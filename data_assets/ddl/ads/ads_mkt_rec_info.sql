@@ -1,0 +1,38 @@
+/*
+ * ads_mkt_rec_info
+ * 中文名称: 营销记录表
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
+ */
+
+CREATE TABLE IF NOT EXISTS ads_mkt_rec_info (
+    MKT_REC_SEQ_ID 40 NOT NULL COMMENT '营销记录流水号',
+    REL_ID 40 NULL COMMENT '关联ID(商机ID、客户群ID/营销活动ID)',
+    MKT_TYP 6 NULL COMMENT '营销类型(1面访/2电话/3短信/4企微)',
+    REL_TYP 6 NULL COMMENT '关联类型(客户群/商机/营销活动)',
+    CUST_ID 20 NULL COMMENT '客户ID',
+    CUST_NAME 100 NULL COMMENT '客户名称',
+    MKT_SITE 200 NULL COMMENT '营销地点',
+    MKT_TIME 20 NULL COMMENT '营销时间',
+    MKT_PERSN 30 NULL COMMENT '营销人ID',
+    MKT_PERSN_NAME 64 NULL COMMENT '营销人名称',
+    MKT_ORG 30 NULL COMMENT '营销机构',
+    MKT_DURA 20 NULL COMMENT '营销时长',
+    MKT_DTL_SITU 400 NULL COMMENT '营销详细情况',
+    MKT_APDIX_ID 40 NULL COMMENT '营销附件ID(录音/图片)',
+    TEMP_ID 40 NULL COMMENT '模板ID',
+    TEMP_NAME 100 NULL COMMENT '模板名称',
+    MSG_SHORT_SEQ_ID 40 NULL COMMENT '短信流水号',
+    PERSN_LEGAL_BK_CODE 30 NULL COMMENT '法人行号',
+    CORDNAT_VISITOR 100 NULL COMMENT '协同拜访人',
+    CORDNAT_VISITOR_NAME 200 NULL COMMENT '协同拜访人名称',
+    LGTUD 40 NULL COMMENT '经度',
+    LATTUD 40 NULL COMMENT '纬度',
+    TEL_NO 40 NULL COMMENT '联系电话',
+    CHNL_NO 6 NULL COMMENT '渠道编号',
+    RMARK 400 NULL COMMENT '备注',
+    NO_BAT 40 NULL COMMENT '批次号',
+    MSG_SHORT_INF 500 NULL COMMENT '短信内容'
+);
+
+COMMENT ON TABLE ads_mkt_rec_info IS '营销记录表';

@@ -1,35 +1,31 @@
 /*
- * DWD层表
- * 表名: crmdm.dwd_sys_org
- * 来源: TB.ddl
+ * DWD_SYS_ORG
+ * 中文名称: 机构表
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
  */
 
--- crmdm.dwd_sys_org 定义
-
--- Drop table
-
--- DROP TABLE crmdm.dwd_sys_org;
-
-CREATE TABLE crmdm.dwd_sys_org (
-	org_id varchar(7) NOT NULL,
-	sup_org_id varchar(7) NULL,
-	org_path varchar(200) NULL,
-	org_name varchar(100) NULL,
-	sup_org_name varchar(100) NULL,
-	direct_under_org varchar(7) NULL,
-	org_typ varchar(10) NULL,
-	org_harcy varchar(10) NULL,
-	org_addrs varchar(800) NULL,
-	org_state varchar(1) NULL,
-	dsply_seq numeric NULL,
-	creatr varchar(64) NULL,
-	creat_time varchar(20) NULL,
-	creat_org varchar(20) NULL,
-	persn_legal_bk_code varchar(30) NULL,
-	hr_ms_org_id varchar(80) NULL,
-	org_lgtud varchar(30) NULL,
-	org_lattud varchar(30) NULL,
-	org_rsponr varchar(40) NULL,
-	org_tel varchar(30) NULL
+CREATE TABLE IF NOT EXISTS DWD_SYS_ORG (
+    ORG_ID 40 NOT NULL COMMENT '机构编号',
+    SUP_ORG_ID 40 NULL COMMENT '上级机构编号',
+    ORG_PATH 200 NULL COMMENT '机构路径',
+    ORG_NAME 100 NULL COMMENT '机构名称',
+    SUP_ORG_NAME 100 NULL COMMENT '上级机构名称',
+    DIRECT_UNDER_ORG 40 NULL COMMENT '直属机构',
+    ORG_TYP 10 NULL COMMENT '机构类型',
+    ORG_HARCY 10 NULL COMMENT '机构层级',
+    ORG_ADDRS 800 NULL COMMENT '机构地址',
+    ORG_STATE 1 NULL COMMENT '机构状态',
+    DSPLY_SEQ VARCHAR(100) NULL COMMENT '显示顺序',
+    CREATR 64 NULL COMMENT '创建人',
+    CREAT_TIME 20 NULL COMMENT '创建时间',
+    CREAT_ORG 20 NULL COMMENT '创建机构',
+    PERSN_LEGAL_BK_CODE 30 NULL COMMENT '法人行号',
+    HR_MS_ORG_ID 80 NULL COMMENT '人力资源系统机构号',
+    ORG_LGTUD 30 NULL COMMENT '机构经度',
+    ORG_LATTUD 30 NULL COMMENT '机构纬度',
+    ORG_RSPONR 40 NULL COMMENT '机构负责人',
+    ORG_TEL 30 NULL COMMENT '机构电话'
 );
 
+COMMENT ON TABLE DWD_SYS_ORG IS '机构表';
