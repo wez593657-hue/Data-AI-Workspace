@@ -33,18 +33,22 @@ def main():
         print("   ✗ 正确流程: git checkout -b feature/xxx → 开发 → git push origin feature/xxx → 创建PR")
         sys.exit(1)
     
-    print("\n2. 检查提交数量...")
+    print("\n2. 检查本地提交数量...")
     stdout, stderr, rc = run_command(['git', 'rev-list', '--count', f'HEAD..origin/{current_branch}'])
-    try:
-        commits_ahead = int(stdout.strip()) if stdout.strip() else 0
-    except:
-        commits_ahead = 0
-    
-    if commits_ahead > 0:
-        print("   ✗ 远程分支有新提交，请先拉取更新")
-        print(f"   ✗ 执行: git pull origin {current_branch}")
-        sys.exit(1)
-    print("   ✓ 提交数量检查通过")
+    if rc != 0:
+        print("   ⚠ 无法访问远程仓库，跳过提交数量检查")
+        print("   ⚠ 请确保网络连接正常")
+    else:
+        try:
+            commits_ahead = int(stdout.strip()) if stdout.strip() else 0
+        except:
+            commits_ahead = 0
+        
+        if commits_ahead > 0:
+            print("   ✗ 远程分支有新提交，请先拉取更新")
+            print(f"   ✗ 执行: git pull origin {current_branch}")
+            sys.exit(1)
+        print("   ✓ 提交数量检查通过")
     
     print("\n3. 执行数据资产一致性校验...")
     stdout, stderr, rc = run_command([sys.executable, 'scripts/validate_consistency.py'])
