@@ -18,6 +18,12 @@ WHITELIST_PATTERNS = [
     'CONTRIBUTING.md'
 ]
 
+DOC_REVIEW_PATTERNS = [
+    'docs/',
+    'README.md',
+    'CONTRIBUTING.md'
+]
+
 def run_command(cmd, cwd=None):
     if cwd is None:
         cwd = BASE_DIR
@@ -26,6 +32,12 @@ def run_command(cmd, cwd=None):
 
 def is_in_whitelist(filepath):
     for pattern in WHITELIST_PATTERNS:
+        if filepath.startswith(pattern) or filepath == pattern.rstrip('/'):
+            return True
+    return False
+
+def is_doc_file(filepath):
+    for pattern in DOC_REVIEW_PATTERNS:
         if filepath.startswith(pattern) or filepath == pattern.rstrip('/'):
             return True
     return False
@@ -46,6 +58,9 @@ def has_data_asset_changes(files):
         'data_assets/',
     ]
     return any(f.startswith(p) for f in files for p in data_asset_paths)
+
+def has_doc_changes(files):
+    return any(is_doc_file(f) for f in files)
 
 def check_python():
     print("\n1. 检查Python环境...")
@@ -102,8 +117,37 @@ def check_staged_files():
     print("   ✓ 暂存区文件检查通过")
     return True
 
+def run_doc_review(changed_files=None):
+    print("\n5. 执行文档变更审核...")
+    
+    if not changed_files or not has_doc_changes(changed_files):
+        print("   ✓ 无文档变更，跳过审核")
+        return True
+    
+    cmd = "python scripts/validate_document_changes.py"
+    
+    stdout, stderr, rc = run_command(cmd)
+    print(stdout)
+    
+    if rc != 0:
+        print("   ⚠ 文档审核发现警告，建议人工审核")
+        print("   ⚠ 是否继续提交？(y/N)")
+        try:
+            import getpass
+            response = getpass.getpass("")
+            if response.lower() != 'y':
+                print("   ✗ 用户取消提交")
+                return False
+            print("   ✓ 用户确认继续提交")
+        except:
+            print("   ✗ 无法获取用户输入，取消提交")
+            return False
+    
+    print("   ✓ 文档变更审核通过")
+    return True
+
 def run_consistency_check(quick_mode=False, changed_files=None):
-    print("\n5. 执行数据资产一致性校验...")
+    print("\n6. 执行数据资产一致性校验...")
     
     if quick_mode and changed_files and not has_data_asset_changes(changed_files):
         print("   ✓ 无数据资产变更，跳过校验")
@@ -125,7 +169,7 @@ def run_consistency_check(quick_mode=False, changed_files=None):
     return True
 
 def run_generated_files_check(quick_mode=False, changed_files=None):
-    print("\n6. 执行文件生成校验...")
+    print("\n7. 执行文件生成校验...")
     
     if quick_mode and changed_files and not has_data_asset_changes(changed_files):
         print("   ✓ 无数据资产变更，跳过校验")
@@ -171,6 +215,9 @@ def main():
         sys.exit(1)
     
     changed_files = get_changed_files()
+    
+    if not run_doc_review(changed_files):
+        sys.exit(1)
     
     if args.mode == 'full':
         if not run_consistency_check(False, changed_files):
