@@ -23,3 +23,6 @@ CREATE TABLE IF NOT EXISTS ads_crm_customer_report (
 
 CREATE INDEX IF NOT EXISTS idx_ads_crm_customer_report_period_type ON ads_crm_customer_report(period_type);
 CREATE INDEX IF NOT EXISTS idx_ads_crm_customer_report_etl_batch_id ON ads_crm_customer_report(etl_batch_id);
+
+
+COMMENT ON TABLE ADS_CRM_CUSTOMER_REPORT IS '【待补充】';

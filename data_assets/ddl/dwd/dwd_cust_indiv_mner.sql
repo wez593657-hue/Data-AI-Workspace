@@ -29,3 +29,6 @@ CREATE TABLE crmdm.dwd_cust_indiv_mner (
 	remark varchar(200) NULL
 );
 
+
+
+COMMENT ON TABLE DWD_CUST_INDIV_MNER IS '【待补充】';

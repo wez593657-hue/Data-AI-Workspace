@@ -21,3 +21,6 @@ CREATE TABLE crmdm.dwd_cust_enter_rela (
 	persn_legal_bk_code varchar(4) NULL
 );
 
+
+
+COMMENT ON TABLE DWD_CUST_ENTER_RELA IS '【待补充】';

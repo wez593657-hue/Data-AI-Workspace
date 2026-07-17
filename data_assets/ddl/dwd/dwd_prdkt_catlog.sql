@@ -35,3 +35,6 @@ CREATE TABLE crmdm.dwd_prdkt_catlog (
 	CONSTRAINT pk_dwd_prdkt_catlog PRIMARY KEY (prdkt_catlog_id)
 );
 
+
+
+COMMENT ON TABLE DWD_PRDKT_CATLOG IS '【待补充】';

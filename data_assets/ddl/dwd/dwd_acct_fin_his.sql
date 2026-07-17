@@ -32,3 +32,6 @@ CREATE TABLE crmdm.dwd_acct_fin_his (
 	risk_lvl varchar(10) NULL
 );
 
+
+
+COMMENT ON TABLE DWD_ACCT_FIN_HIS IS '【待补充】';

@@ -18,3 +18,6 @@ CREATE TABLE crmdm.dwd_crm_sys_xthlcs (
 	hl numeric(20, 7) NULL
 );
 
+
+
+COMMENT ON TABLE DWD_CRM_SYS_XTHLCS IS '【待补充】';

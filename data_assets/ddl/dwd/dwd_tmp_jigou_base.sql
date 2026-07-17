@@ -27,3 +27,6 @@ CREATE TABLE crmdm.dwd_tmp_jigou_base (
 	yewugxjb numeric(3) NULL
 );
 
+
+
+COMMENT ON TABLE DWD_TMP_JIGOU_BASE IS '【待补充】';

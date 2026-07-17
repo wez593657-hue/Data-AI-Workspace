@@ -22,3 +22,6 @@ CREATE TABLE IF NOT EXISTS dws_crm_customer_daily (
 );
 
 CREATE INDEX IF NOT EXISTS idx_dws_crm_customer_daily_etl_batch_id ON dws_crm_customer_daily(etl_batch_id);
+
+
+COMMENT ON TABLE DWS_CRM_CUSTOMER_DAILY IS '【待补充】';

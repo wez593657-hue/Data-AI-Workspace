@@ -35,3 +35,6 @@ CREATE TABLE crmdm.dwd_acct_depo_his (
 	fix_curnt_flg varchar(1) NULL
 );
 
+
+
+COMMENT ON TABLE DWD_ACCT_DEPO_HIS IS '【待补充】';

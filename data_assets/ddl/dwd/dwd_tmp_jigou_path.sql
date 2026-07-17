@@ -17,3 +17,6 @@ CREATE TABLE crmdm.dwd_tmp_jigou_path (
 	org_harcy varchar(10) NULL
 );
 
+
+
+COMMENT ON TABLE DWD_TMP_JIGOU_PATH IS '【待补充】';

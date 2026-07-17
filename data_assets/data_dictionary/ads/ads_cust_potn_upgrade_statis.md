@@ -1,22 +1,22 @@
-# ADS数据字典 - CUST_POTN_UPGRADE_STATIS
+# ADS数据字典 - ads_cust_potn_upgrade_statis
 
 ## 表信息
 
 | 属性 | 值 |
 |------|------|
-| 层级 | ADS - 应用数据层 |
-| 表名 | CUST_POTN_UPGRADE_STATIS |
-| 中文名称 | 潜力提升统计表 |
+| 层级 | ADS |
+| 表名 | ads_cust_potn_upgrade_statis |
+| 中文名称 | 【待补充】 |
 | 更新时间 | 2026-07-17 |
 
 ## 字段列表
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 |--------|-------------|----------|------|----------|--------|------|------|----------|----------|
-| DATA_DATE | 数据日期 | VARCHAR2(8) | - | - | - | - | - | - | - |
-| STATIS_OBJ | 统计对象 | VARCHAR2(2) | - | - | - | - | - | - | - |
-| STATIS_CYCLE | 统计周期 | VARCHAR2(2) | - | - | - | - | - | - | - |
-| LVL_CRIT | 临界等级 | VARCHAR2(2) | - | - | - | - | - | - | - |
+| DATA_DATE | 数据日期 | VARCHAR(8) | - | - | - | - | - | - | - |
+| STATIS_OBJ | 统计对象 | VARCHAR(2) | - | - | - | - | - | - | - |
+| STATIS_CYCLE | 统计周期 | VARCHAR(2) | - | - | - | - | - | - | - |
+| LVL_CRIT | 临界等级 | VARCHAR(2) | - | - | - | - | - | - | - |
 | TTL_CUST_CNT | 总客户数 | NUMBER(8) | - | - | - | - | - | - | - |
 | MTH_AVG_QUAL_CNT | 月均达标 | NUMBER(8) | - | - | - | - | - | - | - |
 | MTH_AVG_QUAL_RATE | 月均达标率 | NUMBER(20,2) | - | - | - | - | - | - | - |

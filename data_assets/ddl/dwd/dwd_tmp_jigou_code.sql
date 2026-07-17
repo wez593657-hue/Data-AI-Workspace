@@ -30,3 +30,6 @@ CREATE TABLE crmdm.dwd_tmp_jigou_code (
 	org_tel varchar(30) NULL
 );
 
+
+
+COMMENT ON TABLE DWD_TMP_JIGOU_CODE IS '【待补充】';

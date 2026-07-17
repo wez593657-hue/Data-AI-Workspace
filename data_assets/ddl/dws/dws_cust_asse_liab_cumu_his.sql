@@ -26,3 +26,6 @@ CREATE TABLE crmdm.dws_cust_asse_liab_cumu_his (
 	yar_days numeric(20, 2) NULL
 );
 
+
+
+COMMENT ON TABLE DWS_CUST_ASSE_LIAB_CUMU_HIS IS '【待补充】';

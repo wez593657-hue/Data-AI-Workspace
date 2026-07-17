@@ -32,3 +32,6 @@ CREATE TABLE crmdm.dwd_acct_loan_his (
 	cate_5lvl varchar(2) NULL
 );
 
+
+
+COMMENT ON TABLE DWD_ACCT_LOAN_HIS IS '【待补充】';

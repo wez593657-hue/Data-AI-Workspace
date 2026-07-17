@@ -37,3 +37,6 @@ CREATE TABLE crmdm.dwd_acct_insur_his (
 	persn_legal_bk_code varchar(4) NULL
 );
 
+
+
+COMMENT ON TABLE DWD_ACCT_INSUR_HIS IS '【待补充】';

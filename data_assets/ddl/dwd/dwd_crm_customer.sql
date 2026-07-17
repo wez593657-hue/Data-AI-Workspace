@@ -29,3 +29,6 @@ CREATE INDEX IF NOT EXISTS idx_dwd_crm_customer_customer_type ON dwd_crm_custome
 CREATE INDEX IF NOT EXISTS idx_dwd_crm_customer_region ON dwd_crm_customer(region);
 CREATE INDEX IF NOT EXISTS idx_dwd_crm_customer_create_time ON dwd_crm_customer(create_time);
 CREATE INDEX IF NOT EXISTS idx_dwd_crm_customer_etl_batch_id ON dwd_crm_customer(etl_batch_id);
+
+
+COMMENT ON TABLE DWD_CRM_CUSTOMER IS '【待补充】';

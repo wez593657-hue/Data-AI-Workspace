@@ -1,22 +1,22 @@
-# ADS数据字典 - CUST_NEW_CUST_STATIS
+# ADS数据字典 - ads_cust_new_cust_statis
 
 ## 表信息
 
 | 属性 | 值 |
 |------|------|
-| 层级 | ADS - 应用数据层 |
-| 表名 | CUST_NEW_CUST_STATIS |
-| 中文名称 | 新客经营统计表 |
+| 层级 | ADS |
+| 表名 | ads_cust_new_cust_statis |
+| 中文名称 | 【待补充】 |
 | 更新时间 | 2026-07-17 |
 
 ## 字段列表
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 |--------|-------------|----------|------|----------|--------|------|------|----------|----------|
-| DATA_DATE | 数据日期 | VARCHAR2(8) | - | - | - | - | - | - | - |
-| STATIS_OBJ | 统计对象 | VARCHAR2(2) | - | - | - | - | - | - | - |
-| STATIS_CYCLE | 统计周期 | VARCHAR2(2) | - | - | - | - | - | - | - |
-| NEW_CUST_CYCLE | 新客周期 | VARCHAR2(1) | - | - | - | - | - | - | - |
+| DATA_DATE | 数据日期 | VARCHAR(8) | - | - | - | - | - | - | - |
+| STATIS_OBJ | 统计对象 | VARCHAR(2) | - | - | - | - | - | - | - |
+| STATIS_CYCLE | 统计周期 | VARCHAR(2) | - | - | - | - | - | - | - |
+| NEW_CUST_CYCLE | 新客周期 | VARCHAR(1) | - | - | - | - | - | - | - |
 | NEW_CUST_CNT | 新客数 | NUMBER(8) | - | - | - | - | - | - | - |
 | CNTCT_CUST_CNT | 已接触客户 | NUMBER(8) | - | - | - | - | - | - | - |
 | ASSET_BAL_SEG1_CUST_CNT | 资产余额区间1客户数 | NUMBER(8) | - | - | - | - | - | - | - |
