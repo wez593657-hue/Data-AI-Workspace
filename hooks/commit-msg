@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+import re
+import sys
+from pathlib import Path
+
+message = Path(sys.argv[1]).read_text(encoding='utf-8').strip() if len(sys.argv) == 2 else ''
+if not re.match(r'^(feat|fix|docs|refactor|style|test|chore|sync)\([^)]+\): .+', message):
+    print('提交信息格式不正确: <type>(scope): <subject>')
+    sys.exit(1)

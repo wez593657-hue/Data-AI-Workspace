@@ -1,0 +1,207 @@
+# ODS 层数据字典 - crmdm.cms_business_duebill
+
+## 表信息
+
+| 属性 | 值 |
+|------|----|
+| 表名 | crmdm.cms_business_duebill |
+| 中文名称 | 【待确认】 |
+| 描述 | 根据 ODS DDL 自动生成，业务含义待确认 |
+| 数据来源 | DDL: crmdm.cms_business_duebill |
+| 负责人 | 【待确认】 |
+| 更新时间 | 2026-07-17 |
+
+## 字段列表
+
+| 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 数据来源 | 负责人 | 更新时间 |
+|--------|--------------|----------|------|----------|--------|------|------|----------|----------|--------|----------|
+| serialno | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.serialno | 【待确认】 | 2026-07-17 |
+| relativeserialno1 | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.relativeserialno1 | 【待确认】 | 2026-07-17 |
+| relativeserialno2 | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.relativeserialno2 | 【待确认】 | 2026-07-17 |
+| subjectno | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.subjectno | 【待确认】 | 2026-07-17 |
+| mfcustomerid | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.mfcustomerid | 【待确认】 | 2026-07-17 |
+| customerid | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.customerid | 【待确认】 | 2026-07-17 |
+| customername | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.customername | 【待确认】 | 2026-07-17 |
+| businesstype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.businesstype | 【待确认】 | 2026-07-17 |
+| businesssubtype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.businesssubtype | 【待确认】 | 2026-07-17 |
+| businessstatus | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.businessstatus | 【待确认】 | 2026-07-17 |
+| businesscurrency | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.businesscurrency | 【待确认】 | 2026-07-17 |
+| businesssum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.businesssum | 【待确认】 | 2026-07-17 |
+| putoutdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.putoutdate | 【待确认】 | 2026-07-17 |
+| maturity | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.maturity | 【待确认】 | 2026-07-17 |
+| actualmaturity | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.actualmaturity | 【待确认】 | 2026-07-17 |
+| businessrate | 【待确认】 | NUMERIC | 24, 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.businessrate | 【待确认】 | 2026-07-17 |
+| actualbusinessrate | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.actualbusinessrate | 【待确认】 | 2026-07-17 |
+| ictype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.ictype | 【待确认】 | 2026-07-17 |
+| iccyc | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.iccyc | 【待确认】 | 2026-07-17 |
+| paytimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.paytimes | 【待确认】 | 2026-07-17 |
+| paycyc | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.paycyc | 【待确认】 | 2026-07-17 |
+| corpuspaymethod | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.corpuspaymethod | 【待确认】 | 2026-07-17 |
+| extendtimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.extendtimes | 【待确认】 | 2026-07-17 |
+| reorgtimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.reorgtimes | 【待确认】 | 2026-07-17 |
+| renewtimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.renewtimes | 【待确认】 | 2026-07-17 |
+| golntimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.golntimes | 【待确认】 | 2026-07-17 |
+| balance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.balance | 【待确认】 | 2026-07-17 |
+| normalbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.normalbalance | 【待确认】 | 2026-07-17 |
+| overduebalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.overduebalance | 【待确认】 | 2026-07-17 |
+| dullbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.dullbalance | 【待确认】 | 2026-07-17 |
+| badbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.badbalance | 【待确认】 | 2026-07-17 |
+| interestbalance1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.interestbalance1 | 【待确认】 | 2026-07-17 |
+| interestbalance2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.interestbalance2 | 【待确认】 | 2026-07-17 |
+| finebalance1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.finebalance1 | 【待确认】 | 2026-07-17 |
+| finebalance2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.finebalance2 | 【待确认】 | 2026-07-17 |
+| receivebalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.receivebalance | 【待确认】 | 2026-07-17 |
+| payedbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.payedbalance | 【待确认】 | 2026-07-17 |
+| overduedays | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.overduedays | 【待确认】 | 2026-07-17 |
+| payaccount | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.payaccount | 【待确认】 | 2026-07-17 |
+| putoutaccount | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.putoutaccount | 【待确认】 | 2026-07-17 |
+| paybackaccount | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.paybackaccount | 【待确认】 | 2026-07-17 |
+| payinterestaccount | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.payinterestaccount | 【待确认】 | 2026-07-17 |
+| oweinterestdays | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.oweinterestdays | 【待确认】 | 2026-07-17 |
+| tabalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.tabalance | 【待确认】 | 2026-07-17 |
+| tainterestbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.tainterestbalance | 【待确认】 | 2026-07-17 |
+| tatimes | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.tatimes | 【待确认】 | 2026-07-17 |
+| lcatimes | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.lcatimes | 【待确认】 | 2026-07-17 |
+| saledate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.saledate | 【待确认】 | 2026-07-17 |
+| finishtype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.finishtype | 【待确认】 | 2026-07-17 |
+| finishdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.finishdate | 【待确认】 | 2026-07-17 |
+| mfareaid | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.mfareaid | 【待确认】 | 2026-07-17 |
+| mforgid | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.mforgid | 【待确认】 | 2026-07-17 |
+| mfuserid | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.mfuserid | 【待确认】 | 2026-07-17 |
+| operateorgid | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.operateorgid | 【待确认】 | 2026-07-17 |
+| operateuserid | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.operateuserid | 【待确认】 | 2026-07-17 |
+| inputorgid | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.inputorgid | 【待确认】 | 2026-07-17 |
+| inputuserid | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.inputuserid | 【待确认】 | 2026-07-17 |
+| inputdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.inputdate | 【待确认】 | 2026-07-17 |
+| updatedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.updatedate | 【待确认】 | 2026-07-17 |
+| inoutflag | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.inoutflag | 【待确认】 | 2026-07-17 |
+| dealflag | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.dealflag | 【待确认】 | 2026-07-17 |
+| occurdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.occurdate | 【待确认】 | 2026-07-17 |
+| businessprop | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.businessprop | 【待确认】 | 2026-07-17 |
+| benefitcorp | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.benefitcorp | 【待确认】 | 2026-07-17 |
+| actualtermmonth | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.actualtermmonth | 【待确认】 | 2026-07-17 |
+| actualtermday | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.actualtermday | 【待确认】 | 2026-07-17 |
+| baseratetype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.baseratetype | 【待确认】 | 2026-07-17 |
+| baserate | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.baserate | 【待确认】 | 2026-07-17 |
+| ratefloattype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.ratefloattype | 【待确认】 | 2026-07-17 |
+| ratefloat | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.ratefloat | 【待确认】 | 2026-07-17 |
+| timsflag | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.timsflag | 【待确认】 | 2026-07-17 |
+| bailratio | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bailratio | 【待确认】 | 2026-07-17 |
+| logoutdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.logoutdate | 【待确认】 | 2026-07-17 |
+| cancellogoutdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.cancellogoutdate | 【待确认】 | 2026-07-17 |
+| bailsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bailsum | 【待确认】 | 2026-07-17 |
+| bailaccount | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bailaccount | 【待确认】 | 2026-07-17 |
+| purpose | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.purpose | 【待确认】 | 2026-07-17 |
+| advanceflag | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.advanceflag | 【待确认】 | 2026-07-17 |
+| relativeduebillno | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.relativeduebillno | 【待确认】 | 2026-07-17 |
+| actualartificialno | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.actualartificialno | 【待确认】 | 2026-07-17 |
+| accountno | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.accountno | 【待确认】 | 2026-07-17 |
+| loanaccountno | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.loanaccountno | 【待确认】 | 2026-07-17 |
+| secondpayaccount | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.secondpayaccount | 【待确认】 | 2026-07-17 |
+| adjustratetype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.adjustratetype | 【待确认】 | 2026-07-17 |
+| adjustrateterm | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.adjustrateterm | 【待确认】 | 2026-07-17 |
+| overinttype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.overinttype | 【待确认】 | 2026-07-17 |
+| rateadjustcyc | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.rateadjustcyc | 【待确认】 | 2026-07-17 |
+| pdgaccountno | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.pdgaccountno | 【待确认】 | 2026-07-17 |
+| deductdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.deductdate | 【待确认】 | 2026-07-17 |
+| fzanbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.fzanbalance | 【待确认】 | 2026-07-17 |
+| acceptinttype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.acceptinttype | 【待确认】 | 2026-07-17 |
+| ratio | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.ratio | 【待确认】 | 2026-07-17 |
+| thirdpartyadd1 | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.thirdpartyadd1 | 【待确认】 | 2026-07-17 |
+| thirdpartyzip1 | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.thirdpartyzip1 | 【待确认】 | 2026-07-17 |
+| thirdpartyadd2 | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.thirdpartyadd2 | 【待确认】 | 2026-07-17 |
+| thirdpartyzip2 | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.thirdpartyzip2 | 【待确认】 | 2026-07-17 |
+| termdate1 | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.termdate1 | 【待确认】 | 2026-07-17 |
+| termdate2 | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.termdate2 | 【待确认】 | 2026-07-17 |
+| termdate3 | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.termdate3 | 【待确认】 | 2026-07-17 |
+| describe2 | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.describe2 | 【待确认】 | 2026-07-17 |
+| fixcyc | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.fixcyc | 【待确认】 | 2026-07-17 |
+| thirdparty1 | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.thirdparty1 | 【待确认】 | 2026-07-17 |
+| thirdpartyid1 | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.thirdpartyid1 | 【待确认】 | 2026-07-17 |
+| thirdparty2 | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.thirdparty2 | 【待确认】 | 2026-07-17 |
+| thirdparty3 | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.thirdparty3 | 【待确认】 | 2026-07-17 |
+| type1 | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.type1 | 【待确认】 | 2026-07-17 |
+| type2 | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.type2 | 【待确认】 | 2026-07-17 |
+| type3 | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.type3 | 【待确认】 | 2026-07-17 |
+| billno | 【待确认】 | VARCHAR | 64 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.billno | 【待确认】 | 2026-07-17 |
+| flag1 | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.flag1 | 【待确认】 | 2026-07-17 |
+| flag2 | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.flag2 | 【待确认】 | 2026-07-17 |
+| flag3 | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.flag3 | 【待确认】 | 2026-07-17 |
+| thirdpartyregion | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.thirdpartyregion | 【待确认】 | 2026-07-17 |
+| thirdpartyaccounts | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.thirdpartyaccounts | 【待确认】 | 2026-07-17 |
+| cargoinfo | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.cargoinfo | 【待确认】 | 2026-07-17 |
+| securitiestype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.securitiestype | 【待确认】 | 2026-07-17 |
+| securitiesregion | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.securitiesregion | 【待确认】 | 2026-07-17 |
+| aboutbankid2 | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.aboutbankid2 | 【待确认】 | 2026-07-17 |
+| aboutbankname2 | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.aboutbankname2 | 【待确认】 | 2026-07-17 |
+| aboutbankid3 | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.aboutbankid3 | 【待确认】 | 2026-07-17 |
+| aboutbankname | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.aboutbankname | 【待确认】 | 2026-07-17 |
+| aboutbankid | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.aboutbankid | 【待确认】 | 2026-07-17 |
+| oldlctermtype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.oldlctermtype | 【待确认】 | 2026-07-17 |
+| negotiateno | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.negotiateno | 【待确认】 | 2026-07-17 |
+| creditkind | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.creditkind | 【待确认】 | 2026-07-17 |
+| gatheringname | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.gatheringname | 【待确认】 | 2026-07-17 |
+| preinttype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.preinttype | 【待确认】 | 2026-07-17 |
+| resumeinttype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.resumeinttype | 【待确认】 | 2026-07-17 |
+| guarantyno | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.guarantyno | 【待确认】 | 2026-07-17 |
+| pztype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.pztype | 【待确认】 | 2026-07-17 |
+| graceperiod | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.graceperiod | 【待确认】 | 2026-07-17 |
+| oldlcvaliddate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.oldlcvaliddate | 【待确认】 | 2026-07-17 |
+| mfeepaymethod | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.mfeepaymethod | 【待确认】 | 2026-07-17 |
+| describe1 | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.describe1 | 【待确认】 | 2026-07-17 |
+| tradecontractno | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.tradecontractno | 【待确认】 | 2026-07-17 |
+| loantype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.loantype | 【待确认】 | 2026-07-17 |
+| fixterm | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.fixterm | 【待确认】 | 2026-07-17 |
+| cancelsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.cancelsum | 【待确认】 | 2026-07-17 |
+| cancelinterest | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.cancelinterest | 【待确认】 | 2026-07-17 |
+| bailacount | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bailacount | 【待确认】 | 2026-07-17 |
+| classify4 | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.classify4 | 【待确认】 | 2026-07-17 |
+| classifyresult | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.classifyresult | 【待确认】 | 2026-07-17 |
+| returntype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.returntype | 【待确认】 | 2026-07-17 |
+| bailpercent | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bailpercent | 【待确认】 | 2026-07-17 |
+| paymenttype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.paymenttype | 【待确认】 | 2026-07-17 |
+| termsfreq | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.termsfreq | 【待确认】 | 2026-07-17 |
+| overduedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.overduedate | 【待确认】 | 2026-07-17 |
+| oweinterestdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.oweinterestdate | 【待确认】 | 2026-07-17 |
+| lcstatus | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.lcstatus | 【待确认】 | 2026-07-17 |
+| ichangedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.ichangedate | 【待确认】 | 2026-07-17 |
+| vouchtype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.vouchtype | 【待确认】 | 2026-07-17 |
+| executeyearrate | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.executeyearrate | 【待确认】 | 2026-07-17 |
+| offsheetflag | 【待确认】 | VARCHAR | 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.offsheetflag | 【待确认】 | 2026-07-17 |
+| basebusinesstype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.basebusinesstype | 【待确认】 | 2026-07-17 |
+| interestoverduedate | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.interestoverduedate | 【待确认】 | 2026-07-17 |
+| currentrpttermid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.currentrpttermid | 【待确认】 | 2026-07-17 |
+| lctermtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.lctermtype | 【待确认】 | 2026-07-17 |
+| paytype | 【待确认】 | VARCHAR | 12 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.paytype | 【待确认】 | 2026-07-17 |
+| lastclassifyresult | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.lastclassifyresult | 【待确认】 | 2026-07-17 |
+| sysclassifyresult | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.sysclassifyresult | 【待确认】 | 2026-07-17 |
+| putoutorgid | 【待确认】 | VARCHAR | 100 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.putoutorgid | 【待确认】 | 2026-07-17 |
+| balanceoverduedate | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.balanceoverduedate | 【待确认】 | 2026-07-17 |
+| guaranteeway | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.guaranteeway | 【待确认】 | 2026-07-17 |
+| gjflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.gjflag | 【待确认】 | 2026-07-17 |
+| lcno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.lcno | 【待确认】 | 2026-07-17 |
+| cancleinterestsum2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.cancleinterestsum2 | 【待确认】 | 2026-07-17 |
+| canclefinesum1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.canclefinesum1 | 【待确认】 | 2026-07-17 |
+| canclefinesum2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.canclefinesum2 | 【待确认】 | 2026-07-17 |
+| canclebalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.canclebalance | 【待确认】 | 2026-07-17 |
+| cancleinterestbalance2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.cancleinterestbalance2 | 【待确认】 | 2026-07-17 |
+| canclefinebalance1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.canclefinebalance1 | 【待确认】 | 2026-07-17 |
+| canclefinebalance2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.canclefinebalance2 | 【待确认】 | 2026-07-17 |
+| unacceptbalance | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.unacceptbalance | 【待确认】 | 2026-07-17 |
+| dongjbho | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.dongjbho | 【待确认】 | 2026-07-17 |
+| taskflag | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.taskflag | 【待确认】 | 2026-07-17 |
+| yzflag | 【待确认】 | VARCHAR | 5 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.yzflag | 【待确认】 | 2026-07-17 |
+| ratetermid | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.ratetermid | 【待确认】 | 2026-07-17 |
+| bpratetermid | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bpratetermid | 【待确认】 | 2026-07-17 |
+| bprateadjustcyc | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bprateadjustcyc | 【待确认】 | 2026-07-17 |
+| bpadjustratetype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bpadjustratetype | 【待确认】 | 2026-07-17 |
+| bpratefloat | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bpratefloat | 【待确认】 | 2026-07-17 |
+| bpratefloattype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bpratefloattype | 【待确认】 | 2026-07-17 |
+| bpbaserate | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bpbaserate | 【待确认】 | 2026-07-17 |
+| bpbaseratetype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.bpbaseratetype | 【待确认】 | 2026-07-17 |
+| financebailoutdelay | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.financebailoutdelay | 【待确认】 | 2026-07-17 |
+| financebailoutdelaymonths | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.financebailoutdelaymonths | 【待确认】 | 2026-07-17 |
+| iswriteoffaccrualflag | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.iswriteoffaccrualflag | 【待确认】 | 2026-07-17 |
+| loanwriteofftype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.loanwriteofftype | 【待确认】 | 2026-07-17 |
+| observedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.observedate | 【待确认】 | 2026-07-17 |
+| ryzd | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_duebill.ryzd | 【待确认】 | 2026-07-17 |

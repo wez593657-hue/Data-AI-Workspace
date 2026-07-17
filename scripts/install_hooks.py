@@ -9,7 +9,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HOOKS_DIR = os.path.join(BASE_DIR, 'hooks')
 GIT_HOOKS_DIR = os.path.join(BASE_DIR, '.git', 'hooks')
 
-HOOK_FILES = ['pre-commit', 'pre-push', 'prepare-commit-msg']
+HOOK_FILES = ['pre-commit', 'pre-push', 'commit-msg']
 
 def main():
     print("=" * 60)
@@ -48,6 +48,12 @@ def main():
     print(f"  安装完成! 共安装 {installed_count} 个钩子")
     print("=" * 60)
     
+    if installed_count != len(HOOK_FILES):
+        sys.exit(1)
+
+    legacy_hook = os.path.join(GIT_HOOKS_DIR, 'prepare-commit-msg')
+    if os.path.exists(legacy_hook):
+        os.remove(legacy_hook)
     sys.exit(0)
 
 if __name__ == "__main__":

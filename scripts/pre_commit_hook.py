@@ -51,11 +51,7 @@ def is_doc_file(filepath):
     return False
 
 def get_changed_files():
-    stdout, stderr, rc = run_command("git diff --cached --name-only")
-    staged = [f.strip() for f in stdout.strip().split('\n') if f.strip()]
-    stdout, stderr, rc = run_command("git diff --name-only")
-    unstaged = [f.strip() for f in stdout.strip().split('\n') if f.strip()]
-    return list(set(staged + unstaged))
+    return get_staged_files()
 
 def get_staged_files():
     stdout, stderr, rc = run_command("git diff --cached --name-only")
@@ -214,12 +210,6 @@ def main():
         sys.exit(1)
     
     if not check_staged_files():
-        sys.exit(1)
-    
-    if not check_unstaged_changes():
-        sys.exit(1)
-    
-    if not check_untracked_files():
         sys.exit(1)
     
     changed_files = get_changed_files()

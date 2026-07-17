@@ -33,6 +33,9 @@ jobs:
     - name: 执行映射完整性校验
       run: python scripts/analyze_missing_mapping.py
 
+    - name: 执行TMP表审核清单校验
+      run: python scripts/validate_tmp_tables.py --require-approved
+
   code-review:
     name: 代码审查检查
     runs-on: ubuntu-latest

@@ -23,7 +23,7 @@ ls -la .git/hooks/
 安装的钩子：
 - `pre-commit`: 提交前校验（数据资产一致性、文档审核、工作区检查）
 - `pre-push`: 推送前检查（分支保护、提交信息格式、完整校验）
-- `prepare-commit-msg`: 提交信息格式校验
+- `commit-msg`: 提交信息格式校验
 
 ## 分支策略
 

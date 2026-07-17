@@ -1,0 +1,400 @@
+# ODS 层数据字典 - crmdm.cms_business_contract
+
+## 表信息
+
+| 属性 | 值 |
+|------|----|
+| 表名 | crmdm.cms_business_contract |
+| 中文名称 | 【待确认】 |
+| 描述 | 根据 ODS DDL 自动生成，业务含义待确认 |
+| 数据来源 | DDL: crmdm.cms_business_contract |
+| 负责人 | 【待确认】 |
+| 更新时间 | 2026-07-17 |
+
+## 字段列表
+
+| 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 数据来源 | 负责人 | 更新时间 |
+|--------|--------------|----------|------|----------|--------|------|------|----------|----------|--------|----------|
+| serialno | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.serialno | 【待确认】 | 2026-07-17 |
+| relativeserialno | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.relativeserialno | 【待确认】 | 2026-07-17 |
+| artificialno | 【待确认】 | VARCHAR | 100 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.artificialno | 【待确认】 | 2026-07-17 |
+| occurdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.occurdate | 【待确认】 | 2026-07-17 |
+| customerid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.customerid | 【待确认】 | 2026-07-17 |
+| customername | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.customername | 【待确认】 | 2026-07-17 |
+| businesstype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businesstype | 【待确认】 | 2026-07-17 |
+| oldbusinesstype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oldbusinesstype | 【待确认】 | 2026-07-17 |
+| businesssubtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businesssubtype | 【待确认】 | 2026-07-17 |
+| occurtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.occurtype | 【待确认】 | 2026-07-17 |
+| creditdigest | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.creditdigest | 【待确认】 | 2026-07-17 |
+| creditcycle | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.creditcycle | 【待确认】 | 2026-07-17 |
+| credittype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.credittype | 【待确认】 | 2026-07-17 |
+| currenylist | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.currenylist | 【待确认】 | 2026-07-17 |
+| currencymode | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.currencymode | 【待确认】 | 2026-07-17 |
+| businesstypelist | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businesstypelist | 【待确认】 | 2026-07-17 |
+| calculatemode | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.calculatemode | 【待确认】 | 2026-07-17 |
+| useorglist | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.useorglist | 【待确认】 | 2026-07-17 |
+| flowreduceflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.flowreduceflag | 【待确认】 | 2026-07-17 |
+| contractflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.contractflag | 【待确认】 | 2026-07-17 |
+| subcontractflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.subcontractflag | 【待确认】 | 2026-07-17 |
+| selfuseflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.selfuseflag | 【待确认】 | 2026-07-17 |
+| creditindex | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.creditindex | 【待确认】 | 2026-07-17 |
+| creditreducesum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.creditreducesum | 【待确认】 | 2026-07-17 |
+| limitationterm | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.limitationterm | 【待确认】 | 2026-07-17 |
+| useterm | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.useterm | 【待确认】 | 2026-07-17 |
+| creditaggreement | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.creditaggreement | 【待确认】 | 2026-07-17 |
+| relativeagreement | 【待确认】 | VARCHAR | 4000 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.relativeagreement | 【待确认】 | 2026-07-17 |
+| loanflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.loanflag | 【待确认】 | 2026-07-17 |
+| totalsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.totalsum | 【待确认】 | 2026-07-17 |
+| ourrole | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.ourrole | 【待确认】 | 2026-07-17 |
+| reversibility | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.reversibility | 【待确认】 | 2026-07-17 |
+| billnum | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.billnum | 【待确认】 | 2026-07-17 |
+| housetype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.housetype | 【待确认】 | 2026-07-17 |
+| lctermtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.lctermtype | 【待确认】 | 2026-07-17 |
+| riskattribute | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.riskattribute | 【待确认】 | 2026-07-17 |
+| suretype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.suretype | 【待确认】 | 2026-07-17 |
+| safeguardtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.safeguardtype | 【待确认】 | 2026-07-17 |
+| creditbusiness | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.creditbusiness | 【待确认】 | 2026-07-17 |
+| businesscurrency | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businesscurrency | 【待确认】 | 2026-07-17 |
+| businesssum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businesssum | 【待确认】 | 2026-07-17 |
+| businessprop | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businessprop | 【待确认】 | 2026-07-17 |
+| termyear | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.termyear | 【待确认】 | 2026-07-17 |
+| termmonth | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.termmonth | 【待确认】 | 2026-07-17 |
+| termday | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.termday | 【待确认】 | 2026-07-17 |
+| lgterm | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.lgterm | 【待确认】 | 2026-07-17 |
+| baseratetype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.baseratetype | 【待确认】 | 2026-07-17 |
+| baserate | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.baserate | 【待确认】 | 2026-07-17 |
+| ratefloattype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.ratefloattype | 【待确认】 | 2026-07-17 |
+| ratefloat | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.ratefloat | 【待确认】 | 2026-07-17 |
+| businessrate | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businessrate | 【待确认】 | 2026-07-17 |
+| ictype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.ictype | 【待确认】 | 2026-07-17 |
+| iccyc | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.iccyc | 【待确认】 | 2026-07-17 |
+| pdgratio | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.pdgratio | 【待确认】 | 2026-07-17 |
+| pdgsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.pdgsum | 【待确认】 | 2026-07-17 |
+| pdgpaymethod | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.pdgpaymethod | 【待确认】 | 2026-07-17 |
+| pdgpayperiod | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.pdgpayperiod | 【待确认】 | 2026-07-17 |
+| promisesfeeratio | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.promisesfeeratio | 【待确认】 | 2026-07-17 |
+| promisesfeesum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.promisesfeesum | 【待确认】 | 2026-07-17 |
+| promisesfeeperiod | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.promisesfeeperiod | 【待确认】 | 2026-07-17 |
+| promisesfeebegin | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.promisesfeebegin | 【待确认】 | 2026-07-17 |
+| mfeeratio | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.mfeeratio | 【待确认】 | 2026-07-17 |
+| mfeesum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.mfeesum | 【待确认】 | 2026-07-17 |
+| mfeepaymethod | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.mfeepaymethod | 【待确认】 | 2026-07-17 |
+| agentfee | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.agentfee | 【待确认】 | 2026-07-17 |
+| dealfee | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.dealfee | 【待确认】 | 2026-07-17 |
+| totalcast | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.totalcast | 【待确认】 | 2026-07-17 |
+| discountinterest | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.discountinterest | 【待确认】 | 2026-07-17 |
+| purchaserinterest | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.purchaserinterest | 【待确认】 | 2026-07-17 |
+| bargainorinterest | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.bargainorinterest | 【待确认】 | 2026-07-17 |
+| discountsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.discountsum | 【待确认】 | 2026-07-17 |
+| bailratio | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.bailratio | 【待确认】 | 2026-07-17 |
+| bailcurrency | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.bailcurrency | 【待确认】 | 2026-07-17 |
+| bailsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.bailsum | 【待确认】 | 2026-07-17 |
+| bailaccount | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.bailaccount | 【待确认】 | 2026-07-17 |
+| fineratetype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.fineratetype | 【待确认】 | 2026-07-17 |
+| finerate | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.finerate | 【待确认】 | 2026-07-17 |
+| drawingtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.drawingtype | 【待确认】 | 2026-07-17 |
+| firstdrawingdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.firstdrawingdate | 【待确认】 | 2026-07-17 |
+| drawingperiod | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.drawingperiod | 【待确认】 | 2026-07-17 |
+| paytimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.paytimes | 【待确认】 | 2026-07-17 |
+| paycyc | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.paycyc | 【待确认】 | 2026-07-17 |
+| graceperiod | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.graceperiod | 【待确认】 | 2026-07-17 |
+| overdraftperiod | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.overdraftperiod | 【待确认】 | 2026-07-17 |
+| oldlcno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oldlcno | 【待确认】 | 2026-07-17 |
+| oldlctermtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oldlctermtype | 【待确认】 | 2026-07-17 |
+| remitmode | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.remitmode | 【待确认】 | 2026-07-17 |
+| oldlcsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oldlcsum | 【待确认】 | 2026-07-17 |
+| oldlcloadingdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oldlcloadingdate | 【待确认】 | 2026-07-17 |
+| oldlcvaliddate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oldlcvaliddate | 【待确认】 | 2026-07-17 |
+| direction | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.direction | 【待确认】 | 2026-07-17 |
+| purpose | 【待确认】 | VARCHAR | 2000 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.purpose | 【待确认】 | 2026-07-17 |
+| planallocation | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.planallocation | 【待确认】 | 2026-07-17 |
+| immediacypaysource | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.immediacypaysource | 【待确认】 | 2026-07-17 |
+| paysource | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.paysource | 【待确认】 | 2026-07-17 |
+| corpuspaymethod | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.corpuspaymethod | 【待确认】 | 2026-07-17 |
+| interestpaymethod | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.interestpaymethod | 【待确认】 | 2026-07-17 |
+| putoutdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.putoutdate | 【待确认】 | 2026-07-17 |
+| maturity | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.maturity | 【待确认】 | 2026-07-17 |
+| thirdparty1 | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdparty1 | 【待确认】 | 2026-07-17 |
+| thirdpartyid1 | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdpartyid1 | 【待确认】 | 2026-07-17 |
+| thirdparty2 | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdparty2 | 【待确认】 | 2026-07-17 |
+| thirdpartyid2 | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdpartyid2 | 【待确认】 | 2026-07-17 |
+| thirdparty3 | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdparty3 | 【待确认】 | 2026-07-17 |
+| thirdpartyid3 | 【待确认】 | VARCHAR | 100 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdpartyid3 | 【待确认】 | 2026-07-17 |
+| thirdpartyregion | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdpartyregion | 【待确认】 | 2026-07-17 |
+| thirdpartyaccounts | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdpartyaccounts | 【待确认】 | 2026-07-17 |
+| cargoinfo | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.cargoinfo | 【待确认】 | 2026-07-17 |
+| projectname | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.projectname | 【待确认】 | 2026-07-17 |
+| operationinfo | 【待确认】 | VARCHAR | 400 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.operationinfo | 【待确认】 | 2026-07-17 |
+| contextinfo | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.contextinfo | 【待确认】 | 2026-07-17 |
+| securitiestype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.securitiestype | 【待确认】 | 2026-07-17 |
+| securitiesregion | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.securitiesregion | 【待确认】 | 2026-07-17 |
+| constructionarea | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.constructionarea | 【待确认】 | 2026-07-17 |
+| usearea | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.usearea | 【待确认】 | 2026-07-17 |
+| flag1 | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.flag1 | 【待确认】 | 2026-07-17 |
+| flag2 | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.flag2 | 【待确认】 | 2026-07-17 |
+| flag3 | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.flag3 | 【待确认】 | 2026-07-17 |
+| tradecontractno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.tradecontractno | 【待确认】 | 2026-07-17 |
+| invoiceno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.invoiceno | 【待确认】 | 2026-07-17 |
+| tradecurrency | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.tradecurrency | 【待确认】 | 2026-07-17 |
+| tradesum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.tradesum | 【待确认】 | 2026-07-17 |
+| lcno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.lcno | 【待确认】 | 2026-07-17 |
+| paymentdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.paymentdate | 【待确认】 | 2026-07-17 |
+| operationmode | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.operationmode | 【待确认】 | 2026-07-17 |
+| begindate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.begindate | 【待确认】 | 2026-07-17 |
+| enddate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.enddate | 【待确认】 | 2026-07-17 |
+| vouchclass | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.vouchclass | 【待确认】 | 2026-07-17 |
+| vouchtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.vouchtype | 【待确认】 | 2026-07-17 |
+| vouchtype1 | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.vouchtype1 | 【待确认】 | 2026-07-17 |
+| vouchtype2 | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.vouchtype2 | 【待确认】 | 2026-07-17 |
+| vouchflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.vouchflag | 【待确认】 | 2026-07-17 |
+| warrantor | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.warrantor | 【待确认】 | 2026-07-17 |
+| warrantorid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.warrantorid | 【待确认】 | 2026-07-17 |
+| othercondition | 【待确认】 | VARCHAR | 400 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.othercondition | 【待确认】 | 2026-07-17 |
+| guarantyvalue | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.guarantyvalue | 【待确认】 | 2026-07-17 |
+| guarantyrate | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.guarantyrate | 【待确认】 | 2026-07-17 |
+| baseevaluateresult | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.baseevaluateresult | 【待确认】 | 2026-07-17 |
+| riskrate | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.riskrate | 【待确认】 | 2026-07-17 |
+| lowrisk | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.lowrisk | 【待确认】 | 2026-07-17 |
+| otherarealoan | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.otherarealoan | 【待确认】 | 2026-07-17 |
+| lowriskbailsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.lowriskbailsum | 【待确认】 | 2026-07-17 |
+| applytype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.applytype | 【待确认】 | 2026-07-17 |
+| originalputoutdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.originalputoutdate | 【待确认】 | 2026-07-17 |
+| extendtimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.extendtimes | 【待确认】 | 2026-07-17 |
+| lngotimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.lngotimes | 【待确认】 | 2026-07-17 |
+| golntimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.golntimes | 【待确认】 | 2026-07-17 |
+| drtimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.drtimes | 【待确认】 | 2026-07-17 |
+| guarantyno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.guarantyno | 【待确认】 | 2026-07-17 |
+| putoutsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.putoutsum | 【待确认】 | 2026-07-17 |
+| actualputoutsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.actualputoutsum | 【待确认】 | 2026-07-17 |
+| balance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.balance | 【待确认】 | 2026-07-17 |
+| normalbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.normalbalance | 【待确认】 | 2026-07-17 |
+| overduebalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.overduebalance | 【待确认】 | 2026-07-17 |
+| dullbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.dullbalance | 【待确认】 | 2026-07-17 |
+| badbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.badbalance | 【待确认】 | 2026-07-17 |
+| interestbalance1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.interestbalance1 | 【待确认】 | 2026-07-17 |
+| interestbalance2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.interestbalance2 | 【待确认】 | 2026-07-17 |
+| finebalance1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.finebalance1 | 【待确认】 | 2026-07-17 |
+| finebalance2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.finebalance2 | 【待确认】 | 2026-07-17 |
+| overduedays | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.overduedays | 【待确认】 | 2026-07-17 |
+| oweinterestdays | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oweinterestdays | 【待确认】 | 2026-07-17 |
+| tabalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.tabalance | 【待确认】 | 2026-07-17 |
+| tainterestbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.tainterestbalance | 【待确认】 | 2026-07-17 |
+| tatimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.tatimes | 【待确认】 | 2026-07-17 |
+| lcatimes | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.lcatimes | 【待确认】 | 2026-07-17 |
+| pbinterestsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.pbinterestsum | 【待确认】 | 2026-07-17 |
+| pbmfeesum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.pbmfeesum | 【待确认】 | 2026-07-17 |
+| pbpdgsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.pbpdgsum | 【待确认】 | 2026-07-17 |
+| pblegalcostsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.pblegalcostsum | 【待确认】 | 2026-07-17 |
+| polegalcostsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.polegalcostsum | 【待确认】 | 2026-07-17 |
+| originalbaddate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.originalbaddate | 【待确认】 | 2026-07-17 |
+| baseclassifyresult | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.baseclassifyresult | 【待确认】 | 2026-07-17 |
+| classifyresult | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.classifyresult | 【待确认】 | 2026-07-17 |
+| classifytype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.classifytype | 【待确认】 | 2026-07-17 |
+| classifydate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.classifydate | 【待确认】 | 2026-07-17 |
+| classifyorgid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.classifyorgid | 【待确认】 | 2026-07-17 |
+| reservesum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.reservesum | 【待确认】 | 2026-07-17 |
+| expectlosssum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.expectlosssum | 【待确认】 | 2026-07-17 |
+| bailrate | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.bailrate | 【待确认】 | 2026-07-17 |
+| finishorg | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.finishorg | 【待确认】 | 2026-07-17 |
+| finishtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.finishtype | 【待确认】 | 2026-07-17 |
+| finishdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.finishdate | 【待确认】 | 2026-07-17 |
+| describe1 | 【待确认】 | VARCHAR | 100 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.describe1 | 【待确认】 | 2026-07-17 |
+| reinforceflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.reinforceflag | 【待确认】 | 2026-07-17 |
+| manageorgid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.manageorgid | 【待确认】 | 2026-07-17 |
+| manageuserid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.manageuserid | 【待确认】 | 2026-07-17 |
+| recoveryorgid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.recoveryorgid | 【待确认】 | 2026-07-17 |
+| recoveryuserid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.recoveryuserid | 【待确认】 | 2026-07-17 |
+| statorgid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.statorgid | 【待确认】 | 2026-07-17 |
+| statuserid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.statuserid | 【待确认】 | 2026-07-17 |
+| operateorgid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.operateorgid | 【待确认】 | 2026-07-17 |
+| operateuserid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.operateuserid | 【待确认】 | 2026-07-17 |
+| operatedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.operatedate | 【待确认】 | 2026-07-17 |
+| inputorgid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.inputorgid | 【待确认】 | 2026-07-17 |
+| inputuserid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.inputuserid | 【待确认】 | 2026-07-17 |
+| inputdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.inputdate | 【待确认】 | 2026-07-17 |
+| updatedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.updatedate | 【待确认】 | 2026-07-17 |
+| pigeonholedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.pigeonholedate | 【待确认】 | 2026-07-17 |
+| remark | 【待确认】 | VARCHAR | 400 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.remark | 【待确认】 | 2026-07-17 |
+| flag4 | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.flag4 | 【待确认】 | 2026-07-17 |
+| paycurrency | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.paycurrency | 【待确认】 | 2026-07-17 |
+| paydate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.paydate | 【待确认】 | 2026-07-17 |
+| flag5 | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.flag5 | 【待确认】 | 2026-07-17 |
+| classifysum1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.classifysum1 | 【待确认】 | 2026-07-17 |
+| classifysum2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.classifysum2 | 【待确认】 | 2026-07-17 |
+| classifysum3 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.classifysum3 | 【待确认】 | 2026-07-17 |
+| classifysum4 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.classifysum4 | 【待确认】 | 2026-07-17 |
+| classifysum5 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.classifysum5 | 【待确认】 | 2026-07-17 |
+| shifttype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.shifttype | 【待确认】 | 2026-07-17 |
+| operatetype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.operatetype | 【待确认】 | 2026-07-17 |
+| fundsource | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.fundsource | 【待确认】 | 2026-07-17 |
+| cycleflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.cycleflag | 【待确认】 | 2026-07-17 |
+| creditfreezeflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.creditfreezeflag | 【待确认】 | 2026-07-17 |
+| shiftbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.shiftbalance | 【待确认】 | 2026-07-17 |
+| classifyfrequency | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.classifyfrequency | 【待确认】 | 2026-07-17 |
+| classifylevel | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.classifylevel | 【待确认】 | 2026-07-17 |
+| vouchnewflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.vouchnewflag | 【待确认】 | 2026-07-17 |
+| actualartificialno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.actualartificialno | 【待确认】 | 2026-07-17 |
+| deleteflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.deleteflag | 【待确认】 | 2026-07-17 |
+| accountno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.accountno | 【待确认】 | 2026-07-17 |
+| loanaccountno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.loanaccountno | 【待确认】 | 2026-07-17 |
+| secondpayaccount | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.secondpayaccount | 【待确认】 | 2026-07-17 |
+| adjustratetype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.adjustratetype | 【待确认】 | 2026-07-17 |
+| adjustrateterm | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.adjustrateterm | 【待确认】 | 2026-07-17 |
+| overinttype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.overinttype | 【待确认】 | 2026-07-17 |
+| rateadjustcyc | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.rateadjustcyc | 【待确认】 | 2026-07-17 |
+| pdgaccountno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.pdgaccountno | 【待确认】 | 2026-07-17 |
+| deductdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.deductdate | 【待确认】 | 2026-07-17 |
+| fzanbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.fzanbalance | 【待确认】 | 2026-07-17 |
+| acceptinttype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.acceptinttype | 【待确认】 | 2026-07-17 |
+| ratio | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.ratio | 【待确认】 | 2026-07-17 |
+| thirdpartyadd1 | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdpartyadd1 | 【待确认】 | 2026-07-17 |
+| thirdpartyzip1 | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdpartyzip1 | 【待确认】 | 2026-07-17 |
+| thirdpartyadd2 | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdpartyadd2 | 【待确认】 | 2026-07-17 |
+| thirdpartyzip2 | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdpartyzip2 | 【待确认】 | 2026-07-17 |
+| thirdpartyadd3 | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdpartyadd3 | 【待确认】 | 2026-07-17 |
+| thirdpartyzip3 | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.thirdpartyzip3 | 【待确认】 | 2026-07-17 |
+| effectarea | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.effectarea | 【待确认】 | 2026-07-17 |
+| termdate1 | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.termdate1 | 【待确认】 | 2026-07-17 |
+| termdate2 | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.termdate2 | 【待确认】 | 2026-07-17 |
+| termdate3 | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.termdate3 | 【待确认】 | 2026-07-17 |
+| fixcyc | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.fixcyc | 【待确认】 | 2026-07-17 |
+| describe2 | 【待确认】 | VARCHAR | 100 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.describe2 | 【待确认】 | 2026-07-17 |
+| cancelsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.cancelsum | 【待确认】 | 2026-07-17 |
+| cancelinterest | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.cancelinterest | 【待确认】 | 2026-07-17 |
+| loanterm | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.loanterm | 【待确认】 | 2026-07-17 |
+| putoutorgid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.putoutorgid | 【待确认】 | 2026-07-17 |
+| tempsaveflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.tempsaveflag | 【待确认】 | 2026-07-17 |
+| overduedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.overduedate | 【待确认】 | 2026-07-17 |
+| oweinterestdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oweinterestdate | 【待确认】 | 2026-07-17 |
+| freezeflag | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.freezeflag | 【待确认】 | 2026-07-17 |
+| approvedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.approvedate | 【待确认】 | 2026-07-17 |
+| shiftstatus | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.shiftstatus | 【待确认】 | 2026-07-17 |
+| recoverycognorgid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.recoverycognorgid | 【待确认】 | 2026-07-17 |
+| recoverycognuserid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.recoverycognuserid | 【待确认】 | 2026-07-17 |
+| shiftdocdescribe | 【待确认】 | VARCHAR | 800 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.shiftdocdescribe | 【待确认】 | 2026-07-17 |
+| guarantyflag | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.guarantyflag | 【待确认】 | 2026-07-17 |
+| totalbalance | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.totalbalance | 【待确认】 | 2026-07-17 |
+| grouplineid | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.grouplineid | 【待确认】 | 2026-07-17 |
+| transformtimes | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.transformtimes | 【待确认】 | 2026-07-17 |
+| transformflag | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.transformflag | 【待确认】 | 2026-07-17 |
+| fundbackaccount | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.fundbackaccount | 【待确认】 | 2026-07-17 |
+| requitalaccount | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.requitalaccount | 【待确认】 | 2026-07-17 |
+| paymentmode | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.paymentmode | 【待确认】 | 2026-07-17 |
+| executeyearrate | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.executeyearrate | 【待确认】 | 2026-07-17 |
+| offsheetflag | 【待确认】 | VARCHAR | 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.offsheetflag | 【待确认】 | 2026-07-17 |
+| paysourcen | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.paysourcen | 【待确认】 | 2026-07-17 |
+| returnfrequency | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.returnfrequency | 【待确认】 | 2026-07-17 |
+| backfrequency | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.backfrequency | 【待确认】 | 2026-07-17 |
+| paysourcedetail | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.paysourcedetail | 【待确认】 | 2026-07-17 |
+| ishostbank | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.ishostbank | 【待确认】 | 2026-07-17 |
+| lendaccountno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.lendaccountno | 【待确认】 | 2026-07-17 |
+| payaccountno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.payaccountno | 【待确认】 | 2026-07-17 |
+| breachratio | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.breachratio | 【待确认】 | 2026-07-17 |
+| breachratio1 | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.breachratio1 | 【待确认】 | 2026-07-17 |
+| havepayplan | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.havepayplan | 【待确认】 | 2026-07-17 |
+| ipcode | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.ipcode | 【待确认】 | 2026-07-17 |
+| frcode | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.frcode | 【待确认】 | 2026-07-17 |
+| breachfinetype | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.breachfinetype | 【待确认】 | 2026-07-17 |
+| businesssource | 【待确认】 | VARCHAR | 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businesssource | 【待确认】 | 2026-07-17 |
+| barcode | 【待确认】 | VARCHAR | 64 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.barcode | 【待确认】 | 2026-07-17 |
+| status | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.status | 【待确认】 | 2026-07-17 |
+| creditmethod | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.creditmethod | 【待确认】 | 2026-07-17 |
+| titularsum1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.titularsum1 | 【待确认】 | 2026-07-17 |
+| titularsum2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.titularsum2 | 【待确认】 | 2026-07-17 |
+| titularsum3 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.titularsum3 | 【待确认】 | 2026-07-17 |
+| titularsum4 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.titularsum4 | 【待确认】 | 2026-07-17 |
+| titularsum5 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.titularsum5 | 【待确认】 | 2026-07-17 |
+| exposuresum1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.exposuresum1 | 【待确认】 | 2026-07-17 |
+| exposuresum2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.exposuresum2 | 【待确认】 | 2026-07-17 |
+| exposuresum3 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.exposuresum3 | 【待确认】 | 2026-07-17 |
+| exposuresum4 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.exposuresum4 | 【待确认】 | 2026-07-17 |
+| exposuresum5 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.exposuresum5 | 【待确认】 | 2026-07-17 |
+| overagesum1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.overagesum1 | 【待确认】 | 2026-07-17 |
+| overagesum2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.overagesum2 | 【待确认】 | 2026-07-17 |
+| overagesum3 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.overagesum3 | 【待确认】 | 2026-07-17 |
+| operateuserid1 | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.operateuserid1 | 【待确认】 | 2026-07-17 |
+| reapply | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.reapply | 【待确认】 | 2026-07-17 |
+| usedepositpile | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.usedepositpile | 【待确认】 | 2026-07-17 |
+| depositpilesum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.depositpilesum | 【待确认】 | 2026-07-17 |
+| preappno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.preappno | 【待确认】 | 2026-07-17 |
+| direction1 | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.direction1 | 【待确认】 | 2026-07-17 |
+| billtype | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.billtype | 【待确认】 | 2026-07-17 |
+| basebusinesstype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.basebusinesstype | 【待确认】 | 2026-07-17 |
+| investedcapital | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.investedcapital | 【待确认】 | 2026-07-17 |
+| promisesfeetype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.promisesfeetype | 【待确认】 | 2026-07-17 |
+| issuetype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.issuetype | 【待确认】 | 2026-07-17 |
+| issuebankname | 【待确认】 | VARCHAR | 90 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.issuebankname | 【待确认】 | 2026-07-17 |
+| isinsurance | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.isinsurance | 【待确认】 | 2026-07-17 |
+| extend | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.extend | 【待确认】 | 2026-07-17 |
+| extend1 | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.extend1 | 【待确认】 | 2026-07-17 |
+| businessloantype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businessloantype | 【待确认】 | 2026-07-17 |
+| extend3 | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.extend3 | 【待确认】 | 2026-07-17 |
+| extend4 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.extend4 | 【待确认】 | 2026-07-17 |
+| isfarming | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.isfarming | 【待确认】 | 2026-07-17 |
+| xwbz | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.xwbz | 【待确认】 | 2026-07-17 |
+| farmorg | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.farmorg | 【待确认】 | 2026-07-17 |
+| industrialadjust | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.industrialadjust | 【待确认】 | 2026-07-17 |
+| industrialupgrading | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.industrialupgrading | 【待确认】 | 2026-07-17 |
+| newindustry | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.newindustry | 【待确认】 | 2026-07-17 |
+| firstdrawingterm | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.firstdrawingterm | 【待确认】 | 2026-07-17 |
+| enddrawingterm | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.enddrawingterm | 【待确认】 | 2026-07-17 |
+| enddrawingdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.enddrawingdate | 【待确认】 | 2026-07-17 |
+| reauditterm | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.reauditterm | 【待确认】 | 2026-07-17 |
+| reauditdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.reauditdate | 【待确认】 | 2026-07-17 |
+| yz | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.yz | 【待确认】 | 2026-07-17 |
+| isliquidity | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.isliquidity | 【待确认】 | 2026-07-17 |
+| isfixed | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.isfixed | 【待确认】 | 2026-07-17 |
+| isproject | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.isproject | 【待确认】 | 2026-07-17 |
+| redeclare | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.redeclare | 【待确认】 | 2026-07-17 |
+| businesssum1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businesssum1 | 【待确认】 | 2026-07-17 |
+| businesssum2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businesssum2 | 【待确认】 | 2026-07-17 |
+| businessproduct | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businessproduct | 【待确认】 | 2026-07-17 |
+| relaserialno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.relaserialno | 【待确认】 | 2026-07-17 |
+| bridlemark | 【待确认】 | VARCHAR | 2000 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.bridlemark | 【待确认】 | 2026-07-17 |
+| linetype | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.linetype | 【待确认】 | 2026-07-17 |
+| policynumber | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.policynumber | 【待确认】 | 2026-07-17 |
+| ispolicyloan | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.ispolicyloan | 【待确认】 | 2026-07-17 |
+| bankvouchtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.bankvouchtype | 【待确认】 | 2026-07-17 |
+| isdiscount | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.isdiscount | 【待确认】 | 2026-07-17 |
+| productid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.productid | 【待确认】 | 2026-07-17 |
+| vouchcompanybailaccount | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.vouchcompanybailaccount | 【待确认】 | 2026-07-17 |
+| oldputoutdate | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oldputoutdate | 【待确认】 | 2026-07-17 |
+| dealloan | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.dealloan | 【待确认】 | 2026-07-17 |
+| approveuser | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.approveuser | 【待确认】 | 2026-07-17 |
+| paytype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.paytype | 【待确认】 | 2026-07-17 |
+| imagebatchno | 【待确认】 | VARCHAR | 90 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.imagebatchno | 【待确认】 | 2026-07-17 |
+| oldoccurtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oldoccurtype | 【待确认】 | 2026-07-17 |
+| oldapplytype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oldapplytype | 【待确认】 | 2026-07-17 |
+| dutyfreecode | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.dutyfreecode | 【待确认】 | 2026-07-17 |
+| finishuser | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.finishuser | 【待确认】 | 2026-07-17 |
+| channel | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.channel | 【待确认】 | 2026-07-17 |
+| oldmaturity | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.oldmaturity | 【待确认】 | 2026-07-17 |
+| loanpersontype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.loanpersontype | 【待确认】 | 2026-07-17 |
+| graduatetype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.graduatetype | 【待确认】 | 2026-07-17 |
+| disabletype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.disabletype | 【待确认】 | 2026-07-17 |
+| femaleflag | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.femaleflag | 【待确认】 | 2026-07-17 |
+| greencredit | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.greencredit | 【待确认】 | 2026-07-17 |
+| firstloanflag | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.firstloanflag | 【待确认】 | 2026-07-17 |
+| exposuresum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.exposuresum | 【待确认】 | 2026-07-17 |
+| ismicropro | 【待确认】 | VARCHAR | 32 | NOT NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.ismicropro | 【待确认】 | 2026-07-17 |
+| microproname | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.microproname | 【待确认】 | 2026-07-17 |
+| financebailoutdelay | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.financebailoutdelay | 【待确认】 | 2026-07-17 |
+| financebailoutdelaymonths | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.financebailoutdelaymonths | 【待确认】 | 2026-07-17 |
+| creditpromise | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.creditpromise | 【待确认】 | 2026-07-17 |
+| iscultureindustry | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.iscultureindustry | 【待确认】 | 2026-07-17 |
+| isfirstloan | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.isfirstloan | 【待确认】 | 2026-07-17 |
+| exposuresumauto | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.exposuresumauto | 【待确认】 | 2026-07-17 |
+| businesssumauto | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.businesssumauto | 【待确认】 | 2026-07-17 |
+| transno | 【待确认】 | VARCHAR | 100 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.transno | 【待确认】 | 2026-07-17 |
+| isregroup | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.isregroup | 【待确认】 | 2026-07-17 |
+| farmingindicator | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.farmingindicator | 【待确认】 | 2026-07-17 |
+| observedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.observedate | 【待确认】 | 2026-07-17 |
+| czclassifyresult | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.czclassifyresult | 【待确认】 | 2026-07-17 |
+| isenforce | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.isenforce | 【待确认】 | 2026-07-17 |
+| myareacode | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.myareacode | 【待确认】 | 2026-07-17 |
+| isbatchguaranty | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.isbatchguaranty | 【待确认】 | 2026-07-17 |
+| issueforms | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.issueforms | 【待确认】 | 2026-07-17 |
+| gjspprj | 【待确认】 | VARCHAR | 3 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.gjspprj | 【待确认】 | 2026-07-17 |
+| intpaymode | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.intpaymode | 【待确认】 | 2026-07-17 |
+| isspzy | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.isspzy | 【待确认】 | 2026-07-17 |
+| ryzd | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_contract.ryzd | 【待确认】 | 2026-07-17 |
