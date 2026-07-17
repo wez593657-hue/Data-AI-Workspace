@@ -24,7 +24,7 @@
 Kingbase-CRM-AI-Development-Guide
 ├── README.md
 ├── CHANGELOG.md
-├── docs/
+├── docs/                      # 核心规范文档（已冻结，12个）
 │   ├── 01_AI_SOP.md          # AI 工作流程规范
 │   ├── 02_SQL_Standard.md    # SQL 编码规范
 │   ├── 03_SQL_Performance.md # SQL 性能优化指南
@@ -37,10 +37,16 @@ Kingbase-CRM-AI-Development-Guide
 │   ├── 10_Code_Review.md     # Code Review 规范
 │   ├── 11_Project_SOP.md     # 项目 SOP
 │   └── 12_AI_Prompts.md      # AI 提示词模板
+├── requirements/              # 需求文档（新增）
+│   └── *.md                   # 需求文档、规格说明书
 ├── templates/                 # 模板文件
 ├── examples/                  # 示例代码
 ├── checklists/                # 检查清单
-└── prompts/                   # AI 提示词
+├── prompts/                   # AI 提示词
+└── temp/                      # 临时文件（新增，已忽略）
+    ├── logs/                  # 日志文件
+    ├── scripts/               # 临时脚本
+    └── outputs/               # 执行输出
 ```
 
 ## 🚀 快速开始
