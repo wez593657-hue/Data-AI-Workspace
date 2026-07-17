@@ -14,6 +14,7 @@
 | DWD_CUST_INDIV_CRDT | 个人客户授信信息 | MFCUSTOMERID |  |
 | DWD_CUST_CTRAKT_INFO | 客户合同信息 | MFCUSTOMERID |  |
 | DWD_CUST_INDIV_RISK_INVST | 客户风险评估 | host_cust_no |  |
+| DWD_SYS_ORG | 机构表 | CREATR |  |
 
 ## 字段映射详情
 
@@ -78,7 +79,7 @@
 | AMT | 发生额 | NUMBER(18,4) | - | - | TRANS_AMT | - |
 | TX_TYP_NAME | 交易类型名称 | VARCHAR2(80) | - | - |  | - |
 | TX_ORG | 交易机构 | VARCHAR2(20) | - | - | TRANS_ORGNO | - |
-| OPRTR | 经办人 | VARCHAR2(20) | - | - |  | - |
+| OPRTR | 经办人 | VARCHAR2(20) | - | - | CUST_MANAGER_NO | - |
 | LOAN_FLG | 借贷标识 | VARCHAR2(3) | - | - |  | - |
 | ACCT_BAL | 账户余额 | NUMBER(18,4) | - | - | BALANCE | - |
 | TX_DSC | 交易说明 | VARCHAR2(200) | - | - |  | - |
@@ -289,7 +290,7 @@ INTERESTPENALTY | - |
 | CUST_ID | 客户编号 | VARCHAR(100) | - | - | host_cust_no | - |
 | INVEST_TYP | 投资类型 | VARCHAR(100) | - | - |  | - |
 | ESTIM_RSLT | 评估结果 | VARCHAR(100) | - | - | CUST_RISK_LEVEL | - |
-| SCORE | 分数 | VARCHAR(100) | - | - | CUST_RISK_LEVEL | - |
+| SCORE | 分数 | VARCHAR(100) | - | - | CUST_EVAL_LEVEL | - |
 | RISK_LVL | 风险级别 | VARCHAR(100) | - | - | CUST_RISK_LEVEL | - |
 | ESTIM_DATE | 评估日期 | VARCHAR(100) | - | - | ASSESS_DATE | - |
 | EXPR_DATE | 到期日期 | VARCHAR(100) | - | - | INVALID_DATE | - |
@@ -297,7 +298,7 @@ INTERESTPENALTY | - |
 | CUST_ID | 客户编号 | VARCHAR(100) | - | - |  | - |
 | INVEST_TYP | 投资类型 | VARCHAR(100) | - | - |  | - |
 | ESTIM_RSLT | 评估结果 | VARCHAR(100) | - | - |  | - |
-| SCORE | 分数 | VARCHAR(100) | - | - |  | - |
+| SCORE | 分数 | VARCHAR(100) | - | - | CUST_EVAL_LEVEL | - |
 | RISK_LVL | 风险级别 | VARCHAR(100) | - | - |  | - |
 | ESTIM_DATE | 评估日期 | VARCHAR(100) | - | - |  | - |
 | EXPR_DATE | 到期日期 | VARCHAR(100) | - | - |  | - |
@@ -318,7 +319,7 @@ INTERESTPENALTY | - |
 | ORG_ADDRS | 机构地址 | 800 | - | - |  | - |
 | ORG_STATE | 机构状态 | 1 | - | - |  | - |
 | DSPLY_SEQ | 显示顺序 | VARCHAR(100) | - | - |  | - |
-| CREATR | 创建人 | 64 | - | - |  | - |
+| CREATR | 创建人 | 64 | - | - | CREATR | - |
 | CREAT_TIME | 创建时间 | 20 | - | - |  | - |
 | CREAT_ORG | 创建机构 | 20 | - | - |  | - |
 | PERSN_LEGAL_BK_CODE | 法人行号 | 30 | - | - |  | - |

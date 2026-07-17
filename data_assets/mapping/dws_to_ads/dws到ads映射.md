@@ -4,6 +4,9 @@
 
 | 目标表 | 目标表中文名 | 源表 | 源表中文名 |
 |--------|-------------|------|------------|
+| ADS_CUST_INDV_POTEN | 零售潜在客户信息 | GEND |  |
+| ADS_MKT_TSK_INFO | 营销任务表 | CREATR |  |
+| MKT_REC_INFO | 营销记录表 | ORG_LGTUD |  |
 
 ## 字段映射详情
 
@@ -15,13 +18,13 @@
 | POTEN_CUST_NAME | 潜在客户名称 | VARCHAR2(100) | - | - |  | - |
 | POTEN_TYP | 潜客类型 | VARCHAR2(6) | - | - |  | - |
 | POTEN_CUST_TYP | 潜在客户类型 | VARCHAR2(6) | - | - |  | - |
-| GENDER | 性别 | VARCHAR2(6) | - | - |  | - |
+| GENDER | 性别 | VARCHAR2(6) | - | - | GEND | - |
 | CERT_TYP | 证件类型 | VARCHAR2(6) | - | - |  | - |
 | CERT_ID | 证件号码 | VARCHAR2(32) | - | - |  | - |
 | TEL_NO | 联系电话 | VARCHAR2(32) | - | - |  | - |
 | INTENT_DSC | 备注说明 | VARCHAR2(400) | - | - |  | - |
 | DTL_ADDRS | 居住地址 | VARCHAR2(400) | - | - |  | - |
-| CREATR | 创建人 | VARCHAR2(20) | - | - |  | - |
+| CREATR | 创建人 | VARCHAR2(20) | - | - | CREATR | - |
 | CREAT_TIME | 创建时间 | VARCHAR2(20) | - | - |  | - |
 | POTEN_CUST_STATE | 潜在客户状态 | VARCHAR2(6) | - | - |  | - |
 | LPR_ID | 法人行号 | VARCHAR2(4) | - | - |  | - |
@@ -30,7 +33,7 @@
 | ALLO_DATE | 分配日期(创建时和创建日期一致) | VARCHAR2(8) | - | - |  | - |
 | MKT_ORG | 归属机构 | VARCHAR2(6) | - | - |  | - |
 | SERV_ENTER | 工作单位 | VARCHAR2(200) | - | - |  | - |
-| POST | 职位 | VARCHAR2(6) | - | - |  | - |
+| POST | 职位 | VARCHAR2(6) | - | - | HOST_CUST_MNGR_POST_ID | - |
 | MTH_INCOM | 月收入 | NUMBER(20,2) | - | - |  | - |
 | YR_INCOM | 年收入 | NUMBER(20,2) | - | - |  | - |
 | RMARK | 备注 | VARCHAR2(400) | - | - |  | - |
@@ -76,7 +79,7 @@
 | CONVRS_FLG | 是否成功 | VARCHAR2(1) | - | - |  | - |
 | MKT_PERSN | 营销人 | VARCHAR2(30) | - | - |  | - |
 | MKT_PERSN_ORG | 营销人机构 | VARCHAR2(30) | - | - |  | - |
-| CREATR | 创建人 | VARCHAR2(64) | - | - |  | - |
+| CREATR | 创建人 | VARCHAR2(64) | - | - | CREATR | - |
 | CREAT_TIME | 创建时间 | VARCHAR2(20) | - | - |  | - |
 | CREAT_ORG | 创建机构 | VARCHAR2(30) | - | - |  | - |
 | BASE_VAL | 基数 | NUMBER(18,4) | - | - |  | - |
@@ -338,8 +341,8 @@
 | PERSN_LEGAL_BK_CODE | 法人行号 | 30 | - | - |  | - |
 | CORDNAT_VISITOR | 协同拜访人 | 100 | - | - |  | - |
 | CORDNAT_VISITOR_NAME | 协同拜访人名称 | 200 | - | - |  | - |
-| LGTUD | 经度 | 40 | - | - |  | - |
-| LATTUD | 纬度 | 40 | - | - |  | - |
+| LGTUD | 经度 | 40 | - | - | ORG_LGTUD | - |
+| LATTUD | 纬度 | 40 | - | - | ORG_LATTUD | - |
 | TEL_NO | 联系电话 | 40 | - | - |  | - |
 | CHNL_NO | 渠道编号 | 6 | - | - |  | - |
 | RMARK | 备注 | 400 | - | - |  | - |
