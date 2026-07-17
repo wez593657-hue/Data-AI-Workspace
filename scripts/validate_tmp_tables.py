@@ -30,8 +30,17 @@ def main():
             except json.JSONDecodeError as error:
                 errors.append(f'{manifest_path.relative_to(ROOT)}: JSON 无效: {error.msg}')
                 continue
-            if manifest.get('table_name', '').upper() != name or not manifest.get('columns'):
-                errors.append(f'{manifest_path.relative_to(ROOT)}: 表名或字段清单缺失')
+            required = ['table_name', 'procedure', 'purpose', 'columns', 'indexes', 'lifecycle']
+            missing = [key for key in required if not manifest.get(key)]
+            if manifest.get('table_name', '').upper() != name or missing:
+                errors.append(f"{manifest_path.relative_to(ROOT)}: 审核清单缺失 {', '.join(missing) or '正确表名'}")
+            for column in manifest.get('columns', []):
+                if not all(column.get(key) is not None for key in ('name', 'type', 'nullable')):
+                    errors.append(f"{manifest_path.relative_to(ROOT)}: 字段定义不完整")
+                    break
+            lifecycle = manifest.get('lifecycle', {})
+            if not lifecycle.get('cleanup') or not lifecycle.get('concurrency'):
+                errors.append(f'{manifest_path.relative_to(ROOT)}: 生命周期或并发隔离策略缺失')
             if args.require_approved and manifest.get('approval_status') != 'approved':
                 errors.append(f'{manifest_path.relative_to(ROOT)}: 未获人工审核')
     if errors:

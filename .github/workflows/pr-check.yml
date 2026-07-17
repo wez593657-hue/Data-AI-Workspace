@@ -36,6 +36,9 @@ jobs:
     - name: 执行TMP表审核清单校验
       run: python scripts/validate_tmp_tables.py --require-approved
 
+    - name: 执行ODS数据字典校验
+      run: python scripts/validate_ods_dictionary.py
+
   code-review:
     name: 代码审查检查
     runs-on: ubuntu-latest
@@ -67,7 +70,7 @@ jobs:
           console.log(`已批准的审查人: ${completedReviews.join(', ') || '无'}`);
           
           if (completedReviews.length === 0) {
-            console.log('警告: 尚未有审查人批准，建议等待审查后再合并');
+            throw new Error('尚未有审查人批准，不能合并');
           }
 
   checklists:

@@ -134,18 +134,8 @@ def run_doc_review(changed_files=None):
     print(stdout)
     
     if rc != 0:
-        safe_print("   ⚠ 文档审核发现警告，建议人工审核")
-        safe_print("   ⚠ 是否继续提交？(y/N)")
-        try:
-            import getpass
-            response = getpass.getpass("")
-            if response.lower() != 'y':
-                safe_print("   ✗ 用户取消提交")
-                return False
-            safe_print("   ✓ 用户确认继续提交")
-        except:
-            safe_print("   ✗ 无法获取用户输入，取消提交")
-            return False
+        safe_print("   ✗ 文档审核发现规则冲突，请修复后再提交")
+        return False
     
     safe_print("   ✓ 文档变更审核通过")
     return True

@@ -96,10 +96,12 @@ def main():
     args = parser.parse_args()
     results = {'generated': [], 'failed': []}
     for ddl_path in sorted(DDL_DIR.rglob('*.sql')):
+        if 'temp' in ddl_path.relative_to(DDL_DIR).parts:
+            continue
         try:
             table, columns, primary, unique = parse_ddl(ddl_path)
             output = OUTPUT_DIR / f'{table.split(".")[-1].lower()}_dd.md'
-            if args.write:
+            if args.write and not output.exists():
                 output.parent.mkdir(parents=True, exist_ok=True)
                 output.write_text(render(table, columns, primary, unique), encoding='utf-8')
             results['generated'].append({'source': str(ddl_path.relative_to(ROOT)), 'output': str(output.relative_to(ROOT)), 'columns': len(columns)})
