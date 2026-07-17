@@ -1,0 +1,76 @@
+/*
+ * 上游理财系统
+ * 表名: crmdm.fms_t5_prod_info
+ * 来源: TB.ddl
+ */
+
+-- crmdm.fms_t5_prod_info 定义
+
+-- Drop table
+
+-- DROP TABLE crmdm.fms_t5_prod_info;
+
+CREATE TABLE crmdm.fms_t5_prod_info (
+	prod_code varchar(32) NOT NULL,
+	prod_name varchar(256) NOT NULL,
+	prod_name_short varchar(68) NULL,
+	parent_prod_code varchar(32) NULL,
+	prod_type bpchar(1) NULL,
+	prod_mode bpchar(2) NOT NULL,
+	period_type bpchar(1) NOT NULL,
+	prod_cur varchar(3) NOT NULL,
+	prod_risk_level bpchar(1) NOT NULL,
+	orgno varchar(10) NOT NULL,
+	legal_code varchar(32) NULL,
+	def_div_method bpchar(1) NULL,
+	div_chg_flag bpchar(1) NULL,
+	min_div_amt numeric(16, 2) NULL,
+	max_size numeric(16, 2) NULL,
+	min_size numeric(16, 2) NULL,
+	hold_quota numeric(16, 2) NULL,
+	quota_dime varchar(20) NULL,
+	sale_status bpchar(1) NOT NULL,
+	can_booking bpchar(1) NULL,
+	can_order bpchar(1) NULL,
+	can_subs bpchar(1) NULL,
+	can_apply bpchar(1) NULL,
+	can_redeem bpchar(1) NULL,
+	can_frozen bpchar(1) NOT NULL,
+	start_buy_time bpchar(6) NULL,
+	end_buy_time bpchar(6) NULL,
+	publish_code varchar(10) NOT NULL,
+	income_characteristic bpchar(1) NOT NULL,
+	prod_lifecycle bpchar(1) NOT NULL,
+	regist_code varchar(32) NULL,
+	pay_check_acct_no varchar(32) NULL,
+	cust_type varchar(16) NULL,
+	subs_capital_model bpchar(1) NULL,
+	subs_income_deal_type bpchar(1) NULL,
+	series_code varchar(32) NULL,
+	series_num numeric NULL,
+	profit_type bpchar(1) NOT NULL,
+	nav numeric(12, 6) NULL,
+	nav_date bpchar(8) NULL,
+	auto_winding_flag bpchar(1) NULL,
+	rasie_type bpchar(1) NULL,
+	subs_quota numeric(16, 2) NULL,
+	apply_quota numeric(16, 2) NULL,
+	redeem_quota numeric(16, 2) NULL,
+	recover_apply_quota bpchar(1) NULL,
+	recover_redeem_quota bpchar(1) NULL,
+	cust_group bpchar(1) NULL,
+	prod_quota numeric(16, 2) NULL,
+	subs_redeem_flag bpchar(1) NULL,
+	winding_pay_date bpchar(8) NULL,
+	winding_pay_days varchar(32) NULL,
+	specification_status bpchar(1) NULL,
+	protocol_status bpchar(1) NULL,
+	rasie_quota numeric(16, 2) NULL,
+	money_pay_day varchar(1) NULL,
+	has_waver_period bpchar(1) NULL,
+	prod_comp_type varchar(1) NULL,
+	update_prod_date varchar(8) NULL,
+	update_prod_time varchar(6) NULL,
+	ryzd varchar(1) NULL
+);
+

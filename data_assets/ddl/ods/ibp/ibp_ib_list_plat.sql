@@ -1,0 +1,79 @@
+/*
+ * 上游中间业务系统
+ * 表名: crmdm.ibp_ib_list_plat
+ * 来源: TB.ddl
+ */
+
+-- crmdm.ibp_ib_list_plat 定义
+
+-- Drop table
+
+-- DROP TABLE crmdm.ibp_ib_list_plat;
+
+CREATE TABLE crmdm.ibp_ib_list_plat (
+	plat_serial varchar(35) NOT NULL,
+	plat_date varchar(8) NOT NULL,
+	plat_time varchar(6) NOT NULL,
+	reverse_flag varchar(1) NOT NULL,
+	ori_serial varchar(35) NULL,
+	channel_id varchar(4) NOT NULL,
+	service_id varchar(8) NOT NULL,
+	channel_serial varchar(40) NOT NULL,
+	channel_date varchar(8) NULL,
+	channel_time varchar(6) NULL,
+	trans_device_no varchar(40) NULL,
+	area_id varchar(4) NULL,
+	branch_code varchar(20) NULL,
+	teller_id varchar(20) NULL,
+	auther_id varchar(20) NULL,
+	auther_password varchar(64) NULL,
+	busi_id varchar(24) NOT NULL,
+	acct_no varchar(32) NULL,
+	acct_name varchar(1020) NULL,
+	trad_type varchar(1) NOT NULL,
+	cry_id varchar(3) NOT NULL,
+	amt numeric(16, 2) NOT NULL,
+	amt1 numeric(16, 2) NULL,
+	amt2 numeric(16, 2) NULL,
+	amt3 numeric(16, 2) NULL,
+	trad_abs varchar(800) NULL,
+	voucher_type varchar(3) NULL,
+	voucher_no varchar(40) NULL,
+	opp_acct_no varchar(32) NULL,
+	opp_acct_name varchar(1020) NULL,
+	user_id varchar(80) NULL,
+	user_name varchar(800) NULL,
+	tran_memo varchar(1020) NULL,
+	plat_trad_status varchar(1) NOT NULL,
+	plat_resp_code varchar(12) NULL,
+	plat_resp_msg varchar(800) NULL,
+	core_status varchar(1) NULL,
+	core_serial_no varchar(40) NULL,
+	core_resp_serial varchar(40) NULL,
+	core_resp_code varchar(20) NULL,
+	core_resp_msg varchar(800) NULL,
+	third_party_status varchar(1) NULL,
+	third_party_serial_no varchar(40) NULL,
+	third_party_resp_serial varchar(40) NULL,
+	third_party_resp_code varchar(20) NULL,
+	third_party_resp_msg varchar(800) NULL,
+	request_add_info varchar(4000) NULL,
+	resp_add_info varchar(4000) NULL,
+	chk_flag varchar(1) NOT NULL,
+	core_date varchar(8) NULL,
+	third_party_date varchar(8) NULL,
+	core_time varchar(6) NULL,
+	settle_date varchar(8) NULL,
+	tran_date varchar(8) NOT NULL,
+	item_id varchar(40) NULL,
+	rem_amt numeric(16, 2) NULL,
+	third_party_time varchar(6) NULL,
+	third_chk_flag varchar(2) NULL,
+	settle_cd_flag varchar(2) NULL,
+	settle_flag varchar(2) NULL,
+	settle_amt numeric(16, 2) NULL,
+	d_amt_sum numeric(17, 2) NOT NULL,
+	c_amt_sum numeric(17, 2) NOT NULL,
+	ryzd varchar(1) NULL
+);
+

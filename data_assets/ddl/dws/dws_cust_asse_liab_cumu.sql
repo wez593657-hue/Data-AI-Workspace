@@ -1,0 +1,28 @@
+/*
+ * DWS层表
+ * 表名: crmdm.dws_cust_asse_liab_cumu
+ * 来源: TB.ddl
+ */
+
+-- crmdm.dws_cust_asse_liab_cumu 定义
+
+-- Drop table
+
+-- DROP TABLE crmdm.dws_cust_asse_liab_cumu;
+
+CREATE TABLE crmdm.dws_cust_asse_liab_cumu (
+	data_date varchar(8) NOT NULL,
+	cust_id varchar(20) NOT NULL,
+	acct_id varchar(40) NOT NULL,
+	prdkt_id varchar(40) NOT NULL,
+	prdkt_cate_big varchar(40) NULL,
+	prdkt_typ varchar(1) NULL,
+	bal numeric(20, 2) NULL,
+	mth_bal numeric(20, 2) NULL,
+	qrt_bal numeric(20, 2) NULL,
+	yar_bal numeric(20, 2) NULL,
+	mth_days numeric(20, 2) NULL,
+	qrt_days numeric(20, 2) NULL,
+	yar_days numeric(20, 2) NULL
+);
+
