@@ -1,0 +1,11 @@
+*                                       @wez593657-hue
+
+/docs/                                   @wez593657-hue
+/data_assets/ddl/                        @wez593657-hue
+/data_assets/data_dictionary/            @wez593657-hue
+/data_assets/mapping/                    @wez593657-hue
+/data_assets/etl/                        @wez593657-hue
+
+/requirements/                           @wez593657-hue
+
+/temp/scripts/                           @wez593657-hue

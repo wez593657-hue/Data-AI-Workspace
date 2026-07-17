@@ -1,0 +1,33 @@
+name: 自动校验
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Python环境
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    
+    - name: 安装依赖
+      run: |
+        pip install pandas openpyxl xlrd
+    
+    - name: 执行DDL校验
+      run: python scripts/validate_generated_files.py
+    
+    - name: 执行映射完整性校验
+      run: python scripts/analyze_missing_mapping.py
+    
+    - name: 执行数据一致性校验
+      run: python scripts/validate_consistency.py
