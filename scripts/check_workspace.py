@@ -3,6 +3,13 @@
 import subprocess
 import sys
 
+# 修复 Windows GBK 控制台 Unicode 编码问题
+import sys as _sys
+if hasattr(_sys.stdout, 'reconfigure'):
+    _sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(_sys.stderr, 'reconfigure'):
+    _sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 def run_command(cmd):
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     return result.stdout.strip(), result.stderr.strip(), result.returncode
