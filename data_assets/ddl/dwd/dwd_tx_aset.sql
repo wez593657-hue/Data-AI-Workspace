@@ -1,38 +1,37 @@
 /*
- * DWD层表
- * 表名: crmdm.dwd_tx_aset
- * 来源: TB.ddl
+ * DWD_TX_ASET
+ * 中文名称: 资产类交易
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
  */
 
--- crmdm.dwd_tx_aset 定义
-
--- Drop table
-
--- DROP TABLE crmdm.dwd_tx_aset;
-
-CREATE TABLE crmdm.dwd_tx_aset (
-	seq_id varchar(40) NOT NULL,
-	cust_id varchar(21) NULL,
-	cust_typ varchar(4) NULL,
-	acct_id varchar(40) NULL,
-	prdkt_id varchar(40) NULL,
-	tx_chnl varchar(10) NULL,
-	tx_date varchar(10) NULL,
-	tx_time varchar(20) NULL,
-	ccy_cd varchar(6) NULL,
-	amt numeric(18, 4) NULL,
-	tx_org varchar(20) NULL,
-	oprtr varchar(20) NULL,
-	loan_flg varchar(3) NULL,
-	acct_bal numeric(18, 4) NULL,
-	tx_dsc varchar(200) NULL,
-	opnt_acct varchar(32) NULL,
-	opnt_acct_name_fst varchar(200) NULL,
-	opnt_bk_keep varchar(20) NULL,
-	opnt_name_bk varchar(200) NULL,
-	acct_blng_org varchar(20) NULL,
-	card_no varchar(30) NULL,
-	persn_legal_bk_code varchar(30) NULL,
-	CONSTRAINT pk_dwd_tx_aset PRIMARY KEY (seq_id)
+CREATE TABLE IF NOT EXISTS DWD_TX_ASET (
+    SEQ_ID VARCHAR(40) NOT NULL COMMENT '流水号',
+    CUST_ID VARCHAR(21) NULL COMMENT '客户编号',
+    CUST_TYP VARCHAR(4) NULL COMMENT '客户类型',
+    ACCT_ID VARCHAR(40) NULL COMMENT '账户',
+    PRDKT_CATE_BIG VARCHAR(6) NULL COMMENT '产品大类',
+    PRDKT_ID VARCHAR(40) NULL COMMENT '产品ID',
+    TX_CHNL VARCHAR(10) NULL COMMENT '交易渠道',
+    TX_DATE VARCHAR(10) NULL COMMENT '交易日期',
+    TX_TIME VARCHAR(20) NULL COMMENT '交易时间',
+    CCY_CD VARCHAR(6) NULL COMMENT '币种',
+    TX_TYP VARCHAR(6) NULL COMMENT '交易类型',
+    AMT NUMBER(18,4) NULL COMMENT '发生额',
+    TX_TYP_NAME VARCHAR(80) NULL COMMENT '交易类型名称',
+    TX_ORG VARCHAR(20) NULL COMMENT '交易机构',
+    OPRTR VARCHAR(20) NULL COMMENT '经办人',
+    LOAN_FLG VARCHAR(3) NULL COMMENT '借贷标识',
+    ACCT_BAL NUMBER(18,4) NULL COMMENT '账户余额',
+    TX_DSC VARCHAR(200) NULL COMMENT '交易说明',
+    OPNT_ACCT VARCHAR(32) NULL COMMENT '对方账户',
+    OPNT_ACCT_NAME_FST VARCHAR(200) NULL COMMENT '对方户名',
+    OPNT_BK_KEEP VARCHAR(20) NULL COMMENT '对方行',
+    OPNT_NAME_BK VARCHAR(200) NULL COMMENT '对方行名',
+    FEE_HAND NUMBER(18,4) NULL COMMENT '手续费',
+    ACCT_BLNG_ORG VARCHAR(20) NULL COMMENT '账户归属机构',
+    CARD_NO VARCHAR(30) NULL COMMENT '卡/折号',
+    PERSN_LEGAL_BK_CODE VARCHAR(30) NULL COMMENT '法人行号'
 );
 
+COMMENT ON TABLE DWD_TX_ASET IS '资产类交易';

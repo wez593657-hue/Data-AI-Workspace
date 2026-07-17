@@ -1,38 +1,33 @@
 /*
- * DWD层表
- * 表名: crmdm.dwd_acct_depo
- * 来源: TB.ddl
+ * DWD_ACCT_DEPO
+ * 中文名称: 存款账户信息表
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
  */
 
--- crmdm.dwd_acct_depo 定义
-
--- Drop table
-
--- DROP TABLE crmdm.dwd_acct_depo;
-
-CREATE TABLE crmdm.dwd_acct_depo (
-	cust_id varchar(20) NOT NULL,
-	cust_typ varchar(2) NULL,
-	acct_id varchar(40) NOT NULL,
-	card_no varchar(40) NOT NULL,
-	prdkt_id varchar(30) NULL,
-	prdkt_name varchar(200) NULL,
-	prdkt_cate_big varchar(64) NULL,
-	acct_typ varchar(10) NULL,
-	ccy_cd varchar(4) NULL,
-	bal numeric(20, 2) NULL,
-	rmb_bal numeric(20, 2) NULL,
-	open_acct_org varchar(6) NULL,
-	open_date varchar(10) NULL,
-	rate_intri numeric(20, 2) NULL,
-	intri_bgn_date varchar(10) NULL,
-	expr_date varchar(10) NULL,
-	acct_cloz_date varchar(10) NULL,
-	acct_state varchar(10) NULL,
-	persn_legal_bk_code varchar(4) NULL,
-	vchr_typ varchar(10) NULL,
-	cunq varchar(10) NULL,
-	fix_curnt_flg varchar(1) NULL,
-	CONSTRAINT pk_dwd_acct_depo PRIMARY KEY (cust_id, acct_id, card_no)
+CREATE TABLE IF NOT EXISTS DWD_ACCT_DEPO (
+    CUST_ID VARCHAR(20) NOT NULL COMMENT '客户编号',
+    CUST_TYP VARCHAR(2) NULL COMMENT '客户类型',
+    ACCT_ID VARCHAR(40) NULL COMMENT '账户',
+    CARD_NO VARCHAR(40) NULL COMMENT '卡/折号',
+    PRDKT_ID VARCHAR(30) NULL COMMENT '产品编号',
+    PRDKT_NAME VARCHAR(200) NULL COMMENT '产品名称',
+    PRDKT_CATE_BIG VARCHAR(64) NULL COMMENT '产品大类',
+    ACCT_TYP VARCHAR(10) NULL COMMENT '账户类型',
+    CCY_CD VARCHAR(4) NULL COMMENT '币种',
+    BAL NUMBER(20,2) NULL COMMENT '余额',
+    RMB_BAL NUMBER(20,2) NULL COMMENT '折人民币余额',
+    OPEN_ACCT_ORG VARCHAR(6) NULL COMMENT '归属机构',
+    OPEN_DATE VARCHAR(10) NULL COMMENT '开户日期',
+    RATE_INTRI NUMBER(20,2) NULL COMMENT '利率',
+    INTRI_BGN_DATE VARCHAR(10) NULL COMMENT '起息日期',
+    EXPR_DATE VARCHAR(10) NULL COMMENT '到期日期',
+    ACCT_CLOZ_DATE VARCHAR(10) NULL COMMENT '销户日期',
+    ACCT_STATE VARCHAR(10) NULL COMMENT '账户状态',
+    PERSN_LEGAL_BK_CODE VARCHAR(4) NULL COMMENT '法人行号',
+    VCHR_TYP VARCHAR(10) NULL COMMENT '凭证类型',
+    CUNQ VARCHAR(10) NULL COMMENT '存期',
+    FIX_CURNT_FLG VARCHAR(1) NULL COMMENT '定活标志'
 );
 
+COMMENT ON TABLE DWD_ACCT_DEPO IS '存款账户信息表';

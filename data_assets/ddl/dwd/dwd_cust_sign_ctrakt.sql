@@ -1,24 +1,20 @@
 /*
- * DWD层表
- * 表名: crmdm.dwd_cust_sign_ctrakt
- * 来源: TB.ddl
+ * DWD_CUST_SIGN_CTRAKT
+ * 中文名称: 客户签约信息
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
  */
 
--- crmdm.dwd_cust_sign_ctrakt 定义
-
--- Drop table
-
--- DROP TABLE crmdm.dwd_cust_sign_ctrakt;
-
-CREATE TABLE crmdm.dwd_cust_sign_ctrakt (
-	cust_id varchar(21) NULL,
-	ctrakt_acct varchar(40) NULL,
-	ctrakt_typ varchar(6) NULL,
-	ctrakt_date varchar(10) NULL,
-	phone_no varchar(32) NULL,
-	ctrakt_org varchar(30) NULL,
-	ctrakt_oprtr varchar(64) NULL,
-	ctrakt_state varchar(6) NULL,
-	persn_legal_bk_code varchar(30) NULL
+CREATE TABLE IF NOT EXISTS DWD_CUST_SIGN_CTRAKT (
+    CUST_ID VARCHAR(20) NOT NULL COMMENT '客户编号',
+    CTRAKT_ACCT VARCHAR(40) NULL COMMENT '签约账户',
+    CTRAKT_TYP VARCHAR(6) NULL COMMENT '签约类型',
+    CTRAKT_DATE VARCHAR(10) NULL COMMENT '签约日期',
+    PHONE_NO VARCHAR(32) NULL COMMENT '手机号',
+    CTRAKT_ORG VARCHAR(6) NULL COMMENT '签约机构',
+    CTRAKT_OPRTR VARCHAR(20) NULL COMMENT '签约经办人',
+    CTRAKT_STATE VARCHAR(2) NULL COMMENT '签约状态',
+    PERSN_LEGAL_BK_CODE VARCHAR(4) NULL COMMENT '法人行号'
 );
 
+COMMENT ON TABLE DWD_CUST_SIGN_CTRAKT IS '客户签约信息';

@@ -1,34 +1,30 @@
 /*
- * DWD层表
- * 表名: crmdm.dwd_acct_loan
- * 来源: TB.ddl
+ * DWD_ACCT_LOAN
+ * 中文名称: 贷款账户
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
  */
 
--- crmdm.dwd_acct_loan 定义
-
--- Drop table
-
--- DROP TABLE crmdm.dwd_acct_loan;
-
-CREATE TABLE crmdm.dwd_acct_loan (
-	cust_id varchar(20) NOT NULL,
-	cust_typ varchar(6) NULL,
-	acct_id varchar(40) NOT NULL,
-	prdkt_id varchar(40) NOT NULL,
-	prdkt_name varchar(100) NULL,
-	prdkt_cate_big varchar(60) NULL,
-	loan_issu_amt numeric(20, 2) NULL,
-	loan_issu_date varchar(10) NULL,
-	bal numeric(20, 2) NULL,
-	rate_intri numeric(10, 4) NULL,
-	expr_date varchar(10) NULL,
-	acct_state varchar(10) NULL,
-	persn_legal_bk_code varchar(4) NULL,
-	oprt_org varchar(6) NULL,
-	iou_no varchar(100) NULL,
-	int_arrears_ttl numeric(20, 2) NULL,
-	repay_typ varchar(6) NULL,
-	repay_acct_no varchar(30) NULL,
-	cate_5lvl varchar(2) NULL
+CREATE TABLE IF NOT EXISTS DWD_ACCT_LOAN (
+    CUST_ID VARCHAR(20) NOT NULL COMMENT '客户编号',
+    CUST_TYP VARCHAR(6) NULL COMMENT '客户类型',
+    ACCT_ID VARCHAR(40) NULL COMMENT '账号',
+    PRDKT_ID VARCHAR(40) NULL COMMENT '产品编号',
+    PRDKT_NAME VARCHAR(100) NULL COMMENT '产品名称',
+    PRDKT_CATE_BIG VARCHAR(60) NULL COMMENT '产品大类',
+    LOAN_ISSU_AMT NUMBER(20,2) NULL COMMENT '借据金额',
+    LOAN_ISSU_DATE VARCHAR(10) NULL COMMENT '贷款发放日期',
+    BAL NUMBER(20,2) NULL COMMENT '余额',
+    RATE_INTRI NUMBER(10,4) NULL COMMENT '利率',
+    EXPR_DATE VARCHAR(10) NULL COMMENT '到期日期',
+    ACCT_STATE VARCHAR(10) NULL COMMENT '账户状态',
+    PERSN_LEGAL_BK_CODE VARCHAR(4) NULL COMMENT '法人行号',
+    OPRT_ORG VARCHAR(6) NULL COMMENT '经办机构',
+    IOU_NO VARCHAR(100) NULL COMMENT '借据号',
+    INT_ARREARS_TTL NUMBER(20,2) NULL COMMENT '欠息(合计)',
+    REPAY_TYP VARCHAR(4) NULL COMMENT '还款方式',
+    REPAY_ACCT_NO VARCHAR(30) NULL COMMENT '还款账号',
+    CATE_5LVL VARCHAR(2) NULL COMMENT '五级分类'
 );
 
+COMMENT ON TABLE DWD_ACCT_LOAN IS '贷款账户';

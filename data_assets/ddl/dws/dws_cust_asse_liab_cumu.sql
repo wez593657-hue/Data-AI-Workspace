@@ -1,28 +1,24 @@
 /*
- * DWS层表
- * 表名: crmdm.dws_cust_asse_liab_cumu
- * 来源: TB.ddl
+ * DWS_CUST_ASSE_LIAB_CUMU
+ * 中文名称: 客户资产负债基数表
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
  */
 
--- crmdm.dws_cust_asse_liab_cumu 定义
-
--- Drop table
-
--- DROP TABLE crmdm.dws_cust_asse_liab_cumu;
-
-CREATE TABLE crmdm.dws_cust_asse_liab_cumu (
-	data_date varchar(8) NOT NULL,
-	cust_id varchar(20) NOT NULL,
-	acct_id varchar(40) NOT NULL,
-	prdkt_id varchar(40) NOT NULL,
-	prdkt_cate_big varchar(40) NULL,
-	prdkt_typ varchar(1) NULL,
-	bal numeric(20, 2) NULL,
-	mth_bal numeric(20, 2) NULL,
-	qrt_bal numeric(20, 2) NULL,
-	yar_bal numeric(20, 2) NULL,
-	mth_days numeric(20, 2) NULL,
-	qrt_days numeric(20, 2) NULL,
-	yar_days numeric(20, 2) NULL
+CREATE TABLE IF NOT EXISTS DWS_CUST_ASSE_LIAB_CUMU (
+    DATA_DATE VARCHAR(8) NOT NULL COMMENT '数据日期',
+    CUST_ID VARCHAR(20) NULL COMMENT '客户号',
+    ACCT_ID VARCHAR(40) NULL COMMENT '账号',
+    PRDKT_ID VARCHAR(40) NULL COMMENT '产品编号',
+    PRDKT_CATE_BIG VARCHAR(40) NULL COMMENT '产品大类',
+    PRDKT_TYP VARCHAR(1) NULL COMMENT '产品类型',
+    BAL NUMBER(20,2) NULL COMMENT '日余额',
+    MTH_BAL NUMBER(20,2) NULL COMMENT '月余额',
+    QRT_BAL NUMBER(20,2) NULL COMMENT '季余额',
+    YAR_BAL NUMBER(20,2) NULL COMMENT '年余额',
+    MTH_DAYS NUMBER(20,2) NULL COMMENT '月天数',
+    QRT_DAYS NUMBER(20,2) NULL COMMENT '季天数',
+    YAR_DAYS NUMBER(20,2) NULL COMMENT '年天数'
 );
 
+COMMENT ON TABLE DWS_CUST_ASSE_LIAB_CUMU IS '客户资产负债基数表';

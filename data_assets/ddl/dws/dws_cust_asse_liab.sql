@@ -1,0 +1,25 @@
+/*
+ * dws_cust_asse_liab
+ * 中文名称: 客户资产负债表
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
+ */
+
+CREATE TABLE IF NOT EXISTS dws_cust_asse_liab (
+    DATA_DATE VARCHAR(8) NOT NULL COMMENT '数据日期',
+    CUST_ID VARCHAR(20) NULL COMMENT '客户号',
+    ORG_ID VARCHAR(6) NULL COMMENT '归属机构',
+    ORG_ID_LOAN VARCHAR(6) NULL COMMENT '信贷归属机构',
+    BAL_TYPE CHAR(1) NULL COMMENT '类型1-余额2-月日均3-季日均4-年日均',
+    AUM_BAL NUMBER(20,2) NULL COMMENT 'AUM余额',
+    DEPO_BAL NUMBER(20,2) NULL COMMENT '定期余额',
+    DEPO_CURNT_DEPO_BAL NUMBER(20,2) NULL COMMENT '活期余额',
+    FIXD_DEPO_BAL NUMBER(20,2) NULL COMMENT '普通定期余额',
+    LEHUI_BAL NUMBER(20,2) NULL COMMENT '乐惠存产品余额',
+    LARGEDP_BAL NUMBER(20,2) NULL COMMENT '大额存单余额',
+    FIN_BAL NUMBER(20,2) NULL COMMENT '理财余额',
+    INSUR_BAL NUMBER(20,2) NULL COMMENT '保险余额',
+    LOAN_BAL NUMBER(20,2) NULL COMMENT '贷款余额'
+);
+
+COMMENT ON TABLE dws_cust_asse_liab IS '客户资产负债表';

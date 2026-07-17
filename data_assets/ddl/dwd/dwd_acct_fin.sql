@@ -1,34 +1,52 @@
 /*
- * DWD层表
- * 表名: crmdm.dwd_acct_fin
- * 来源: TB.ddl
+ * DWD_ACCT_FIN
+ * 中文名称: 理财账户信息
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
  */
 
--- crmdm.dwd_acct_fin 定义
-
--- Drop table
-
--- DROP TABLE crmdm.dwd_acct_fin;
-
-CREATE TABLE crmdm.dwd_acct_fin (
-	cust_id varchar(21) NOT NULL,
-	cust_typ varchar(4) NOT NULL,
-	acct_id varchar(40) NOT NULL,
-	card_no varchar(30) NOT NULL,
-	prdkt_id varchar(40) NOT NULL,
-	prdkt_name varchar(100) NULL,
-	prdkt_cate_big varchar(64) NULL,
-	estab_date varchar(10) NULL,
-	fin_amt numeric(18, 4) NULL,
-	rate_intri numeric(18, 4) NULL,
-	acct_state varchar(10) NULL,
-	intri_bgn_date varchar(10) NULL,
-	expr_date varchar(10) NULL,
-	oprt_org varchar(40) NULL,
-	chnl_no varchar(10) NULL,
-	persn_legal_bk_code varchar(30) NULL,
-	issu_org varchar(30) NULL,
-	issu_date varchar(10) NULL,
-	risk_lvl varchar(10) NULL
+CREATE TABLE IF NOT EXISTS DWD_ACCT_FIN (
+    CUST_ID VARCHAR(20) NOT NULL COMMENT '客户编号',
+    CUST_TYP VARCHAR(2) NULL COMMENT '客户类型',
+    ACCT_ID VARCHAR(40) NULL COMMENT '账户',
+    CARD_NO VARCHAR(30) NULL COMMENT '卡/折号',
+    PRDKT_ID VARCHAR(40) NULL COMMENT '产品ID',
+    PRDKT_NAME VARCHAR(100) NULL COMMENT '产品名称',
+    PRDKT_CATE_BIG VARCHAR(64) NULL COMMENT '产品大类',
+    ESTAB_DATE VARCHAR(10) NULL COMMENT '成立日期',
+    FIN_AMT NUMBER(20,2) NULL COMMENT '理财余额',
+    RATE_INTRI NUMBER(20,2) NULL COMMENT '收益率',
+    ACCT_STATE VARCHAR(10) NULL COMMENT '状态',
+    INTRI_BGN_DATE VARCHAR(10) NULL COMMENT '起息日期',
+    EXPR_DATE VARCHAR(10) NULL COMMENT '到期日期',
+    OPRT_ORG VARCHAR(6) NULL COMMENT '归属机构',
+    CHNL_NO VARCHAR(10) NULL COMMENT '办理渠道',
+    PERSN_LEGAL_BK_CODE VARCHAR(4) NULL COMMENT '法人行号',
+    ISSU_ORG VARCHAR(6) NULL COMMENT '发行机构',
+    ISSU_DATE VARCHAR(10) NULL COMMENT '办理日期',
+    RISK_LVL VARCHAR(2) NULL COMMENT '风险等级',
+    CUST_ID VARCHAR(20) NULL COMMENT '客户编号',
+    CUST_TYP VARCHAR(2) NULL COMMENT '客户类型',
+    ACCT_ID VARCHAR(40) NULL COMMENT '账户',
+    CARD_NO VARCHAR(30) NULL COMMENT '卡/折号',
+    PRDKT_ID VARCHAR(40) NULL COMMENT '产品ID',
+    PRDKT_NAME VARCHAR(100) NULL COMMENT '产品名称',
+    PRDKT_CATE_BIG VARCHAR(64) NULL COMMENT '产品大类',
+    ESTAB_DATE VARCHAR(10) NULL COMMENT '成立日期',
+    FIN_AMT NUMBER(20,2) NULL COMMENT '理财余额',
+    FIN_MTH_AVG NUMBER(20,2) NULL COMMENT '理财月日均',
+    FIN_QRT_AVG NUMBER(20,2) NULL COMMENT '理财季日均',
+    FIN_YR_AVG NUMBER(20,2) NULL COMMENT '理财年日均',
+    RATE_INTRI NUMBER(20,2) NULL COMMENT '收益率',
+    ACCT_STATE VARCHAR(10) NULL COMMENT '状态',
+    INTRI_BGN_DATE VARCHAR(10) NULL COMMENT '起息日期',
+    EXPR_DATE VARCHAR(10) NULL COMMENT '到期日期',
+    OPRT_ORG VARCHAR(6) NULL COMMENT '归属机构',
+    CHNL_NO VARCHAR(10) NULL COMMENT '办理渠道',
+    PERSN_LEGAL_BK_CODE VARCHAR(4) NULL COMMENT '法人行号',
+    ISSU_ORG VARCHAR(6) NULL COMMENT '发行机构',
+    ISSU_DATE VARCHAR(10) NULL COMMENT '办理日期',
+    RISK_LVL VARCHAR(2) NULL COMMENT '风险等级'
 );
 
+COMMENT ON TABLE DWD_ACCT_FIN IS '理财账户信息';

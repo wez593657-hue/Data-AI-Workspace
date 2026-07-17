@@ -1,42 +1,49 @@
 /*
- * DWD层表
- * 表名: crmdm.dwd_cust_indv_info
- * 来源: TB.ddl
+ * DWD_CUST_INDV_INFO
+ * 中文名称: 客户基本信息
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
  */
 
--- crmdm.dwd_cust_indv_info 定义
-
--- Drop table
-
--- DROP TABLE crmdm.dwd_cust_indv_info;
-
-CREATE TABLE crmdm.dwd_cust_indv_info (
-	cust_id varchar(20) NULL,
-	cust_name varchar(100) NULL,
-	cert_typ varchar(6) NULL,
-	cert_id varchar(32) NULL,
-	cert_prd_vlid varchar(10) NULL,
-	cert_prd_vlid_end varchar(10) NULL,
-	cert_issuing_authority varchar(100) NULL,
-	cust_typ varchar(2) NULL,
-	nationality varchar(6) NULL,
-	nation varchar(6) NULL,
-	mari_situ varchar(6) NULL,
-	max_deg_edu varchar(6) NULL,
-	now_enter varchar(120) NULL,
-	occu_cls varchar(6) NULL,
-	persn_legal_bk_code varchar(4) NULL,
-	gend varchar(2) NULL,
-	phone_no varchar(20) NULL,
-	contact_address varchar(254) NULL,
-	contact_address_detail varchar(254) NULL,
-	id_address varchar(254) NULL,
-	id_address_detail varchar(254) NULL,
-	home_address varchar(254) NULL,
-	home_address_detail varchar(254) NULL,
-	residence_address varchar(254) NULL,
-	residence_address_detail varchar(254) NULL,
-	office_address varchar(254) NULL,
-	office_address_detail varchar(254) NULL
+CREATE TABLE IF NOT EXISTS DWD_CUST_INDV_INFO (
+    CUST_ID VARCHAR(20) NOT NULL COMMENT '客户编号',
+    CUST_NAME VARCHAR(100) NULL COMMENT '客户名称',
+    CERT_TYP VARCHAR(6) NULL COMMENT '证件类型',
+    CERT_ID VARCHAR(32) NULL COMMENT '证件号码',
+    CERT_PRD_VLID VARCHAR(10) NULL COMMENT '证件有效期起',
+    CERT_PRD_VLID_END VARCHAR(10) NULL COMMENT '证件有效期止',
+    CERT_ISSUING_AUTHORITY VARCHAR(100) NULL COMMENT '签发机关所在地',
+    CUST_TYP VARCHAR(2) NULL COMMENT '客户类型',
+    NATIONALITY VARCHAR(6) NULL COMMENT '国籍',
+    NATION VARCHAR(6) NULL COMMENT '民族',
+    MARI_SITU VARCHAR(6) NULL COMMENT '婚姻状况',
+    MAX_DEG_EDU VARCHAR(6) NULL COMMENT '最高学历',
+    NOW_ENTER VARCHAR(120) NULL COMMENT '现工作单位',
+    OCCU_CLS VARCHAR(6) NULL COMMENT '职业分类',
+    CUST_HRAKY VARCHAR(2) NULL COMMENT '客户等级',
+    PERSN_LEGAL_BK_CODE VARCHAR(4) NULL COMMENT '法人行号',
+    GEND VARCHAR(2) NULL COMMENT '性别',
+    PHONE_NO VARCHAR(20) NULL COMMENT '手机号码',
+    CONTACT_ADDRESS VARCHAR(254) NULL COMMENT '联系地址',
+    CONTACT_ADDRESS_DETAIL VARCHAR(254) NULL COMMENT '联系地址详细地址',
+    ID_ADDRESS VARCHAR(254) NULL COMMENT '证件地址',
+    ID_ADDRESS_DETAIL VARCHAR(254) NULL COMMENT '证件地址详细地址',
+    HOME_ADDRESS VARCHAR(254) NULL COMMENT '家庭地址',
+    HOME_ADDRESS_DETAIL VARCHAR(254) NULL COMMENT '家庭地址详细地址',
+    RESIDENCE_ADDRESS VARCHAR(254) NULL COMMENT '住宅地址',
+    RESIDENCE_ADDRESS_DETAIL VARCHAR(254) NULL COMMENT '住宅地址详细地址',
+    OFFICE_ADDRESS VARCHAR(254) NULL COMMENT '办公地址',
+    OFFICE_ADDRESS_DETAIL VARCHAR(254) NULL COMMENT '办公地址详细地址',
+    HOST_CUST_MNGR_POST_ID VARCHAR(20) NULL COMMENT '主办客户经理职位编号',
+    HOST_CUST_MNGR_NAME VARCHAR(60) NULL COMMENT '主办客户经理名称',
+    HOST_CUST_MNGR_EMP_ID VARCHAR(6) NULL COMMENT '主办客户经理工号',
+    ORG_LEAD VARCHAR(6) NULL COMMENT '主办机构(归属机构)',
+    ORG_LEAD_PATH VARCHAR(50) NULL COMMENT '主办机构路径',
+    COSPSR_CUST_MNGR_POST_ID VARCHAR(20) NULL COMMENT '信贷客户经理职位编号',
+    COSPSR_CUST_MNGR_NAME VARCHAR(60) NULL COMMENT '信贷客户经理名称',
+    COSPSR_CUST_MNGR_EMP_ID VARCHAR(6) NULL COMMENT '信贷客户经理工号',
+    COSPSR_ORG VARCHAR(6) NULL COMMENT '信贷机构',
+    COSPSR_ORG_PATH VARCHAR(50) NULL COMMENT '信贷机构路径'
 );
 
+COMMENT ON TABLE DWD_CUST_INDV_INFO IS '客户基本信息';

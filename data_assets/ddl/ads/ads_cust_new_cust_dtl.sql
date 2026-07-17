@@ -1,0 +1,23 @@
+/*
+ * ads_cust_new_cust_dtl
+ * 中文名称: 新客经营明细
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
+ */
+
+CREATE TABLE IF NOT EXISTS ads_cust_new_cust_dtl (
+    DATA_DATE VARCHAR(8) NOT NULL COMMENT '数据日期',
+    CUST_ID VARCHAR(20) NULL COMMENT '客户编号',
+    CUST_NAME VARCHAR(100) NULL COMMENT '客户名称',
+    CUST_LVL VARCHAR(2) NULL COMMENT '客户等级',
+    NEW_CUST_CYCLE VARCHAR(1) NULL COMMENT '新客周期',
+    DEPO_CURNT_DEPO_BAL NUMBER(20,2) NULL COMMENT '活期余额',
+    FIXD_DEPO_BAL NUMBER(20,2) NULL COMMENT '定期余额',
+    FIN_AMT NUMBER(20,2) NULL COMMENT '理财余额',
+    CNTCT_STATE VARCHAR(1) NULL COMMENT '接触状态',
+    KYC_STATE VARCHAR(1) NULL COMMENT 'KYC状态',
+    POST_ID VARCHAR(20) NULL COMMENT '管户经理',
+    ORG_ID VARCHAR(6) NULL COMMENT '归属机构'
+);
+
+COMMENT ON TABLE ads_cust_new_cust_dtl IS '新客经营明细';

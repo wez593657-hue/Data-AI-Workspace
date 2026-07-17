@@ -1,28 +1,23 @@
 /*
- * DWD层表
- * 表名: crmdm.dwd_prdkt_info
- * 来源: TB.ddl
+ * DWD_PRDKT_INFO
+ * 中文名称: 产品信息表
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
  */
 
--- crmdm.dwd_prdkt_info 定义
-
--- Drop table
-
--- DROP TABLE crmdm.dwd_prdkt_info;
-
-CREATE TABLE crmdm.dwd_prdkt_info (
-	prdkt_id varchar(40) NOT NULL,
-	prdkt_name varchar(100) NULL,
-	prdkt_cate_big varchar(10) NULL,
-	bgn_date varchar(10) NULL,
-	end_date varchar(10) NULL,
-	prdkt_line varchar(10) NULL,
-	sup_prdkt_id varchar(30) NULL,
-	mdl_biz_rate_fee numeric(18, 4) NULL,
-	prdkt_rate numeric(18, 4) NULL,
-	sys_src varchar(6) NULL,
-	prdkt_state varchar(10) NULL,
-	persn_legal_bk_code varchar(30) NULL,
-	CONSTRAINT sys_c0012861 CHECK ((prdkt_id IS NOT NULL))
+CREATE TABLE IF NOT EXISTS DWD_PRDKT_INFO (
+    PRDKT_ID VARCHAR(40) NOT NULL COMMENT '产品编号',
+    PRDKT_NAME VARCHAR(100) NULL COMMENT '产品名称',
+    PRDKT_CATE_BIG VARCHAR(10) NULL COMMENT '产品大类',
+    BGN_DATE VARCHAR(10) NULL COMMENT '开始日期',
+    END_DATE VARCHAR(10) NULL COMMENT '结束日期',
+    PRDKT_LINE VARCHAR(10) NULL COMMENT '产品条线',
+    SUP_PRDKT_ID VARCHAR(30) NULL COMMENT '上级产品编号',
+    MDL_BIZ_RATE_FEE NUMBER(18,4) NULL COMMENT '中间业务费率',
+    PRDKT_RATE NUMBER(18,4) NULL COMMENT '产品利率',
+    SYS_SRC VARCHAR(6) NULL COMMENT '系统来源',
+    PRDKT_STATE VARCHAR(10) NULL COMMENT '产品状态(在售/停售)',
+    PERSN_LEGAL_BK_CODE VARCHAR(30) NULL COMMENT '法人行号'
 );
 
+COMMENT ON TABLE DWD_PRDKT_INFO IS '产品信息表';
