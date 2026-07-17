@@ -91,7 +91,41 @@ Mapping
 变更申请 → 影响评估 → Mapping 更新 → 数据字典同步 → SQL 更新 → ETL 更新 → 审核确认 → 上线
 ```
 
-### 8.6.3 版本控制
+### 8.6.3 数据分层 Mapping 规范
+
+数据仓库采用分层架构，Mapping 需按层间转换关系管理：
+
+| 转换方向 | 目录 | 命名规范 | 说明 |
+|----------|------|----------|------|
+| ODS → DWD | `data_assets/mapping/ods_to_dwd/` | `ods_to_dwd_{系统}_{表名}_mapping.md` | 原始数据到明细数据的转换规则 |
+| DWD → DWS | `data_assets/mapping/dwd_to_dws/` | `dwd_to_dws_{业务域}_{表名}_mapping.md` | 明细数据到汇总数据的转换规则 |
+| DWS → ADS | `data_assets/mapping/dws_to_ads/` | `dws_to_ads_{业务域}_{表名}_mapping.md` | 汇总数据到报表数据的转换规则 |
+
+**分层 Mapping 模板**:
+
+```text
+========================================
+来源层级: ODS
+来源表: ods_sap_customer
+目标层级: DWD
+目标表: dwd_crm_customer
+========================================
+描述: SAP客户数据清洗转换到CRM客户明细表
+同步方式: 增量同步（基于 UPDATE_TIME）
+负责人: 【待确认】
+更新时间: 2026-07-17
+
+字段 Mapping:
+```
+
+**字段级别 Mapping 扩展**:
+
+| 序号 | 来源层级 | 来源表 | 来源字段 | 目标层级 | 目标表 | 目标字段 | 转换规则 | 默认值 | 是否允许为空 | 上游来源 | 下游影响 |
+|------|----------|--------|----------|----------|--------|----------|----------|--------|--------------|----------|----------|
+| 1 | ODS | ods_sap_customer | CUST_ID | DWD | dwd_crm_customer | customer_id | 直接映射，去除前后空格 | - | NOT NULL | SAP → S_CUSTOMER → CUST_ID | dwd_crm_order |
+| 2 | ODS | ods_sap_customer | CUST_TYPE | DWD | dwd_crm_customer | customer_type | 'P'→'PERSONAL', 'E'→'ENTERPRISE' | PERSONAL | NULL | SAP → S_CUSTOMER → CUST_TYPE | 客户分类统计 |
+
+### 8.6.4 版本控制
 
 ```text
 Mapping 版本: v1.0

@@ -1,0 +1,29 @@
+/*
+ * ODS 层 - SAP 客户信息表
+ * 来源系统: SAP
+ * 来源表: S_CUSTOMER
+ * 描述: 原始数据落地，保留SAP原始格式
+ * 版本: v1.0
+ * 创建时间: 2026-07-17
+ */
+
+CREATE TABLE IF NOT EXISTS ods_sap_customer (
+    CUST_ID VARCHAR(50) NOT NULL,
+    CUST_NAME VARCHAR(200) NOT NULL,
+    CUST_CODE VARCHAR(50) NOT NULL,
+    CUST_TYPE VARCHAR(20),
+    CUST_STATUS VARCHAR(10),
+    INDUSTRY VARCHAR(100),
+    REGION VARCHAR(100),
+    CONTACT_PHONE VARCHAR(50),
+    CONTACT_EMAIL VARCHAR(200),
+    CREATE_TIME VARCHAR(20),
+    UPDATE_TIME VARCHAR(20),
+    ETL_LOAD_TIME TIMESTAMP NOT NULL DEFAULT NOW(),
+    ETL_BATCH_ID VARCHAR(50),
+    PRIMARY KEY (CUST_ID),
+    UNIQUE (CUST_CODE)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ods_sap_customer_update_time ON ods_sap_customer(UPDATE_TIME);
+CREATE INDEX IF NOT EXISTS idx_ods_sap_customer_etl_batch_id ON ods_sap_customer(ETL_BATCH_ID);

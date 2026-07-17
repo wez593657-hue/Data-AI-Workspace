@@ -37,6 +37,26 @@ Kingbase-CRM-AI-Development-Guide
 │   ├── 10_Code_Review.md     # Code Review 规范
 │   ├── 11_Project_SOP.md     # 项目 SOP
 │   └── 12_AI_Prompts.md      # AI 提示词模板
+├── data_assets/               # 数据资产（新增）
+│   ├── ddl/                  # DDL 建表脚本
+│   │   ├── ods/              # ODS 层
+│   │   ├── dwd/              # DWD 层
+│   │   ├── dws/              # DWS 层
+│   │   └── ads/              # ADS 层
+│   ├── data_dictionary/      # 数据字典
+│   │   ├── source/           # 上游系统数据字典
+│   │   ├── ods/              # ODS 层数据字典
+│   │   ├── dwd/              # DWD 层数据字典
+│   │   ├── dws/              # DWS 层数据字典
+│   │   └── ads/              # ADS 层数据字典
+│   ├── mapping/              # Mapping 文件
+│   │   ├── ods_to_dwd/       # ODS → DWD Mapping
+│   │   ├── dwd_to_dws/       # DWD → DWS Mapping
+│   │   └── dws_to_ads/       # DWS → ADS Mapping
+│   └── etl/                  # ETL 脚本
+│       ├── ods_to_dwd/       # ODS → DWD ETL
+│       ├── dwd_to_dws/       # DWD → DWS ETL
+│       └── dws_to_ads/       # DWS → ADS ETL
 ├── requirements/              # 需求文档（新增）
 │   └── *.md                   # 需求文档、规格说明书
 ├── templates/                 # 模板文件

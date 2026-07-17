@@ -64,6 +64,56 @@
 | 日志表 | `log_` | `log_customer_operation` |
 | 临时表 | `temp_` | `temp_customer_batch` |
 
+### 7.4.5 数据分层命名规则
+
+数据仓库采用分层架构，各层表命名遵循以下规则：
+
+| 层级 | 名称 | 前缀 | 说明 | 示例 |
+|------|------|------|------|------|
+| **ODS** | 原始数据层 | `ods_` | 原始数据落地，保留上游格式 | `ods_sap_customer`, `ods_core_banking_account` |
+| **DWD** | 明细数据层 | `dwd_` | 清洗去重后的业务明细 | `dwd_crm_customer`, `dwd_crm_order` |
+| **DWS** | 汇总数据层 | `dws_` | 按维度轻度聚合 | `dws_crm_customer_daily`, `dws_crm_order_monthly` |
+| **ADS** | 应用数据层 | `ads_` | 面向业务指标的报表数据 | `ads_crm_customer_report`, `ads_crm_sales_dashboard` |
+
+**分层命名格式**:
+
+```
+{层级前缀}_{业务域}_{表名}_{周期(可选)}
+```
+
+示例:
+- `ods_sap_customer` - ODS层 SAP客户表
+- `dwd_crm_customer` - DWD层 CRM客户明细表
+- `dws_crm_customer_daily` - DWS层 CRM客户日汇总表
+- `ads_crm_customer_report` - ADS层 CRM客户报表表
+
+### 7.4.6 数据分层目录结构
+
+数据资产统一存放在 `data_assets/` 目录下：
+
+```
+data_assets/
+├── ddl/                    # DDL 建表脚本
+│   ├── ods/               # ODS 层
+│   ├── dwd/               # DWD 层
+│   ├── dws/               # DWS 层
+│   └── ads/               # ADS 层
+├── data_dictionary/       # 数据字典
+│   ├── source/            # 上游系统数据字典
+│   ├── ods/               # ODS 层数据字典
+│   ├── dwd/               # DWD 层数据字典
+│   ├── dws/               # DWS 层数据字典
+│   └── ads/               # ADS 层数据字典
+├── mapping/               # Mapping 文件
+│   ├── ods_to_dwd/        # ODS → DWD Mapping
+│   ├── dwd_to_dws/        # DWD → DWS Mapping
+│   └── dws_to_ads/        # DWS → ADS Mapping
+└── etl/                   # ETL 脚本
+    ├── ods_to_dwd/        # ODS → DWD ETL
+    ├── dwd_to_dws/        # DWD → DWS ETL
+    └── dws_to_ads/        # DWS → ADS ETL
+```
+
 ### 7.4.2 字段命名规则
 
 | 类型 | 规则 | 示例 |
