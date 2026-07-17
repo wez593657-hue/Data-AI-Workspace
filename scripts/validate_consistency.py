@@ -5,7 +5,7 @@ import os
 import sys
 import re
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DDL_DIR = os.path.join(BASE_DIR, 'data_assets', 'ddl')
 DATA_DICT_DIR = os.path.join(BASE_DIR, 'data_assets', 'data_dictionary')
 MAPPING_DIR = os.path.join(BASE_DIR, 'data_assets', 'mapping')

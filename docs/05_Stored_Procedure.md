@@ -323,14 +323,21 @@ END $$;
 
 ## 5.9 存储过程命名规范
 
-| 类型 | 前缀 | 示例 |
-|------|------|------|
-| 查询类 | `proc_*_query` | `proc_crm_customer_query` |
-| 新增类 | `proc_*_insert` | `proc_crm_customer_insert` |
-| 更新类 | `proc_*_update` | `proc_crm_customer_update` |
-| 删除类 | `proc_*_delete` | `proc_crm_customer_delete` |
-| 同步类 | `proc_*_sync` | `proc_crm_order_sync` |
-| 统计类 | `proc_*_stat` | `proc_crm_sales_stat` |
+命名格式：`pro_{结果表}`
+
+| 层 | 示例 |
+|----|------|
+| DWD层 | `pro_dwd_cust_indv_info` |
+| DWS层 | `pro_dws_cust_deadline_rmnd` |
+| ADS层 | `pro_ads_cust_deadline_rmnd_dtl` |
+
+文件命名格式：`pro_{结果表}.sql`
+
+| 目录 | 示例文件 |
+|------|----------|
+| ods_to_dwd | `pro_dwd_cust_indv_info.sql` |
+| dwd_to_dws | `pro_dws_cust_deadline_rmnd.sql` |
+| dws_to_ads | `pro_ads_cust_deadline_rmnd_dtl.sql` |
 
 ## 5.10 禁止事项
 

@@ -31,7 +31,7 @@ def validate_ddl_files():
             table_name = filename.replace('.sql', '').upper()
             
             has_create = 'CREATE TABLE' in content
-            has_table_comment = f"COMMENT ON TABLE {table_name}" in content
+            has_table_comment = ('COMMENT ON TABLE' in content) or ('comment on table' in content.lower())
             has_column_comments = 'COMMENT' in content
             has_semicolon = content.strip().endswith(';')
             

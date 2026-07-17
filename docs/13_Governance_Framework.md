@@ -134,7 +134,7 @@
 校验Mapping文件的完整性。
 
 ```
-脚本: temp/scripts/analyze_missing_mapping.py
+脚本: scripts/analyze_missing_mapping.py
 ```
 
 ### 13.6.4 GitHub Actions
