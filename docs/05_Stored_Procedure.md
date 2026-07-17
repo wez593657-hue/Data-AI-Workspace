@@ -272,6 +272,8 @@ RAISE NOTICE '输出: code=%, msg=%', p_result_code, p_result_msg;
 
 ## 5.8 临时表使用
 
+存储过程中使用的临时表统一采用 `TMP_` 前缀的物理表，命名格式为 `TMP_{结果表}_{用途}`。
+
 ```sql
 CREATE OR REPLACE PROCEDURE proc_crm_order_sync()
 LANGUAGE plpgsql
@@ -280,22 +282,22 @@ DECLARE
     v_batch_size INT := 1000;
 BEGIN
     -- 步骤 1: 创建临时表存储待同步数据
-    CREATE TEMP TABLE temp_pending_orders AS
+    CREATE TABLE IF NOT EXISTS TMP_CRM_ORDER_PENDING AS
     SELECT order_id, customer_id, order_amount
     FROM crm_order
     WHERE sync_status = 'PENDING';
 
-    RAISE NOTICE '待同步订单数量: %', (SELECT COUNT(*) FROM temp_pending_orders);
+    RAISE NOTICE '待同步订单数量: %', (SELECT COUNT(*) FROM TMP_CRM_ORDER_PENDING);
 
     -- 步骤 2: 分批处理
     LOOP
-        EXIT WHEN NOT EXISTS (SELECT 1 FROM temp_pending_orders);
+        EXIT WHEN NOT EXISTS (SELECT 1 FROM TMP_CRM_ORDER_PENDING);
 
         -- 处理一批数据
         UPDATE crm_order 
         SET sync_status = 'SYNCING'
         WHERE order_id IN (
-            SELECT order_id FROM temp_pending_orders LIMIT v_batch_size
+            SELECT order_id FROM TMP_CRM_ORDER_PENDING LIMIT v_batch_size
         );
 
         -- 模拟同步操作
@@ -307,16 +309,16 @@ BEGIN
         WHERE sync_status = 'SYNCING';
 
         -- 删除已处理数据
-        DELETE FROM temp_pending_orders 
+        DELETE FROM TMP_CRM_ORDER_PENDING 
         WHERE order_id IN (
             SELECT order_id FROM crm_order WHERE sync_status = 'SYNCED'
         );
 
-        RAISE NOTICE '已同步批次，剩余: %', (SELECT COUNT(*) FROM temp_pending_orders);
+        RAISE NOTICE '已同步批次，剩余: %', (SELECT COUNT(*) FROM TMP_CRM_ORDER_PENDING);
     END LOOP;
 
-    -- 步骤 3: 清理临时表（自动清理）
-    DROP TABLE IF EXISTS temp_pending_orders;
+    -- 步骤 3: 清理临时表（物理表需手动清理）
+    DROP TABLE IF EXISTS TMP_CRM_ORDER_PENDING;
 
 END $$;
 ```

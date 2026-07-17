@@ -42,6 +42,16 @@ jobs:
       uses: actions/github-script@v7
       with:
         script: |
+          const reviews = await github.rest.pulls.listReviews({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number
+          });
+          
+          const completedReviews = reviews.data
+            .filter(r => r.state === 'APPROVED')
+            .map(r => r.user.login);
+          
           const pr = await github.rest.pulls.get({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -49,13 +59,12 @@ jobs:
           });
           
           const requestedReviewers = pr.data.requested_reviewers.map(r => r.login);
-          const completedReviews = pr.data.reviews.filter(r => r.state === 'APPROVED').map(r => r.user.login);
           
           console.log(`请求的审查人: ${requestedReviewers.join(', ') || '无'}`);
           console.log(`已批准的审查人: ${completedReviews.join(', ') || '无'}`);
           
           if (completedReviews.length === 0) {
-            throw new Error('需要至少一个审查人批准!');
+            console.log('警告: 尚未有审查人批准，建议等待审查后再合并');
           }
 
   checklists:

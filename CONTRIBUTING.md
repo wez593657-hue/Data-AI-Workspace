@@ -4,6 +4,27 @@
 
 远程仓库地址: `https://github.com/wez593657-hue/Data-AI-Workspace.git`
 
+## 钩子安装
+
+克隆仓库后，必须安装Git钩子以启用本地门禁：
+
+```bash
+# 安装钩子
+python scripts/install_hooks.py
+
+# 验证钩子安装
+ls -la .git/hooks/
+```
+
+钩子目录说明：
+- `hooks/`: 钩子源文件（Git跟踪）
+- `.git/hooks/`: Git钩子目录（本地，不跟踪）
+
+安装的钩子：
+- `pre-commit`: 提交前校验（数据资产一致性、文档审核、工作区检查）
+- `pre-push`: 推送前检查（分支保护、提交信息格式、完整校验）
+- `prepare-commit-msg`: 提交信息格式校验
+
 ## 分支策略
 
 | 分支类型 | 命名规范 | 用途 | 保护状态 |

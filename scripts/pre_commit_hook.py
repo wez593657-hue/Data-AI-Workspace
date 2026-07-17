@@ -7,6 +7,14 @@ import argparse
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+def safe_print(*args, **kwargs):
+    try:
+        print(*args, **kwargs)
+    except UnicodeEncodeError:
+        text = ' '.join(str(arg) for arg in args)
+        text = text.replace('✓', '[OK]').replace('✗', '[FAIL]').replace('⚠', '[WARN]')
+        print(text)
+
 WHITELIST_PATTERNS = [
     'docs/',
     'README.md',
@@ -63,65 +71,65 @@ def has_doc_changes(files):
     return any(is_doc_file(f) for f in files)
 
 def check_python():
-    print("\n1. 检查Python环境...")
+    safe_print("\n1. 检查Python环境...")
     if sys.executable:
-        print("   ✓ Python已安装")
+        safe_print("   ✓ Python已安装")
         return True
     else:
-        print("   ✗ Python未安装")
+        safe_print("   ✗ Python未安装")
         return False
 
 def check_unstaged_changes():
-    print("\n2. 检查工作区未暂存变更...")
+    safe_print("\n2. 检查工作区未暂存变更...")
     stdout, stderr, rc = run_command("git diff --name-only")
     unstaged_files = [f.strip() for f in stdout.strip().split('\n') if f.strip()]
     
     non_whitelist_unstaged = [f for f in unstaged_files if not is_in_whitelist(f)]
     
     if non_whitelist_unstaged:
-        print("   ✗ 工作区存在未暂存的变更:")
+        safe_print("   ✗ 工作区存在未暂存的变更:")
         for file in non_whitelist_unstaged[:5]:
-            print(f"     - {file}")
+            safe_print(f"     - {file}")
         if len(non_whitelist_unstaged) > 5:
-            print(f"     ...还有{len(non_whitelist_unstaged) - 5}个文件")
-        print("   ✗ 请先使用 git add 添加所有变更文件")
+            safe_print(f"     ...还有{len(non_whitelist_unstaged) - 5}个文件")
+        safe_print("   ✗ 请先使用 git add 添加所有变更文件")
         return False
-    print("   ✓ 工作区未暂存变更检查通过")
+    safe_print("   ✓ 工作区未暂存变更检查通过")
     return True
 
 def check_untracked_files():
-    print("\n3. 检查未跟踪文件...")
+    safe_print("\n3. 检查未跟踪文件...")
     stdout, stderr, rc = run_command("git ls-files --others --exclude-standard")
     untracked_files = [f.strip() for f in stdout.strip().split('\n') if f.strip()]
     
     non_whitelist_untracked = [f for f in untracked_files if not is_in_whitelist(f)]
     
     if non_whitelist_untracked:
-        print("   ✗ 发现未跟踪文件:")
+        safe_print("   ✗ 发现未跟踪文件:")
         for file in non_whitelist_untracked[:5]:
-            print(f"     - {file}")
+            safe_print(f"     - {file}")
         if len(non_whitelist_untracked) > 5:
-            print(f"     ...还有{len(non_whitelist_untracked) - 5}个文件")
-        print("   ✗ 请使用 git add 添加或 .gitignore 忽略")
+            safe_print(f"     ...还有{len(non_whitelist_untracked) - 5}个文件")
+        safe_print("   ✗ 请使用 git add 添加或 .gitignore 忽略")
         return False
-    print("   ✓ 未跟踪文件检查通过")
+    safe_print("   ✓ 未跟踪文件检查通过")
     return True
 
 def check_staged_files():
-    print("\n4. 检查暂存区文件...")
+    safe_print("\n4. 检查暂存区文件...")
     staged_files = get_staged_files()
     if not staged_files:
-        print("   ✗ 暂存区没有文件")
-        print("   ✗ 请先使用 git add 添加文件")
+        safe_print("   ✗ 暂存区没有文件")
+        safe_print("   ✗ 请先使用 git add 添加文件")
         return False
-    print("   ✓ 暂存区文件检查通过")
+    safe_print("   ✓ 暂存区文件检查通过")
     return True
 
 def run_doc_review(changed_files=None):
-    print("\n5. 执行文档变更审核...")
+    safe_print("\n5. 执行文档变更审核...")
     
     if not changed_files or not has_doc_changes(changed_files):
-        print("   ✓ 无文档变更，跳过审核")
+        safe_print("   ✓ 无文档变更，跳过审核")
         return True
     
     cmd = "python scripts/validate_document_changes.py"
@@ -130,27 +138,27 @@ def run_doc_review(changed_files=None):
     print(stdout)
     
     if rc != 0:
-        print("   ⚠ 文档审核发现警告，建议人工审核")
-        print("   ⚠ 是否继续提交？(y/N)")
+        safe_print("   ⚠ 文档审核发现警告，建议人工审核")
+        safe_print("   ⚠ 是否继续提交？(y/N)")
         try:
             import getpass
             response = getpass.getpass("")
             if response.lower() != 'y':
-                print("   ✗ 用户取消提交")
+                safe_print("   ✗ 用户取消提交")
                 return False
-            print("   ✓ 用户确认继续提交")
+            safe_print("   ✓ 用户确认继续提交")
         except:
-            print("   ✗ 无法获取用户输入，取消提交")
+            safe_print("   ✗ 无法获取用户输入，取消提交")
             return False
     
-    print("   ✓ 文档变更审核通过")
+    safe_print("   ✓ 文档变更审核通过")
     return True
 
 def run_consistency_check(quick_mode=False, changed_files=None):
-    print("\n6. 执行数据资产一致性校验...")
+    safe_print("\n6. 执行数据资产一致性校验...")
     
     if quick_mode and changed_files and not has_data_asset_changes(changed_files):
-        print("   ✓ 无数据资产变更，跳过校验")
+        safe_print("   ✓ 无数据资产变更，跳过校验")
         return True
     
     cmd = "python scripts/validate_consistency.py"
@@ -162,17 +170,17 @@ def run_consistency_check(quick_mode=False, changed_files=None):
     
     stdout, stderr, rc = run_command(cmd)
     if rc != 0:
-        print("   ✗ 数据资产一致性校验失败")
-        print("   ✗ 请修复校验错误后重新提交")
+        safe_print("   ✗ 数据资产一致性校验失败")
+        safe_print("   ✗ 请修复校验错误后重新提交")
         return False
-    print("   ✓ 数据资产一致性校验通过")
+    safe_print("   ✓ 数据资产一致性校验通过")
     return True
 
 def run_generated_files_check(quick_mode=False, changed_files=None):
-    print("\n7. 执行文件生成校验...")
+    safe_print("\n7. 执行文件生成校验...")
     
     if quick_mode and changed_files and not has_data_asset_changes(changed_files):
-        print("   ✓ 无数据资产变更，跳过校验")
+        safe_print("   ✓ 无数据资产变更，跳过校验")
         return True
     
     cmd = "python scripts/validate_generated_files.py"
@@ -184,10 +192,10 @@ def run_generated_files_check(quick_mode=False, changed_files=None):
     
     stdout, stderr, rc = run_command(cmd)
     if rc != 0:
-        print("   ✗ 文件生成校验失败")
-        print("   ✗ 请修复校验错误后重新提交")
+        safe_print("   ✗ 文件生成校验失败")
+        safe_print("   ✗ 请修复校验错误后重新提交")
         return False
-    print("   ✓ 文件生成校验通过")
+    safe_print("   ✓ 文件生成校验通过")
     return True
 
 def main():
@@ -196,11 +204,11 @@ def main():
                        help='校验模式: quick(快速)或full(完整)')
     args = parser.parse_args()
     
-    print("=" * 70)
-    print("  Git Pre-Commit Hook - 自动校验")
-    print("=" * 70)
+    safe_print("=" * 70)
+    safe_print("  Git Pre-Commit Hook - 自动校验")
+    safe_print("=" * 70)
     
-    print(f"  模式: {'快速校验' if args.mode == 'quick' else '完整校验'}")
+    safe_print(f"  模式: {'快速校验' if args.mode == 'quick' else '完整校验'}")
     
     if not check_python():
         sys.exit(1)
@@ -230,9 +238,9 @@ def main():
         if not run_generated_files_check(True, changed_files):
             sys.exit(1)
     
-    print("\n" + "=" * 70)
-    print("  所有校验通过，可以提交!")
-    print("=" * 70)
+    safe_print("\n" + "=" * 70)
+    safe_print("  所有校验通过，可以提交!")
+    safe_print("=" * 70)
     
     sys.exit(0)
 

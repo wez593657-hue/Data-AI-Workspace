@@ -3,11 +3,13 @@
 
 import os
 import pandas as pd
+import re
 
-DWD_FILE = r'd:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\DWD明细层数据模型_CRM_ V1.0.xlsx'
-ADS_FILE = r'd:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\dws_to_ads\ADS应用层数据模型_CRM_ V1.0.xlsx'
-ODS_DIR = r'd:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\ddl\ods'
-DWD_DIR = r'd:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\ddl\dwd'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DWD_FILE = os.path.join(BASE_DIR, 'data_assets', 'mapping', 'ods_to_dwd', 'DWD明细层数据模型_CRM_ V1.0.xlsx')
+ADS_FILE = os.path.join(BASE_DIR, 'data_assets', 'mapping', 'dws_to_ads', 'ADS应用层数据模型_CRM_ V1.0.xlsx')
+ODS_DIR = os.path.join(BASE_DIR, 'data_assets', 'ddl', 'ods')
+DWD_DIR = os.path.join(BASE_DIR, 'data_assets', 'ddl', 'dwd')
 
 def parse_ods_tables():
     ods_tables = {}
@@ -45,6 +47,10 @@ def parse_ods_tables():
     return ods_tables
 
 def analyze_dwd_mapping():
+    if not os.path.exists(DWD_FILE):
+        print(f"警告: DWD Excel文件不存在: {DWD_FILE}")
+        return
+    
     xls = pd.ExcelFile(DWD_FILE)
     
     for sheet_name in xls.sheet_names:
@@ -53,7 +59,7 @@ def analyze_dwd_mapping():
         
         df = pd.read_excel(DWD_FILE, sheet_name=sheet_name, header=None)
         
-        if len(df) < 5:
+        if len(df) < 3:
             continue
         
         table_name = str(df.iloc[0, 5]).strip() if len(df.columns) > 5 and pd.notna(df.iloc[0, 5]) else sheet_name
@@ -89,6 +95,10 @@ def analyze_dwd_mapping():
                 print(f"  - {item['attr_name']}: {item['std_name']}")
 
 def analyze_ads_mapping():
+    if not os.path.exists(ADS_FILE):
+        print(f"警告: ADS Excel文件不存在: {ADS_FILE}")
+        return
+    
     xls = pd.ExcelFile(ADS_FILE)
     
     for sheet_name in xls.sheet_names:
@@ -97,7 +107,7 @@ def analyze_ads_mapping():
         
         df = pd.read_excel(ADS_FILE, sheet_name=sheet_name, header=None)
         
-        if len(df) < 5:
+        if len(df) < 3:
             continue
         
         table_name = str(df.iloc[0, 5]).strip() if len(df.columns) > 5 and pd.notna(df.iloc[0, 5]) else sheet_name
@@ -133,7 +143,6 @@ def analyze_ads_mapping():
                 print(f"  - {item['attr_name']}: {item['std_name']}")
 
 if __name__ == '__main__':
-    import re
     print("分析DWD层缺少映射的字段:")
     analyze_dwd_mapping()
     

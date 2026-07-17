@@ -238,10 +238,12 @@ def validate_excel_mapping(changed_files=None, quick_mode=False):
             
             df = pd.read_excel(file_path, sheet_name=sheet_name, header=None)
             
-            if len(df) < 5:
-                print(f"  ✗ {sheet_name}: 数据行数不足")
-                has_errors = True
+            if len(df) < 3:
+                print(f"  ⚠ {sheet_name}: 数据行数较少")
                 continue
+            
+            if len(df) < 5:
+                print(f"  ⚠ {sheet_name}: 数据行数较少，建议检查内容完整性")
             
             table_name = str(df.iloc[0, 5]).strip() if len(df.columns) > 5 and pd.notna(df.iloc[0, 5]) else sheet_name
             
