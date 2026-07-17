@@ -28,27 +28,27 @@ def main():
     
     protected_branches = ['master', 'main', 'develop']
     if current_branch in protected_branches:
-        if os.environ.get('SKIP_BRANCH_PROTECTION') == '1':
-            print(f"   ⚠ 检测到保护分支，但已跳过保护检查: {current_branch}")
-            print("   ⚠ 请确保已完成代码审查和审批流程")
-        else:
-            print(f"   ✗ 禁止直接推送到保护分支: {current_branch}")
-            print("   ✗ 请通过PR提交")
-            print("   ✗ 如需临时绕过，执行: $env:SKIP_BRANCH_PROTECTION='1'; git push")
-            sys.exit(1)
-    
-    print("\n2. 检查提交数量...")
-    stdout, stderr, rc = run_command(['git', 'rev-list', '--count', f'HEAD..origin/{current_branch}'])
-    try:
-        commits_ahead = int(stdout.strip()) if stdout.strip() else 0
-    except:
-        commits_ahead = 0
-    
-    if commits_ahead > 0:
-        print("   ✗ 远程分支有新提交，请先拉取更新")
-        print(f"   ✗ 执行: git pull origin {current_branch}")
+        print(f"   ✗ 禁止直接推送到保护分支: {current_branch}")
+        print("   ✗ 请使用特性分支并通过PR提交")
+        print("   ✗ 正确流程: git checkout -b feature/xxx → 开发 → git push origin feature/xxx → 创建PR")
         sys.exit(1)
-    print("   ✓ 提交数量检查通过")
+    
+    print("\n2. 检查本地提交数量...")
+    stdout, stderr, rc = run_command(['git', 'rev-list', '--count', f'HEAD..origin/{current_branch}'])
+    if rc != 0:
+        print("   ⚠ 无法访问远程仓库，跳过提交数量检查")
+        print("   ⚠ 请确保网络连接正常")
+    else:
+        try:
+            commits_ahead = int(stdout.strip()) if stdout.strip() else 0
+        except:
+            commits_ahead = 0
+        
+        if commits_ahead > 0:
+            print("   ✗ 远程分支有新提交，请先拉取更新")
+            print(f"   ✗ 执行: git pull origin {current_branch}")
+            sys.exit(1)
+        print("   ✓ 提交数量检查通过")
     
     print("\n3. 执行数据资产一致性校验...")
     stdout, stderr, rc = run_command([sys.executable, 'scripts/validate_consistency.py'])
