@@ -1,6 +1,10 @@
 /*
  * 存储过程示例: 更新客户状态
  * 参考文档: docs/05_Stored_Procedure.md
+ * 
+ * 事务处理说明:
+ * - Kingbase/PostgreSQL 的 PL/pgSQL 中，EXCEPTION 块会自动回滚到进入块之前的状态
+ * - 本示例使用外部事务控制模式，由调用方管理事务的 BEGIN/COMMIT/ROLLBACK
  */
 
 CREATE OR REPLACE PROCEDURE proc_crm_customer_update_status(
@@ -64,12 +68,14 @@ BEGIN
         END IF;
 
         INSERT INTO crm_customer_log (
+            log_id,
             customer_id,
             operation_type,
             operation_time,
             operator,
             operation_detail
         ) VALUES (
+            'LOG_' || REPLACE(CAST(NOW() AS VARCHAR), ' ', '_'),
             p_customer_id,
             'UPDATE_STATUS',
             NOW(),
@@ -77,20 +83,25 @@ BEGIN
             '状态变更为: ' || p_new_status
         );
 
-        -- ====================
-        -- 步骤 4: 事务提交
-        -- ====================
-        COMMIT;
-
         p_result_code := 0;
         p_result_msg := '客户状态更新成功';
 
     EXCEPTION
         -- ====================
-        -- 步骤 5: 异常处理
+        -- 步骤 4: 异常处理
         -- ====================
+        -- PL/pgSQL EXCEPTION 块会自动回滚到进入块之前的状态
+        WHEN NO_DATA_FOUND THEN
+            p_result_code := -4;
+            p_result_msg := '客户不存在: ' || p_customer_id;
+            RAISE NOTICE '异常发生: 客户不存在';
+        
+        WHEN UNIQUE_VIOLATION THEN
+            p_result_code := -5;
+            p_result_msg := '数据重复';
+            RAISE NOTICE '异常发生: 数据重复';
+        
         WHEN OTHERS THEN
-            ROLLBACK;
             p_result_code := SQLSTATE;
             p_result_msg := SQLERRM;
             RAISE NOTICE '异常发生: SQLSTATE=%, SQLERRM=%', SQLSTATE, SQLERRM;
@@ -98,7 +109,7 @@ BEGIN
     END;
 
     -- ====================
-    -- 步骤 6: 日志结束
+    -- 步骤 5: 日志结束
     -- ====================
     v_end_time := NOW();
     v_duration := v_end_time - v_start_time;
@@ -107,3 +118,14 @@ BEGIN
     RAISE NOTICE '输出结果: result_code=%, result_msg=%', p_result_code, p_result_msg;
 
 END $$;
+
+-- 调用示例
+-- BEGIN;
+-- CALL proc_crm_customer_update_status(
+--     p_customer_id => 'C001',
+--     p_new_status => 'INACTIVE',
+--     p_result_code => :result_code,
+--     p_result_msg => :result_msg
+-- );
+-- COMMIT;
+-- SELECT :result_code, :result_msg;

@@ -1,6 +1,11 @@
 /*
  * 存储过程模板
  * 参考文档: docs/05_Stored_Procedure.md
+ * 
+ * 事务处理说明:
+ * - Kingbase/PostgreSQL 的 PL/pgSQL 中，EXCEPTION 块会自动回滚到进入块之前的状态
+ * - 本模板使用外部事务控制模式，由调用方管理事务的 BEGIN/COMMIT/ROLLBACK
+ * - 如果需要在存储过程内部管理事务，请使用 BEGIN TRANSACTION/COMMIT/ROLLBACK 语句
  */
 
 CREATE OR REPLACE PROCEDURE proc_[模块名]_[操作名](
@@ -38,20 +43,25 @@ BEGIN
     BEGIN
         -- [业务逻辑]
 
-        -- ====================
-        -- 步骤 4: 事务提交
-        -- ====================
-        COMMIT;
-
         p_result_code := 0;
         p_result_msg := '[操作]成功';
 
     EXCEPTION
         -- ====================
-        -- 步骤 5: 异常处理
+        -- 步骤 4: 异常处理
         -- ====================
+        -- PL/pgSQL EXCEPTION 块会自动回滚到进入块之前的状态
+        WHEN NO_DATA_FOUND THEN
+            p_result_code := -3;
+            p_result_msg := '数据不存在';
+            RAISE NOTICE '异常发生: 数据不存在';
+        
+        WHEN UNIQUE_VIOLATION THEN
+            p_result_code := -4;
+            p_result_msg := '数据已存在';
+            RAISE NOTICE '异常发生: 数据已存在';
+        
         WHEN OTHERS THEN
-            ROLLBACK;
             p_result_code := SQLSTATE;
             p_result_msg := SQLERRM;
             RAISE NOTICE '异常发生: SQLSTATE=%, SQLERRM=%', SQLSTATE, SQLERRM;
@@ -59,7 +69,7 @@ BEGIN
     END;
 
     -- ====================
-    -- 步骤 6: 日志结束
+    -- 步骤 5: 日志结束
     -- ====================
     v_end_time := NOW();
     v_duration := v_end_time - v_start_time;
