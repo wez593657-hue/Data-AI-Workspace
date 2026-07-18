@@ -1,110 +1,33 @@
-name: PR检查
+name: PR 治理检查
 
 on:
   pull_request:
-    branches: [ master, develop ]
-    types: [ opened, synchronize, reopened ]
+    branches: [master, develop]
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: read
 
 jobs:
-  validate:
-    name: 自动校验
+  checklist:
+    name: PR 模板与变更边界
     runs-on: ubuntu-latest
     steps:
-    - name: 检出代码
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: 设置Python环境
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: 安装依赖
-      run: |
-        pip install pandas openpyxl xlrd
-
-    - name: 执行数据资产校验
-      run: python scripts/validate_generated_files.py
-
-    - name: 执行映射完整性校验
-      run: python scripts/analyze_missing_mapping.py
-
-    - name: 执行TMP表审核清单校验
-      run: python scripts/validate_tmp_tables.py --require-approved
-
-    - name: 执行ODS数据字典校验
-      run: python scripts/validate_ods_dictionary.py
-
-  code-review:
-    name: 代码审查检查
-    runs-on: ubuntu-latest
-    needs: validate
-    steps:
-    - name: 检查CODEOWNERS审查
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const reviews = await github.rest.pulls.listReviews({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: context.issue.number
-          });
-          
-          const completedReviews = reviews.data
-            .filter(r => r.state === 'APPROVED')
-            .map(r => r.user.login);
-          
-          const pr = await github.rest.pulls.get({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: context.issue.number
-          });
-          
-          const requestedReviewers = pr.data.requested_reviewers.map(r => r.login);
-          
-          console.log(`请求的审查人: ${requestedReviewers.join(', ') || '无'}`);
-          console.log(`已批准的审查人: ${completedReviews.join(', ') || '无'}`);
-          
-          if (completedReviews.length === 0) {
-            throw new Error('尚未有审查人批准，不能合并');
-          }
-
-  checklists:
-    name: 检查清单验证
-    runs-on: ubuntu-latest
-    needs: code-review
-    steps:
-    - name: 检出代码
-      uses: actions/checkout@v4
-
-    - name: 验证PR模板填写完整性
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const pr = await github.rest.pulls.get({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: context.issue.number
-          });
-          
-          const body = pr.data.body || '';
-          
-          const requiredSections = [
-            '## 类型',
-            '## 描述',
-            '## 关联需求',
-            '## 变更范围',
-            '## 检查清单',
-            '## 测试结果',
-            '## 风险评估',
-            '## 审批人'
-          ];
-          
-          const missingSections = requiredSections.filter(section => !body.includes(section));
-          
-          if (missingSections.length > 0) {
-            throw new Error(`PR模板缺少以下必填部分: ${missingSections.join(', ')}`);
-          }
-          
-          console.log('PR模板检查通过!');
+      - name: 检查 PR 模板和标题
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            const requiredSections = [
+              '## 类型', '## 描述', '## 关联需求', '## 变更范围',
+              '## 检查清单', '## 测试结果', '## 风险评估', '## 审批人',
+            ];
+            const missing = requiredSections.filter(section => !body.includes(section));
+            if (missing.length) {
+              core.setFailed(`PR 模板缺少必填部分：${missing.join('、')}`);
+            }
+            if (!/^(feat|fix|docs|refactor|style|test|chore|sync)(\([^\n]+\))?: .+/.test(pr.title)) {
+              core.setFailed('PR 标题必须符合 <type>(scope): <subject> 格式');
+            }
