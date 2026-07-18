@@ -3,6 +3,10 @@ name: AI Connectivity Check
 on:
   workflow_dispatch:
 
+  push:
+    branches:
+      - feature/ai-repair-loop
+
 permissions:
   contents: read
 
