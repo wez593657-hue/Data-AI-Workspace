@@ -3,6 +3,7 @@
 import sys
 import os
 import subprocess
+import re
 
 BASE_DIR = subprocess.run(
     ['git', 'rev-parse', '--show-toplevel'], capture_output=True, encoding='utf-8', errors='replace', check=True
@@ -30,7 +31,7 @@ def validate_commit_message(msg):
         errors.append('提交信息不能为空')
         return errors
     
-    subject = lines[0]
+    subject = lines[0].lstrip('\ufeff')
     
     if not subject:
         errors.append('提交信息主题不能为空')
@@ -39,16 +40,15 @@ def validate_commit_message(msg):
     if len(subject) > MAX_SUBJECT_LENGTH:
         errors.append(f'主题长度超过{MAX_SUBJECT_LENGTH}字符（当前{len(subject)}字符）')
     
-    parts = subject.split(':')
-    if len(parts) >= 2:
-        commit_type = parts[0].strip()
-        description = ':'.join(parts[1:]).strip()
+    match = re.match(r'^([a-z]+)(?:\(([^()]+)\))?:\s+(.+)$', subject)
+    if match:
+        commit_type, _, description = match.groups()
         if commit_type not in VALID_TYPES:
             errors.append(f'提交类型"{commit_type}"不合法，必须是: {", ".join(sorted(VALID_TYPES))}')
         if not description:
             errors.append('提交信息缺少描述内容')
     else:
-        errors.append('提交信息格式不正确，应为: type: description')
+        errors.append('提交信息格式不正确，应为: type: description 或 type(scope): description')
     
     for i, line in enumerate(lines[1:], start=2):
         if line and len(line) > MAX_BODY_LINE_LENGTH:
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         for err in errors:
             safe_print(f'  - {err}')
         safe_print('\n格式要求:')
-        safe_print('  <type>: <subject>')
+        safe_print('  <type>: <subject> 或 <type>(scope): <subject>')
         safe_print('  <BLANK LINE>')
         safe_print('  <body>')
         safe_print(f'  type: {", ".join(sorted(VALID_TYPES))}')
