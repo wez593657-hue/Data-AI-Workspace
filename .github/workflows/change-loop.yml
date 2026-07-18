@@ -1,0 +1,15 @@
+name: Change Loop
+on:
+  pull_request:
+    branches: [master, develop]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.10' }
+      - run: pip install pandas openpyxl xlrd
+      - run: python scripts/validate_generated_files.py
+      - run: python scripts/validate_ods_dictionary.py
+      - run: python scripts/validate_tmp_tables.py --require-approved
