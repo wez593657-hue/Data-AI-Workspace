@@ -2,8 +2,11 @@
 
 import sys
 import os
+import subprocess
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = subprocess.run(
+    ['git', 'rev-parse', '--show-toplevel'], capture_output=True, encoding='utf-8', errors='replace', check=True
+).stdout.strip()
 sys.path.insert(0, os.path.join(BASE_DIR, 'scripts'))
 
 from utils import fix_windows_encoding, safe_print
