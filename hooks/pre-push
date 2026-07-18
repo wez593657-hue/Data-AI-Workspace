@@ -65,19 +65,19 @@ def main():
         has_script_changes = any(f.startswith('scripts/') for f in changed_files)
     
     if has_data_changes or has_script_changes:
-        safe_print("\n4. 执行数据资产校验...")
-        stdout, stderr, rc = run_command([sys.executable, 'scripts/validate_generated_files.py'])
+        safe_print("\n4. 执行工作区完整校验...")
+        stdout, stderr, rc = run_command([sys.executable, 'scripts/workspace_validation.py', 'full'])
         if rc != 0:
-            safe_print("   ✗ 数据资产校验失败")
+            safe_print("   ✗ 工作区校验失败")
+            if stdout:
+                safe_print(stdout[-1000:] if len(stdout) > 1000 else stdout)
             if stderr:
                 safe_print(f"   错误详情: {stderr}")
-            if stdout:
-                safe_print(f"   输出: {stdout[-500:] if len(stdout) > 500 else stdout}")
             safe_print("   ✗ 请修复校验错误后重新推送")
             sys.exit(1)
-        safe_print("   ✓ 数据资产校验通过")
+        safe_print("   ✓ 工作区校验通过")
     else:
-        safe_print("\n4. 无数据资产或脚本变更，跳过校验")
+        safe_print("\n4. 无数据资产或脚本变更，跳过完整校验")
     
     safe_print("\n" + "=" * 50)
     safe_print("  所有检查通过，可以推送!")

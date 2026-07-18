@@ -120,29 +120,21 @@ def run_doc_review(changed_files=None):
     safe_print("   ✓ 文档变更审核通过")
     return True
 
-def run_data_asset_check(quick_mode=False, changed_files=None):
-    safe_print("\n6. 执行数据资产校验...")
+def run_workspace_validation(quick_mode=False):
+    safe_print("\n6. 执行工作区完整校验...")
     
-    if changed_files:
-        has_data_changes = any(f.startswith('data_assets/') for f in changed_files)
-        has_script_changes = any(f.startswith('scripts/') for f in changed_files)
-        if quick_mode and not has_data_changes and not has_script_changes:
-            safe_print("   ✓ 无数据资产或脚本变更，跳过校验")
-            return True
-    
-    cmd = "python scripts/validate_generated_files.py"
-    if quick_mode:
-        cmd += " --quick"
-    if changed_files:
-        changed_str = ' '.join(f'"{f}"' for f in changed_files)
-        cmd += f" --changed {changed_str}"
-    
+    cmd = f"python scripts/workspace_validation.py {'quick' if quick_mode else 'full'}"
     stdout, stderr, rc = run_command(cmd)
+    
+    if stdout:
+        safe_print(stdout)
+    
     if rc != 0:
-        safe_print("   ✗ 数据资产校验失败")
+        safe_print("   ✗ 工作区校验失败")
         safe_print("   ✗ 请修复校验错误后重新提交")
+        safe_print("   ✗ 或运行: python scripts/ai_repair_loop.py 自动修复")
         return False
-    safe_print("   ✓ 数据资产校验通过")
+    safe_print("   ✓ 工作区校验通过")
     return True
 
 def main():
@@ -169,10 +161,10 @@ def main():
         sys.exit(1)
     
     if args.mode == 'full':
-        if not run_data_asset_check(False, changed_files):
+        if not run_workspace_validation(False):
             sys.exit(1)
     else:
-        if not run_data_asset_check(True, changed_files):
+        if not run_workspace_validation(True):
             sys.exit(1)
     
     safe_print("\n" + "=" * 70)
