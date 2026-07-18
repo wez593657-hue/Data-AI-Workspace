@@ -60,6 +60,7 @@ def main():
             elif src_hash != dst_hash:
                 print(f"  ✓ 更新成功: {hook_name}")
                 updated_count += 1
+                installed_count += 1
             else:
                 print(f"  ✓ 钩子已最新: {hook_name}")
                 installed_count += 1
