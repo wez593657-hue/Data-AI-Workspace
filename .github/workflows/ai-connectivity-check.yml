@@ -1,0 +1,40 @@
+name: AI Connectivity Check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      AI_API_KEY: ${{ sk-7c96525b973e82f9ada4135ea87fdc23666743ca61ed4474546c9011c5c1de38 }}
+      AI_BASE_URL: ${{ https://blackaicoding.com/v1 }}
+      AI_MODEL: ${{ gpt-5.6-luna }}
+
+    steps:
+      - name: Validate configuration
+        run: |
+          test -n "$AI_API_KEY"
+          test -n "$AI_BASE_URL"
+          test -n "$AI_MODEL"
+
+      - name: Call AI service
+        run: |
+          curl --fail --silent --show-error \
+            --request POST "${AI_BASE_URL%/}/chat/completions" \
+            --header "Authorization: Bearer $AI_API_KEY" \
+            --header "Content-Type: application/json" \
+            --data "{
+              \"model\": \"$AI_MODEL\",
+              \"messages\": [
+                {
+                  \"role\": \"user\",
+                  \"content\": \"Return exactly: {\\"status\\":\\"ok\\"}\"
+                }
+              ],
+              \"temperature\": 0
+            }" \
+            | jq -e '.choices[0].message.content'
