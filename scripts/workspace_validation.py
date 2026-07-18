@@ -166,14 +166,25 @@ def validate_git_consistency():
         return False
     
     untracked = [line for line in stdout.split('\n') if line.startswith('??')]
-    modified = [line for line in stdout.split('\n') if line.startswith(' M') or line.startswith('M ')]
-    staged = [line for line in stdout.split('\n') if line.startswith('A ') or line.startswith(' M') or line.startswith('M ') or line.startswith('D ')]
+    unstaged = [line for line in stdout.split('\n') if line.startswith(' M') or line.startswith('MM') or line.startswith('AM') or line.startswith(' D')]
     
     if untracked:
-        safe_print(f"  ⚠ 存在未跟踪文件: {len(untracked)} 个")
+        safe_print(f"  ✗ 存在未跟踪文件: {len(untracked)} 个")
+        for line in untracked[:5]:
+            safe_print(f"    - {line[3:]}")
+        if len(untracked) > 5:
+            safe_print(f"    ...还有{len(untracked) - 5}个文件")
+        safe_print("  ✗ 请使用 git add 添加或 .gitignore 忽略")
+        return False
     
-    if modified:
-        safe_print(f"  ⚠ 存在未暂存的修改: {len(modified)} 个")
+    if unstaged:
+        safe_print(f"  ✗ 存在未暂存的修改: {len(unstaged)} 个")
+        for line in unstaged[:5]:
+            safe_print(f"    - {line[3:]}")
+        if len(unstaged) > 5:
+            safe_print(f"    ...还有{len(unstaged) - 5}个文件")
+        safe_print("  ✗ 请使用 git add 添加所有变更文件")
+        return False
     
     safe_print("  ✓ Git一致性检查完成")
     return True

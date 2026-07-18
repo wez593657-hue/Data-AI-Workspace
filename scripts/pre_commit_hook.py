@@ -139,7 +139,7 @@ def run_workspace_validation(quick_mode=False):
 
 def main():
     parser = argparse.ArgumentParser(description='Git Pre-Commit Hook')
-    parser.add_argument('--mode', choices=['quick', 'full'], default='quick',
+    parser.add_argument('--mode', choices=['quick', 'full'], default='full',
                        help='校验模式: quick(快速)或full(完整)')
     args = parser.parse_args()
     
