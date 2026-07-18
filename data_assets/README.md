@@ -69,10 +69,17 @@ data_assets/
 
 ### Mapping 文件
 
+支持两种命名方式：
+
+**中文汇总命名**（适用于包含多个表映射的文档）：
+- `ods到dwd映射.md`
+- `dwd到dws映射.md`
+- `dws到ads映射.md`
+
+**英文单表命名**（适用于单表映射文档）：
 ```
 {来源层级}_{目标层级}_{业务域}_{表名}_mapping.md
 ```
-
 示例:
 - `ods_to_dwd_sap_customer_mapping.md`
 - `dwd_to_dws_crm_customer_mapping.md`

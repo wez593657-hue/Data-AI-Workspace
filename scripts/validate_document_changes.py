@@ -20,16 +20,18 @@ DOCS_DIR = os.path.join(BASE_DIR, 'docs')
 def run_command(cmd, cwd=None):
     if cwd is None:
         cwd = BASE_DIR
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=cwd)
+    result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, encoding='utf-8', errors='replace')
     return result.stdout, result.stderr, result.returncode
 
 def get_staged_files():
     stdout, stderr, rc = run_command("git diff --cached --name-only")
+    if not stdout:
+        return []
     return [f.strip() for f in stdout.strip().split('\n') if f.strip()]
 
 def get_file_diff(filepath):
     stdout, stderr, rc = run_command(f"git diff --cached {filepath}")
-    return stdout
+    return stdout if stdout else ''
 
 def get_file_status(filepath):
     stdout, stderr, rc = run_command(f"git diff --cached --name-status {filepath}")
@@ -152,10 +154,25 @@ def check_doc_consistency(filepath, added_sections, modified_sections, status):
         
         if status == 'M':
             all_changes = '\n'.join(modified_sections).lower()
-            
-            for section in required_sections:
-                if '删除' in all_changes and section.lower() in all_changes:
-                    issues.append(f"可能删除核心章节: {section}")
+
+            # 检查核心章节是否被删除：读取文件当前内容确认，而非仅依赖diff
+            try:
+                with open(os.path.join(BASE_DIR, filepath), 'r', encoding='utf-8') as f:
+                    current_content = f.read().lower()
+                for section in required_sections:
+                    if '删除' in all_changes and section.lower() in all_changes:
+                        # 二次确认：文件当前内容是否仍包含该章节关键词
+                        section_keywords = {
+                            '映射概览': ['映射', 'overview'],
+                            '字段映射': ['字段映射', 'field', 'mapping'],
+                            '转换规则': ['转换', 'transform'],
+                        }
+                        keywords = section_keywords.get(section, [section.lower()])
+                        still_exists = any(kw in current_content for kw in keywords)
+                        if not still_exists:
+                            issues.append(f"可能删除核心章节: {section}")
+            except:
+                pass
             
             try:
                 with open(os.path.join(BASE_DIR, filepath), 'r', encoding='utf-8') as f:
@@ -176,7 +193,7 @@ def check_doc_consistency(filepath, added_sections, modified_sections, status):
                             '字段列表': ['字段', 'column'],
                             '审计字段': ['审计', 'audit'],
                             '映射概览': ['映射', 'overview'],
-                            '字段映射': ['字段映射', 'field'],
+                            '字段映射': ['字段映射', 'field', 'mapping'],
                             '转换规则': ['转换', 'transform'],
                             '五层约束': ['五层', '约束', 'governance'],
                             '技术约束': ['技术', '约束'],

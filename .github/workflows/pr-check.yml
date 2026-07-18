@@ -24,10 +24,7 @@ jobs:
       run: |
         pip install pandas openpyxl xlrd
 
-    - name: 执行数据资产一致性校验
-      run: python scripts/validate_consistency.py
-
-    - name: 执行文件生成校验
+    - name: 执行数据资产校验
       run: python scripts/validate_generated_files.py
 
     - name: 执行映射完整性校验

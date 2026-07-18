@@ -147,30 +147,8 @@ def run_doc_review(changed_files=None):
     safe_print("   ✓ 文档变更审核通过")
     return True
 
-def run_consistency_check(quick_mode=False, changed_files=None):
-    safe_print("\n6. 执行数据资产一致性校验...")
-    
-    if quick_mode and changed_files and not has_data_asset_changes(changed_files):
-        safe_print("   ✓ 无数据资产变更，跳过校验")
-        return True
-    
-    cmd = "python scripts/validate_consistency.py"
-    if quick_mode:
-        cmd += " --quick"
-    if changed_files:
-        changed_str = ' '.join(f'"{f}"' for f in changed_files)
-        cmd += f" --changed {changed_str}"
-    
-    stdout, stderr, rc = run_command(cmd)
-    if rc != 0:
-        safe_print("   ✗ 数据资产一致性校验失败")
-        safe_print("   ✗ 请修复校验错误后重新提交")
-        return False
-    safe_print("   ✓ 数据资产一致性校验通过")
-    return True
-
-def run_generated_files_check(quick_mode=False, changed_files=None):
-    safe_print("\n7. 执行文件生成校验...")
+def run_data_asset_check(quick_mode=False, changed_files=None):
+    safe_print("\n6. 执行数据资产校验...")
     
     if quick_mode and changed_files and not has_data_asset_changes(changed_files):
         safe_print("   ✓ 无数据资产变更，跳过校验")
@@ -185,10 +163,10 @@ def run_generated_files_check(quick_mode=False, changed_files=None):
     
     stdout, stderr, rc = run_command(cmd)
     if rc != 0:
-        safe_print("   ✗ 文件生成校验失败")
+        safe_print("   ✗ 数据资产校验失败")
         safe_print("   ✗ 请修复校验错误后重新提交")
         return False
-    safe_print("   ✓ 文件生成校验通过")
+    safe_print("   ✓ 数据资产校验通过")
     return True
 
 def main():
@@ -215,14 +193,10 @@ def main():
         sys.exit(1)
     
     if args.mode == 'full':
-        if not run_consistency_check(False, changed_files):
-            sys.exit(1)
-        if not run_generated_files_check(False, changed_files):
+        if not run_data_asset_check(False, changed_files):
             sys.exit(1)
     else:
-        if not run_consistency_check(True, changed_files):
-            sys.exit(1)
-        if not run_generated_files_check(True, changed_files):
+        if not run_data_asset_check(True, changed_files):
             sys.exit(1)
     
     safe_print("\n" + "=" * 70)

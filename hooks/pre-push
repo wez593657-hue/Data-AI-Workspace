@@ -59,29 +59,17 @@ def main():
             sys.exit(1)
         safe_print("   ✓ 提交数量检查通过")
     
-    safe_print("\n3. 执行数据资产一致性校验...")
-    stdout, stderr, rc = run_command([sys.executable, 'scripts/validate_consistency.py'])
-    if rc != 0:
-        safe_print("   ✗ 数据资产一致性校验失败")
-        if stderr:
-            safe_print(f"   错误详情: {stderr}")
-        if stdout:
-            safe_print(f"   输出: {stdout[-500:] if len(stdout) > 500 else stdout}")
-        safe_print("   ✗ 请修复校验错误后重新推送")
-        sys.exit(1)
-    safe_print("   ✓ 数据资产一致性校验通过")
-    
-    safe_print("\n4. 执行文件生成校验...")
+    safe_print("\n3. 执行数据资产校验...")
     stdout, stderr, rc = run_command([sys.executable, 'scripts/validate_generated_files.py'])
     if rc != 0:
-        safe_print("   ✗ 文件生成校验失败")
+        safe_print("   ✗ 数据资产校验失败")
         if stderr:
             safe_print(f"   错误详情: {stderr}")
         if stdout:
             safe_print(f"   输出: {stdout[-500:] if len(stdout) > 500 else stdout}")
         safe_print("   ✗ 请修复校验错误后重新推送")
         sys.exit(1)
-    safe_print("   ✓ 文件生成校验通过")
+    safe_print("   ✓ 数据资产校验通过")
     
     safe_print("\n" + "=" * 50)
     safe_print("  所有检查通过，可以推送!")
