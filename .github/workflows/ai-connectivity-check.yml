@@ -27,7 +27,7 @@ jobs:
 
       - name: Call AI service
         run: |
-          curl --fail --silent --show-error \
+          curl --fail-with-body --show-error \
             --request POST "${AI_BASE_URL%/}/chat/completions" \
             --header "Authorization: Bearer $AI_API_KEY" \
             --header "Content-Type: application/json" \
@@ -38,7 +38,6 @@ jobs:
                   \"role\": \"user\",
                   \"content\": \"Return exactly: {\\"status\\":\\"ok\\"}\"
                 }
-              ],
-              \"temperature\": 0
+              ]
             }" \
             | jq -e '.choices[0].message.content'
