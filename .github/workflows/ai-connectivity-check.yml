@@ -31,7 +31,7 @@ jobs:
             --arg model "$AI_MODEL" \
             '{model: $model, messages: [{role: "user", content: "Return exactly: OK"}]}')
           status=$(curl --silent --show-error \
-            --request POST "$AI_BASE_URL/chat/completions"
+            --request POST "$AI_BASE_URL/chat/completions" \\
             --header "Authorization: Bearer $AI_API_KEY" \
             --header "Content-Type: application/json" \
             --output "$response_file" \
