@@ -5,22 +5,11 @@ import sys
 import os
 import argparse
 
-# 修复 Windows GBK 控制台 Unicode 编码问题
-import sys as _sys
-if hasattr(_sys.stdout, 'reconfigure'):
-    _sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-if hasattr(_sys.stderr, 'reconfigure'):
-    _sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+from utils import fix_windows_encoding, safe_print, run_command, get_staged_files, is_in_whitelist
+
+fix_windows_encoding()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-def safe_print(*args, **kwargs):
-    try:
-        print(*args, **kwargs)
-    except UnicodeEncodeError:
-        text = ' '.join(str(arg) for arg in args)
-        text = text.replace('✓', '[OK]').replace('✗', '[FAIL]').replace('⚠', '[WARN]')
-        print(text)
 
 WHITELIST_PATTERNS = [
     'docs/',
@@ -39,18 +28,6 @@ DOC_REVIEW_PATTERNS = [
     'CONTRIBUTING.md'
 ]
 
-def run_command(cmd, cwd=None):
-    if cwd is None:
-        cwd = BASE_DIR
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=cwd)
-    return result.stdout, result.stderr, result.returncode
-
-def is_in_whitelist(filepath):
-    for pattern in WHITELIST_PATTERNS:
-        if filepath.startswith(pattern) or filepath == pattern.rstrip('/'):
-            return True
-    return False
-
 def is_doc_file(filepath):
     for pattern in DOC_REVIEW_PATTERNS:
         if filepath.startswith(pattern) or filepath == pattern.rstrip('/'):
@@ -59,10 +36,6 @@ def is_doc_file(filepath):
 
 def get_changed_files():
     return get_staged_files()
-
-def get_staged_files():
-    stdout, stderr, rc = run_command("git diff --cached --name-only")
-    return [f.strip() for f in stdout.strip().split('\n') if f.strip()]
 
 def has_data_asset_changes(files):
     data_asset_paths = [
@@ -150,9 +123,12 @@ def run_doc_review(changed_files=None):
 def run_data_asset_check(quick_mode=False, changed_files=None):
     safe_print("\n6. 执行数据资产校验...")
     
-    if quick_mode and changed_files and not has_data_asset_changes(changed_files):
-        safe_print("   ✓ 无数据资产变更，跳过校验")
-        return True
+    if changed_files:
+        has_data_changes = any(f.startswith('data_assets/') for f in changed_files)
+        has_script_changes = any(f.startswith('scripts/') for f in changed_files)
+        if quick_mode and not has_data_changes and not has_script_changes:
+            safe_print("   ✓ 无数据资产或脚本变更，跳过校验")
+            return True
     
     cmd = "python scripts/validate_generated_files.py"
     if quick_mode:

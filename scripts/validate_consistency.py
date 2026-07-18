@@ -6,12 +6,9 @@ import sys
 import re
 import argparse
 
-# 修复 Windows GBK 控制台 Unicode 编码问题
-import sys as _sys
-if hasattr(_sys.stdout, 'reconfigure'):
-    _sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-if hasattr(_sys.stderr, 'reconfigure'):
-    _sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+from utils import fix_windows_encoding, get_changed_files
+
+fix_windows_encoding()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DDL_DIR = os.path.join(BASE_DIR, 'data_assets', 'ddl')
@@ -19,25 +16,6 @@ DATA_DICT_DIR = os.path.join(BASE_DIR, 'data_assets', 'data_dictionary')
 MAPPING_DIR = os.path.join(BASE_DIR, 'data_assets', 'mapping')
 
 WHITELIST_DIRS = ['docs/', 'README.md', '.git/', '.github/', 'scripts/', '.vscode/']
-
-def get_changed_files():
-    try:
-        import subprocess
-        result = subprocess.run(['git', 'diff', '--cached', '--name-only'], 
-                              capture_output=True, text=True, cwd=BASE_DIR)
-        changed = [f.strip() for f in result.stdout.strip().split('\n') if f.strip()]
-        result2 = subprocess.run(['git', 'diff', '--name-only'], 
-                               capture_output=True, text=True, cwd=BASE_DIR)
-        changed += [f.strip() for f in result2.stdout.strip().split('\n') if f.strip()]
-        return list(set(changed))
-    except:
-        return []
-
-def is_in_whitelist(filepath):
-    for pattern in WHITELIST_DIRS:
-        if filepath.startswith(pattern) or filepath == pattern.rstrip('/'):
-            return True
-    return False
 
 def validate_ddl_structure(changed_files=None, quick_mode=False):
     print("=" * 80)

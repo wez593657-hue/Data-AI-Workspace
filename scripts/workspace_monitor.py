@@ -4,16 +4,9 @@ import subprocess
 import sys
 import os
 
-# 修复 Windows GBK 控制台 Unicode 编码问题
-import sys as _sys
-if hasattr(_sys.stdout, 'reconfigure'):
-    _sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-if hasattr(_sys.stderr, 'reconfigure'):
-    _sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+from utils import fix_windows_encoding, run_command
 
-def run_command(cmd):
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-    return result.stdout.strip(), result.stderr.strip(), result.returncode
+fix_windows_encoding()
 
 def check_workspace():
     print("=" * 70)

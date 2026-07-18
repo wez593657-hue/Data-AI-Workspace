@@ -4,26 +4,16 @@
 import subprocess
 import sys
 import os
-import re
 
 BASE_DIR = subprocess.run(
-    ['git', 'rev-parse', '--show-toplevel'], capture_output=True, text=True, check=True
+    ['git', 'rev-parse', '--show-toplevel'], capture_output=True, encoding='utf-8', errors='replace', check=True
 ).stdout.strip()
 
-def safe_print(*args, **kwargs):
-    """安全打印函数，处理Windows GBK编码问题"""
-    try:
-        print(*args, **kwargs)
-    except UnicodeEncodeError:
-        text = ' '.join(str(arg) for arg in args)
-        text = text.replace('✓', '[OK]').replace('✗', '[FAIL]').replace('⚠', '[WARN]')
-        print(text, **kwargs)
+sys.path.insert(0, os.path.join(BASE_DIR, 'scripts'))
 
-def run_command(cmd, cwd=None):
-    if cwd is None:
-        cwd = BASE_DIR
-    result = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
-    return result.stdout, result.stderr, result.returncode
+from utils import fix_windows_encoding, safe_print, run_command
+
+fix_windows_encoding()
 
 def main():
     safe_print("=" * 50)
@@ -59,17 +49,35 @@ def main():
             sys.exit(1)
         safe_print("   ✓ 提交数量检查通过")
     
-    safe_print("\n3. 执行数据资产校验...")
-    stdout, stderr, rc = run_command([sys.executable, 'scripts/validate_generated_files.py'])
+    safe_print("\n3. 检测待推送的变更文件...")
+    stdout, stderr, rc = run_command(['git', 'diff', '--name-only', f'origin/{current_branch}...HEAD'])
     if rc != 0:
-        safe_print("   ✗ 数据资产校验失败")
-        if stderr:
-            safe_print(f"   错误详情: {stderr}")
-        if stdout:
-            safe_print(f"   输出: {stdout[-500:] if len(stdout) > 500 else stdout}")
-        safe_print("   ✗ 请修复校验错误后重新推送")
-        sys.exit(1)
-    safe_print("   ✓ 数据资产校验通过")
+        safe_print("   ⚠ 无法检测远程分支变更，跳过变更检测")
+        has_data_changes = True
+        has_script_changes = True
+    else:
+        changed_files = [f.strip() for f in stdout.strip().split('\n') if f.strip()]
+        
+        if changed_files:
+            safe_print(f"   待推送变更文件: {len(changed_files)} 个")
+        
+        has_data_changes = any(f.startswith('data_assets/') for f in changed_files)
+        has_script_changes = any(f.startswith('scripts/') for f in changed_files)
+    
+    if has_data_changes or has_script_changes:
+        safe_print("\n4. 执行数据资产校验...")
+        stdout, stderr, rc = run_command([sys.executable, 'scripts/validate_generated_files.py'])
+        if rc != 0:
+            safe_print("   ✗ 数据资产校验失败")
+            if stderr:
+                safe_print(f"   错误详情: {stderr}")
+            if stdout:
+                safe_print(f"   输出: {stdout[-500:] if len(stdout) > 500 else stdout}")
+            safe_print("   ✗ 请修复校验错误后重新推送")
+            sys.exit(1)
+        safe_print("   ✓ 数据资产校验通过")
+    else:
+        safe_print("\n4. 无数据资产或脚本变更，跳过校验")
     
     safe_print("\n" + "=" * 50)
     safe_print("  所有检查通过，可以推送!")

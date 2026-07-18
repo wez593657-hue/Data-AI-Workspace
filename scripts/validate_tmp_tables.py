@@ -7,12 +7,9 @@ import re
 import sys
 from pathlib import Path
 
-# 修复 Windows GBK 控制台 Unicode 编码问题
-import sys as _sys
-if hasattr(_sys.stdout, 'reconfigure'):
-    _sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-if hasattr(_sys.stderr, 'reconfigure'):
-    _sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+from utils import fix_windows_encoding
+
+fix_windows_encoding()
 
 ROOT = Path(__file__).resolve().parents[1]
 PROCEDURE_DIR = ROOT / 'data_assets' / 'stored_procedure'
