@@ -30,13 +30,7 @@ jobs:
           payload=$(jq -n \
             --arg model "$AI_MODEL" \
             '{model: $model, messages: [{role: "user", content: "Return exactly: OK"}]}')
-          status=$(curl --silent --show-error \
-            --request POST "$AI_BASE_URL/chat/completions" \
-            --header "Authorization: Bearer $AI_API_KEY" \
-            --header "Content-Type: application/json" \
-            --output "$response_file" \
-            --write-out "%{http_code}" \
-            --data "$payload")
+          status=$(curl --silent --show-error --request POST --url "$AI_BASE_URL/chat/completions" --header "Authorization: Bearer $AI_API_KEY" --header "Content-Type: application/json" --output "$response_file" --write-out "%{http_code}" --data "$payload")
           echo "HTTP status: $status"
           cat "$response_file"
           test "$status" -ge 200
