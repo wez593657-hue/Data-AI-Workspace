@@ -192,31 +192,29 @@ BEGIN
       V_LOG_BUTTON
   );
 
-  -- 3.4 TMP4: 临时表段 - 获取客户历史购买偏好
+  -- 3.4 TMP4: 临时表段 - 获取客户产品大类购买偏好排名
   V_NO_ID := 'TMP4';
   V_BGN_DATE := NOW();
 
-  DROP TABLE IF EXISTS tmp_cust_hist_pref;
-  CREATE TEMP TABLE tmp_cust_hist_pref AS
+  DROP TABLE IF EXISTS tmp_cust_cate_pref;
+  CREATE TEMP TABLE tmp_cust_cate_pref AS
   SELECT 
       f.cust_id,                              -- 客户编号
       f.prdkt_cate_big,                       -- 产品大类
-      f.issu_org,                             -- 发行机构
       COUNT(*) AS purchase_cnt,               -- 购买次数
-      ROW_NUMBER() OVER (PARTITION BY f.cust_id ORDER BY COUNT(*) DESC) AS cate_rank,
-      ROW_NUMBER() OVER (PARTITION BY f.cust_id ORDER BY COUNT(*) DESC) AS org_rank
+      ROW_NUMBER() OVER (PARTITION BY f.cust_id ORDER BY COUNT(*) DESC) AS cate_rank
   FROM dwd_acct_fin f                         -- DWD层理财账户信息表
   WHERE f.issu_date IS NOT NULL AND f.issu_date != ''
     AND TO_DATE(f.issu_date, 'YYYY-MM-DD') >= TO_DATE(V_SYSDAT, 'YYYYMMDD') - INTERVAL '365 days'
     AND f.acct_state = '有效'
-  GROUP BY f.cust_id, f.prdkt_cate_big, f.issu_org;
+  GROUP BY f.cust_id, f.prdkt_cate_big;
 
   COMMIT;
 
   V_END_DATE := NOW();
   V_DURA_DATE := EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER;
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP4 临时表处理完成，客户历史购买偏好数: ' || (SELECT COUNT(DISTINCT cust_id) FROM tmp_cust_hist_pref);
+  V_LOG_MSG := 'TMP4 临时表处理完成，客户产品大类偏好数: ' || (SELECT COUNT(DISTINCT cust_id) FROM tmp_cust_cate_pref);
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(
@@ -232,8 +230,46 @@ BEGIN
       V_LOG_BUTTON
   );
 
-  -- 3.5 TMP5: 临时表段 - 获取同类产品收益排名（用于收益吸引力评分）
+  -- 3.5 TMP5: 临时表段 - 获取客户发行机构购买偏好排名
   V_NO_ID := 'TMP5';
+  V_BGN_DATE := NOW();
+
+  DROP TABLE IF EXISTS tmp_cust_org_pref;
+  CREATE TEMP TABLE tmp_cust_org_pref AS
+  SELECT 
+      f.cust_id,                              -- 客户编号
+      f.issu_org,                             -- 发行机构
+      COUNT(*) AS purchase_cnt,               -- 购买次数
+      ROW_NUMBER() OVER (PARTITION BY f.cust_id ORDER BY COUNT(*) DESC) AS org_rank
+  FROM dwd_acct_fin f                         -- DWD层理财账户信息表
+  WHERE f.issu_date IS NOT NULL AND f.issu_date != ''
+    AND TO_DATE(f.issu_date, 'YYYY-MM-DD') >= TO_DATE(V_SYSDAT, 'YYYYMMDD') - INTERVAL '365 days'
+    AND f.acct_state = '有效'
+  GROUP BY f.cust_id, f.issu_org;
+
+  COMMIT;
+
+  V_END_DATE := NOW();
+  V_DURA_DATE := EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER;
+  OUTCDE := 0;
+  V_LOG_MSG := 'TMP5 临时表处理完成，客户发行机构偏好数: ' || (SELECT COUNT(DISTINCT cust_id) FROM tmp_cust_org_pref);
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT,
+      V_PRC_NAME,
+      V_PRC_DESC,
+      V_NO_ID,
+      V_BGN_DATE,
+      V_END_DATE,
+      V_DURA_DATE,
+      V_LOG_MSG,
+      V_LOG_FLG,
+      V_LOG_BUTTON
+  );
+
+  -- 3.6 TMP6: 临时表段 - 获取同类产品收益排名（用于收益吸引力评分）
+  V_NO_ID := 'TMP6';
   V_BGN_DATE := NOW();
 
   DROP TABLE IF EXISTS tmp_prdkt_return_rank;
@@ -243,7 +279,13 @@ BEGIN
       p.prdkt_cate_big,                        -- 产品大类
       p.risk_lvl,                              -- 产品风险等级
       p.prdkt_rate,                            -- 产品收益率
-      PERCENT_RANK() OVER (PARTITION BY p.prdkt_cate_big, p.risk_lvl ORDER BY p.prdkt_rate DESC) AS return_percent_rank
+      PERCENT_RANK() OVER (PARTITION BY p.prdkt_cate_big, p.risk_lvl ORDER BY p.prdkt_rate DESC) AS return_percent_rank,
+      CASE 
+          WHEN PERCENT_RANK() OVER (PARTITION BY p.prdkt_cate_big, p.risk_lvl ORDER BY p.prdkt_rate DESC) <= 0.2 THEN 35
+          WHEN PERCENT_RANK() OVER (PARTITION BY p.prdkt_cate_big, p.risk_lvl ORDER BY p.prdkt_rate DESC) <= 0.5 THEN 25
+          WHEN PERCENT_RANK() OVER (PARTITION BY p.prdkt_cate_big, p.risk_lvl ORDER BY p.prdkt_rate DESC) <= 0.8 THEN 15
+          ELSE 5
+      END AS return_score                      -- 收益吸引力得分(0-35)
   FROM tmp_prdkt_pool p;                       -- 在售产品池
 
   COMMIT;
@@ -251,7 +293,7 @@ BEGIN
   V_END_DATE := NOW();
   V_DURA_DATE := EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER;
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP5 临时表处理完成，产品收益排名数: ' || (SELECT COUNT(*) FROM tmp_prdkt_return_rank);
+  V_LOG_MSG := 'TMP6 临时表处理完成，产品收益排名数: ' || (SELECT COUNT(*) FROM tmp_prdkt_return_rank);
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(
@@ -267,8 +309,8 @@ BEGIN
       V_LOG_BUTTON
   );
 
-  -- 3.6 TMP6: 临时表段 - 客户基本信息
-  V_NO_ID := 'TMP6';
+  -- 3.7 TMP7: 临时表段 - 客户基本信息
+  V_NO_ID := 'TMP7';
   V_BGN_DATE := NOW();
 
   DROP TABLE IF EXISTS tmp_cust_info;
@@ -374,11 +416,12 @@ BEGIN
           rc.risk_comfort_score,
           h.hist_pref_score,
           r.return_score + d.duration_score + rc.risk_comfort_score + h.hist_pref_score AS total_score,
-          CASE 
-              WHEN rc.risk_comfort_score > 0 THEN '风险等级符合客户风险承受能力，' ELSE '' END ||
-              WHEN d.duration_score >= 20 THEN '期限与客户目标期限较为匹配，' ELSE '' END ||
-              WHEN r.return_score >= 25 THEN '在同类产品中收益表现较优，' ELSE '' END ||
-              WHEN h.hist_pref_score > 0 THEN '且与客户过往购买偏好较为一致' ELSE '' END AS rcmd_reason,
+          CONCAT(
+              CASE WHEN rc.risk_comfort_score > 0 THEN '风险等级符合客户风险承受能力，' ELSE '' END,
+              CASE WHEN d.duration_score >= 20 THEN '期限与客户目标期限较为匹配，' ELSE '' END,
+              CASE WHEN r.return_score >= 25 THEN '在同类产品中收益表现较优，' ELSE '' END,
+              CASE WHEN h.hist_pref_score > 0 THEN '且与客户过往购买偏好较为一致' ELSE '' END
+          ) AS rcmd_reason,
           ROW_NUMBER() OVER (PARTITION BY e.cust_id ORDER BY 
               (r.return_score + d.duration_score + rc.risk_comfort_score + h.hist_pref_score) DESC,
               d.duration_score DESC,
@@ -429,12 +472,12 @@ BEGIN
           CROSS JOIN tmp_prdkt_pool p
           LEFT JOIN (
               SELECT cust_id, prdkt_cate_big, 8 AS score
-              FROM tmp_cust_hist_pref
+              FROM tmp_cust_cate_pref
               WHERE cate_rank = 1
           ) d1 ON e.cust_id = d1.cust_id AND p.prdkt_cate_big = d1.prdkt_cate_big
           LEFT JOIN (
               SELECT cust_id, issu_org, 4 AS score
-              FROM tmp_cust_hist_pref
+              FROM tmp_cust_org_pref
               WHERE org_rank = 1
           ) d2 ON e.cust_id = d2.cust_id AND p.issu_org = d2.issu_org
           LEFT JOIN (
