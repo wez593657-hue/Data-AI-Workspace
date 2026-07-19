@@ -54,3 +54,7 @@ temp/
 
 # Temporary SQL files
 CREATE_TMP_*.sql
+
+# Word documents
+*.docx
+*.doc
