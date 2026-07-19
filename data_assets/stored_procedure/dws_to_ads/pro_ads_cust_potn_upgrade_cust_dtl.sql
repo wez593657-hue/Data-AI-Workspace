@@ -193,7 +193,41 @@ BEGIN
       V_LOG_BUTTON
   );
 
-  -- 3.4 目标表写入 - 潜力提升客户明细
+  -- 3.4 TMP4: 临时表段 - T-1日时点余额（用于时点达标判断）
+  V_NO_ID := 'TMP4';
+  V_BGN_DATE := NOW();
+
+  DROP TABLE IF EXISTS tmp_pnt_bal;
+  CREATE TEMP TABLE tmp_pnt_bal AS
+  SELECT 
+      a.cust_id,                              -- 客户编号
+      a.aum_bal AS pnt_aum_bal                -- T-1日时点AUM余额
+  FROM dws_cust_asse_liab a                  -- DWS层客户资产负债表(T-1日时点余额)
+  WHERE a.data_date = TO_CHAR(TO_DATE(V_SYSDAT, 'YYYYMMDD') - INTERVAL '1 day', 'YYYYMMDD')
+    AND a.bal_type = '1';                    -- 余额类型：1表示时点余额
+
+  COMMIT;
+
+  V_END_DATE := NOW();
+  V_DURA_DATE := EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER;
+  OUTCDE := 0;
+  V_LOG_MSG := 'TMP4 临时表处理完成，T-1日时点余额数据数: ' || (SELECT COUNT(*) FROM tmp_pnt_bal);
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT,
+      V_PRC_NAME,
+      V_PRC_DESC,
+      V_NO_ID,
+      V_BGN_DATE,
+      V_END_DATE,
+      V_DURA_DATE,
+      V_LOG_MSG,
+      V_LOG_FLG,
+      V_LOG_BUTTON
+  );
+
+  -- 3.5 目标表写入 - 潜力提升客户明细
   V_NO_ID := '2';
   V_BGN_DATE := NOW();
 
@@ -207,7 +241,8 @@ BEGIN
       fixd_depo_bal,       -- 定期存款余额
       fin_amt,             -- 金融资产余额
       cntct_state,         -- 接触状态
-      qual_state,          -- 达标状态
+      mth_avg_qual_state,  -- 月均达标状态
+      pnt_qual_state,      -- 时点达标状态
       post_id,             -- 主办客户经理职位编号
       org_id               -- 归属机构
   )
@@ -228,7 +263,15 @@ BEGIN
           WHEN t.lvl_crit = '8' AND t.aum_bal >= 1000000 THEN '1'
           WHEN t.lvl_crit = '9' AND t.aum_bal >= 3000000 THEN '1'
           ELSE '0'
-      END AS qual_state,                            -- 达标状态：0未达标/1已达标
+      END AS mth_avg_qual_state,                   -- 月均达标状态：0未达标/1已达标（月日均AUM达标）
+      CASE 
+          WHEN t.lvl_crit = '3' AND COALESCE(p.pnt_aum_bal, 0) >= 50000 THEN '1'
+          WHEN t.lvl_crit = '6' AND COALESCE(p.pnt_aum_bal, 0) >= 300000 THEN '1'
+          WHEN t.lvl_crit = '7' AND COALESCE(p.pnt_aum_bal, 0) >= 500000 THEN '1'
+          WHEN t.lvl_crit = '8' AND COALESCE(p.pnt_aum_bal, 0) >= 1000000 THEN '1'
+          WHEN t.lvl_crit = '9' AND COALESCE(p.pnt_aum_bal, 0) >= 3000000 THEN '1'
+          ELSE '0'
+      END AS pnt_qual_state,                       -- 时点达标状态：0未达标/1已达标（T-1日时点AUM达标）
       COALESCE(i.post_id, '') AS post_id,
       COALESCE(i.org_id, '') AS org_id
   FROM tmp_potn_upgrade_cust t                    -- 临时表：潜力提升客户
@@ -236,6 +279,8 @@ BEGIN
       ON t.cust_id = c.cust_id
   LEFT JOIN tmp_cust_info i                       -- 临时表：客户基本信息
       ON t.cust_id = i.cust_id
+  LEFT JOIN tmp_pnt_bal p                         -- 临时表：T-1日时点余额
+      ON t.cust_id = p.cust_id
   WHERE t.lvl_crit IS NOT NULL;                   -- 只保留有临界等级的客户
 
   COMMIT;

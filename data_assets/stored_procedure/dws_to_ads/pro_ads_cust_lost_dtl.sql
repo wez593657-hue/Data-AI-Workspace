@@ -105,6 +105,7 @@ BEGIN
       prev_bal.aum_bal AS prev_end_bal,          -- 上月末余额
       prev_prev.aum_bal AS prev_prev_aum_bal,    -- 上上月月日均AUM
       prev_prev.cust_lvl AS prev_prev_lvl,       -- 上上月客户等级
+      curr_pnt.aum_bal AS curr_pnt_aum_bal       -- T-1日时点AUM余额（用于挽回判断）
       CASE 
           WHEN prev.cust_lvl IN ('03','04','05','07','09') 
                AND prev.aum_bal >= CASE prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END 
@@ -173,7 +174,15 @@ BEGIN
            AND prev_prev.aum_bal >= CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END
            AND COALESCE(prev.aum_bal, 0) < CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END
            AND COALESCE(prev_end_bal, 0) < CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END)
-        );
+        )
+  LEFT JOIN (
+      SELECT 
+          a.cust_id,
+          a.aum_bal
+      FROM dws_cust_asse_liab a                -- DWS层客户资产负债表(T-1日时点余额)
+      WHERE a.data_date = TO_CHAR(TO_DATE(V_SYSDAT, 'YYYYMMDD') - INTERVAL '1 day', 'YYYYMMDD')
+        AND a.bal_type = '1'                   -- 余额类型：1表示时点余额
+  ) curr_pnt ON curr.cust_id = curr_pnt.cust_id;
 
   COMMIT;
 
@@ -277,7 +286,7 @@ BEGIN
       t.cust_id,
       '1' AS rescue_state
   FROM tmp_lost_cust t
-  WHERE t.aum_bal >= CASE WHEN t.lvl_churn = '1' THEN 
+  WHERE COALESCE(t.curr_pnt_aum_bal, 0) >= CASE WHEN t.lvl_churn = '1' THEN 
                          CASE t.prev_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END
                        ELSE
                          CASE t.prev_prev_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END
@@ -313,14 +322,15 @@ BEGIN
       cust_id,             -- 客户编号
       cust_name,           -- 客户名称
       cust_lvl,            -- 客户等级
-      lvl_churn,           -- 流失等级：01轻度流失，02重度流失
+      lvl_churn,           -- 流失等级：1轻度流失，2重度流失
       depo_curnt_depo_bal, -- 活期余额
       fixd_depo_bal,       -- 定期余额
       fin_amt,             -- 理财余额
       cntct_state,         -- 接触状态：0未接触/1已接触
       rescue_state,        -- 挽回状态：0未挽回/1已挽回
       post_id,             -- 管户经理
-      org_id               -- 归属机构
+      org_id,              -- 归属机构
+      pnt_aum_bal          -- T-1日时点AUM余额（用于计算已挽回金融资产）
   )
   SELECT 
       V_SYSDAT AS data_date,
@@ -334,7 +344,8 @@ BEGIN
       COALESCE(c.cntct_state, '0') AS cntct_state,
       COALESCE(r.rescue_state, '0') AS rescue_state,
       COALESCE(i.post_id, '') AS post_id,
-      COALESCE(i.org_id, '') AS org_id
+      COALESCE(i.org_id, '') AS org_id,
+      COALESCE(t.curr_pnt_aum_bal, 0) AS pnt_aum_bal
   FROM tmp_lost_cust t                        -- 临时表：流失客户
   LEFT JOIN tmp_cust_contact c                -- 临时表：已接触客户
       ON t.cust_id = c.cust_id

@@ -22,7 +22,8 @@
 | FIXD_DEPO_BAL | 定期余额 | NUMBER(20,2) | - | - | - | - | - | - | - |
 | FIN_AMT | 理财余额 | NUMBER(20,2) | - | - | - | - | - | - | - |
 | CNTCT_STATE | 接触状态 | VARCHAR(1) | - | - | - | - | - | - | - |
-| QUAL_STATE | 达标状态 | VARCHAR(1) | - | - | - | - | - | - | - |
+| MTH_AVG_QUAL_STATE | 月均达标状态 | VARCHAR(1) | - | - | - | - | - | - | - |
+| PNT_QUAL_STATE | 时点达标状态 | VARCHAR(1) | - | - | - | - | - | - | - |
 | POST_ID | 管户经理 | VARCHAR(20) | - | - | - | - | - | - | - |
 | ORG_ID | 归属机构 | VARCHAR(6) | - | - | - | - | - | - | - |
 

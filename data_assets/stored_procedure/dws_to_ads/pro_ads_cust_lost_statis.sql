@@ -99,7 +99,7 @@ BEGIN
       ROUND(CASE WHEN COUNT(*) > 0 THEN SUM(CASE WHEN d.cntct_state = '1' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) ELSE 0 END * 100, 2) AS cntct_rate,  -- 接触率(%)
       SUM(CASE WHEN d.rescue_state = '1' THEN 1 ELSE 0 END) AS rescued_cust_cnt, -- 已挽回客户数
       ROUND(CASE WHEN COUNT(*) > 0 THEN SUM(CASE WHEN d.rescue_state = '1' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) ELSE 0 END * 100, 2) AS rescue_rate,  -- 挽回率(%)
-      SUM(CASE WHEN d.rescue_state = '1' THEN d.fin_amt ELSE 0 END) AS rescued_fina_asset  -- 已挽回金融资产
+      SUM(CASE WHEN d.rescue_state = '1' THEN d.pnt_aum_bal ELSE 0 END) AS rescued_fina_asset  -- 已挽回金融资产（T-1日时点AUM余额）
   FROM ads_cust_lost_dtl d                    -- ADS层客户流失清单表
   WHERE d.data_date = V_SYSDAT                -- 数据日期
   GROUP BY d.lvl_churn;                       -- 按流失等级分组统计
