@@ -48,7 +48,9 @@ temp/
 *.tmp
 *.bak
 
-# Excel temporary files
+# Excel files
+*.xlsx
+*.xls
 ~$*.xlsx
 ~$*.xls
 
