@@ -128,8 +128,9 @@ BEGIN
         SELECT 
             c.cust_id,
             c.cust_name,
-            c.post_id
-        FROM dwd_crm_customer c
+            c.host_cust_mngr_post_id AS post_id,
+            c.org_lead AS org_id
+        FROM dwd_cust_indv_info c
         WHERE c.data_date = p_data_date;
         
         COMMIT;
@@ -176,7 +177,7 @@ BEGIN
                 ELSE '0'
             END AS qual_state,
             COALESCE(i.post_id, '') AS post_id,
-            t.org_id
+            COALESCE(i.org_id, '') AS org_id
         FROM tmp_potn_upgrade_cust t
         LEFT JOIN tmp_cust_contact c ON t.cust_id = c.cust_id
         LEFT JOIN tmp_cust_info i ON t.cust_id = i.cust_id
