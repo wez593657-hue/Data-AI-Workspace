@@ -57,33 +57,33 @@ BEGIN
         v_bgn_date := NOW();
         
         INSERT INTO ads_cust_potn_upgrade_statis (
-            data_date,
-            statis_obj,
-            statis_cycle,
-            lvl_crit,
-            ttl_cust_cnt,
-            mth_avg_qual_cnt,
-            mth_avg_qual_rate,
-            pnt_qual_cnt,
-            pnt_qual_rate,
-            cntct_cust_cnt,
-            cntct_rate
+            data_date,           -- 数据日期
+            statis_obj,          -- 统计对象：0全量
+            statis_cycle,        -- 统计周期：01月度
+            lvl_crit,            -- 临界等级
+            ttl_cust_cnt,        -- 总客户数
+            mth_avg_qual_cnt,    -- 月均达标客户数
+            mth_avg_qual_rate,   -- 月均达标率(%)
+            pnt_qual_cnt,        -- 时点达标客户数
+            pnt_qual_rate,       -- 时点达标率(%)
+            cntct_cust_cnt,      -- 已接触客户数
+            cntct_rate           -- 接触率(%)
         )
         SELECT 
             p_data_date AS data_date,
-            '0' AS statis_obj,
-            '01' AS statis_cycle,
-            d.lvl_crit,
-            COUNT(*) AS ttl_cust_cnt,
-            SUM(CASE WHEN d.qual_state = '1' THEN 1 ELSE 0 END) AS mth_avg_qual_cnt,
-            ROUND(CASE WHEN COUNT(*) > 0 THEN SUM(CASE WHEN d.qual_state = '1' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) ELSE 0 END * 100, 2) AS mth_avg_qual_rate,
-            SUM(CASE WHEN d.qual_state = '1' THEN 1 ELSE 0 END) AS pnt_qual_cnt,
-            ROUND(CASE WHEN COUNT(*) > 0 THEN SUM(CASE WHEN d.qual_state = '1' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) ELSE 0 END * 100, 2) AS pnt_qual_rate,
-            SUM(CASE WHEN d.cntct_state = '1' THEN 1 ELSE 0 END) AS cntct_cust_cnt,
-            ROUND(CASE WHEN COUNT(*) > 0 THEN SUM(CASE WHEN d.cntct_state = '1' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) ELSE 0 END * 100, 2) AS cntct_rate
-        FROM ads_cust_potn_upgrade_cust_dtl d
-        WHERE d.data_date = p_data_date
-        GROUP BY d.lvl_crit;
+            '0' AS statis_obj,                       -- 统计对象：0全量
+            '01' AS statis_cycle,                    -- 统计周期：01月度
+            d.lvl_crit,                              -- 临界等级
+            COUNT(*) AS ttl_cust_cnt,                -- 总客户数
+            SUM(CASE WHEN d.qual_state = '1' THEN 1 ELSE 0 END) AS mth_avg_qual_cnt,  -- 月均达标客户数
+            ROUND(CASE WHEN COUNT(*) > 0 THEN SUM(CASE WHEN d.qual_state = '1' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) ELSE 0 END * 100, 2) AS mth_avg_qual_rate,  -- 月均达标率(%)
+            SUM(CASE WHEN d.qual_state = '1' THEN 1 ELSE 0 END) AS pnt_qual_cnt,       -- 时点达标客户数
+            ROUND(CASE WHEN COUNT(*) > 0 THEN SUM(CASE WHEN d.qual_state = '1' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) ELSE 0 END * 100, 2) AS pnt_qual_rate,      -- 时点达标率(%)
+            SUM(CASE WHEN d.cntct_state = '1' THEN 1 ELSE 0 END) AS cntct_cust_cnt,    -- 已接触客户数
+            ROUND(CASE WHEN COUNT(*) > 0 THEN SUM(CASE WHEN d.cntct_state = '1' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) ELSE 0 END * 100, 2) AS cntct_rate        -- 接触率(%)
+        FROM ads_cust_potn_upgrade_cust_dtl d        -- ADS层潜力提升客户明细表
+        WHERE d.data_date = p_data_date              -- 数据日期
+        GROUP BY d.lvl_crit;                         -- 按临界等级分组统计
         
         COMMIT;
         

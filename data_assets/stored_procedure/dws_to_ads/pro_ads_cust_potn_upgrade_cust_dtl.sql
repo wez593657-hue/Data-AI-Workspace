@@ -59,36 +59,26 @@ BEGIN
         DROP TABLE IF EXISTS tmp_potn_upgrade_cust;
         CREATE TEMP TABLE tmp_potn_upgrade_cust AS
         SELECT 
-            a.cust_id,
-            a.org_id,
-            a.aum_bal,
-            a.depo_curnt_depo_bal,
-            a.fixd_depo_bal,
-            a.fin_bal,
+            a.cust_id,                              -- 客户编号
+            a.aum_bal,                              -- AUM余额（月日均）
+            a.depo_curnt_depo_bal,                  -- 活期存款余额
+            a.fixd_depo_bal,                        -- 定期存款余额
+            a.fin_bal,                              -- 金融资产余额
+            COALESCE(l.cust_lvl, '00') AS cust_lvl, -- 客户等级（从客户等级信息表获取）
             CASE 
-                WHEN a.aum_bal >= 45000 AND a.aum_bal < 50000 THEN '03'
-                WHEN a.aum_bal >= 270000 AND a.aum_bal < 300000 THEN '06'
-                WHEN a.aum_bal >= 450000 AND a.aum_bal < 500000 THEN '07'
-                WHEN a.aum_bal >= 900000 AND a.aum_bal < 1000000 THEN '08'
-                WHEN a.aum_bal >= 2700000 AND a.aum_bal < 3000000 THEN '09'
+                WHEN a.aum_bal >= 45000 AND a.aum_bal < 50000 THEN '03'   -- 临界优质
+                WHEN a.aum_bal >= 270000 AND a.aum_bal < 300000 THEN '06' -- 临界财富1
+                WHEN a.aum_bal >= 450000 AND a.aum_bal < 500000 THEN '07' -- 临界财富2
+                WHEN a.aum_bal >= 900000 AND a.aum_bal < 1000000 THEN '08' -- 临界贵宾
+                WHEN a.aum_bal >= 2700000 AND a.aum_bal < 3000000 THEN '09' -- 临界私行
                 ELSE NULL
-            END AS lvl_crit,
-            CASE 
-                WHEN a.aum_bal >= 0 AND a.aum_bal < 10000 THEN '01'
-                WHEN a.aum_bal >= 10000 AND a.aum_bal < 30000 THEN '02'
-                WHEN a.aum_bal >= 30000 AND a.aum_bal < 50000 THEN '03'
-                WHEN a.aum_bal >= 50000 AND a.aum_bal < 100000 THEN '04'
-                WHEN a.aum_bal >= 100000 AND a.aum_bal < 200000 THEN '05'
-                WHEN a.aum_bal >= 200000 AND a.aum_bal < 300000 THEN '06'
-                WHEN a.aum_bal >= 300000 AND a.aum_bal < 500000 THEN '07'
-                WHEN a.aum_bal >= 500000 AND a.aum_bal < 1000000 THEN '08'
-                WHEN a.aum_bal >= 1000000 AND a.aum_bal < 3000000 THEN '09'
-                WHEN a.aum_bal >= 3000000 THEN '10'
-                ELSE '00'
-            END AS cust_lvl
-        FROM dws_cust_asse_liab a
-        WHERE a.data_date = p_data_date
-          AND a.bal_type = '2';
+            END AS lvl_crit                         -- 临界等级
+        FROM dws_cust_asse_liab a                  -- DWS层客户资产负债表
+        LEFT JOIN dws_cust_lvl_info l              -- DWS层客户等级信息表
+            ON a.cust_id = l.cust_id 
+            AND a.data_date = l.data_dt
+        WHERE a.data_date = p_data_date            -- 数据日期
+          AND a.bal_type = '2';                    -- 余额类型：2表示月日均
         
         COMMIT;
         
@@ -104,12 +94,12 @@ BEGIN
         DROP TABLE IF EXISTS tmp_cust_contact;
         CREATE TEMP TABLE tmp_cust_contact AS
         SELECT 
-            m.cust_id,
-            '1' AS cntct_state
-        FROM ads_mkt_rec_info m
+            m.cust_id,                              -- 客户编号
+            '1' AS cntct_state                      -- 接触状态：1表示已接触
+        FROM ads_mkt_rec_info m                    -- ADS层营销记录表
         WHERE TO_CHAR(TO_DATE(m.mkt_time, 'YYYY-MM-DD HH24:MI:SS'), 'YYYYMMDD') <= p_data_date
           AND m.mkt_time >= TO_CHAR(TO_DATE(p_data_date, 'YYYYMMDD') - INTERVAL '1 month', 'YYYY-MM-DD HH24:MI:SS')
-          AND m.mkt_typ IN ('1', '2', '3', '4')
+          AND m.mkt_typ IN ('1', '2', '3', '4')    -- 营销类型：1面访/2电话/3短信/4企微
         GROUP BY m.cust_id;
         
         COMMIT;
@@ -126,12 +116,12 @@ BEGIN
         DROP TABLE IF EXISTS tmp_cust_info;
         CREATE TEMP TABLE tmp_cust_info AS
         SELECT 
-            c.cust_id,
-            c.cust_name,
-            c.host_cust_mngr_post_id AS post_id,
-            c.org_lead AS org_id
-        FROM dwd_cust_indv_info c
-        WHERE c.data_date = p_data_date;
+            c.cust_id,                              -- 客户编号
+            c.cust_name,                            -- 客户名称
+            c.host_cust_mngr_post_id AS post_id,    -- 主办客户经理职位编号
+            c.org_lead AS org_id                    -- 归属机构
+        FROM dwd_cust_indv_info c                  -- DWD层客户基本信息表
+        WHERE c.data_date = p_data_date;           -- 数据日期
         
         COMMIT;
         
@@ -145,18 +135,18 @@ BEGIN
         v_bgn_date := NOW();
         
         INSERT INTO ads_cust_potn_upgrade_cust_dtl (
-            data_date,
-            cust_id,
-            cust_name,
-            cust_lvl,
-            lvl_crit,
-            depo_curnt_depo_bal,
-            fixd_depo_bal,
-            fin_amt,
-            cntct_state,
-            qual_state,
-            post_id,
-            org_id
+            data_date,           -- 数据日期
+            cust_id,             -- 客户编号
+            cust_name,           -- 客户名称
+            cust_lvl,            -- 客户等级
+            lvl_crit,            -- 临界等级
+            depo_curnt_depo_bal, -- 活期存款余额
+            fixd_depo_bal,       -- 定期存款余额
+            fin_amt,             -- 金融资产余额
+            cntct_state,         -- 接触状态
+            qual_state,          -- 达标状态
+            post_id,             -- 主办客户经理职位编号
+            org_id               -- 归属机构
         )
         SELECT 
             p_data_date AS data_date,
@@ -167,7 +157,7 @@ BEGIN
             t.depo_curnt_depo_bal,
             t.fixd_depo_bal,
             t.fin_bal AS fin_amt,
-            COALESCE(c.cntct_state, '0') AS cntct_state,
+            COALESCE(c.cntct_state, '0') AS cntct_state,  -- 接触状态：0未接触/1已接触
             CASE 
                 WHEN t.lvl_crit = '03' AND t.aum_bal >= 50000 THEN '1'
                 WHEN t.lvl_crit = '06' AND t.aum_bal >= 300000 THEN '1'
@@ -175,13 +165,15 @@ BEGIN
                 WHEN t.lvl_crit = '08' AND t.aum_bal >= 1000000 THEN '1'
                 WHEN t.lvl_crit = '09' AND t.aum_bal >= 3000000 THEN '1'
                 ELSE '0'
-            END AS qual_state,
+            END AS qual_state,                            -- 达标状态：0未达标/1已达标
             COALESCE(i.post_id, '') AS post_id,
             COALESCE(i.org_id, '') AS org_id
-        FROM tmp_potn_upgrade_cust t
-        LEFT JOIN tmp_cust_contact c ON t.cust_id = c.cust_id
-        LEFT JOIN tmp_cust_info i ON t.cust_id = i.cust_id
-        WHERE t.lvl_crit IS NOT NULL;
+        FROM tmp_potn_upgrade_cust t                    -- 临时表：潜力提升客户
+        LEFT JOIN tmp_cust_contact c                    -- 临时表：已接触客户
+            ON t.cust_id = c.cust_id
+        LEFT JOIN tmp_cust_info i                       -- 临时表：客户基本信息
+            ON t.cust_id = i.cust_id
+        WHERE t.lvl_crit IS NOT NULL;                   -- 只保留有临界等级的客户
         
         COMMIT;
         
