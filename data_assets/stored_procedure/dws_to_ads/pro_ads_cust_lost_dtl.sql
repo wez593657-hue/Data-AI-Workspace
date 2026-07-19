@@ -6,6 +6,20 @@ AS
   ------------------------------------------------------------------
   -- 存储过程：客户流失清单
   --
+  -- 业务规则：
+  -- 轻度流失：上月金融资产月日均达标，上月末金融资产余额不达标
+  -- 重度流失：上上月金融资产月日均达标（上月金融资产月日均不达标），上月末金融资产余额不达标
+  --
+  -- 等级体系说明：
+  -- 客户AUM等级（CUST_LVL）：存储在DWS_CUST_LVL_INFO表中，基于AUM余额计算得出
+  -- 客户等级编码：按AUM余额区间划分的规则
+  -- 等级阈值映射（客户等级编码 -> AUM阈值）：
+  --   03-优质：50000
+  --   04-财富1：300000
+  --   05-财富2：500000
+  --   07-贵宾：1000000
+  --   09-私行：3000000
+  --
   -- 生成规则：
   -- 1. 保留本过程的参数、异常处理框架和 SYS_PRC_STEP_LOGS 调用方式。
   -- 2. 业务逻辑按实际处理链拆分，不预设固定的业务段数量。
@@ -73,7 +87,7 @@ BEGIN
   -- 3. 业务处理段
   --***************************************
 
-  -- 3.1 TMP1: 临时表段 - 流失客户数据（当前等级低于上月等级）
+  -- 3.1 TMP1: 临时表段 - 流失客户数据（基于AUM余额达标情况判断）
   V_NO_ID := 'TMP1';
   V_BGN_DATE := NOW();
 
@@ -85,19 +99,22 @@ BEGIN
       curr.depo_curnt_depo_bal,                  -- 当前活期存款余额
       curr.fixd_depo_bal,                        -- 当前定期存款余额
       curr.fin_bal,                              -- 当前金融资产余额
-      curr.cust_lvl AS curr_lvl,                 -- 当前客户等级
+      curr.cust_lvl,                             -- 当前客户等级（从DWS_CUST_LVL_INFO获取）
       prev.cust_lvl AS prev_lvl,                 -- 上月客户等级
+      prev.aum_bal AS prev_aum_bal,              -- 上月月日均AUM
+      prev_bal.aum_bal AS prev_end_bal,          -- 上月末余额
+      prev_prev.aum_bal AS prev_prev_aum_bal,    -- 上上月月日均AUM
+      prev_prev.cust_lvl AS prev_prev_lvl,       -- 上上月客户等级
       CASE 
-          WHEN prev.cust_lvl = '03' AND curr.cust_lvl <= '02' THEN '01' -- 优质流失
-          WHEN prev.cust_lvl = '04' AND curr.cust_lvl <= '03' THEN '02' -- 财富1流失
-          WHEN prev.cust_lvl = '05' AND curr.cust_lvl <= '04' THEN '03' -- 财富2流失
-          WHEN prev.cust_lvl = '06' AND curr.cust_lvl <= '05' THEN '04' -- 财富3流失
-          WHEN prev.cust_lvl = '07' AND curr.cust_lvl <= '06' THEN '05' -- 贵宾流失
-          WHEN prev.cust_lvl = '08' AND curr.cust_lvl <= '07' THEN '06' -- 黄金贵宾流失
-          WHEN prev.cust_lvl = '09' AND curr.cust_lvl <= '08' THEN '07' -- 私行流失
-          WHEN prev.cust_lvl = '10' AND curr.cust_lvl <= '09' THEN '08' -- 顶级私行流失
+          WHEN prev.cust_lvl IN ('03','04','05','07','09') 
+               AND prev.aum_bal >= CASE prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END 
+               AND COALESCE(prev_end_bal, 0) < CASE prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END THEN '01' -- 轻度流失
+          WHEN prev_prev.cust_lvl IN ('03','04','05','07','09') 
+               AND prev_prev.aum_bal >= CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END 
+               AND COALESCE(prev.aum_bal, 0) < CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END 
+               AND COALESCE(prev_end_bal, 0) < CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END THEN '02' -- 重度流失
           ELSE NULL
-      END AS lvl_churn                          -- 流失等级
+      END AS lvl_churn                          -- 流失等级：01轻度流失，02重度流失
   FROM (
       SELECT 
           a.cust_id,
@@ -116,17 +133,47 @@ BEGIN
   LEFT JOIN (
       SELECT 
           a.cust_id,
+          a.aum_bal,
           COALESCE(l.cust_lvl, '00') AS cust_lvl
-      FROM dws_cust_asse_liab a                -- DWS层客户资产负债表(上月)
+      FROM dws_cust_asse_liab a                -- DWS层客户资产负债表(上月月日均)
       LEFT JOIN dws_cust_lvl_info l            -- DWS层客户等级信息表(上月)
           ON a.cust_id = l.cust_id 
           AND a.data_date = l.data_dt
       WHERE a.data_date = TO_CHAR(TO_DATE(V_SYSDAT, 'YYYYMMDD') - INTERVAL '1 month', 'YYYYMMDD')
         AND a.bal_type = '2'
   ) prev ON curr.cust_id = prev.cust_id
-  WHERE prev.cust_lvl IS NOT NULL 
-    AND curr.cust_lvl IS NOT NULL
-    AND curr.cust_lvl < prev.cust_lvl;         -- 当前等级低于上月等级
+  LEFT JOIN (
+      SELECT 
+          a.cust_id,
+          a.aum_bal
+      FROM dws_cust_asse_liab a                -- DWS层客户资产负债表(上月末)
+      WHERE a.data_date = TO_CHAR(TO_DATE(V_SYSDAT, 'YYYYMMDD') - INTERVAL '1 month', 'YYYYMMDD')
+        AND a.bal_type = '1'                   -- 余额类型：1表示时点余额
+  ) prev_bal ON curr.cust_id = prev_bal.cust_id
+  LEFT JOIN (
+      SELECT 
+          a.cust_id,
+          a.aum_bal,
+          COALESCE(l.cust_lvl, '00') AS cust_lvl
+      FROM dws_cust_asse_liab a                -- DWS层客户资产负债表(上上月月日均)
+      LEFT JOIN dws_cust_lvl_info l            -- DWS层客户等级信息表(上上月)
+          ON a.cust_id = l.cust_id 
+          AND a.data_date = l.data_dt
+      WHERE a.data_date = TO_CHAR(TO_DATE(V_SYSDAT, 'YYYYMMDD') - INTERVAL '2 month', 'YYYYMMDD')
+        AND a.bal_type = '2'
+  ) prev_prev ON curr.cust_id = prev_prev.cust_id
+  WHERE (
+          -- 轻度流失：上月月日均达标，上月末余额不达标
+          (prev.cust_lvl IN ('03','04','05','07','09') 
+           AND prev.aum_bal >= CASE prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END
+           AND COALESCE(prev_end_bal, 0) < CASE prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END)
+          OR
+          -- 重度流失：上上月月日均达标，上月月日均不达标，上月末余额不达标
+          (prev_prev.cust_lvl IN ('03','04','05','07','09') 
+           AND prev_prev.aum_bal >= CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END
+           AND COALESCE(prev.aum_bal, 0) < CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END
+           AND COALESCE(prev_end_bal, 0) < CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END)
+        );
 
   COMMIT;
 
@@ -220,7 +267,7 @@ BEGIN
       V_LOG_BUTTON
   );
 
-  -- 3.4 TMP4: 临时表段 - 挽回客户判断（资产回升至原等级）
+  -- 3.4 TMP4: 临时表段 - 挽回客户判断（T-1日金融资产余额达标）
   V_NO_ID := 'TMP4';
   V_BGN_DATE := NOW();
 
@@ -230,7 +277,11 @@ BEGIN
       t.cust_id,
       '1' AS rescue_state
   FROM tmp_lost_cust t
-  WHERE t.curr_lvl >= t.prev_lvl;            -- 当前等级 >= 原等级表示已挽回
+  WHERE t.aum_bal >= CASE WHEN t.lvl_churn = '01' THEN 
+                         CASE t.prev_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END
+                       ELSE
+                         CASE t.prev_prev_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END
+                       END;
 
   COMMIT;
 
@@ -262,12 +313,12 @@ BEGIN
       cust_id,             -- 客户编号
       cust_name,           -- 客户名称
       cust_lvl,            -- 客户等级
-      lvl_churn,           -- 流失等级
+      lvl_churn,           -- 流失等级：01轻度流失，02重度流失
       depo_curnt_depo_bal, -- 活期余额
       fixd_depo_bal,       -- 定期余额
       fin_amt,             -- 理财余额
-      cntct_state,         -- 接触状态
-      rescue_state,        -- 挽回状态
+      cntct_state,         -- 接触状态：0未接触/1已接触
+      rescue_state,        -- 挽回状态：0未挽回/1已挽回
       post_id,             -- 管户经理
       org_id               -- 归属机构
   )
@@ -275,13 +326,13 @@ BEGIN
       V_SYSDAT AS data_date,
       t.cust_id,
       COALESCE(i.cust_name, '') AS cust_name,
-      t.curr_lvl AS cust_lvl,
+      t.cust_lvl,
       t.lvl_churn,
       t.depo_curnt_depo_bal,
       t.fixd_depo_bal,
       t.fin_bal AS fin_amt,
-      COALESCE(c.cntct_state, '0') AS cntct_state,  -- 接触状态：0未接触/1已接触
-      COALESCE(r.rescue_state, '0') AS rescue_state, -- 挽回状态：0未挽回/1已挽回
+      COALESCE(c.cntct_state, '0') AS cntct_state,
+      COALESCE(r.rescue_state, '0') AS rescue_state,
       COALESCE(i.post_id, '') AS post_id,
       COALESCE(i.org_id, '') AS org_id
   FROM tmp_lost_cust t                        -- 临时表：流失客户
