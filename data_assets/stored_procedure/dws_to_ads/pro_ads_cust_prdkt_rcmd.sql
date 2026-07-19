@@ -123,10 +123,12 @@ BEGIN
   CREATE TEMP TABLE tmp_cust_risk AS
   SELECT 
       r.cust_id,                              -- 客户编号
-      COALESCE(r.risk_lvl, 'C3') AS risk_lvl  -- 客户风险承受等级(C1-C5)
+      COALESCE(r.fin_risk_lvl, r.ins_risk_lvl, 'C3') AS risk_lvl  -- 客户风险承受等级(C1-C5)
   FROM dwd_cust_indiv_risk_invst r            -- DWD层客户风险评估表
-  WHERE r.estim_date <= V_SYSDAT              -- 评估日期在数据日期之前
-    AND (r.expr_date IS NULL OR r.expr_date >= V_SYSDAT); -- 评估未过期
+  WHERE (r.fin_estim_date IS NULL OR r.fin_estim_date <= V_SYSDAT)  -- 理财评估日期在数据日期之前
+    AND (r.fin_expr_date IS NULL OR r.fin_expr_date >= V_SYSDAT)     -- 理财评估未过期
+    AND (r.ins_estim_date IS NULL OR r.ins_estim_date <= V_SYSDAT)  -- 保险评估日期在数据日期之前
+    AND (r.ins_expr_date IS NULL OR r.ins_expr_date >= V_SYSDAT);
 
   COMMIT;
 

@@ -285,23 +285,26 @@ INTERESTPENALTY | - |
 
 ### DWD_CUST_INDIV_RISK_INVST (客户风险评估)
 
+**理财来源字段:**
 | 目标字段 | 目标字段中文名 | 目标字段类型 | 源系统 | 源表 | 源字段 | 映射规则 |
 |----------|---------------|--------------|--------|------|--------|----------|
 | CUST_ID | 客户编号 | VARCHAR(100) | - | - | host_cust_no | - |
-| INVEST_TYP | 投资类型 | VARCHAR(100) | - | - |  | - |
-| ESTIM_RSLT | 评估结果 | VARCHAR(100) | - | - | CUST_RISK_LEVEL | - |
-| SCORE | 分数 | VARCHAR(100) | - | - | CUST_EVAL_LEVEL | - |
-| RISK_LVL | 风险级别 | VARCHAR(100) | - | - | CUST_RISK_LEVEL | - |
-| ESTIM_DATE | 评估日期 | VARCHAR(100) | - | - | ASSESS_DATE | - |
-| EXPR_DATE | 到期日期 | VARCHAR(100) | - | - | INVALID_DATE | - |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR(100) | - | - |  | - |
-| CUST_ID | 客户编号 | VARCHAR(100) | - | - |  | - |
-| INVEST_TYP | 投资类型 | VARCHAR(100) | - | - |  | - |
-| ESTIM_RSLT | 评估结果 | VARCHAR(100) | - | - |  | - |
-| SCORE | 分数 | VARCHAR(100) | - | - | CUST_EVAL_LEVEL | - |
-| RISK_LVL | 风险级别 | VARCHAR(100) | - | - |  | - |
-| ESTIM_DATE | 评估日期 | VARCHAR(100) | - | - |  | - |
-| EXPR_DATE | 到期日期 | VARCHAR(100) | - | - |  | - |
+| FIN_INVEST_TYP | 理财投资类型 | VARCHAR(100) | - | - |  | - |
+| FIN_ESTIM_RSLT | 理财评估结果 | VARCHAR(100) | - | - | CUST_RISK_LEVEL | - |
+| FIN_SCORE | 理财分数 | VARCHAR(100) | - | - | CUST_EVAL_LEVEL | - |
+| FIN_RISK_LVL | 理财风险级别 | VARCHAR(100) | - | - | CUST_RISK_LEVEL | - |
+| FIN_ESTIM_DATE | 理财评估日期 | VARCHAR(100) | - | - | ASSESS_DATE | - |
+| FIN_EXPR_DATE | 理财到期日期 | VARCHAR(100) | - | - | INVALID_DATE | - |
+
+**保险来源字段:**
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源系统 | 源表 | 源字段 | 映射规则 |
+|----------|---------------|--------------|--------|------|--------|----------|
+| INS_INVEST_TYP | 保险投资类型 | VARCHAR(100) | - | - |  | - |
+| INS_ESTIM_RSLT | 保险评估结果 | VARCHAR(100) | - | - |  | - |
+| INS_SCORE | 保险分数 | VARCHAR(100) | - | - | CUST_EVAL_LEVEL | - |
+| INS_RISK_LVL | 保险风险级别 | VARCHAR(100) | - | - |  | - |
+| INS_ESTIM_DATE | 保险评估日期 | VARCHAR(100) | - | - |  | - |
+| INS_EXPR_DATE | 保险到期日期 | VARCHAR(100) | - | - |  | - |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR(100) | - | - |  | - |
 
 ### DWD_SYS_ORG (机构表)
