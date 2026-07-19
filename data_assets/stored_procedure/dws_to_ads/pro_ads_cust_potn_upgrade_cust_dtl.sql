@@ -87,13 +87,13 @@ BEGIN
       a.fin_bal,                              -- 金融资产余额
       COALESCE(l.cust_lvl, '00') AS cust_lvl, -- 客户等级（从客户等级信息表获取）
       CASE 
-          WHEN a.aum_bal >= 45000 AND a.aum_bal < 50000 THEN '03'   -- 临界优质
-          WHEN a.aum_bal >= 270000 AND a.aum_bal < 300000 THEN '06' -- 临界财富1
-          WHEN a.aum_bal >= 450000 AND a.aum_bal < 500000 THEN '07' -- 临界财富2
-          WHEN a.aum_bal >= 900000 AND a.aum_bal < 1000000 THEN '08' -- 临界贵宾
-          WHEN a.aum_bal >= 2700000 AND a.aum_bal < 3000000 THEN '09' -- 临界私行
+          WHEN a.aum_bal >= 45000 AND a.aum_bal < 50000 THEN '3'   -- 临界优质（客户等级编码：1字符）
+          WHEN a.aum_bal >= 270000 AND a.aum_bal < 300000 THEN '6' -- 临界财富1（客户等级编码：1字符）
+          WHEN a.aum_bal >= 450000 AND a.aum_bal < 500000 THEN '7' -- 临界财富2（客户等级编码：1字符）
+          WHEN a.aum_bal >= 900000 AND a.aum_bal < 1000000 THEN '8' -- 临界贵宾（客户等级编码：1字符）
+          WHEN a.aum_bal >= 2700000 AND a.aum_bal < 3000000 THEN '9' -- 临界私行（客户等级编码：1字符）
           ELSE NULL
-      END AS lvl_crit                         -- 临界等级
+      END AS lvl_crit                         -- 临界等级（客户等级编码：1字符）
   FROM dws_cust_asse_liab a                  -- DWS层客户资产负债表
   LEFT JOIN dws_cust_lvl_info l              -- DWS层客户等级信息表
       ON a.cust_id = l.cust_id 
@@ -222,11 +222,11 @@ BEGIN
       t.fin_bal AS fin_amt,
       COALESCE(c.cntct_state, '0') AS cntct_state,  -- 接触状态：0未接触/1已接触
       CASE 
-          WHEN t.lvl_crit = '03' AND t.aum_bal >= 50000 THEN '1'
-          WHEN t.lvl_crit = '06' AND t.aum_bal >= 300000 THEN '1'
-          WHEN t.lvl_crit = '07' AND t.aum_bal >= 500000 THEN '1'
-          WHEN t.lvl_crit = '08' AND t.aum_bal >= 1000000 THEN '1'
-          WHEN t.lvl_crit = '09' AND t.aum_bal >= 3000000 THEN '1'
+          WHEN t.lvl_crit = '3' AND t.aum_bal >= 50000 THEN '1'
+          WHEN t.lvl_crit = '6' AND t.aum_bal >= 300000 THEN '1'
+          WHEN t.lvl_crit = '7' AND t.aum_bal >= 500000 THEN '1'
+          WHEN t.lvl_crit = '8' AND t.aum_bal >= 1000000 THEN '1'
+          WHEN t.lvl_crit = '9' AND t.aum_bal >= 3000000 THEN '1'
           ELSE '0'
       END AS qual_state,                            -- 达标状态：0未达标/1已达标
       COALESCE(i.post_id, '') AS post_id,

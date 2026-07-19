@@ -108,13 +108,13 @@ BEGIN
       CASE 
           WHEN prev.cust_lvl IN ('03','04','05','07','09') 
                AND prev.aum_bal >= CASE prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END 
-               AND COALESCE(prev_end_bal, 0) < CASE prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END THEN '01' -- 轻度流失
+               AND COALESCE(prev_end_bal, 0) < CASE prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END THEN '1' -- 轻度流失（客户等级编码：1字符）
           WHEN prev_prev.cust_lvl IN ('03','04','05','07','09') 
-               AND prev_prev.aum_bal >= CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END 
+               AND prev_prev_aum_bal >= CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END 
                AND COALESCE(prev.aum_bal, 0) < CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END 
-               AND COALESCE(prev_end_bal, 0) < CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END THEN '02' -- 重度流失
+               AND COALESCE(prev_end_bal, 0) < CASE prev_prev.cust_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END THEN '2' -- 重度流失（客户等级编码：1字符）
           ELSE NULL
-      END AS lvl_churn                          -- 流失等级：01轻度流失，02重度流失
+      END AS lvl_churn                          -- 流失等级：1轻度流失，2重度流失（客户等级编码：1字符）
   FROM (
       SELECT 
           a.cust_id,
@@ -277,7 +277,7 @@ BEGIN
       t.cust_id,
       '1' AS rescue_state
   FROM tmp_lost_cust t
-  WHERE t.aum_bal >= CASE WHEN t.lvl_churn = '01' THEN 
+  WHERE t.aum_bal >= CASE WHEN t.lvl_churn = '1' THEN 
                          CASE t.prev_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END
                        ELSE
                          CASE t.prev_prev_lvl WHEN '03' THEN 50000 WHEN '04' THEN 300000 WHEN '05' THEN 500000 WHEN '07' THEN 1000000 WHEN '09' THEN 3000000 END
