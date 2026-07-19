@@ -88,13 +88,14 @@ BEGIN
       curr.cust_lvl AS curr_lvl,                 -- 当前客户等级
       prev.cust_lvl AS prev_lvl,                 -- 上月客户等级
       CASE 
-          WHEN prev.cust_lvl = '04' AND curr.cust_lvl <= '03' THEN '01' -- 财富1流失
-          WHEN prev.cust_lvl = '05' AND curr.cust_lvl <= '04' THEN '02' -- 财富2流失
-          WHEN prev.cust_lvl = '06' AND curr.cust_lvl <= '05' THEN '03' -- 财富3流失
-          WHEN prev.cust_lvl = '07' AND curr.cust_lvl <= '06' THEN '04' -- 贵宾流失
-          WHEN prev.cust_lvl = '08' AND curr.cust_lvl <= '07' THEN '05' -- 黄金贵宾流失
-          WHEN prev.cust_lvl = '09' AND curr.cust_lvl <= '08' THEN '06' -- 私行流失
-          WHEN prev.cust_lvl = '10' AND curr.cust_lvl <= '09' THEN '07' -- 顶级私行流失
+          WHEN prev.cust_lvl = '03' AND curr.cust_lvl <= '02' THEN '01' -- 优质流失
+          WHEN prev.cust_lvl = '04' AND curr.cust_lvl <= '03' THEN '02' -- 财富1流失
+          WHEN prev.cust_lvl = '05' AND curr.cust_lvl <= '04' THEN '03' -- 财富2流失
+          WHEN prev.cust_lvl = '06' AND curr.cust_lvl <= '05' THEN '04' -- 财富3流失
+          WHEN prev.cust_lvl = '07' AND curr.cust_lvl <= '06' THEN '05' -- 贵宾流失
+          WHEN prev.cust_lvl = '08' AND curr.cust_lvl <= '07' THEN '06' -- 黄金贵宾流失
+          WHEN prev.cust_lvl = '09' AND curr.cust_lvl <= '08' THEN '07' -- 私行流失
+          WHEN prev.cust_lvl = '10' AND curr.cust_lvl <= '09' THEN '08' -- 顶级私行流失
           ELSE NULL
       END AS lvl_churn                          -- 流失等级
   FROM (
