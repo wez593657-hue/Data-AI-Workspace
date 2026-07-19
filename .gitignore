@@ -47,3 +47,10 @@ tmp/
 temp/
 *.tmp
 *.bak
+
+# Excel temporary files
+~$*.xlsx
+~$*.xls
+
+# Temporary SQL files
+CREATE_TMP_*.sql
