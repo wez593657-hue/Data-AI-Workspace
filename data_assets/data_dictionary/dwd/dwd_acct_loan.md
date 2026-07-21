@@ -26,7 +26,7 @@
 | EXPR_DATE | 到期日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | ACCT_STATE | 账户状态 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | - | - | - | - | - | - | - |
-| OPRT_ORG | 经办机构 | VARCHAR2(6) | - | - | - | - | - | - | - |
+| OPRT_ORG | 经办机构 | VARCHAR2(7) | - | - | - | - | - | - | - |
 | IOU_NO | 借据号 | VARCHAR2(100) | - | - | - | - | - | - | - |
 | INT_ARREARS_TTL | 欠息(合计) | NUMBER(20,2) | - | - | - | - | - | - | - |
 | REPAY_TYP | 还款方式 | VARCHAR2(4) | - | - | - | - | - | - | - |

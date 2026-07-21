@@ -44,6 +44,8 @@ __pycache__/
 
 # Temp
 tmp/
+!data_assets/ddl/tmp/
+!data_assets/ddl/tmp/*.sql
 temp/
 *.tmp
 *.bak

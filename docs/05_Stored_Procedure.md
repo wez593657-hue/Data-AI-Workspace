@@ -4,6 +4,17 @@
 
 本规范定义了 Kingbase 数据库存储过程的统一开发标准，确保存储过程的可维护性、可追溯性和安全性。
 
+### 模板优先原则
+
+开发存储过程时，**必须优先使用 `templates/` 目录下的存储过程模板文件**，模板文件优先级高于本规范文档中的示例代码。
+
+| 模板文件 | 路径 | 适用场景 |
+|----------|------|----------|
+| `procedure_template.sql` | [templates/procedure_template.sql](file:///d:/AI/AI-Workspace/Kingbase-CRM-AI-Development-Guide/templates/procedure_template.sql) | Kingbase/PostgreSQL 风格存储过程 |
+| `PRC_模板.sql` | [templates/PRC_模板.sql](file:///d:/AI/AI-Workspace/Kingbase-CRM-AI-Development-Guide/templates/PRC_模板.sql) | Oracle 兼容模式存储过程 |
+
+当 `templates/` 目录下存在存储过程模板时，必须基于模板文件进行开发，本规范文档仅作为规则约束和参考说明。
+
 ## 5.2 存储过程统一流程
 
 ```
@@ -27,7 +38,17 @@
 
 ## 5.3 存储过程模板
 
-### 5.3.1 基本结构
+### 5.3.1 模板选择规则
+
+开发存储过程时，**必须按照以下优先级选择模板**：
+
+1. **优先使用 `templates/` 目录下的模板文件**：
+   - Kingbase/PostgreSQL 风格：使用 [templates/procedure_template.sql](file:///d:/AI/AI-Workspace/Kingbase-CRM-AI-Development-Guide/templates/procedure_template.sql)
+   - Oracle 兼容模式：使用 [templates/PRC_模板.sql](file:///d:/AI/AI-Workspace/Kingbase-CRM-AI-Development-Guide/templates/PRC_模板.sql)
+
+2. **模板文件不存在时**：可参考本规范文档中的示例代码结构进行开发
+
+### 5.3.2 基本结构
 
 ```sql
 CREATE OR REPLACE PROCEDURE proc_crm_customer_update(
@@ -131,7 +152,7 @@ BEGIN
 END $$;
 ```
 
-### 5.3.2 调用方式
+### 5.3.3 调用方式
 
 ```sql
 -- 调用存储过程

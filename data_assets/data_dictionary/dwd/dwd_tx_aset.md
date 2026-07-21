@@ -26,7 +26,7 @@
 | TX_TYP | 交易类型 | VARCHAR2(6) | - | - | - | - | - | - | - |
 | AMT | 发生额 | NUMBER(18,4) | - | - | - | - | - | - | - |
 | TX_TYP_NAME | 交易类型名称 | VARCHAR2(80) | - | - | - | - | - | - | - |
-| TX_ORG | 交易机构 | VARCHAR2(20) | - | - | - | - | - | - | - |
+| TX_ORG | 交易机构 | VARCHAR2(7) | - | - | - | - | - | - | - |
 | OPRTR | 经办人 | VARCHAR2(20) | - | - | - | - | - | - | - |
 | LOAN_FLG | 借贷标识 | VARCHAR2(3) | - | - | - | - | - | - | - |
 | ACCT_BAL | 账户余额 | NUMBER(18,4) | - | - | - | - | - | - | - |
@@ -36,7 +36,7 @@
 | OPNT_BK_KEEP | 对方行 | VARCHAR2(20) | - | - | - | - | - | - | - |
 | OPNT_NAME_BK | 对方行名 | VARCHAR2(200) | - | - | - | - | - | - | - |
 | FEE_HAND | 手续费 | NUMBER(18,4) | - | - | - | - | - | - | - |
-| ACCT_BLNG_ORG | 账户归属机构 | VARCHAR2(20) | - | - | - | - | - | - | - |
+| ACCT_BLNG_ORG | 账户归属机构 | VARCHAR2(7) | - | - | - | - | - | - | - |
 | CARD_NO | 卡/折号 | VARCHAR2(30) | - | - | - | - | - | - | - |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(30) | - | - | - | - | - | - | - |
 

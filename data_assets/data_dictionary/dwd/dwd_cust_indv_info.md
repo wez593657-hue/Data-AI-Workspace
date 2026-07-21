@@ -44,12 +44,12 @@
 | HOST_CUST_MNGR_POST_ID | 主办客户经理职位编号 | VARCHAR2(20) | - | - | - | - | - | - | - |
 | HOST_CUST_MNGR_NAME | 主办客户经理名称 | VARCHAR2(60) | - | - | - | - | - | - | - |
 | HOST_CUST_MNGR_EMP_ID | 主办客户经理工号 | VARCHAR2(6) | - | - | - | - | - | - | - |
-| ORG_LEAD | 主办机构(归属机构) | VARCHAR2(6) | - | - | - | - | - | - | - |
+| ORG_LEAD | 主办机构(归属机构) | VARCHAR2(7) | - | - | - | - | - | - | - |
 | ORG_LEAD_PATH | 主办机构路径 | VARCHAR2(50) | - | - | - | - | - | - | - |
 | COSPSR_CUST_MNGR_POST_ID | 信贷客户经理职位编号 | VARCHAR2(20) | - | - | - | - | - | - | - |
 | COSPSR_CUST_MNGR_NAME | 信贷客户经理名称 | VARCHAR2(60) | - | - | - | - | - | - | - |
 | COSPSR_CUST_MNGR_EMP_ID | 信贷客户经理工号 | VARCHAR2(6) | - | - | - | - | - | - | - |
-| COSPSR_ORG | 信贷机构 | VARCHAR2(6) | - | - | - | - | - | - | - |
+| COSPSR_ORG | 信贷机构 | VARCHAR2(7) | - | - | - | - | - | - | - |
 | COSPSR_ORG_PATH | 信贷机构路径 | VARCHAR2(50) | - | - | - | - | - | - | - |
 
 ---

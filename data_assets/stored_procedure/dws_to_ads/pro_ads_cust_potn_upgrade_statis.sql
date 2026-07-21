@@ -1,24 +1,18 @@
-CREATE OR REPLACE PROCEDURE pro_ads_cust_potn_upgrade_statis(
+CREATE OR REPLACE PROCEDURE PRO_ADS_CUST_POTN_UPGRADE_STATIS(
     V_SYSDAT IN VARCHAR,
     OUTCDE   OUT INTEGER
 )
 AS
   ------------------------------------------------------------------
-  -- 存储过程：潜力提升统计
-  --
-  -- 生成规则：
-  -- 1. 保留本过程的参数、异常处理框架和 SYS_PRC_STEP_LOGS 调用方式。
-  -- 2. 业务逻辑按实际处理链拆分，不预设固定的业务段数量。
-  -- 3. 每个物理临时表段按 TMP1、TMP2、TMP3... 顺序命名并独立处理。
-  -- 4. 每个临时表段必须依次包含：设置步骤号、记录开始时间、处理数据、COMMIT、
-  --    记录结束时间和耗时、调用 SYS_PRC_STEP_LOGS。
-  -- 5. 临时表段之间的 COMMIT 和日志调用不可省略，不得合并为过程末尾一次提交。
-  -- 6. 临时表段完成后，再按实际业务逻辑汇总写入目标表，并单独记录目标表步骤日志。
-  -- 7. 字段、来源表、过滤条件无法确认时保留 NULL 或明确占位，不得猜测业务规则。
-  -- 8. 字段、来源表、目标表都要带上注释并对齐。
+  -- 存储过程：潜力提升统计处理
+  -- 处理周期: 日
+  -- 过程描述: 按机构向上汇总和客户经理维度生成潜力提升统计
+  -- 来源表: ADS_CUST_POTN_UPGRADE_CUST_DTL, DWS_CUST_ASSE_LIAB, DWD_SYS_ORG
+  -- 目标表: ADS_CUST_POTN_UPGRADE_STATIS
+  -- 适配数据库: Kingbase Oracle 兼容模式
   ------------------------------------------------------------------
-  V_PRC_DESC             VARCHAR(100) := '潜力提升统计';
-  V_PRC_NAME             VARCHAR(32)  := 'pro_ads_cust_potn_upgrade_statis';
+  V_PRC_DESC             VARCHAR(100) := '潜力提升统计处理';
+  V_PRC_NAME             VARCHAR(64)  := 'PRO_ADS_CUST_POTN_UPGRADE_STATIS';
   V_LOG_MSG              VARCHAR(4000);
   V_LOG_FLG              INTEGER;
   V_LOG_BUTTON           INTEGER := 1;
@@ -26,34 +20,43 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
+
+  PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
+  BEGIN
+    EXECUTE IMMEDIATE 'TRUNCATE TABLE ' || P_TABLE_NAME;
+  END;
+
 BEGIN
-  --***************************************
-  --1.自定义参数区
-  --***************************************
+  ------------------------------------------------------------------
+  -- 1. 参数检查
+  ------------------------------------------------------------------
   IF V_SYSDAT IS NULL
-     OR NOT V_SYSDAT ~ '^[0-9]{8}$'
+     OR NOT REGEXP_LIKE(V_SYSDAT, '^[0-9]{8}$')
   THEN
-    RAISE EXCEPTION 'V_SYSDAT must be in YYYYMMDD format';
+    RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
   END IF;
 
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
 
-  --***************************************
-  -- 2. 目标表准备
-  --***************************************
-  
-  -- 每日全量过程先清理目标表；该语义保持不变。
-  DELETE FROM ads_cust_potn_upgrade_statis 
-  WHERE data_date = V_SYSDAT;
+  ------------------------------------------------------------------
+  -- 2. TMP1：清理当前数据日统计结果、三年前历史数据和物理临时表
+  ------------------------------------------------------------------
+  V_NO_ID := 'TMP1';
+  V_BGN_DATE := SYSDATE;
 
+  DELETE FROM ADS_CUST_POTN_UPGRADE_STATIS T
+   WHERE T.DATA_DATE = V_SYSDAT;
+
+  DELETE FROM ADS_CUST_POTN_UPGRADE_STATIS T
+   WHERE T.DATA_DATE < TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'YYYY'), -36), 'YYYYMMDD');
+
+  TRUNC_TMP('TMP_ADS_POTN_STAT_SRC');
   COMMIT;
 
-  V_NO_ID := '1';
-  V_BGN_DATE := NOW();
-  V_END_DATE := NOW();
-  V_DURA_DATE := EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER;
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := '清理目标表完成，删除数据日期: ' || V_SYSDAT;
+  V_LOG_MSG := 'TMP1 完成：清理当前数据日统计结果、三年前历史数据和物理临时表';
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(
@@ -69,49 +72,90 @@ BEGIN
       V_LOG_BUTTON
   );
 
-  --***************************************
-  -- 3. 业务处理段
-  --***************************************
+  ------------------------------------------------------------------
+  -- 3. TMP2：展开机构和客户经理统计对象
+  ------------------------------------------------------------------
+  V_NO_ID := 'TMP2';
+  V_BGN_DATE := SYSDATE;
 
-  -- 3.1 目标表写入 - 潜力提升统计
-  V_NO_ID := '2';
-  V_BGN_DATE := NOW();
-
-  INSERT INTO ads_cust_potn_upgrade_statis (
-      data_date,           -- 数据日期
-      statis_obj,          -- 统计对象：0全量
-      statis_cycle,        -- 统计周期：01月度
-      lvl_crit,            -- 临界等级
-      ttl_cust_cnt,        -- 总客户数
-      mth_avg_qual_cnt,    -- 月均达标客户数
-      mth_avg_qual_rate,   -- 月均达标率(%)
-      pnt_qual_cnt,        -- 时点达标客户数
-      pnt_qual_rate,       -- 时点达标率(%)
-      cntct_cust_cnt,      -- 已接触客户数
-      cntct_rate           -- 接触率(%)
+  INSERT INTO TMP_ADS_POTN_STAT_SRC (
+      PERSN_LEGAL_BK_CODE,
+      DATA_DATE,
+      STATIS_CYCLE,
+      STATIS_OBJ,
+      LVL_CRIT,
+      MTH_AVG_QUAL_STATE,
+      PNT_QUAL_STATE,
+      CNTCT_STATE
   )
-  SELECT 
-      V_SYSDAT AS data_date,
-      '0' AS statis_obj,                       -- 统计对象：0全量
-      '01' AS statis_cycle,                    -- 统计周期：01月度
-      d.lvl_crit,                              -- 临界等级
-      COUNT(*) AS ttl_cust_cnt,                -- 总客户数
-      SUM(CASE WHEN d.mth_avg_qual_state = '1' THEN 1 ELSE 0 END) AS mth_avg_qual_cnt,  -- 月均达标客户数（月日均AUM达标）
-      ROUND(CASE WHEN COUNT(*) > 0 THEN SUM(CASE WHEN d.mth_avg_qual_state = '1' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) ELSE 0 END * 100, 2) AS mth_avg_qual_rate,  -- 月均达标率(%)
-      SUM(CASE WHEN d.pnt_qual_state = '1' THEN 1 ELSE 0 END) AS pnt_qual_cnt,       -- 时点达标客户数（T-1日时点AUM达标）
-      ROUND(CASE WHEN COUNT(*) > 0 THEN SUM(CASE WHEN d.pnt_qual_state = '1' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) ELSE 0 END * 100, 2) AS pnt_qual_rate,      -- 时点达标率(%)
-      SUM(CASE WHEN d.cntct_state = '1' THEN 1 ELSE 0 END) AS cntct_cust_cnt,    -- 已接触客户数
-      ROUND(CASE WHEN COUNT(*) > 0 THEN SUM(CASE WHEN d.cntct_state = '1' THEN 1 ELSE 0 END)::NUMERIC / COUNT(*) ELSE 0 END * 100, 2) AS cntct_rate        -- 接触率(%)
-  FROM ads_cust_potn_upgrade_cust_dtl d        -- ADS层潜力提升客户明细表
-  WHERE d.data_date = V_SYSDAT                 -- 数据日期
-  GROUP BY d.lvl_crit;                         -- 按临界等级分组统计
+  SELECT D.PERSN_LEGAL_BK_CODE,
+         D.DATA_DATE,
+         D.STATIS_CYCLE,
+         O.ANCESTOR_ORG_ID,
+         D.LVL_CRIT,
+         CASE
+           WHEN (D.LVL_CRIT = '03' AND NVL(M.AUM_BAL, 0) >= 50000)
+             OR (D.LVL_CRIT = '04' AND NVL(M.AUM_BAL, 0) >= 300000)
+             OR (D.LVL_CRIT = '05' AND NVL(M.AUM_BAL, 0) >= 500000)
+             OR (D.LVL_CRIT = '06' AND NVL(M.AUM_BAL, 0) >= 1000000)
+             OR (D.LVL_CRIT = '07' AND NVL(M.AUM_BAL, 0) >= 3000000)
+           THEN '1'
+           ELSE '0'
+         END,
+         D.QUAL_STATE,
+         D.CNTCT_STATE
+    FROM ADS_CUST_POTN_UPGRADE_CUST_DTL D
+    JOIN (
+          SELECT DISTINCT
+                 CONNECT_BY_ROOT X.ORG_ID AS LEAF_ORG_ID,
+                 X.ORG_ID AS ANCESTOR_ORG_ID
+            FROM DWD_SYS_ORG X
+           START WITH X.ORG_ID IN (
+                 SELECT DISTINCT ORG_ID
+                   FROM ADS_CUST_POTN_UPGRADE_CUST_DTL
+                  WHERE ORG_ID IS NOT NULL
+                )
+         CONNECT BY NOCYCLE PRIOR X.SUP_ORG_ID = X.ORG_ID
+    ) O
+      ON O.LEAF_ORG_ID = D.ORG_ID
+    LEFT JOIN DWS_CUST_ASSE_LIAB M
+      ON M.CUST_ID = D.CUST_ID
+     AND M.DATA_DATE = V_SYSDAT
+     AND M.BAL_TYPE = '2'
+   WHERE D.DATA_DATE = V_SYSDAT
+
+  UNION ALL
+
+  SELECT D.PERSN_LEGAL_BK_CODE,
+         D.DATA_DATE,
+         D.STATIS_CYCLE,
+         D.POST_ID,
+         D.LVL_CRIT,
+         CASE
+           WHEN (D.LVL_CRIT = '03' AND NVL(M.AUM_BAL, 0) >= 50000)
+             OR (D.LVL_CRIT = '04' AND NVL(M.AUM_BAL, 0) >= 300000)
+             OR (D.LVL_CRIT = '05' AND NVL(M.AUM_BAL, 0) >= 500000)
+             OR (D.LVL_CRIT = '06' AND NVL(M.AUM_BAL, 0) >= 1000000)
+             OR (D.LVL_CRIT = '07' AND NVL(M.AUM_BAL, 0) >= 3000000)
+           THEN '1'
+           ELSE '0'
+         END,
+         D.QUAL_STATE,
+         D.CNTCT_STATE
+    FROM ADS_CUST_POTN_UPGRADE_CUST_DTL D
+    LEFT JOIN DWS_CUST_ASSE_LIAB M
+      ON M.CUST_ID = D.CUST_ID
+     AND M.DATA_DATE = V_SYSDAT
+     AND M.BAL_TYPE = '2'
+   WHERE D.POST_ID IS NOT NULL
+     AND D.DATA_DATE = V_SYSDAT;
 
   COMMIT;
 
-  V_END_DATE := NOW();
-  V_DURA_DATE := EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER;
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := '第2个业务处理段完成，插入统计记录数: ' || SQL%ROWCOUNT;
+  V_LOG_MSG := 'TMP2 完成：展开机构和客户经理统计对象';
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(
@@ -127,18 +171,75 @@ BEGIN
       V_LOG_BUTTON
   );
 
-  -- ***************************************  
-  -- 4. 异常处理区（捕获错误码并记录详细日志）
-  -- ***************************************  
+  ------------------------------------------------------------------
+  -- 4. 目标表写入：按统计对象和月/季/年周期汇总
+  ------------------------------------------------------------------
+  V_NO_ID := '3';
+  V_BGN_DATE := SYSDATE;
+
+  INSERT INTO ADS_CUST_POTN_UPGRADE_STATIS (
+      PERSN_LEGAL_BK_CODE,
+      DATA_DATE,
+      STATIS_OBJ,
+      STATIS_CYCLE,
+      LVL_CRIT,
+      TTL_CUST_CNT,
+      MTH_AVG_QUAL_CNT,
+      MTH_AVG_QUAL_RATE,
+      PNT_QUAL_CNT,
+      PNT_QUAL_RATE,
+      CNTCT_CUST_CNT,
+      CNTCT_RATE
+  )
+  SELECT S.PERSN_LEGAL_BK_CODE,
+         S.DATA_DATE,
+         S.STATIS_OBJ,
+         S.STATIS_CYCLE,
+         S.LVL_CRIT,
+         COUNT(*),
+         SUM(CASE WHEN S.MTH_AVG_QUAL_STATE = '1' THEN 1 ELSE 0 END),
+         CASE WHEN COUNT(*) = 0 THEN 0 ELSE ROUND(SUM(CASE WHEN S.MTH_AVG_QUAL_STATE = '1' THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) END,
+         SUM(CASE WHEN S.PNT_QUAL_STATE = '1' THEN 1 ELSE 0 END),
+         CASE WHEN COUNT(*) = 0 THEN 0 ELSE ROUND(SUM(CASE WHEN S.PNT_QUAL_STATE = '1' THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) END,
+         SUM(CASE WHEN S.CNTCT_STATE = '1' THEN 1 ELSE 0 END),
+         CASE WHEN COUNT(*) = 0 THEN 0 ELSE ROUND(SUM(CASE WHEN S.CNTCT_STATE = '1' THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) END
+    FROM TMP_ADS_POTN_STAT_SRC S
+   GROUP BY S.PERSN_LEGAL_BK_CODE,
+            S.DATA_DATE,
+            S.STATIS_OBJ,
+            S.STATIS_CYCLE,
+            S.LVL_CRIT;
+
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '第3段完成：按统计对象和月/季/年周期汇总写入统计';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT,
+      V_PRC_NAME,
+      V_PRC_DESC,
+      V_NO_ID,
+      V_BGN_DATE,
+      V_END_DATE,
+      V_DURA_DATE,
+      V_LOG_MSG,
+      V_LOG_FLG,
+      V_LOG_BUTTON
+  );
+
 EXCEPTION
   WHEN OTHERS THEN
     OUTCDE := -1;
     ROLLBACK;
 
-    V_END_DATE := NOW();
+    V_END_DATE := SYSDATE;
     V_DURA_DATE := CASE
                      WHEN V_BGN_DATE IS NULL OR V_END_DATE IS NULL THEN NULL
-                     ELSE EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER
+                     ELSE TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60)
                    END;
     V_LOG_MSG := SUBSTR(SQLERRM, 1, 1000);
     V_LOG_FLG := OUTCDE;
@@ -158,3 +259,4 @@ EXCEPTION
 
     RAISE;
 END;
+/

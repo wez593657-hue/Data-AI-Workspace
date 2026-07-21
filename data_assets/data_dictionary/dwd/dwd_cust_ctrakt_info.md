@@ -26,7 +26,7 @@
 | BGN_DATE | 发放日期 | VARCHAR(100) | - | - | - | - | - | - | - |
 | END_DATE | 结束日期 | VARCHAR(100) | - | - | - | - | - | - | - |
 | OPRTR | 经办人 | VARCHAR(100) | - | - | - | - | - | - | - |
-| OPRT_ORG | 经办机构 | VARCHAR(100) | - | - | - | - | - | - | - |
+| OPRT_ORG | 经办机构 | VARCHAR(7) | - | - | - | - | - | - | - |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR(100) | - | - | - | - | - | - | - |
 
 ---

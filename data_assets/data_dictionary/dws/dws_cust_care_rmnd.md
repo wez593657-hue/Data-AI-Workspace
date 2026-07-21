@@ -21,7 +21,7 @@
 | CUST_NAME | 客户名称 | VARCHAR2(120) | - | - | - | - | - | - | - |
 | PHONE_NO | 手机号 | VARCHAR2(32) | - | - | - | - | - | - | - |
 | CUST_TYP | 客户类型 | VARCHAR2(2) | - | - | - | - | - | - | - |
-| ORG_ID | 所属机构(客户经理所在机构) | VARCHAR2(6) | - | - | - | - | - | - | - |
+| ORG_ID | 所属机构(客户经理所在机构) | VARCHAR2(7) | - | - | - | - | - | - | - |
 | HDLE_STATE | 处理状态(0 未处理，1 已处理，2已到期) | VARCHAR2(2) | - | - | - | - | - | - | - |
 | CATE_TIME | 关怀时间 | VARCHAR2(20) | - | - | - | - | - | - | - |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | - | - | - | - | - | - | - |

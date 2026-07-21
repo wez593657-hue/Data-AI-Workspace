@@ -77,11 +77,24 @@ BEGIN
       c.WEIHSHIJ,
       c.JINGDUXX, -- 经度
       c.WEIDUXXZ, -- 纬度
-      NVL(g.YEWUGXJG, 0) AS YEWUGXJG, -- 业务关系机构
+      CASE
+          WHEN g.JIGOUHAO IS NOT NULL THEN g.YEWUGXJG
+          WHEN c.FENHDAIM IS NOT NULL
+               AND LPAD(c.FENHDAIM, 2, '0') || '0000' <> LPAD(c.JIGOUHAO, 6, '0')
+               AND EXISTS (
+                   SELECT 1
+                     FROM CBS_kbrp_jgcshu f
+                    WHERE f.FARENDMA = c.FARENDMA
+                      AND f.JIGOUHAO = LPAD(c.FENHDAIM, 2, '0') || '0000'
+               )
+            THEN LPAD(c.FENHDAIM, 2, '0') || '0000'
+          ELSE ''
+      END AS YEWUGXJG, -- 业务关系机构；关系缺失时回退至存在的分行机构
       NVL(g.YEWUGXJB, 1) AS YEWUGXJB  -- 业务关系级别
     FROM CBS_kbrp_jgcshu c               -- 机构参数表
     LEFT JOIN cbs_kbrp_jggxii g          -- 机构关系表
-      ON c.JIGOUHAO = g.JIGOUHAO;
+      ON c.FARENDMA = g.FARENDMA
+     AND c.JIGOUHAO = g.JIGOUHAO;
 
   -- 记录第1段结束时间和耗时
   OUTCDE      := 0;
@@ -150,21 +163,21 @@ BEGIN
       src.ORG_TEL
   FROM (
       SELECT
-          LPAD(TO_CHAR(b.JIGOUHAO), 6, '0') AS ORG_ID,
+          LPAD(b.JIGOUHAO, 6, '0') AS ORG_ID,
           CASE
-              WHEN b.JIGOUHAO = 0 THEN '-1'
-              WHEN b.JIGOUHAO IN (120000, 150000, 180000) THEN '-1'
-              WHEN b.YEWUGXJG = 90 THEN '000000'
+              WHEN b.JIGOUHAO = '000000' THEN '-1'
+              WHEN b.JIGOUHAO IN ('120000', '150000', '180000') THEN '-1'
+              WHEN b.YEWUGXJG = '000090' THEN '000000'
               WHEN b.YEWUGXJG = b.JIGOUHAO
-                    AND b.JIGOUHAO IN (10100, 10200, 10300, 10400, 10500, 10600, 10700, 10800, 10900, 11000, 11100, 12000)
-                THEN LPAD(TO_CHAR(b.JIGOUHAO), 6, '0') || 'a'
+                    AND b.JIGOUHAO IN ('010100', '010200', '010300', '010400', '010500', '010600', '010700', '010800', '010900', '011000', '011100', '012000')
+                THEN LPAD(b.JIGOUHAO, 6, '0') || 'a'
               WHEN b.YEWUGXJG = b.JIGOUHAO THEN '000000'
-              WHEN b.YEWUGXJG = 95 THEN ''
-              WHEN b.YEWUGXJG = 10000 THEN LPAD(TO_CHAR(b.JIGOUHAO), 6, '0') || 'a'
-              ELSE NVL(LPAD(TO_CHAR(p.JIGOUHAO), 6, '0'), '')
+              WHEN b.YEWUGXJG = '000095' THEN ''
+              WHEN b.YEWUGXJG = '010000' THEN LPAD(b.JIGOUHAO, 6, '0') || 'a'
+              ELSE NVL(LPAD(p.JIGOUHAO, 6, '0'), '')
           END AS SUP_ORG_ID,
           CASE
-              WHEN b.YEWUGXJG = 10000 THEN
+              WHEN b.YEWUGXJG = '010000' THEN
                   CASE
                       WHEN b.JIGOUZWM LIKE '%乐山市商业银行%' THEN
                           CASE
@@ -177,7 +190,7 @@ BEGIN
                       ELSE b.JIGOUZWM || '管理部'
                   END
               WHEN b.YEWUGXJG = b.JIGOUHAO
-                   AND b.JIGOUHAO IN (10100, 10200, 10300, 10400, 10500, 10600, 10700, 10800, 10900, 11000, 11100, 12000)
+                   AND b.JIGOUHAO IN ('010100', '010200', '010300', '010400', '010500', '010600', '010700', '010800', '010900', '011000', '011100', '012000')
                 THEN
                   CASE
                       WHEN b.JIGOUZWM LIKE '%乐山市商业银行%' THEN
@@ -193,33 +206,33 @@ BEGIN
               ELSE b.JIGOUZWM
           END AS ORG_NAME,
           CASE
-              WHEN b.FENHDAIM = 0 THEN ''
-              WHEN b.FENHDAIM = 1 THEN '010000'
-              WHEN b.FENHDAIM = 2 THEN '020000'
-              WHEN b.FENHDAIM = 3 THEN '030000'
-              WHEN b.FENHDAIM = 4 THEN '040000'
-              WHEN b.FENHDAIM = 5 THEN '050000'
-              WHEN b.FENHDAIM = 6 THEN '060000'
-              WHEN b.FENHDAIM = 7 THEN '070000'
-              WHEN b.FENHDAIM = 8 THEN '080000'
-              WHEN b.FENHDAIM = 9 THEN '090000'
-              WHEN b.FENHDAIM = 10 THEN '100000'
-              WHEN b.FENHDAIM = 11 THEN '110000'
-              WHEN b.FENHDAIM = 12 THEN '120000'
-              WHEN b.FENHDAIM = 15 THEN '150000'
-              WHEN b.FENHDAIM = 18 THEN '180000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '00' THEN ''
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '01' THEN '010000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '02' THEN '020000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '03' THEN '030000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '04' THEN '040000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '05' THEN '050000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '06' THEN '060000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '07' THEN '070000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '08' THEN '080000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '09' THEN '090000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '10' THEN '100000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '11' THEN '110000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '12' THEN '120000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '15' THEN '150000'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '18' THEN '180000'
               ELSE ''
           END AS DIRECT_UNDER_ORG,
           CASE
-              WHEN b.JIGOUHAO = 0 THEN '01'
+              WHEN b.JIGOUHAO = '000000' THEN '01'
               WHEN b.JIGOUZWM LIKE '%村镇银行%' THEN '07'
-              WHEN b.JIGOUZWM LIKE '%汇总%' AND b.JIGOLEIX = 3 THEN '06'
+              WHEN b.JIGOUZWM LIKE '%汇总%' AND b.JIGOLEIX = '3' THEN '06'
               WHEN b.JIGOUZWM LIKE '%分行%' AND b.YEWUGXJB = 2 THEN '02'
-              WHEN b.JIGOUZWM LIKE '%支行%' AND b.YEWUGXJB >= 3 AND b.JIGOLEIX = 2 THEN '03'
+              WHEN b.JIGOUZWM LIKE '%支行%' AND b.YEWUGXJB >= 3 AND b.JIGOLEIX = '2' THEN '03'
               WHEN b.JIGOUZWM LIKE '%营业部%' THEN '04'
               WHEN b.JIGOUZWM LIKE '%清算中心%' THEN '08'
-              WHEN b.FENHDAIM = 0 AND (b.JIGOUZWM LIKE '%部%' OR b.JIGOUZWM LIKE '%办公室%') THEN '09'
-              WHEN b.JIGOUZWM LIKE '%支行%' AND b.JIGOLEIX = 3 THEN '06'
+              WHEN LPAD(b.FENHDAIM, 2, '0') = '00' AND (b.JIGOUZWM LIKE '%部%' OR b.JIGOUZWM LIKE '%办公室%') THEN '09'
+              WHEN b.JIGOUZWM LIKE '%支行%' AND b.JIGOLEIX = '3' THEN '06'
               ELSE '05'
           END AS ORG_TYP,
           TRIM(
@@ -234,7 +247,7 @@ BEGIN
               WHEN b.JIGOUZWM LIKE '%测试%' THEN '2'
               ELSE '1'
           END AS ORG_STATE,
-          TO_NUMBER(LPAD(TO_CHAR(b.JIGOUHAO), 6, '0')) AS DSPLY_SEQ,
+          TO_NUMBER(LPAD(b.JIGOUHAO, 6, '0')) AS DSPLY_SEQ,
           NULL AS CREATR,
           TRIM(
               CASE
@@ -257,7 +270,7 @@ BEGIN
       LEFT JOIN DWD_TMP_JIGOU_BASE p
         ON b.YEWUGXJG = p.JIGOUHAO
       WHERE NOT (
-          LPAD(TO_CHAR(b.JIGOUHAO), 6, '0') IN ('000090', '000095', '010000', '001100', '002000', '002600')
+          LPAD(b.JIGOUHAO, 6, '0') IN ('000090', '000095', '010000', '001100', '002000', '002600')
           OR (
               NVL(b.JIGOUZWM, ' ') NOT LIKE '%营业部%'
               AND (NVL(b.JIGOUZWM, ' ') LIKE '%部%' OR NVL(b.JIGOUZWM, ' ') LIKE '%办公室%')
@@ -267,7 +280,7 @@ BEGIN
       UNION ALL
 
       SELECT
-          LPAD(TO_CHAR(b.JIGOUHAO), 6, '0') || 'a' AS ORG_ID,
+          LPAD(b.JIGOUHAO, 6, '0') || 'a' AS ORG_ID,
           '000000' AS SUP_ORG_ID,
           CASE
               WHEN b.JIGOUZWM LIKE '%乐山市商业银行%' THEN
@@ -284,7 +297,7 @@ BEGIN
           '02' AS ORG_TYP,
           '' AS ORG_ADDRS,
           '1' AS ORG_STATE,
-           TO_NUMBER(LPAD(TO_CHAR(b.JIGOUHAO), 6, '0')) AS DSPLY_SEQ,
+           TO_NUMBER(LPAD(b.JIGOUHAO, 6, '0')) AS DSPLY_SEQ,
           NULL AS CREATR,
           '' AS CREAT_TIME,
           NULL AS CREAT_ORG,
@@ -295,7 +308,7 @@ BEGIN
           NULL AS ORG_RSPONR,
           NULL AS ORG_TEL
       FROM DWD_TMP_JIGOU_BASE b
-      WHERE b.JIGOUHAO IN (10100, 10200, 10300, 10400, 10500, 10600, 10700, 10800, 10900, 11000, 11100, 12000)
+      WHERE b.JIGOUHAO IN ('010100', '010200', '010300', '010400', '010500', '010600', '010700', '010800', '010900', '011000', '011100', '012000')
   ) src;
 
   -- 记录第2段结束时间和耗时
@@ -336,7 +349,7 @@ BEGIN
       c.ORG_ID,
       c.SUP_ORG_ID,
       SYS_CONNECT_BY_PATH(c.ORG_ID, '/') || '/' AS ORG_PATH,
-      'L' || TO_CHAR(LEVEL) AS ORG_HARCY
+      TO_CHAR(LEVEL) AS ORG_HARCY
     FROM DWD_TMP_JIGOU_CODE c
    START WITH c.SUP_ORG_ID IS NULL
            OR c.SUP_ORG_ID = ''

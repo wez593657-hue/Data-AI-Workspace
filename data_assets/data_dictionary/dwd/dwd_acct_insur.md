@@ -21,9 +21,9 @@
 | PRDKT_CATE_BIG | 产品大类 | VARCHAR2(64) | - | - | - | - | - | - | - |
 | INSUR_BID_FORM_NO | 投保单号 | VARCHAR2(40) | - | - | - | - | - | - | - |
 | TX_DATE | 交易日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
-| TX_ORG | 交易机构 | VARCHAR2(6) | - | - | - | - | - | - | - |
+| TX_ORG | 交易机构 | VARCHAR2(7) | - | - | - | - | - | - | - |
 | TX_CHNL | 交易渠道 | VARCHAR2(10) | - | - | - | - | - | - | - |
-| MKT_ORG | 归属机构 | VARCHAR2(6) | - | - | - | - | - | - | - |
+| MKT_ORG | 归属机构 | VARCHAR2(7) | - | - | - | - | - | - | - |
 | BGN_INSUR_DATE | 起保日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | CANCL_INSUR_DATE | 退保日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | INSUR_PERIOD_TYP | 保险期间类型 | VARCHAR2(2) | - | - | - | - | - | - | - |

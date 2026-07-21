@@ -21,7 +21,7 @@
 | CUST_NAME | 客户名称 | VARCHAR2(100) | - | - | - | - | - | - | - |
 | ACCT_NO | 账号 | VARCHAR2(40) | - | - | - | - | - | - | - |
 | HAPN_BAL | 发生金额 | NUMBER(20,2) | - | - | - | - | - | - | - |
-| ORG_ID | 机构ID | VARCHAR2(6) | - | - | - | - | - | - | - |
+| ORG_ID | 机构ID | VARCHAR2(7) | - | - | - | - | - | - | - |
 | PHONE_NO | 手机号 | VARCHAR2(32) | - | - | - | - | - | - | - |
 | HDLE_STATE | 处理状态(0为浏览,1已浏览) | VARCHAR2(2) | - | - | - | - | - | - | - |
 | DC_FLAG | 借贷标志 | VARCHAR2(2) | - | - | - | - | - | - | - |

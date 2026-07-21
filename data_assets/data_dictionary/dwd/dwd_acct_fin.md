@@ -26,7 +26,7 @@
 | ACCT_STATE | 状态 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | INTRI_BGN_DATE | 起息日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | EXPR_DATE | 到期日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
-| OPRT_ORG | 归属机构 | VARCHAR2(6) | - | - | - | - | - | - | - |
+| OPRT_ORG | 归属机构 | VARCHAR2(7) | - | - | - | - | - | - | - |
 | CHNL_NO | 办理渠道 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | - | - | - | - | - | - | - |
 | ISSU_ORG | 发行机构 | VARCHAR2(6) | - | - | - | - | - | - | - |
@@ -48,7 +48,7 @@
 | ACCT_STATE | 状态 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | INTRI_BGN_DATE | 起息日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | EXPR_DATE | 到期日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
-| OPRT_ORG | 归属机构 | VARCHAR2(6) | - | - | - | - | - | - | - |
+| OPRT_ORG | 归属机构 | VARCHAR2(7) | - | - | - | - | - | - | - |
 | CHNL_NO | 办理渠道 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | - | - | - | - | - | - | - |
 | ISSU_ORG | 发行机构 | VARCHAR2(6) | - | - | - | - | - | - | - |

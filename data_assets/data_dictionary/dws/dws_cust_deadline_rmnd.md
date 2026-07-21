@@ -24,7 +24,7 @@
 | PRDKT_NAME | 产品名称 | VARCHAR2(100) | - | - | - | - | - | - | - |
 | EXPR_AMT | 到期金额 | NUMBER(20,2) | - | - | - | - | - | - | - |
 | EXPR_DATE | 到期日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
-| ORG_ID | 机构(客户经理所在机构) | VARCHAR2(6) | - | - | - | - | - | - | - |
+| ORG_ID | 机构(客户经理所在机构) | VARCHAR2(7) | - | - | - | - | - | - | - |
 | HDLE_STATE | 处理状态(0为未读,1已读) | VARCHAR2(2) | - | - | - | - | - | - | - |
 | RMND_DATE | 提醒日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | - | - | - | - | - | - | - |

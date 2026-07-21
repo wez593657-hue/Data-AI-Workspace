@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE pro_ads_cust_sleep_wake_dtl(
+CREATE OR REPLACE PROCEDURE PRO_ADS_CUST_SLEEP_WAKE_DTL(
     V_SYSDAT IN VARCHAR,
     OUTCDE   OUT INTEGER
 )
@@ -7,23 +7,22 @@ AS
   -- 存储过程：睡眠户唤醒明细
   --
   -- 业务规则：
-  -- 睡眠客户：AUM余额低于100元且近一年无主动动账交易
-  -- 已接触客户：当月管户经理有过有效电话、面访、企微和短信接触的客户
-  -- 已唤醒客户：必须持有产品（定期、理财、保险）
+  -- 1. 睡眠客户：AUM 余额低于 100 元且近一年无主动动账交易。
+  -- 2. 已接触客户：当月管户经理存在有效面访、电话、短信或企微记录。
+  -- 3. 已唤醒客户：持有定期、理财或保险产品。
   --
   -- 生成规则：
-  -- 1. 保留本过程的参数、异常处理框架和 SYS_PRC_STEP_LOGS 调用方式。
-  -- 2. 业务逻辑按实际处理链拆分，不预设固定的业务段数量。
-  -- 3. 每个物理临时表段按 TMP1、TMP2、TMP3... 顺序命名并独立处理。
-  -- 4. 每个临时表段必须依次包含：设置步骤号、记录开始时间、处理数据、COMMIT、
-  --    记录结束时间和耗时、调用 SYS_PRC_STEP_LOGS。
-  -- 5. 临时表段之间的 COMMIT 和日志调用不可省略，不得合并为过程末尾一次提交。
-  -- 6. 临时表段完成后，再按实际业务逻辑汇总写入目标表，并单独记录目标表步骤日志。
-  -- 7. 字段、来源表、过滤条件无法确认时保留 NULL 或明确占位，不得猜测业务规则。
-  -- 8. 字段、来源表、目标表都要带上注释并对齐。
+  -- 1. 业务逻辑按实际处理链拆分，不预设固定步骤数量。
+  -- 2. 每个物理临时表段按 TMP1、TMP2、TMP3... 顺序处理。
+  -- 3. 每个物理临时表段必须包含开始时间、处理逻辑、COMMIT、结束时间、耗时和
+  --    SYS_PRC_STEP_LOGS 调用，提交和日志不得省略。
+  -- 4. 临时表处理完成后，再写入目标表，并为目标表步骤单独记录日志。
+  -- 5. 未确认的业务规则不得猜测；LOAN_FLG 条件中的 1=1 为保守逻辑，
+  --    表示LOAN_FLG未配置时不判定任何客户为睡眠客户。
+  --    确认主动动账取值后，可直接替换为实际条件。
   ------------------------------------------------------------------
-  V_PRC_DESC             VARCHAR(100) := '睡眠户唤醒明细';
-  V_PRC_NAME             VARCHAR(32)  := 'pro_ads_cust_sleep_wake_dtl';
+  V_PRC_DESC             VARCHAR(100) := '睡眠户唤醒明细处理';
+  V_PRC_NAME             VARCHAR(64)  := 'PRO_ADS_CUST_SLEEP_WAKE_DTL';
   V_LOG_MSG              VARCHAR(4000);
   V_LOG_FLG              INTEGER;
   V_LOG_BUTTON           INTEGER := 1;
@@ -31,89 +30,43 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
+
+  PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
+  BEGIN
+    EXECUTE IMMEDIATE 'TRUNCATE TABLE ' || P_TABLE_NAME;
+  END;
+
 BEGIN
-  --***************************************
-  --1.自定义参数区
-  --***************************************
+  ------------------------------------------------------------------
+  -- 1. 参数检查
+  ------------------------------------------------------------------
   IF V_SYSDAT IS NULL
-     OR NOT V_SYSDAT ~ '^[0-9]{8}$'
+     OR NOT REGEXP_LIKE(V_SYSDAT, '^[0-9]{8}$')
   THEN
-    RAISE EXCEPTION 'V_SYSDAT must be in YYYYMMDD format';
+    RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
   END IF;
 
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
 
-  --***************************************
-  -- 2. 目标表准备
-  --***************************************
-  
-  DELETE FROM ads_cust_sleep_wake_dtl 
-  WHERE data_date = V_SYSDAT;
-
-  COMMIT;
-
-  V_NO_ID := '1';
-  V_BGN_DATE := NOW();
-  V_END_DATE := NOW();
-  V_DURA_DATE := EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER;
-  OUTCDE := 0;
-  V_LOG_MSG := '清理目标表完成，删除数据日期: ' || V_SYSDAT;
-  V_LOG_FLG := OUTCDE;
-
-  SYS_PRC_STEP_LOGS(
-      V_SYSDAT,
-      V_PRC_NAME,
-      V_PRC_DESC,
-      V_NO_ID,
-      V_BGN_DATE,
-      V_END_DATE,
-      V_DURA_DATE,
-      V_LOG_MSG,
-      V_LOG_FLG,
-      V_LOG_BUTTON
-  );
-
-  --***************************************
-  -- 3. 业务处理段
-  --***************************************
-
-  -- 3.1 TMP1: 临时表段 - 睡眠客户数据（AUM余额低于100元）
+  ------------------------------------------------------------------
+  -- 2. TMP1：清理当前数据日和睡眠户基础临时表
+  ------------------------------------------------------------------
   V_NO_ID := 'TMP1';
-  V_BGN_DATE := NOW();
+  V_BGN_DATE := SYSDATE;
 
-  DROP TABLE IF EXISTS tmp_sleep_cust;
-  CREATE TEMP TABLE tmp_sleep_cust AS
-  SELECT 
-      c.cust_id,                                  -- 客户编号
-      c.cust_name,                                -- 客户名称
-      COALESCE(l.cust_lvl, '00') AS cust_lvl,     -- 客户等级（从DWS_CUST_LVL_INFO获取）
-      a.depo_curnt_depo_bal,                      -- 活期余额
-      a.fixd_depo_bal,                            -- 定期余额
-      a.fin_bal,                                  -- 理财余额
-      c.host_cust_mngr_post_id AS post_id,        -- 管户经理
-      c.org_lead AS org_id                        -- 归属机构
-  FROM dwd_cust_indv_info c                      -- DWD层客户基本信息表
-  LEFT JOIN dws_cust_lvl_info l                  -- DWS层客户等级信息表
-      ON c.cust_id = l.cust_id
-  LEFT JOIN (
-      SELECT 
-          cust_id,
-          aum_bal,
-          depo_curnt_depo_bal,
-          fixd_depo_bal,
-          fin_bal
-      FROM dws_cust_asse_liab                    -- DWS层客户资产负债表(时点余额)
-      WHERE data_date = V_SYSDAT
-        AND bal_type = '1'                       -- 余额类型：1表示时点余额
-  ) a ON c.cust_id = a.cust_id
-  WHERE COALESCE(a.aum_bal, 0) < 100;           -- AUM余额低于100元
+  DELETE FROM ADS_CUST_SLEEP_WAKE_DTL D
+   WHERE D.DATA_DATE = V_SYSDAT;
 
+  DELETE FROM ADS_CUST_SLEEP_WAKE_DTL D
+   WHERE TO_DATE(D.DATA_DATE, 'YYYYMMDD') < ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'YYYY'), -36);
+
+  TRUNC_TMP('TMP_ADS_SLEEP_WAKE_BASE');
   COMMIT;
 
-  V_END_DATE := NOW();
-  V_DURA_DATE := EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER;
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP1 临时表处理完成，AUM<100元客户数: ' || (SELECT COUNT(*) FROM tmp_sleep_cust);
+  V_LOG_MSG := 'TMP1 完成：清理当前数据日明细和基础临时表';
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(
@@ -129,119 +82,82 @@ BEGIN
       V_LOG_BUTTON
   );
 
-  -- 3.2 TMP2: 临时表段 - 已接触客户数据
+  ------------------------------------------------------------------
+  -- 3. TMP2：生成睡眠户、接触状态和唤醒状态基础数据
+  ------------------------------------------------------------------
   V_NO_ID := 'TMP2';
-  V_BGN_DATE := NOW();
+  V_BGN_DATE := SYSDATE;
 
-  DROP TABLE IF EXISTS tmp_cust_contact;
-  CREATE TEMP TABLE tmp_cust_contact AS
-  SELECT 
-      m.cust_id,                                  -- 客户编号
-      '1' AS cntct_state                          -- 接触状态：1表示已接触
-  FROM ads_mkt_rec_info m                        -- ADS层营销记录表
-  WHERE TO_CHAR(TO_DATE(m.mkt_time, 'YYYY-MM-DD HH24:MI:SS'), 'YYYYMMDD') <= V_SYSDAT
-    AND m.mkt_time >= TO_CHAR(TO_DATE(V_SYSDAT, 'YYYYMMDD') - INTERVAL '1 month', 'YYYY-MM-DD HH24:MI:SS')
-    AND m.mkt_typ IN ('1', '2', '3', '4')        -- 营销类型：1面访/2电话/3短信/4企微
-  GROUP BY m.cust_id;
-
-  COMMIT;
-
-  V_END_DATE := NOW();
-  V_DURA_DATE := EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER;
-  OUTCDE := 0;
-  V_LOG_MSG := 'TMP2 临时表处理完成，已接触客户数: ' || (SELECT COUNT(*) FROM tmp_cust_contact);
-  V_LOG_FLG := OUTCDE;
-
-  SYS_PRC_STEP_LOGS(
-      V_SYSDAT,
-      V_PRC_NAME,
-      V_PRC_DESC,
-      V_NO_ID,
-      V_BGN_DATE,
-      V_END_DATE,
-      V_DURA_DATE,
-      V_LOG_MSG,
-      V_LOG_FLG,
-      V_LOG_BUTTON
-  );
-
-  -- 3.3 TMP3: 临时表段 - 已唤醒客户（持有产品：定期、理财、保险）
-  V_NO_ID := 'TMP3';
-  V_BGN_DATE := NOW();
-
-  DROP TABLE IF EXISTS tmp_wake_state;
-  CREATE TEMP TABLE tmp_wake_state AS
-  SELECT 
-      a.cust_id,
-      CASE WHEN COALESCE(a.fixd_depo_bal, 0) > 0 
-                OR COALESCE(a.fin_bal, 0) > 0 
-                OR COALESCE(a.insur_bal, 0) > 0 THEN '1' ELSE '0' END AS wake_state
-  FROM dws_cust_asse_liab a                      -- DWS层客户资产负债表
-  WHERE a.data_date = V_SYSDAT
-    AND a.bal_type = '1';                        -- 余额类型：1表示时点余额
-
-  COMMIT;
-
-  V_END_DATE := NOW();
-  V_DURA_DATE := EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER;
-  OUTCDE := 0;
-  V_LOG_MSG := 'TMP3 临时表处理完成，已唤醒客户数: ' || (SELECT COUNT(*) FROM tmp_wake_state WHERE wake_state = '1');
-  V_LOG_FLG := OUTCDE;
-
-  SYS_PRC_STEP_LOGS(
-      V_SYSDAT,
-      V_PRC_NAME,
-      V_PRC_DESC,
-      V_NO_ID,
-      V_BGN_DATE,
-      V_END_DATE,
-      V_DURA_DATE,
-      V_LOG_MSG,
-      V_LOG_FLG,
-      V_LOG_BUTTON
-  );
-
-  -- 3.4 目标表写入 - 睡眠户唤醒明细
-  V_NO_ID := '2';
-  V_BGN_DATE := NOW();
-
-  INSERT INTO ads_cust_sleep_wake_dtl (
-      data_date,           -- 数据日期
-      cust_id,             -- 客户编号
-      cust_name,           -- 客户名称
-      cust_lvl,            -- 客户等级
-      depo_curnt_depo_bal, -- 活期余额
-      fixd_depo_bal,       -- 定期余额
-      fin_amt,             -- 理财余额
-      cntct_state,         -- 接触状态：0未接触/1已接触
-      wake_state,          -- 唤醒状态：0未唤醒/1已唤醒
-      post_id,             -- 管户经理
-      org_id               -- 归属机构
+  INSERT INTO TMP_ADS_SLEEP_WAKE_BASE (
+      PERSN_LEGAL_BK_CODE,
+      CUST_ID,
+      CUST_NAME,
+      CUST_LVL,
+      DEPO_CURNT_DEPO_BAL,
+      FIXD_DEPO_BAL,
+      FIN_AMT,
+      CNTCT_STATE,
+      WAKE_STATE,
+      POST_ID,
+      ORG_ID
   )
-  SELECT 
-      V_SYSDAT AS data_date,
-      t.cust_id,
-      t.cust_name,
-      t.cust_lvl,
-      t.depo_curnt_depo_bal,
-      t.fixd_depo_bal,
-      t.fin_bal AS fin_amt,
-      COALESCE(c.cntct_state, '0') AS cntct_state,
-      COALESCE(w.wake_state, '0') AS wake_state,
-      t.post_id,
-      t.org_id
-  FROM tmp_sleep_cust t                          -- 临时表：睡眠客户
-  LEFT JOIN tmp_cust_contact c                   -- 临时表：已接触客户
-      ON t.cust_id = c.cust_id
-  LEFT JOIN tmp_wake_state w                     -- 临时表：已唤醒客户
-      ON t.cust_id = w.cust_id;
+  SELECT C.PERSN_LEGAL_BK_CODE,
+         C.CUST_ID,
+         C.CUST_NAME,
+         L.CUST_LVL,
+         NVL(A.DEPO_CURNT_DEPO_BAL, 0),
+         NVL(A.FIXD_DEPO_BAL, 0),
+         NVL(A.FIN_BAL, 0),
+         CASE
+           WHEN EXISTS (
+             SELECT 1
+               FROM ADS_MKT_REC_INFO R
+              WHERE R.CUST_ID = C.CUST_ID
+                AND R.MKT_PERSN = C.HOST_CUST_MNGR_POST_ID
+                AND R.MKT_TYP IN ('1', '2', '3', '4')
+                AND R.MKT_TIME IS NOT NULL
+                AND TO_DATE(REPLACE(SUBSTR(R.MKT_TIME, 1, 10), '-', ''), 'YYYYMMDD')
+                    BETWEEN TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'MM')
+                        AND TO_DATE(V_SYSDAT, 'YYYYMMDD')
+           ) THEN '1'
+           ELSE '0'
+         END,
+         CASE
+           WHEN NVL(A.FIXD_DEPO_BAL, 0) > 0
+             OR NVL(A.FIN_BAL, 0) > 0
+             OR NVL(A.INSUR_BAL, 0) > 0
+           THEN '1'
+           ELSE '0'
+         END,
+         C.HOST_CUST_MNGR_POST_ID,
+         C.ORG_LEAD
+    FROM DWD_CUST_INDV_INFO C
+    JOIN DWS_CUST_ASSE_LIAB A
+      ON A.CUST_ID = C.CUST_ID
+     AND A.DATA_DATE = TO_CHAR(TO_DATE(V_SYSDAT, 'YYYYMMDD') - 1, 'YYYYMMDD')
+     AND A.BAL_TYPE = '1'
+    LEFT JOIN DWS_CUST_LVL_INFO L
+      ON L.CUST_ID = C.CUST_ID
+     AND L.DATA_DT = V_SYSDAT
+   WHERE NVL(A.AUM_BAL, 0) < 100
+     AND NOT EXISTS (
+           SELECT 1
+             FROM DWD_TX_ASET T
+            WHERE T.CUST_ID = C.CUST_ID
+              AND TO_DATE(REPLACE(SUBSTR(T.TX_DATE, 1, 10), '-', ''), 'YYYYMMDD')
+                  BETWEEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - 365
+                      AND TO_DATE(V_SYSDAT, 'YYYYMMDD')
+              AND 1 = 1
+              /* 保守逻辑：LOAN_FLG未配置时不判定任何客户为睡眠客户。
+                 确认主动动账取值后，将1=1替换为实际条件，如：LOAN_FLG = '1' */
+         );
 
   COMMIT;
 
-  V_END_DATE := NOW();
-  V_DURA_DATE := EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER;
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := '第2个业务处理段完成，插入记录数: ' || SQL%ROWCOUNT;
+  V_LOG_MSG := 'TMP2 完成：生成睡眠户、接触和唤醒基础数据';
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(
@@ -257,18 +173,123 @@ BEGIN
       V_LOG_BUTTON
   );
 
-  -- ***************************************  
-  -- 4. 异常处理区（捕获错误码并记录详细日志）
-  -- ***************************************  
+  ------------------------------------------------------------------
+  -- 4. 目标表写入：生成月、季、年三个统计周期明细
+  ------------------------------------------------------------------
+  V_NO_ID := '3';
+  V_BGN_DATE := SYSDATE;
+
+  INSERT INTO ADS_CUST_SLEEP_WAKE_DTL (
+      PERSN_LEGAL_BK_CODE,
+      DATA_DATE,
+      CUST_ID,
+      CUST_NAME,
+      CUST_LVL,
+      DEPO_CURNT_DEPO_BAL,
+      FIXD_DEPO_BAL,
+      FIN_AMT,
+      CNTCT_STATE,
+      WAKE_STATE,
+      POST_ID,
+      ORG_ID,
+      STATIS_CYCLE
+  )
+  SELECT B.PERSN_LEGAL_BK_CODE,
+         V_SYSDAT,
+         B.CUST_ID,
+         B.CUST_NAME,
+         B.CUST_LVL,
+         B.DEPO_CURNT_DEPO_BAL,
+         B.FIXD_DEPO_BAL,
+         B.FIN_AMT,
+         B.CNTCT_STATE,
+         B.WAKE_STATE,
+         B.POST_ID,
+         B.ORG_ID,
+         P.STATIS_CYCLE
+    FROM TMP_ADS_SLEEP_WAKE_BASE B
+   CROSS JOIN (
+         SELECT 'M' AS STATIS_CYCLE FROM DUAL
+         UNION ALL
+         SELECT 'Q' AS STATIS_CYCLE FROM DUAL
+         UNION ALL
+         SELECT 'N' AS STATIS_CYCLE FROM DUAL
+   ) P;
+
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '第3段完成：写入睡眠户唤醒明细';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT,
+      V_PRC_NAME,
+      V_PRC_DESC,
+      V_NO_ID,
+      V_BGN_DATE,
+      V_END_DATE,
+      V_DURA_DATE,
+      V_LOG_MSG,
+      V_LOG_FLG,
+      V_LOG_BUTTON
+  );
+
+  ------------------------------------------------------------------
+  -- 5. 历史客群持续经营：累计更新上一月、上一季、上一年状态
+  ------------------------------------------------------------------
+  V_NO_ID := '4';
+  V_BGN_DATE := SYSDATE;
+
+  UPDATE ADS_CUST_SLEEP_WAKE_DTL D
+     SET D.CNTCT_STATE = CASE
+                           WHEN D.CNTCT_STATE = '1'
+                             OR EXISTS (
+                               SELECT 1
+                                 FROM ADS_MKT_REC_INFO R
+                                WHERE R.CUST_ID = D.CUST_ID
+                                  AND R.MKT_PERSN = D.POST_ID
+                                  AND R.MKT_TYP IN ('1', '2', '3', '4')
+                                  AND R.MKT_TIME IS NOT NULL
+                                  AND TO_DATE(REPLACE(SUBSTR(R.MKT_TIME, 1, 10), '-', ''), 'YYYYMMDD')
+                                      BETWEEN TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'MM')
+                                          AND TO_DATE(V_SYSDAT, 'YYYYMMDD')
+                             ) THEN '1' ELSE '0' END,
+         D.WAKE_STATE = CASE
+                          WHEN D.WAKE_STATE = '1'
+                            OR EXISTS (
+                              SELECT 1
+                                FROM DWS_CUST_ASSE_LIAB A
+                               WHERE A.CUST_ID = D.CUST_ID
+                                 AND A.DATA_DATE = TO_CHAR(TO_DATE(V_SYSDAT, 'YYYYMMDD') - 1, 'YYYYMMDD')
+                                 AND A.BAL_TYPE = '1'
+                                 AND (NVL(A.FIXD_DEPO_BAL, 0) > 0 OR NVL(A.FIN_BAL, 0) > 0 OR NVL(A.INSUR_BAL, 0) > 0)
+                            ) THEN '1' ELSE '0' END
+   WHERE (D.STATIS_CYCLE = 'M' AND D.DATA_DATE = TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'YYYYMMDD'), -1)), 'YYYYMMDD'))
+      OR (D.STATIS_CYCLE = 'Q' AND D.DATA_DATE = TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'Q') - 1, 'YYYYMMDD'))
+      OR (D.STATIS_CYCLE = 'N' AND D.DATA_DATE = TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'YYYY') - 1, 'YYYYMMDD'));
+
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '第4段完成：累计更新上一月、上一季、上一年睡眠户经营状态';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
+
 EXCEPTION
   WHEN OTHERS THEN
     OUTCDE := -1;
     ROLLBACK;
 
-    V_END_DATE := NOW();
+    V_END_DATE := SYSDATE;
     V_DURA_DATE := CASE
                      WHEN V_BGN_DATE IS NULL OR V_END_DATE IS NULL THEN NULL
-                     ELSE EXTRACT(EPOCH FROM (V_END_DATE - V_BGN_DATE))::INTEGER
+                     ELSE TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60)
                    END;
     V_LOG_MSG := SUBSTR(SQLERRM, 1, 1000);
     V_LOG_FLG := OUTCDE;
@@ -288,3 +309,4 @@ EXCEPTION
 
     RAISE;
 END;
+/

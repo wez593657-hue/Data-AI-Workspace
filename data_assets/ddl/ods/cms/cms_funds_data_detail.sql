@@ -11,9 +11,9 @@
 -- DROP TABLE crmdm.cms_funds_data_detail;
 
 CREATE TABLE crmdm.cms_funds_data_detail (
-	serialno varchar(32) NOT NULL,
-	relativeserialno varchar(32) NOT NULL,
-	zhaiyao varchar(50) NULL,
-	jkfse numeric(24, 6) NULL
+    serialno varchar(32) NOT NULL,
+    relativeserialno varchar(32) NOT NULL,
+    zhaiyao varchar(50) NULL,
+    jkfse numeric(24,
+    6) NULL
 );
-

@@ -24,7 +24,7 @@
 | CCY_CD | 币种 | VARCHAR2(4) | - | - | - | - | - | - | - |
 | BAL | 余额 | NUMBER(20,2) | - | - | - | - | - | - | - |
 | RMB_BAL | 折人民币余额 | NUMBER(20,2) | - | - | - | - | - | - | - |
-| OPEN_ACCT_ORG | 归属机构 | VARCHAR2(6) | - | - | - | - | - | - | - |
+| OPEN_ACCT_ORG | 归属机构 | VARCHAR2(7) | - | - | - | - | - | - | - |
 | OPEN_DATE | 开户日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
 | RATE_INTRI | 利率 | NUMBER(20,2) | - | - | - | - | - | - | - |
 | INTRI_BGN_DATE | 起息日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
