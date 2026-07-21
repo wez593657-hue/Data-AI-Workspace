@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Harness Evidence",
+  "type": "object",
+  "required": ["evidence_id", "phase", "kind", "result", "created_at"],
+  "properties": {
+    "evidence_id": {"type": "string"},
+    "phase": {"type": "string"},
+    "kind": {"type": "string"},
+    "path": {"type": "string"},
+    "sha256": {"type": "string"},
+    "result": {"enum": ["passed", "failed", "blocked"]},
+    "created_at": {"type": "string"}
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Harness Task",
+  "type": "object",
+  "required": ["schema_version", "task_id", "purpose", "state", "branch", "evidence_ids"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "task_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$"},
+    "purpose": {"type": "string", "minLength": 1},
+    "workflow_profile": {"enum": ["data_warehouse", "harness"]},
+    "state": {"type": "string"},
+    "branch": {"type": "string"},
+    "evidence_ids": {"type": "array", "items": {"type": "string"}},
+    "allowed_paths": {"type": "array", "items": {"type": "string"}},
+    "forbidden_paths": {"type": "array", "items": {"type": "string"}},
+    "history": {"type": "array"}
+  },
+  "additionalProperties": true
+}

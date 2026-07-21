@@ -1,0 +1,15 @@
+version: "0.1"
+default:
+  allowed:
+    - docs/
+    - requirements/
+    - templates/
+    - checklists/
+    - scripts/harness/
+    - .harness/
+  forbidden:
+    - .github/
+    - hooks/
+    - secrets/
+    - .env
+  note: 用户确认后仍需按任务 change_manifest.yaml 缩小范围

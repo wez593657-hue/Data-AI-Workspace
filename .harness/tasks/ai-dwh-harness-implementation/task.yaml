@@ -1,0 +1,98 @@
+schema_version: '0.1'
+task_id: ai-dwh-harness-implementation
+purpose: 持续实施 AI 数据仓库开发 Harness
+state: COMMIT_ALLOWED
+branch: feature/ai-repair-loop
+created_at: '2026-07-21T15:44:44+00:00'
+updated_at: '2026-07-21T16:36:52+00:00'
+evidence_ids:
+- E-0001
+- E-0002
+- E-0003
+- E-0004
+- E-0005
+- E-0006
+- E-0007
+- E-0008
+- E-0009
+- E-0010
+- E-0011
+- E-0012
+- E-0013
+- E-0014
+- E-0015
+- E-0016
+- E-0017
+- E-0018
+- E-0019
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-21T15:44:44+00:00'
+- from: CREATED
+  to: WORKSPACE_CHECKED
+  reason: 已记录项目规则、设计、实施计划、校验入口和 Hook 读取证据
+  at: '2026-07-21T15:45:57+00:00'
+- from: WORKSPACE_CHECKED
+  to: BLOCKED
+  reason: 当前状态机只覆盖数据仓库业务需求链路，未定义 Harness 自身实施所需的工作流类型；继续迁移会迫使任务伪造业务需求、记忆卡片和业务规则证据。
+  at: '2026-07-21T15:48:18+00:00'
+- from: BLOCKED
+  to: WORKSPACE_CHECKED
+  reason: 恢复条件已验证
+  at: '2026-07-21T15:56:16+00:00'
+- from: WORKSPACE_CHECKED
+  to: IMPLEMENTATION_READY
+  reason: 实现范围已确认，Harness 工作流门禁通过
+  at: '2026-07-21T16:02:18+00:00'
+- from: IMPLEMENTATION_READY
+  to: QUICK_VALIDATION_PASSED
+  reason: 基础 Harness 快速校验全部通过
+  at: '2026-07-21T16:04:34+00:00'
+- from: QUICK_VALIDATION_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: Harness 任务范围完整校验通过，工作区全量校验的Git未跟踪文件问题已单独记录并未绕过
+  at: '2026-07-21T16:07:30+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户明确批准继续 Harness 实施，未授权提交或推送
+  at: '2026-07-21T16:13:04+00:00'
+- from: USER_APPROVED
+  to: BLOCKED
+  reason: 用户已批准继续开发，但当前 harness 工作流在 USER_APPROVED 后只允许进入 COMMIT_ALLOWED；没有“继续下一实施阶段”的状态。将继续开发视为提交授权会违反项目规则。
+  at: '2026-07-21T16:14:18+00:00'
+- from: BLOCKED
+  to: USER_APPROVED
+  reason: 恢复条件已验证
+  at: '2026-07-21T16:21:42+00:00'
+- from: USER_APPROVED
+  to: NEXT_PHASE_ALLOWED
+  reason: 持续开发授权证据已记录，未触发发布路径
+  at: '2026-07-21T16:22:17+00:00'
+- from: NEXT_PHASE_ALLOWED
+  to: IMPLEMENTATION_READY
+  reason: 下一阶段范围已明确，继续实现需求版本、记忆卡片和读取清单校验
+  at: '2026-07-21T16:23:02+00:00'
+- from: IMPLEMENTATION_READY
+  to: QUICK_VALIDATION_PASSED
+  reason: 需求版本、记忆卡片和读取清单基础能力快速校验通过
+  at: '2026-07-21T16:29:00+00:00'
+- from: QUICK_VALIDATION_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: 需求版本、记忆卡片和读取清单基础能力完整校验通过
+  at: '2026-07-21T16:30:23+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户已批准当前验证结果进入发布流程
+  at: '2026-07-21T16:36:38+00:00'
+- from: USER_APPROVED
+  to: RELEASE_APPROVED
+  reason: 用户已明确要求提交并推送，发布审批通过
+  at: '2026-07-21T16:36:44+00:00'
+- from: RELEASE_APPROVED
+  to: COMMIT_ALLOWED
+  reason: 提交授权证据已记录，允许执行本次 Harness commit
+  at: '2026-07-21T16:36:52+00:00'
+workflow_profile: harness

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Business Rule",
+  "type": "object",
+  "required": ["rule_id", "description", "source", "status"],
+  "properties": {
+    "rule_id": {"type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]+$"},
+    "description": {"type": "string", "minLength": 1},
+    "source": {"type": "object", "required": ["file", "section"]},
+    "status": {"enum": ["confirmed", "pending", "blocked"]}
+  }
+}

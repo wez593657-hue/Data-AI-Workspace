@@ -1,0 +1,8 @@
+evidence_id: E-0008
+phase: QUICK_VALIDATION_PASSED
+kind: quick_validation
+purpose: quick_validation
+result: passed
+details: 5项单元测试通过；所有 Python 文件 py_compile 通过；5个 JSON/YAML 配置集合解析通过；git diff --check
+  通过。
+created_at: '2026-07-21T16:03:35+00:00'

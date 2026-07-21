@@ -1,0 +1,7 @@
+evidence_id: E-0011
+phase: USER_APPROVED
+kind: user_approval
+purpose: user_approval
+result: passed
+details: 用户于2026-07-22明确回复“继续”，批准继续 Harness 实施；不等同于 commit、push 或 PR 授权。
+created_at: '2026-07-21T16:12:11+00:00'

@@ -1,0 +1,7 @@
+evidence_id: E-0018
+phase: RELEASE_APPROVED
+kind: release_approval
+purpose: release_approval
+result: passed
+details: 用户明确命令“提交并推送”，批准当前 Harness 变更进入 RELEASE_APPROVED；不扩大到其他未确认文件。
+created_at: '2026-07-21T16:35:50+00:00'

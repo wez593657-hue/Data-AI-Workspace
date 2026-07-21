@@ -1,0 +1,9 @@
+schema_version: "0.1"
+task_root: .harness/tasks
+allowed_path_policy: .harness/policies/allowed_paths.yaml
+phase_gate_policy: .harness/policies/phase_gates.yaml
+required_evidence_policy: .harness/policies/required_evidence.yaml
+fail_closed: true
+allow_direct_shell_mutation: false
+allow_direct_git_commit: false
+allow_direct_git_push: false
