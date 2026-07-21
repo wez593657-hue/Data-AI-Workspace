@@ -1,10 +1,10 @@
 schema_version: '0.1'
 task_id: ai-dwh-harness-implementation
 purpose: 持续实施 AI 数据仓库开发 Harness
-state: COMMIT_ALLOWED
+state: COMPLETED
 branch: feature/ai-repair-loop
 created_at: '2026-07-21T15:44:44+00:00'
-updated_at: '2026-07-21T16:36:52+00:00'
+updated_at: '2026-07-21T16:42:40+00:00'
 evidence_ids:
 - E-0001
 - E-0002
@@ -25,6 +25,7 @@ evidence_ids:
 - E-0017
 - E-0018
 - E-0019
+- E-0020
 allowed_paths: []
 forbidden_paths: []
 history:
@@ -95,4 +96,8 @@ history:
   to: COMMIT_ALLOWED
   reason: 提交授权证据已记录，允许执行本次 Harness commit
   at: '2026-07-21T16:36:52+00:00'
+- from: COMMIT_ALLOWED
+  to: COMPLETED
+  reason: 提交已创建，完成证据已记录
+  at: '2026-07-21T16:42:40+00:00'
 workflow_profile: harness
