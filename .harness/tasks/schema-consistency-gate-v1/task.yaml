@@ -2,7 +2,7 @@ schema_version: '0.1'
 task_id: schema-consistency-gate-v1
 purpose: 阶段5：全量DDL、数据字典和Mapping一致性门禁
 workflow_profile: harness
-state: CREATED
+state: FULL_VALIDATION_PASSED
 branch: feature/ai-repair-loop
 created_at: '2026-07-21T17:03:32+00:00'
 updated_at: '2026-07-22T02:58:10+00:00'
@@ -27,3 +27,6 @@ history:
   to: CREATED
   reason: 恢复条件已验证
   at: '2026-07-22T02:47:58+00:00'
+- from: CREATED
+  to: FULL_VALIDATION_PASSED
+  reason: schema consistency 报告 status=passed，差异和未解析项均为0

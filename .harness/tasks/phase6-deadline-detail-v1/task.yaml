@@ -2,7 +2,7 @@ schema_version: '0.1'
 task_id: phase6-deadline-detail-v1
 purpose: 阶段6：到期承接明细SQL与存储过程逻辑门禁
 workflow_profile: data_warehouse
-state: CREATED
+state: REVERSE_LOGIC_PASSED
 branch: feature/ai-repair-loop
 created_at: '2026-07-22T03:12:47+00:00'
 updated_at: '2026-07-22T03:36:24+00:00'
@@ -25,3 +25,6 @@ history:
   to: CREATED
   reason: 恢复条件已验证
   at: '2026-07-22T03:36:24+00:00'
+- from: CREATED
+  to: REVERSE_LOGIC_PASSED
+  reason: logic gate 报告 status=passed，规则覆盖和反向逻辑检查通过
