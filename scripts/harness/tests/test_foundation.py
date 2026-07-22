@@ -25,6 +25,7 @@ from scripts.harness.task_manager import (
     resume_task,
     transition_task,
 )
+from scripts.harness.state_integrity import StateIntegrityError, state_seal, validate_history
 
 
 class StateMachineTests(unittest.TestCase):
@@ -109,6 +110,28 @@ class TaskLifecycleTests(unittest.TestCase):
             resume_task(root, task_id, "采用最新版本规则", "用户确认记录")
             _, payload = load_task(root, task_id)
             self.assertEqual(payload["state"], "CREATED")
+
+    def test_direct_state_edit_is_detected_by_seal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            task_id = "sealed-task"
+            create_task(root, task_id, "sealed state test")
+            task_path = root / ".harness" / "tasks" / task_id / "task.yaml"
+            payload = yaml.safe_load(task_path.read_text(encoding="utf-8"))
+            payload["state"] = "FULL_VALIDATION_PASSED"
+            task_path.write_text(yaml.safe_dump(payload, allow_unicode=True, sort_keys=False), encoding="utf-8")
+            with self.assertRaises(TaskError):
+                transition_task(root, task_id, "WORKSPACE_CHECKED", "tampered state")
+
+    def test_invalid_history_is_rejected(self):
+        payload = {
+            "task_id": "invalid-history",
+            "workflow_profile": "data_warehouse",
+            "state": "TEST_PASSED",
+            "history": [{"from": None, "to": "CREATED"}, {"from": "CREATED", "to": "TEST_PASSED"}],
+        }
+        with self.assertRaises(StateIntegrityError):
+            validate_history(payload)
 
 
 class RequirementGuardTests(unittest.TestCase):

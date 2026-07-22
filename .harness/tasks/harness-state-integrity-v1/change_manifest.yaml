@@ -1,0 +1,20 @@
+schema_version: '0.1'
+task_id: harness-state-integrity-v1
+user_confirmation: confirmed
+objective: 通过状态历史校验和状态封印阻止任务状态直接修改，不修改业务数据资产
+allowed_changes:
+  - path: scripts/harness/state_integrity.py
+    purpose: 校验任务状态历史和状态封印
+  - path: scripts/harness/task_manager.py
+    purpose: 在任务读取和迁移时接入完整性校验
+  - path: scripts/harness/tests/test_foundation.py
+    purpose: 增加直接改状态和非法历史测试
+  - path: scripts/harness/tests/test_state_integrity.py
+    purpose: 状态封印单元测试
+  - path: .harness/tasks/harness-state-integrity-v1/
+    purpose: 整改任务及证据
+read_only_inputs:
+  - scripts/harness/state_machine.py
+  - scripts/harness/evidence_store.py
+  - .harness/policies/phase_gates.yaml
+  - .harness/policies/allowed_paths.yaml

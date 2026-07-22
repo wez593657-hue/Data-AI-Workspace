@@ -21,6 +21,7 @@ from .state_machine import (
     validate_required_evidence,
     validate_transition,
 )
+from .state_integrity import StateIntegrityError, state_seal, validate_task_integrity
 
 
 TASK_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{2,63}$")
@@ -70,11 +71,16 @@ def task_file(root: Path, task_id: str) -> Path:
 def load_task(root: Path, task_id: str) -> tuple[Path, dict[str, Any]]:
     directory = task_dir(root, task_id)
     payload = read_yaml(directory / "task.yaml")
+    try:
+        validate_task_integrity(payload)
+    except StateIntegrityError as error:
+        raise TaskError(f"任务状态完整性校验失败: {error}") from error
     return directory, payload
 
 
 def save_task(directory: Path, payload: dict[str, Any]) -> None:
     payload["updated_at"] = utc_now()
+    payload["state_seal"] = state_seal(payload)
     write_yaml(directory / "task.yaml", payload)
 
 
@@ -171,6 +177,10 @@ def add_file_read_evidence(
 
 def transition_task(root: Path, task_id: str, target: str, reason: str) -> dict[str, Any]:
     directory, payload = load_task(root, task_id)
+    try:
+        validate_task_integrity(payload, require_seal=True)
+    except StateIntegrityError as error:
+        raise TaskError(f"任务状态不可迁移: {error}") from error
     source = payload["state"]
     workflow = payload.get("workflow_profile", "data_warehouse")
     if (root / ".harness" / "policies" / "phase_gates.yaml").exists():
