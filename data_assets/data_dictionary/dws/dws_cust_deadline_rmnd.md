@@ -13,26 +13,26 @@
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 |--------|-------------|----------|------|----------|--------|------|------|----------|----------|
-| RMND_ID | 到期提醒ID | VARCHAR2(40) | - | - | - | - | - | - | - |
-| RMND_TYP | 提醒类型 | VARCHAR2(6) | - | - | - | - | - | - | - |
-| RMND_NAME | 提醒名称 | VARCHAR2(100) | - | - | - | - | - | - | - |
-| MNGR_POST_ID | 客户经理编号 | VARCHAR2(20) | - | - | - | - | - | - | - |
-| MNGR_NAME | 客户经理名称 | VARCHAR2(120) | - | - | - | - | - | - | - |
-| CUST_ID | 客户ID | VARCHAR2(20) | - | - | - | - | - | - | - |
-| CUST_TYP | 客户类型 | VARCHAR2(6) | - | - | - | - | - | - | - |
-| CUST_NAME | 客户名称 | VARCHAR2(100) | - | - | - | - | - | - | - |
-| PRDKT_NAME | 产品名称 | VARCHAR2(100) | - | - | - | - | - | - | - |
-| EXPR_AMT | 到期金额 | NUMBER(20,2) | - | - | - | - | - | - | - |
-| EXPR_DATE | 到期日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
-| ORG_ID | 机构(客户经理所在机构) | VARCHAR2(6) | - | - | - | - | - | - | - |
-| HDLE_STATE | 处理状态(0为未读,1已读) | VARCHAR2(2) | - | - | - | - | - | - | - |
-| RMND_DATE | 提醒日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | - | - | - | - | - | - | - |
-| HDLE_TIME | 处理时间 | VARCHAR2(20) | - | - | - | - | - | - | - |
-| DEL_FLG | 删除标志 1 是 0 否 | CHAR(1) | - | - | - | - | - | - | - |
-| PHONE_NO | 手机号 | VARCHAR2(20) | - | - | - | - | - | - | - |
-| RMND_INF | 提醒内容 | VARCHAR2(200) | - | - | - | - | - | - | - |
-| CUST_LVL | 客户层级 | VARCHAR2(2) | - | - | - | - | - | - | - |
+| RMND_ID | 到期提醒ID | VARCHAR | 40 | - | - | - | - | - | - |
+| RMND_TYP | 提醒类型 | VARCHAR | 6 | - | - | - | - | - | - |
+| RMND_NAME | 提醒名称 | VARCHAR | 100 | - | - | - | - | - | - |
+| MNGR_POST_ID | 客户经理编号 | VARCHAR | 20 | - | - | - | - | - | - |
+| MNGR_NAME | 客户经理名称 | VARCHAR | 120 | - | - | - | - | - | - |
+| CUST_ID | 客户ID | VARCHAR | 20 | - | - | - | - | - | - |
+| CUST_TYP | 客户类型 | VARCHAR | 6 | - | - | - | - | - | - |
+| CUST_NAME | 客户名称 | VARCHAR | 100 | - | - | - | - | - | - |
+| PRDKT_NAME | 产品名称 | VARCHAR | 100 | - | - | - | - | - | - |
+| EXPR_AMT | 到期金额 | NUMBER | 20,2 | - | - | - | - | - | - |
+| EXPR_DATE | 到期日期 | VARCHAR | 10 | - | - | - | - | - | - |
+| ORG_ID | 机构(客户经理所在机构) | VARCHAR | 7 | - | - | - | - | - | - |
+| HDLE_STATE | 处理状态(0为未读,1已读) | VARCHAR | 2 | - | - | - | - | - | - |
+| RMND_DATE | 提醒日期 | VARCHAR | 10 | - | - | - | - | - | - |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 4 | - | - | - | - | - | - |
+| HDLE_TIME | 处理时间 | VARCHAR | 20 | - | - | - | - | - | - |
+| DEL_FLG | 删除标志 1 是 0 否 | CHAR | 1 | - | - | - | - | - | - |
+| PHONE_NO | 手机号 | VARCHAR | 20 | - | - | - | - | - | - |
+| RMND_INF | 提醒内容 | VARCHAR | 200 | - | - | - | - | - | - |
+| CUST_LVL | 客户层级 | VARCHAR | 2 | - | - | - | - | - | - |
 
 ---
 *数据字典版本: v1.0 | 生成时间: 2026-07-17*
