@@ -17,9 +17,9 @@
 |--------|--------------|----------|------|----------|--------|------|------|----------|----------|--------|----------|
 | interest_no | 【待确认】 | VARCHAR | 32 | NOT NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.interest_no | 【待确认】 | 2026-07-17 |
 | time_step | 【待确认】 | VARCHAR | 3 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.time_step | 【待确认】 | 2026-07-17 |
-| begin_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.begin_amt | 【待确认】 | 2026-07-17 |
-| end_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.end_amt | 【待确认】 | 2026-07-17 |
-| host_rate | 【待确认】 | NUMERIC | 12, 5 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.host_rate | 【待确认】 | 2026-07-17 |
+| begin_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.begin_amt | 【待确认】 | 2026-07-17 |
+| end_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.end_amt | 【待确认】 | 2026-07-17 |
+| host_rate | 【待确认】 | NUMERIC | 12,5 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.host_rate | 【待确认】 | 2026-07-17 |
 | trans_channel | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.trans_channel | 【待确认】 | 2026-07-17 |
 | begin_cust_level | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.begin_cust_level | 【待确认】 | 2026-07-17 |
 | end_cust_level | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.end_cust_level | 【待确认】 | 2026-07-17 |
@@ -27,5 +27,5 @@
 | crt_time | 【待确认】 | BPCHAR | 6 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.crt_time | 【待确认】 | 2026-07-17 |
 | upd_date | 【待确认】 | BPCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.upd_date | 【待确认】 | 2026-07-17 |
 | upd_time | 【待确认】 | BPCHAR | 6 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.upd_time | 【待确认】 | 2026-07-17 |
-| rate | 【待确认】 | NUMERIC | 12, 8 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.rate | 【待确认】 | 2026-07-17 |
+| rate | 【待确认】 | NUMERIC | 12,8 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.rate | 【待确认】 | 2026-07-17 |
 | ryzd | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_interest_prj_detail.ryzd | 【待确认】 | 2026-07-17 |

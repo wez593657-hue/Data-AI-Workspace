@@ -1,0 +1,41 @@
+schema_version: '0.1'
+task_id: phase6-deadline-detail-v1
+user_confirmation: confirmed
+objective: 仅补齐到期承接 ADS 明细表和统计表 Mapping，不修改任何 DWD 或 DWS 上游资产
+evidence:
+  - requirements/到期承接规则记忆卡片.md
+  - data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_dtl.sql
+  - data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_statis.sql
+allowed_changes:
+  - path: data_assets/mapping/dws_to_ads/ADS应用层数据模型_CRM_ V1.0.xlsx
+    sheets:
+      - 到期承接明细表
+      - 到期承接统计表
+    columns:
+      - 源系统表名
+      - 源表别名
+      - 源系统字段英文名
+      - 源系统字段中文名
+      - 映射规则
+  - path: data_assets/mapping/dws_to_ads/dws到ads映射.md
+    sections:
+      - ADS_CUST_DEADLINE_RMND_DTL
+      - ADS_CUST_DEADLINE_RMND_STATIS
+  - path: scripts/harness/sync_deadline_ads_mapping.py
+    purpose: 定向同步上述两个 ADS 目标表
+  - path: docs/16_Execution_Rules.md
+    purpose: 固化目标任务白名单和上游只读规则
+  - path: .harness/policies/allowed_paths.yaml
+    purpose: 固化 Harness 白名单策略
+read_only_inputs:
+  - requirements/到期承接规则记忆卡片.md
+  - data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_dtl.sql
+  - data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_statis.sql
+  - data_assets/ddl/ads/ads_cust_deadline_rmnd_dtl.sql
+  - data_assets/ddl/ads/ads_cust_deadline_rmnd_statis.sql
+  - data_assets/data_dictionary/ads/ads_cust_deadline_rmnd_dtl.md
+  - data_assets/data_dictionary/ads/ads_cust_deadline_rmnd_statis.md
+  - data_assets/mapping/dwd_to_dws/DWS汇总层数据模型_CRM_ V1.0.xlsx
+  - data_assets/mapping/ods_to_dwd/DWD明细层数据模型_CRM_ V1.0.xlsx
+  - data_assets/mapping/ods_to_dwd/ods到dwd映射.md
+  - data_assets/mapping/dwd_to_dws/dwd到dws映射.md

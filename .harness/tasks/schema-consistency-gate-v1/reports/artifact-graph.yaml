@@ -1,0 +1,1436 @@
+schema_version: '0.1'
+status: passed
+nodes:
+- table:ACCT_BUSINESS_ACCOUNT#field:AccountNo
+- table:ACCT_LOAN#field:ACCRUEDINTEREST<br>OVERDUEINTEREST<br>PRINCIPALPENALTY<br>INTERESTPENALTY
+- table:ACCT_LOAN#field:BusinessSum
+- table:ACCT_LOAN#field:BusinessType
+- table:ACCT_LOAN#field:ClassifyResult
+- table:ACCT_LOAN#field:LoanStatus
+- table:ACCT_LOAN#field:MaturityDate
+- table:ACCT_LOAN#field:NormalBalance+OverdueBalance
+- table:ACCT_LOAN#field:PutoutDate
+- table:ACCT_LOAN#field:SerialNo
+- table:ACCT_RATE_SEGMENT#field:BusinessRate
+- table:ACCT_RPT_SEGMENT#field:TermID
+- table:BUSINESS_CONTRACT#field:Balance
+- table:BUSINESS_CONTRACT#field:BusienssSum
+- table:BUSINESS_CONTRACT#field:BusinessCurrency
+- table:BUSINESS_CONTRACT#field:ClassifyResult
+- table:BUSINESS_CONTRACT#field:ManageOrgID
+- table:BUSINESS_CONTRACT#field:ManageUserID
+- table:BUSINESS_CONTRACT#field:MaturityDate
+- table:BUSINESS_CONTRACT#field:PutoutDate
+- table:BUSINESS_CONTRACT#field:Serialno
+- table:BUSINESS_CONTRACT#field:VouchType
+- table:BUSINESS_TYPE#field:BaseTypeNo
+- table:BUSINESS_TYPE#field:TypeName
+- table:CBS_KCEV_KHPZHE#field:PINGZHZL
+- table:CBS_KDPA_KEHUZH#field:ZHHUFENL
+- table:CBS_KDPA_ZHXINX#field:CSQIXIRQ
+- table:CBS_KDPA_ZHXINX#field:CUNQIIII
+- table:CBS_KDPA_ZHXINX#field:DOQIRIQI
+- table:CBS_KDPA_ZHXINX#field:FZCPLEIX
+- table:CBS_KDPA_ZHXINX#field:HUOBDAIH
+- table:CBS_KDPA_ZHXINX#field:KAIHJIGO
+- table:CBS_KDPA_ZHXINX#field:KAIHRIQI
+- table:CBS_KDPA_ZHXINX#field:KEHUHAOO
+- table:CBS_KDPA_ZHXINX#field:KEHUZHAO
+- table:CBS_KDPA_ZHXINX#field:XIOHRIQI
+- table:CBS_KDPA_ZHXINX#field:ZHANGHAO
+- table:CBS_KDPA_ZHXINX#field:ZHHUYUEE
+- table:CBS_KDPA_ZHXINX#field:ZHHUZTAI
+- table:CBS_KDPA_ZHXINX#field:ZHIXLILV
+- table:CBS_KDPF_CHPSHX#field:CHANPSHM
+- table:CBS_KDPF_CHPSHX#field:CHAPBHAO
+- table:CBS_KDPL_ZHMINX#field:BEIZHUUU
+- table:CBS_KDPL_ZHMINX#field:CAOZGUIY
+- table:CBS_KDPL_ZHMINX#field:CHAPBHAO
+- table:CBS_KDPL_ZHMINX#field:DUIFJGDM
+- table:CBS_KDPL_ZHMINX#field:DUIFJGMC
+- table:CBS_KDPL_ZHMINX#field:DUIFKHZH
+- table:CBS_KDPL_ZHMINX#field:DUIFMINC
+- table:CBS_KDPL_ZHMINX#field:JIAOYBIZ
+- table:CBS_KDPL_ZHMINX#field:JIAOYIJE
+- table:CBS_KDPL_ZHMINX#field:JIAOYIRQ
+- table:CBS_KDPL_ZHMINX#field:JIAOYISJ
+- table:CBS_KDPL_ZHMINX#field:JIEDAIBZ
+- table:CBS_KDPL_ZHMINX#field:JYYYJIGO
+- table:CBS_KDPL_ZHMINX#field:KAIHJIGO
+- table:CBS_KDPL_ZHMINX#field:KEHUZHAO
+- table:CBS_KDPL_ZHMINX#field:QDAOLEIX
+- table:CBS_KDPL_ZHMINX#field:ZHANGHAO
+- table:CBS_KDPL_ZHMINX#field:ZHANGHYE
+- table:CUSTOMER_INFO#field:CustomerName
+- table:CUSTOMER_INFO#field:MFCUSTOMERID
+- table:DWD_CUST_INDV_INFO#field:GEND
+- table:DWD_CUST_INDV_INFO#field:HOST_CUST_MNGR_POST_ID
+- table:DWD_SYS_ORG#field:CREATR
+- table:DWD_SYS_ORG#field:ORG_LATTUD
+- table:DWD_SYS_ORG#field:ORG_LGTUD
+- table:ECIF_T01_P_CUST_INFO#field:CERT_DUE_DATE
+- table:ECIF_T01_P_CUST_INFO#field:CERT_ISSUE_DATE
+- table:ECIF_T01_P_CUST_INFO#field:CERT_NO
+- table:ECIF_T01_P_CUST_INFO#field:CERT_ORG_AREA
+- table:ECIF_T01_P_CUST_INFO#field:CERT_TYPE
+- table:ECIF_T01_P_CUST_INFO#field:ECIF_CUST_NO
+- table:ECIF_T01_P_CUST_INFO#field:HIGHEST_DEGREE
+- table:ECIF_T01_P_CUST_INFO#field:MARITAL_STAT
+- table:ECIF_T01_P_CUST_INFO#field:NAT_CODE
+- table:ECIF_T01_P_CUST_INFO#field:OPEN_DATE
+- table:ECIF_T01_P_CUST_INFO#field:OPEN_ORG
+- table:ECIF_T01_P_CUST_INFO#field:PARTY_NAME
+- table:ECIF_T01_P_CUST_INFO#field:PEOPLE
+- table:ECIF_T01_P_CUST_INFO#field:PROFESSION
+- table:ECIF_T01_P_CUST_WORK#field:WORK_CORP
+- table:ECIF_T03_A_TELE_INFO#field:PHONE_NO
+- table:FLAT_ADDR#field:CONTACT_ADDRESS
+- table:FLAT_ADDR#field:CONTACT_ADDRESS_DETAIL
+- table:FLAT_ADDR#field:HOME_ADDRESS
+- table:FLAT_ADDR#field:HOME_ADDRESS_DETAIL
+- table:FLAT_ADDR#field:ID_ADDRESS
+- table:FLAT_ADDR#field:ID_ADDRESS_DETAIL
+- table:FLAT_ADDR#field:OFFICE_ADDRESS
+- table:FLAT_ADDR#field:OFFICE_ADDRESS_DETAIL
+- table:FLAT_ADDR#field:RESIDENCE_ADDRESS
+- table:FLAT_ADDR#field:RESIDENCE_ADDRESS_DETAIL
+- table:SYS_ORG#field:CREATR
+- table:T01_P_CUST_INFO#field:CUST_EVAL_LEVEL
+- table:T01_P_CUST_INFO#field:t0.ECIF_CUST_NO
+- table:T02_A_CUST_SIGN_REL#field:t1.SIGN_ACC_NO
+- table:T02_A_CUST_SIGN_REL#field:t1.SIGN_STATE
+- table:T02_A_CUST_SIGN_REL#field:t1.SIGN_TYPE
+- table:T05_A_ACC_SIGN#field:t2.ATTN_NAME
+- table:T05_A_ACC_SIGN#field:t2.SIGN_DATE
+- table:T05_A_ACC_SIGN#field:t2.SIGN_ORG
+- table:T05_A_ACC_SIGN#field:t2.SIGN_REL_PHONE
+- table:T1_CUST_FNC_ACCT#field:CRT_DATE
+- table:T1_CUST_FNC_ACCT#field:ISS_BANK_CODE
+- table:T4_CUST_RISK_ASSESS_INFO#field:ASSESS_DATE
+- table:T4_CUST_RISK_ASSESS_INFO#field:CUST_RISK_LEVEL
+- table:T4_CUST_RISK_ASSESS_INFO#field:INVALID_DATE
+- table:T4_CUST_RISK_ASSESS_INFO#field:host_cust_no
+- table:TD_PROD_INFO#field:PROD_RISK_LEVEL
+- table:TD_PROD_INFO#field:TANO
+- table:TD_PROD_INFO#field:VALUE_DATE
+- table:TD_PROD_INFO#field:WINDING_DATE
+- table:TD_PROD_NAV#field:TONOWCLIENTRATIO
+- table:YBT_POLICY_BASE_INFO#field:c.ACCEPT_DATE
+- table:YBT_POLICY_BASE_INFO#field:c.ACC_NO
+- table:YBT_POLICY_BASE_INFO#field:c.CONT_NO
+- table:YBT_POLICY_BASE_INFO#field:c.CONT_SOURCE
+- table:YBT_POLICY_BASE_INFO#field:c.CONT_STATUS
+- table:YBT_POLICY_BASE_INFO#field:c.THROW_COM
+- table:YBT_POLICY_BASE_INFO#field:c.VALI_DATE
+- table:YBT_POLICY_FEE_LIST#field:a.ORD_AMT
+- table:YBT_POLICY_FEE_LIST#field:a.TRAN_TYPE
+- table:YBT_POLICY_INSURANCE_INFO#field:d.PAY_PER_NUM
+- table:YBT_POLICY_INSURANCE_INFO#field:d.PAY_PER_UNIT
+- table:YBT_POLICY_INSURANCE_INFO#field:d.PAY_TYPE
+- table:YBT_POLICY_INSURANCE_INFO#field:d.VALID_PER_NUM
+- table:YBT_POLICY_INSURANCE_INFO#field:d.VALID_PER_UNIT
+- table:YBT_PRODUCT_INFO#field:e.PRODUCT_BIG_TYPE
+- table:YBT_PRODUCT_INFO#field:e.PRODUCT_ID
+- table:YBT_PRODUCT_INFO#field:e.PRODUCT_NAME
+- table:ads_cust_deadline_rmnd_dtl#field:cntct_state
+- table:ads_cust_deadline_rmnd_dtl#field:cust_id
+- table:ads_cust_deadline_rmnd_dtl#field:cust_lvl
+- table:ads_cust_deadline_rmnd_dtl#field:cust_name
+- table:ads_cust_deadline_rmnd_dtl#field:data_date
+- table:ads_cust_deadline_rmnd_dtl#field:depo_curnt_depo_bal
+- table:ads_cust_deadline_rmnd_dtl#field:expr_amt
+- table:ads_cust_deadline_rmnd_dtl#field:fin_amt
+- table:ads_cust_deadline_rmnd_dtl#field:fin_mature_tran_fixed_amt
+- table:ads_cust_deadline_rmnd_dtl#field:fix_depo_mature_amt
+- table:ads_cust_deadline_rmnd_dtl#field:fix_depo_mature_ttl_amt
+- table:ads_cust_deadline_rmnd_dtl#field:fix_depo_take_rate
+- table:ads_cust_deadline_rmnd_dtl#field:fixd_depo_bal
+- table:ads_cust_deadline_rmnd_dtl#field:fixed_fin_mature_tran_insur_amt
+- table:ads_cust_deadline_rmnd_dtl#field:fixed_mature_tran_fin_amt
+- table:ads_cust_deadline_rmnd_dtl#field:frst_mature_pk_bf_day_aum_bal
+- table:ads_cust_deadline_rmnd_dtl#field:last_end_date
+- table:ads_cust_deadline_rmnd_dtl#field:mature_ttl_amt
+- table:ads_cust_deadline_rmnd_dtl#field:org_id
+- table:ads_cust_deadline_rmnd_dtl#field:persn_legal_bk_code
+- table:ads_cust_deadline_rmnd_dtl#field:post_id
+- table:ads_cust_deadline_rmnd_dtl#field:stat_perd
+- table:ads_cust_deadline_rmnd_dtl#field:statis_typ
+- table:ads_cust_deadline_rmnd_dtl#field:take_rate
+- table:ads_cust_deadline_rmnd_dtl#field:undtake_state
+- table:ads_cust_deadline_rmnd_statis#field:asset_keep_rate
+- table:ads_cust_deadline_rmnd_statis#field:asset_undtake_rate
+- table:ads_cust_deadline_rmnd_statis#field:cust_undtake_rate
+- table:ads_cust_deadline_rmnd_statis#field:data_date
+- table:ads_cust_deadline_rmnd_statis#field:depo_to_fin_convrs_rate
+- table:ads_cust_deadline_rmnd_statis#field:expr_amt
+- table:ads_cust_deadline_rmnd_statis#field:expr_cust_cnt
+- table:ads_cust_deadline_rmnd_statis#field:fin_to_depo_convrs_rate
+- table:ads_cust_deadline_rmnd_statis#field:insur_convrs_rate
+- table:ads_cust_deadline_rmnd_statis#field:persn_legal_bk_code
+- table:ads_cust_deadline_rmnd_statis#field:statis_cycle
+- table:ads_cust_deadline_rmnd_statis#field:statis_obj
+- table:ads_cust_deadline_rmnd_statis#field:statis_typ
+- table:ads_cust_deadline_rmnd_statis#field:ttl_expr_amt
+- table:ads_cust_deadline_rmnd_statis#field:ttl_expr_cust_cnt
+- table:ads_cust_indv_poten#field:allo_date
+- table:ads_cust_indv_poten#field:cert_id
+- table:ads_cust_indv_poten#field:cert_typ
+- table:ads_cust_indv_poten#field:creat_time
+- table:ads_cust_indv_poten#field:creatr
+- table:ads_cust_indv_poten#field:cust_id
+- table:ads_cust_indv_poten#field:dtl_addrs
+- table:ads_cust_indv_poten#field:gender
+- table:ads_cust_indv_poten#field:inf_klkt_date
+- table:ads_cust_indv_poten#field:intent_dsc
+- table:ads_cust_indv_poten#field:intn_prdkt
+- table:ads_cust_indv_poten#field:lpr_id
+- table:ads_cust_indv_poten#field:mkt_org
+- table:ads_cust_indv_poten#field:mkt_persn
+- table:ads_cust_indv_poten#field:mth_incom
+- table:ads_cust_indv_poten#field:no_bat
+- table:ads_cust_indv_poten#field:post
+- table:ads_cust_indv_poten#field:pot_cnvrt_org
+- table:ads_cust_indv_poten#field:pot_cnvrt_prdkt
+- table:ads_cust_indv_poten#field:poten_cust_id
+- table:ads_cust_indv_poten#field:poten_cust_name
+- table:ads_cust_indv_poten#field:poten_cust_state
+- table:ads_cust_indv_poten#field:poten_cust_typ
+- table:ads_cust_indv_poten#field:poten_typ
+- table:ads_cust_indv_poten#field:rmark
+- table:ads_cust_indv_poten#field:serv_enter
+- table:ads_cust_indv_poten#field:src_typ
+- table:ads_cust_indv_poten#field:tel_no
+- table:ads_cust_indv_poten#field:unit_addrs
+- table:ads_cust_indv_poten#field:yr_incom
+- table:ads_cust_lost_dtl#field:cntct_state
+- table:ads_cust_lost_dtl#field:cust_id
+- table:ads_cust_lost_dtl#field:cust_lvl
+- table:ads_cust_lost_dtl#field:cust_name
+- table:ads_cust_lost_dtl#field:data_date
+- table:ads_cust_lost_dtl#field:depo_curnt_depo_bal
+- table:ads_cust_lost_dtl#field:fin_amt
+- table:ads_cust_lost_dtl#field:fixd_depo_bal
+- table:ads_cust_lost_dtl#field:lvl_churn
+- table:ads_cust_lost_dtl#field:org_id
+- table:ads_cust_lost_dtl#field:persn_legal_bk_code
+- table:ads_cust_lost_dtl#field:post_id
+- table:ads_cust_lost_dtl#field:rescue_state
+- table:ads_cust_lost_dtl#field:statis_cycle
+- table:ads_cust_lost_statis#field:cntct_cust_cnt
+- table:ads_cust_lost_statis#field:cntct_rate
+- table:ads_cust_lost_statis#field:cust_cnt
+- table:ads_cust_lost_statis#field:data_date
+- table:ads_cust_lost_statis#field:lvl_churn
+- table:ads_cust_lost_statis#field:persn_legal_bk_code
+- table:ads_cust_lost_statis#field:rescue_rate
+- table:ads_cust_lost_statis#field:rescued_cust_cnt
+- table:ads_cust_lost_statis#field:rescued_fina_asset
+- table:ads_cust_lost_statis#field:statis_cycle
+- table:ads_cust_lost_statis#field:statis_obj
+- table:ads_cust_new_cust_dtl#field:cntct_state
+- table:ads_cust_new_cust_dtl#field:cust_id
+- table:ads_cust_new_cust_dtl#field:cust_lvl
+- table:ads_cust_new_cust_dtl#field:cust_name
+- table:ads_cust_new_cust_dtl#field:data_date
+- table:ads_cust_new_cust_dtl#field:depo_curnt_depo_bal
+- table:ads_cust_new_cust_dtl#field:fin_amt
+- table:ads_cust_new_cust_dtl#field:fixd_depo_bal
+- table:ads_cust_new_cust_dtl#field:kyc_state
+- table:ads_cust_new_cust_dtl#field:new_cust_cycle
+- table:ads_cust_new_cust_dtl#field:org_id
+- table:ads_cust_new_cust_dtl#field:persn_legal_bk_code
+- table:ads_cust_new_cust_dtl#field:post_id
+- table:ads_cust_new_cust_dtl#field:statis_cycle
+- table:ads_cust_new_cust_statis#field:asset_bal_seg1_cust_cnt
+- table:ads_cust_new_cust_statis#field:asset_bal_seg2_cust_cnt
+- table:ads_cust_new_cust_statis#field:asset_bal_seg3_cust_cnt
+- table:ads_cust_new_cust_statis#field:asset_bal_seg4_cust_cnt
+- table:ads_cust_new_cust_statis#field:asset_bal_seg5_cust_cnt
+- table:ads_cust_new_cust_statis#field:cntct_cust_cnt
+- table:ads_cust_new_cust_statis#field:cntct_rate
+- table:ads_cust_new_cust_statis#field:comp_rate
+- table:ads_cust_new_cust_statis#field:data_date
+- table:ads_cust_new_cust_statis#field:kyc_cust_cnt
+- table:ads_cust_new_cust_statis#field:new_cust_cnt
+- table:ads_cust_new_cust_statis#field:new_cust_cycle
+- table:ads_cust_new_cust_statis#field:persn_legal_bk_code
+- table:ads_cust_new_cust_statis#field:statis_cycle
+- table:ads_cust_new_cust_statis#field:statis_obj
+- table:ads_cust_others_rmnd#field:cust_id
+- table:ads_cust_others_rmnd#field:cust_name
+- table:ads_cust_others_rmnd#field:cust_typ
+- table:ads_cust_others_rmnd#field:del_flg
+- table:ads_cust_others_rmnd#field:hdle_dsc
+- table:ads_cust_others_rmnd#field:hdle_state
+- table:ads_cust_others_rmnd#field:hdle_time
+- table:ads_cust_others_rmnd#field:mngr_name
+- table:ads_cust_others_rmnd#field:mngr_post_id
+- table:ads_cust_others_rmnd#field:org_id
+- table:ads_cust_others_rmnd#field:persn_legal_bk_code
+- table:ads_cust_others_rmnd#field:phone_no
+- table:ads_cust_others_rmnd#field:rmnd_cate_big
+- table:ads_cust_others_rmnd#field:rmnd_cate_sml
+- table:ads_cust_others_rmnd#field:rmnd_date
+- table:ads_cust_others_rmnd#field:rmnd_id
+- table:ads_cust_others_rmnd#field:rmnd_inf
+- table:ads_cust_potn_upgrade_cust_dtl#field:cntct_state
+- table:ads_cust_potn_upgrade_cust_dtl#field:cust_id
+- table:ads_cust_potn_upgrade_cust_dtl#field:cust_lvl
+- table:ads_cust_potn_upgrade_cust_dtl#field:cust_name
+- table:ads_cust_potn_upgrade_cust_dtl#field:data_date
+- table:ads_cust_potn_upgrade_cust_dtl#field:depo_curnt_depo_bal
+- table:ads_cust_potn_upgrade_cust_dtl#field:fin_amt
+- table:ads_cust_potn_upgrade_cust_dtl#field:fixd_depo_bal
+- table:ads_cust_potn_upgrade_cust_dtl#field:lvl_crit
+- table:ads_cust_potn_upgrade_cust_dtl#field:org_id
+- table:ads_cust_potn_upgrade_cust_dtl#field:persn_legal_bk_code
+- table:ads_cust_potn_upgrade_cust_dtl#field:post_id
+- table:ads_cust_potn_upgrade_cust_dtl#field:qual_state
+- table:ads_cust_potn_upgrade_cust_dtl#field:statis_cycle
+- table:ads_cust_potn_upgrade_statis#field:cntct_cust_cnt
+- table:ads_cust_potn_upgrade_statis#field:cntct_rate
+- table:ads_cust_potn_upgrade_statis#field:data_date
+- table:ads_cust_potn_upgrade_statis#field:lvl_crit
+- table:ads_cust_potn_upgrade_statis#field:mth_avg_qual_cnt
+- table:ads_cust_potn_upgrade_statis#field:mth_avg_qual_rate
+- table:ads_cust_potn_upgrade_statis#field:persn_legal_bk_code
+- table:ads_cust_potn_upgrade_statis#field:pnt_qual_cnt
+- table:ads_cust_potn_upgrade_statis#field:pnt_qual_rate
+- table:ads_cust_potn_upgrade_statis#field:statis_cycle
+- table:ads_cust_potn_upgrade_statis#field:statis_obj
+- table:ads_cust_potn_upgrade_statis#field:ttl_cust_cnt
+- table:ads_cust_prdkt_rcmd#field:cust_id
+- table:ads_cust_prdkt_rcmd#field:data_date
+- table:ads_cust_prdkt_rcmd#field:match_deg_prdkt
+- table:ads_cust_prdkt_rcmd#field:mkt_script
+- table:ads_cust_prdkt_rcmd#field:prdkt_id
+- table:ads_cust_prdkt_rcmd#field:prdkt_name
+- table:ads_cust_prdkt_rcmd#field:prdkt_typ
+- table:ads_cust_prdkt_rcmd#field:rate_intri
+- table:ads_cust_prdkt_rcmd#field:risk_lvl
+- table:ads_cust_sleep_wake_dtl#field:cntct_state
+- table:ads_cust_sleep_wake_dtl#field:cust_id
+- table:ads_cust_sleep_wake_dtl#field:cust_lvl
+- table:ads_cust_sleep_wake_dtl#field:cust_name
+- table:ads_cust_sleep_wake_dtl#field:data_date
+- table:ads_cust_sleep_wake_dtl#field:depo_curnt_depo_bal
+- table:ads_cust_sleep_wake_dtl#field:fin_amt
+- table:ads_cust_sleep_wake_dtl#field:fixd_depo_bal
+- table:ads_cust_sleep_wake_dtl#field:org_id
+- table:ads_cust_sleep_wake_dtl#field:persn_legal_bk_code
+- table:ads_cust_sleep_wake_dtl#field:post_id
+- table:ads_cust_sleep_wake_dtl#field:statis_cycle
+- table:ads_cust_sleep_wake_dtl#field:wake_state
+- table:ads_cust_sleep_wake_statis#field:cntct_cust_cnt
+- table:ads_cust_sleep_wake_statis#field:cntct_rate
+- table:ads_cust_sleep_wake_statis#field:cust_cnt
+- table:ads_cust_sleep_wake_statis#field:data_date
+- table:ads_cust_sleep_wake_statis#field:persn_legal_bk_code
+- table:ads_cust_sleep_wake_statis#field:statis_cycle
+- table:ads_cust_sleep_wake_statis#field:statis_obj
+- table:ads_cust_sleep_wake_statis#field:wake_cust_cnt
+- table:ads_cust_sleep_wake_statis#field:wake_rate
+- table:ads_mkt_act_tsk_mon#field:ctkt_cover_rate
+- table:ads_mkt_act_tsk_mon#field:cust_cnt
+- table:ads_mkt_act_tsk_mon#field:data_date
+- table:ads_mkt_act_tsk_mon#field:further_mkt_cust_cnt
+- table:ads_mkt_act_tsk_mon#field:mkt_act_id
+- table:ads_mkt_act_tsk_mon#field:mkt_success_rate
+- table:ads_mkt_act_tsk_mon#field:not_support_cust_cnt
+- table:ads_mkt_act_tsk_mon#field:plan_support_cust_cnt
+- table:ads_mkt_act_tsk_mon#field:stat_obj
+- table:ads_mkt_act_tsk_mon_zb#field:base_val
+- table:ads_mkt_act_tsk_mon_zb#field:curnt_val
+- table:ads_mkt_act_tsk_mon_zb#field:data_date
+- table:ads_mkt_act_tsk_mon_zb#field:growth_rate
+- table:ads_mkt_act_tsk_mon_zb#field:incr
+- table:ads_mkt_act_tsk_mon_zb#field:mkt_act_id
+- table:ads_mkt_act_tsk_mon_zb#field:stat_obj
+- table:ads_mkt_rec_info#field:chnl_no
+- table:ads_mkt_rec_info#field:cordnat_visitor
+- table:ads_mkt_rec_info#field:cordnat_visitor_name
+- table:ads_mkt_rec_info#field:cust_id
+- table:ads_mkt_rec_info#field:cust_name
+- table:ads_mkt_rec_info#field:lattud
+- table:ads_mkt_rec_info#field:lgtud
+- table:ads_mkt_rec_info#field:mkt_apdix_id
+- table:ads_mkt_rec_info#field:mkt_dtl_situ
+- table:ads_mkt_rec_info#field:mkt_dura
+- table:ads_mkt_rec_info#field:mkt_org
+- table:ads_mkt_rec_info#field:mkt_persn
+- table:ads_mkt_rec_info#field:mkt_persn_name
+- table:ads_mkt_rec_info#field:mkt_rec_seq_id
+- table:ads_mkt_rec_info#field:mkt_site
+- table:ads_mkt_rec_info#field:mkt_time
+- table:ads_mkt_rec_info#field:mkt_typ
+- table:ads_mkt_rec_info#field:msg_short_inf
+- table:ads_mkt_rec_info#field:msg_short_seq_id
+- table:ads_mkt_rec_info#field:no_bat
+- table:ads_mkt_rec_info#field:persn_legal_bk_code
+- table:ads_mkt_rec_info#field:rel_id
+- table:ads_mkt_rec_info#field:rel_typ
+- table:ads_mkt_rec_info#field:rmark
+- table:ads_mkt_rec_info#field:tel_no
+- table:ads_mkt_rec_info#field:temp_id
+- table:ads_mkt_rec_info#field:temp_name
+- table:ads_mkt_task_indx_sub_cmplt#field:acum_cmplt_indx
+- table:ads_mkt_task_indx_sub_cmplt#field:base_val
+- table:ads_mkt_task_indx_sub_cmplt#field:curnt_val
+- table:ads_mkt_task_indx_sub_cmplt#field:day_curnt_cmplt_indx
+- table:ads_mkt_task_indx_sub_cmplt#field:indx_id
+- table:ads_mkt_task_indx_sub_cmplt#field:indx_unit
+- table:ads_mkt_task_indx_sub_cmplt#field:indx_val
+- table:ads_mkt_task_indx_sub_cmplt#field:indx_val_add
+- table:ads_mkt_task_indx_sub_cmplt#field:main_tsk_id
+- table:ads_mkt_task_indx_sub_cmplt#field:persn_legal_bk_code
+- table:ads_mkt_task_indx_sub_cmplt#field:rsv_obj
+- table:ads_mkt_task_indx_sub_cmplt#field:rsv_obj_id
+- table:ads_mkt_task_indx_sub_cmplt#field:tsk_bgn_date
+- table:ads_mkt_task_indx_sub_cmplt#field:tsk_end_date
+- table:ads_mkt_task_indx_sub_cmplt#field:tsk_id
+- table:ads_mkt_task_indx_sub_cmplt#field:tsk_indx_id
+- table:ads_mkt_task_indx_sub_cmplt#field:tsk_next_send_typ
+- table:ads_mkt_tsk_info#field:act_dsc
+- table:ads_mkt_tsk_info#field:base_val
+- table:ads_mkt_tsk_info#field:convrs_flg
+- table:ads_mkt_tsk_info#field:cover_flg
+- table:ads_mkt_tsk_info#field:creat_org
+- table:ads_mkt_tsk_info#field:creat_time
+- table:ads_mkt_tsk_info#field:creatr
+- table:ads_mkt_tsk_info#field:curnt_val
+- table:ads_mkt_tsk_info#field:cust_id
+- table:ads_mkt_tsk_info#field:cust_name
+- table:ads_mkt_tsk_info#field:data_date
+- table:ads_mkt_tsk_info#field:mkt_act_id
+- table:ads_mkt_tsk_info#field:mkt_persn
+- table:ads_mkt_tsk_info#field:mkt_persn_org
+- table:ads_mkt_tsk_info#field:mkt_tsk_id
+- table:ads_mkt_tsk_info#field:persn_legal_bk_code
+- table:ads_stat_indx_data#field:curnt_val
+- table:ads_stat_indx_data#field:data_blng
+- table:ads_stat_indx_data#field:data_date
+- table:ads_stat_indx_data#field:id
+- table:ads_stat_indx_data#field:indx_code
+- table:ads_stat_indx_data#field:mth_end_val
+- table:ads_stat_indx_data#field:mth_last_end_avg_day_val
+- table:ads_stat_indx_data#field:persn_legal_bk_code
+- table:ads_stat_indx_data#field:statis_calib
+- table:ads_stat_indx_data#field:statis_dim
+- table:ads_stat_indx_data#field:term_last_val
+- table:ads_stat_indx_data#field:yr_bgn_val
+- table:ads_stat_indx_data#field:yr_last_end_avg_day_val
+- table:dwd_acct_depo#field:acct_cloz_date
+- table:dwd_acct_depo#field:acct_id
+- table:dwd_acct_depo#field:acct_state
+- table:dwd_acct_depo#field:acct_typ
+- table:dwd_acct_depo#field:bal
+- table:dwd_acct_depo#field:card_no
+- table:dwd_acct_depo#field:ccy_cd
+- table:dwd_acct_depo#field:cunq
+- table:dwd_acct_depo#field:cust_id
+- table:dwd_acct_depo#field:cust_typ
+- table:dwd_acct_depo#field:expr_date
+- table:dwd_acct_depo#field:fix_curnt_flg
+- table:dwd_acct_depo#field:intri_bgn_date
+- table:dwd_acct_depo#field:open_acct_org
+- table:dwd_acct_depo#field:open_date
+- table:dwd_acct_depo#field:persn_legal_bk_code
+- table:dwd_acct_depo#field:prdkt_cate_big
+- table:dwd_acct_depo#field:prdkt_id
+- table:dwd_acct_depo#field:prdkt_name
+- table:dwd_acct_depo#field:rate_intri
+- table:dwd_acct_depo#field:rmb_bal
+- table:dwd_acct_depo#field:vchr_typ
+- table:dwd_acct_fin#field:acct_id
+- table:dwd_acct_fin#field:acct_state
+- table:dwd_acct_fin#field:card_no
+- table:dwd_acct_fin#field:chnl_no
+- table:dwd_acct_fin#field:cust_id
+- table:dwd_acct_fin#field:cust_typ
+- table:dwd_acct_fin#field:estab_date
+- table:dwd_acct_fin#field:expr_date
+- table:dwd_acct_fin#field:fin_amt
+- table:dwd_acct_fin#field:intri_bgn_date
+- table:dwd_acct_fin#field:issu_date
+- table:dwd_acct_fin#field:issu_org
+- table:dwd_acct_fin#field:oprt_org
+- table:dwd_acct_fin#field:persn_legal_bk_code
+- table:dwd_acct_fin#field:prdkt_cate_big
+- table:dwd_acct_fin#field:prdkt_id
+- table:dwd_acct_fin#field:prdkt_name
+- table:dwd_acct_fin#field:rate_intri
+- table:dwd_acct_fin#field:risk_lvl
+- table:dwd_acct_insur#field:acct_id
+- table:dwd_acct_insur#field:bgn_insur_date
+- table:dwd_acct_insur#field:cancl_insur_date
+- table:dwd_acct_insur#field:cust_id
+- table:dwd_acct_insur#field:cust_typ
+- table:dwd_acct_insur#field:insur_amt
+- table:dwd_acct_insur#field:insur_bid_form_no
+- table:dwd_acct_insur#field:insur_period
+- table:dwd_acct_insur#field:insur_period_typ
+- table:dwd_acct_insur#field:mkt_org
+- table:dwd_acct_insur#field:pay_patrn
+- table:dwd_acct_insur#field:pay_period
+- table:dwd_acct_insur#field:pay_period_typ
+- table:dwd_acct_insur#field:persn_legal_bk_code
+- table:dwd_acct_insur#field:policy_state
+- table:dwd_acct_insur#field:prdkt_cate_big
+- table:dwd_acct_insur#field:prdkt_id
+- table:dwd_acct_insur#field:prdkt_name
+- table:dwd_acct_insur#field:tx_chnl
+- table:dwd_acct_insur#field:tx_date
+- table:dwd_acct_insur#field:tx_org
+- table:dwd_acct_loan#field:acct_id
+- table:dwd_acct_loan#field:acct_state
+- table:dwd_acct_loan#field:bal
+- table:dwd_acct_loan#field:cate_5lvl
+- table:dwd_acct_loan#field:cust_id
+- table:dwd_acct_loan#field:cust_typ
+- table:dwd_acct_loan#field:expr_date
+- table:dwd_acct_loan#field:int_arrears_ttl
+- table:dwd_acct_loan#field:iou_no
+- table:dwd_acct_loan#field:loan_issu_amt
+- table:dwd_acct_loan#field:loan_issu_date
+- table:dwd_acct_loan#field:oprt_org
+- table:dwd_acct_loan#field:persn_legal_bk_code
+- table:dwd_acct_loan#field:prdkt_cate_big
+- table:dwd_acct_loan#field:prdkt_id
+- table:dwd_acct_loan#field:prdkt_name
+- table:dwd_acct_loan#field:rate_intri
+- table:dwd_acct_loan#field:repay_acct_no
+- table:dwd_acct_loan#field:repay_typ
+- table:dwd_crm_sys_xthlcs#field:hl
+- table:dwd_crm_sys_xthlcs#field:huobdaih
+- table:dwd_crm_sys_xthlcs#field:huobfhao
+- table:dwd_crm_sys_xthlcs#field:pjdanwei
+- table:dwd_crm_sys_xthlcs#field:zhngjjia
+- table:dwd_cust_ctrakt_info#field:bgn_date
+- table:dwd_cust_ctrakt_info#field:cate_5lvl
+- table:dwd_cust_ctrakt_info#field:ccy_cd
+- table:dwd_cust_ctrakt_info#field:contr_amt
+- table:dwd_cust_ctrakt_info#field:crdt_lmt
+- table:dwd_cust_ctrakt_info#field:ctrakt_id
+- table:dwd_cust_ctrakt_info#field:cust_id
+- table:dwd_cust_ctrakt_info#field:end_date
+- table:dwd_cust_ctrakt_info#field:guarant_mode
+- table:dwd_cust_ctrakt_info#field:loan_acct
+- table:dwd_cust_ctrakt_info#field:loan_bal
+- table:dwd_cust_ctrakt_info#field:oprt_org
+- table:dwd_cust_ctrakt_info#field:oprtr
+- table:dwd_cust_ctrakt_info#field:persn_legal_bk_code
+- table:dwd_cust_ctrakt_info#field:rate_intri
+- table:dwd_cust_indiv_crdt#field:bgn_date
+- table:dwd_cust_indiv_crdt#field:crdt_agre_no
+- table:dwd_cust_indiv_crdt#field:crdt_agre_typ
+- table:dwd_cust_indiv_crdt#field:crdt_status
+- table:dwd_cust_indiv_crdt#field:crdt_ttl_lmt
+- table:dwd_cust_indiv_crdt#field:cust_id
+- table:dwd_cust_indiv_crdt#field:cust_name
+- table:dwd_cust_indiv_crdt#field:expr_date
+- table:dwd_cust_indiv_crdt#field:persn_legal_bk_code
+- table:dwd_cust_indiv_risk_invst#field:cust_id
+- table:dwd_cust_indiv_risk_invst#field:estim_date
+- table:dwd_cust_indiv_risk_invst#field:estim_rslt
+- table:dwd_cust_indiv_risk_invst#field:expr_date
+- table:dwd_cust_indiv_risk_invst#field:invest_typ
+- table:dwd_cust_indiv_risk_invst#field:persn_legal_bk_code
+- table:dwd_cust_indiv_risk_invst#field:risk_lvl
+- table:dwd_cust_indiv_risk_invst#field:score
+- table:dwd_cust_indv_info#field:cert_id
+- table:dwd_cust_indv_info#field:cert_issuing_authority
+- table:dwd_cust_indv_info#field:cert_prd_vlid
+- table:dwd_cust_indv_info#field:cert_prd_vlid_end
+- table:dwd_cust_indv_info#field:cert_typ
+- table:dwd_cust_indv_info#field:contact_address
+- table:dwd_cust_indv_info#field:contact_address_detail
+- table:dwd_cust_indv_info#field:cospsr_cust_mngr_emp_id
+- table:dwd_cust_indv_info#field:cospsr_cust_mngr_name
+- table:dwd_cust_indv_info#field:cospsr_cust_mngr_post_id
+- table:dwd_cust_indv_info#field:cospsr_org
+- table:dwd_cust_indv_info#field:cospsr_org_path
+- table:dwd_cust_indv_info#field:cust_id
+- table:dwd_cust_indv_info#field:cust_name
+- table:dwd_cust_indv_info#field:cust_typ
+- table:dwd_cust_indv_info#field:gend
+- table:dwd_cust_indv_info#field:home_address
+- table:dwd_cust_indv_info#field:home_address_detail
+- table:dwd_cust_indv_info#field:host_cust_mngr_emp_id
+- table:dwd_cust_indv_info#field:host_cust_mngr_name
+- table:dwd_cust_indv_info#field:host_cust_mngr_post_id
+- table:dwd_cust_indv_info#field:id_address
+- table:dwd_cust_indv_info#field:id_address_detail
+- table:dwd_cust_indv_info#field:mari_situ
+- table:dwd_cust_indv_info#field:max_deg_edu
+- table:dwd_cust_indv_info#field:nation
+- table:dwd_cust_indv_info#field:nationality
+- table:dwd_cust_indv_info#field:now_enter
+- table:dwd_cust_indv_info#field:occu_cls
+- table:dwd_cust_indv_info#field:office_address
+- table:dwd_cust_indv_info#field:office_address_detail
+- table:dwd_cust_indv_info#field:open_date
+- table:dwd_cust_indv_info#field:open_org
+- table:dwd_cust_indv_info#field:org_lead
+- table:dwd_cust_indv_info#field:org_lead_path
+- table:dwd_cust_indv_info#field:persn_legal_bk_code
+- table:dwd_cust_indv_info#field:phone_no
+- table:dwd_cust_indv_info#field:residence_address
+- table:dwd_cust_indv_info#field:residence_address_detail
+- table:dwd_cust_indv_kyc#field:avail_lmt
+- table:dwd_cust_indv_kyc#field:bk_outer_crdt_lmt
+- table:dwd_cust_indv_kyc#field:bk_outer_depo
+- table:dwd_cust_indv_kyc#field:bk_outer_fin
+- table:dwd_cust_indv_kyc#field:bk_outer_fund
+- table:dwd_cust_indv_kyc#field:bk_outer_gold
+- table:dwd_cust_indv_kyc#field:bk_outer_insur
+- table:dwd_cust_indv_kyc#field:bk_outer_loan_bal
+- table:dwd_cust_indv_kyc#field:creat_org
+- table:dwd_cust_indv_kyc#field:creat_time
+- table:dwd_cust_indv_kyc#field:creatr
+- table:dwd_cust_indv_kyc#field:cust_id
+- table:dwd_cust_indv_kyc#field:cust_nm
+- table:dwd_cust_indv_kyc#field:estt_inf
+- table:dwd_cust_indv_kyc#field:house_area
+- table:dwd_cust_indv_kyc#field:is_car_loan
+- table:dwd_cust_indv_kyc#field:is_car_mortgaged
+- table:dwd_cust_indv_kyc#field:is_house_mortgaged
+- table:dwd_cust_indv_kyc#field:mth_incom
+- table:dwd_cust_indv_kyc#field:prop_owner_cert_no
+- table:dwd_cust_indv_kyc#field:res_addrs
+- table:dwd_cust_indv_kyc#field:shop_invest
+- table:dwd_cust_indv_kyc#field:stk_invest
+- table:dwd_cust_indv_kyc#field:usage_nature
+- table:dwd_cust_indv_kyc#field:vehicle_plate_no
+- table:dwd_cust_indv_kyc#field:vikl_inf
+- table:dwd_cust_indv_kyc#field:yr_incom
+- table:dwd_cust_sign_ctrakt#field:ctrakt_acct
+- table:dwd_cust_sign_ctrakt#field:ctrakt_date
+- table:dwd_cust_sign_ctrakt#field:ctrakt_oprtr
+- table:dwd_cust_sign_ctrakt#field:ctrakt_org
+- table:dwd_cust_sign_ctrakt#field:ctrakt_state
+- table:dwd_cust_sign_ctrakt#field:ctrakt_typ
+- table:dwd_cust_sign_ctrakt#field:cust_id
+- table:dwd_cust_sign_ctrakt#field:persn_legal_bk_code
+- table:dwd_cust_sign_ctrakt#field:phone_no
+- table:dwd_prdkt_info#field:bgn_date
+- table:dwd_prdkt_info#field:end_date
+- table:dwd_prdkt_info#field:mdl_biz_rate_fee
+- table:dwd_prdkt_info#field:persn_legal_bk_code
+- table:dwd_prdkt_info#field:prdkt_cate_big
+- table:dwd_prdkt_info#field:prdkt_id
+- table:dwd_prdkt_info#field:prdkt_line
+- table:dwd_prdkt_info#field:prdkt_name
+- table:dwd_prdkt_info#field:prdkt_rate
+- table:dwd_prdkt_info#field:prdkt_state
+- table:dwd_prdkt_info#field:sup_prdkt_id
+- table:dwd_prdkt_info#field:sys_src
+- table:dwd_sys_org#field:creat_org
+- table:dwd_sys_org#field:creat_time
+- table:dwd_sys_org#field:creatr
+- table:dwd_sys_org#field:direct_under_org
+- table:dwd_sys_org#field:dsply_seq
+- table:dwd_sys_org#field:hr_ms_org_id
+- table:dwd_sys_org#field:org_addrs
+- table:dwd_sys_org#field:org_harcy
+- table:dwd_sys_org#field:org_id
+- table:dwd_sys_org#field:org_lattud
+- table:dwd_sys_org#field:org_lgtud
+- table:dwd_sys_org#field:org_name
+- table:dwd_sys_org#field:org_path
+- table:dwd_sys_org#field:org_rsponr
+- table:dwd_sys_org#field:org_state
+- table:dwd_sys_org#field:org_tel
+- table:dwd_sys_org#field:org_typ
+- table:dwd_sys_org#field:persn_legal_bk_code
+- table:dwd_sys_org#field:sup_org_id
+- table:dwd_sys_org#field:sup_org_name
+- table:dwd_tx_aset#field:acct_bal
+- table:dwd_tx_aset#field:acct_blng_org
+- table:dwd_tx_aset#field:acct_id
+- table:dwd_tx_aset#field:amt
+- table:dwd_tx_aset#field:card_no
+- table:dwd_tx_aset#field:ccy_cd
+- table:dwd_tx_aset#field:cust_id
+- table:dwd_tx_aset#field:cust_typ
+- table:dwd_tx_aset#field:loan_flg
+- table:dwd_tx_aset#field:opnt_acct
+- table:dwd_tx_aset#field:opnt_acct_name_fst
+- table:dwd_tx_aset#field:opnt_bk_keep
+- table:dwd_tx_aset#field:opnt_name_bk
+- table:dwd_tx_aset#field:oprtr
+- table:dwd_tx_aset#field:persn_legal_bk_code
+- table:dwd_tx_aset#field:prdkt_id
+- table:dwd_tx_aset#field:seq_id
+- table:dwd_tx_aset#field:tx_chnl
+- table:dwd_tx_aset#field:tx_date
+- table:dwd_tx_aset#field:tx_dsc
+- table:dwd_tx_aset#field:tx_org
+- table:dwd_tx_aset#field:tx_time
+- table:dws_cust_asse_liab#field:aum_bal
+- table:dws_cust_asse_liab#field:bal_type
+- table:dws_cust_asse_liab#field:cust_id
+- table:dws_cust_asse_liab#field:data_date
+- table:dws_cust_asse_liab#field:depo_bal
+- table:dws_cust_asse_liab#field:depo_curnt_depo_bal
+- table:dws_cust_asse_liab#field:fin_bal
+- table:dws_cust_asse_liab#field:fixd_depo_bal
+- table:dws_cust_asse_liab#field:insur_bal
+- table:dws_cust_asse_liab#field:largedp_bal
+- table:dws_cust_asse_liab#field:lehui_bal
+- table:dws_cust_asse_liab#field:loan_bal
+- table:dws_cust_asse_liab#field:org_id
+- table:dws_cust_asse_liab#field:org_id_loan
+- table:dws_cust_asse_liab_cumu#field:acct_id
+- table:dws_cust_asse_liab_cumu#field:bal
+- table:dws_cust_asse_liab_cumu#field:cust_id
+- table:dws_cust_asse_liab_cumu#field:data_date
+- table:dws_cust_asse_liab_cumu#field:mth_bal
+- table:dws_cust_asse_liab_cumu#field:mth_days
+- table:dws_cust_asse_liab_cumu#field:oprt_org
+- table:dws_cust_asse_liab_cumu#field:persn_legal_bk_code
+- table:dws_cust_asse_liab_cumu#field:prdkt_cate_big
+- table:dws_cust_asse_liab_cumu#field:prdkt_id
+- table:dws_cust_asse_liab_cumu#field:prdkt_typ
+- table:dws_cust_asse_liab_cumu#field:qrt_bal
+- table:dws_cust_asse_liab_cumu#field:qrt_days
+- table:dws_cust_asse_liab_cumu#field:yar_bal
+- table:dws_cust_asse_liab_cumu#field:yar_days
+- table:dws_cust_capital_rmnd#field:acct_no
+- table:dws_cust_capital_rmnd#field:cust_id
+- table:dws_cust_capital_rmnd#field:cust_lvl
+- table:dws_cust_capital_rmnd#field:cust_name
+- table:dws_cust_capital_rmnd#field:cust_typ
+- table:dws_cust_capital_rmnd#field:dc_flag
+- table:dws_cust_capital_rmnd#field:hapn_bal
+- table:dws_cust_capital_rmnd#field:hdle_state
+- table:dws_cust_capital_rmnd#field:hdle_time
+- table:dws_cust_capital_rmnd#field:mngr_name
+- table:dws_cust_capital_rmnd#field:mngr_post_id
+- table:dws_cust_capital_rmnd#field:opnt_bk_keep
+- table:dws_cust_capital_rmnd#field:opnt_name
+- table:dws_cust_capital_rmnd#field:org_id
+- table:dws_cust_capital_rmnd#field:persn_legal_bk_code
+- table:dws_cust_capital_rmnd#field:phone_no
+- table:dws_cust_capital_rmnd#field:remark
+- table:dws_cust_capital_rmnd#field:rmnd_id
+- table:dws_cust_capital_rmnd#field:rmnd_inf
+- table:dws_cust_capital_rmnd#field:rmnd_time
+- table:dws_cust_capital_rmnd#field:tx_chnl
+- table:dws_cust_care_rmnd#field:care_id
+- table:dws_cust_care_rmnd#field:care_typ
+- table:dws_cust_care_rmnd#field:cate_time
+- table:dws_cust_care_rmnd#field:ctktr_name
+- table:dws_cust_care_rmnd#field:ctktr_rel
+- table:dws_cust_care_rmnd#field:cust_id
+- table:dws_cust_care_rmnd#field:cust_name
+- table:dws_cust_care_rmnd#field:cust_typ
+- table:dws_cust_care_rmnd#field:data_date
+- table:dws_cust_care_rmnd#field:hdle_state
+- table:dws_cust_care_rmnd#field:hdle_time
+- table:dws_cust_care_rmnd#field:mngr_name
+- table:dws_cust_care_rmnd#field:mngr_post_id
+- table:dws_cust_care_rmnd#field:msg_content
+- table:dws_cust_care_rmnd#field:org_id
+- table:dws_cust_care_rmnd#field:persn_legal_bk_code
+- table:dws_cust_care_rmnd#field:phone_no
+- table:dws_cust_deadline_rmnd#field:cust_id
+- table:dws_cust_deadline_rmnd#field:cust_lvl
+- table:dws_cust_deadline_rmnd#field:cust_name
+- table:dws_cust_deadline_rmnd#field:cust_typ
+- table:dws_cust_deadline_rmnd#field:del_flg
+- table:dws_cust_deadline_rmnd#field:expr_amt
+- table:dws_cust_deadline_rmnd#field:expr_date
+- table:dws_cust_deadline_rmnd#field:hdle_state
+- table:dws_cust_deadline_rmnd#field:hdle_time
+- table:dws_cust_deadline_rmnd#field:mngr_name
+- table:dws_cust_deadline_rmnd#field:mngr_post_id
+- table:dws_cust_deadline_rmnd#field:org_id
+- table:dws_cust_deadline_rmnd#field:persn_legal_bk_code
+- table:dws_cust_deadline_rmnd#field:phone_no
+- table:dws_cust_deadline_rmnd#field:prdkt_name
+- table:dws_cust_deadline_rmnd#field:rmnd_date
+- table:dws_cust_deadline_rmnd#field:rmnd_id
+- table:dws_cust_deadline_rmnd#field:rmnd_inf
+- table:dws_cust_deadline_rmnd#field:rmnd_name
+- table:dws_cust_deadline_rmnd#field:rmnd_typ
+- table:dws_cust_indiv_referral#field:aum
+- table:dws_cust_indiv_referral#field:cert_id
+- table:dws_cust_indiv_referral#field:cust_id
+- table:dws_cust_indiv_referral#field:cust_name
+- table:dws_cust_indiv_referral#field:cust_typ
+- table:dws_cust_indiv_referral#field:dsc
+- table:dws_cust_indiv_referral#field:elevt_aum
+- table:dws_cust_indiv_referral#field:intent_prdkt
+- table:dws_cust_indiv_referral#field:pk_id
+- table:dws_cust_indiv_referral#field:referral_date
+- table:dws_cust_indiv_referral#field:referrer
+- table:dws_cust_indiv_referral#field:rsv_date
+- table:dws_cust_indiv_referral#field:state
+- table:dws_cust_indiv_referral#field:tel_no
+- table:dws_cust_lvl_info#field:cust_id
+- table:dws_cust_lvl_info#field:cust_lvl
+- table:dws_cust_lvl_info#field:data_dt
+- table:dws_cust_referral_rmnd#field:hdle_state
+- table:dws_cust_referral_rmnd#field:hdle_time
+- table:dws_cust_referral_rmnd#field:mngr_post_id
+- table:dws_cust_referral_rmnd#field:pk_id
+- table:dws_cust_referral_rmnd#field:referee_cust_id
+- table:dws_cust_referral_rmnd#field:referee_name
+- table:dws_cust_referral_rmnd#field:referrer_cust_id
+- table:dws_cust_referral_rmnd#field:referrer_name
+- table:dws_cust_referral_rmnd#field:rmnd_inf
+- table:dws_cust_referral_rmnd#field:rmnd_time
+- table:ib_list_plat#field:b.user_id
+- table:report_0001#field:aum_bal
+- table:report_0001#field:aum_mth_avg
+- table:report_0001#field:biz_self_fin_bal
+- table:report_0001#field:blng_brch
+- table:report_0001#field:blng_brch_net
+- table:report_0001#field:blng_brch_sub
+- table:report_0001#field:comn_fixd_bal
+- table:report_0001#field:cust_cnt
+- table:report_0001#field:cust_lvl
+- table:report_0001#field:data_date
+- table:report_0001#field:depo_curnt_depo_bal
+- table:report_0001#field:depo_sum
+- table:report_0001#field:fin_bal_sum
+- table:report_0001#field:fixd_sum
+- table:report_0001#field:insur_bal
+- table:report_0001#field:largedp_bal
+- table:report_0001#field:lehui_bal
+- table:report_0001#field:loan_bal
+- table:report_0001#field:org_path
+- table:report_0001#field:proxy_sell_fin_bal
+- table:t1_cust_fnc_acct#field:ACCT_STATUS
+- table:t1_cust_fnc_acct#field:acct_no
+- table:t1_cust_fnc_acct#field:card_no
+- table:t1_cust_info#field:host_cust_no
+- table:td_cust_vol#field:remain_vol
+- table:td_prod_info#field:ESTABLISH_DATE
+- table:td_prod_info#field:PROD_TYPE
+- table:td_prod_info#field:REGIST_CODE
+- table:td_prod_info#field:prod_name
+edges:
+- from: table:DWD_CUST_INDV_INFO#field:GEND
+  to: table:ads_cust_indv_poten#field:gender
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\dws_to_ads\dws到ads映射.md
+- from: table:DWD_SYS_ORG#field:CREATR
+  to: table:ads_cust_indv_poten#field:creatr
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\dws_to_ads\dws到ads映射.md
+- from: table:DWD_CUST_INDV_INFO#field:HOST_CUST_MNGR_POST_ID
+  to: table:ads_cust_indv_poten#field:post
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\dws_to_ads\dws到ads映射.md
+- from: table:DWD_SYS_ORG#field:CREATR
+  to: table:ads_mkt_tsk_info#field:creatr
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\dws_to_ads\dws到ads映射.md
+- from: table:DWD_SYS_ORG#field:ORG_LGTUD
+  to: table:ads_mkt_rec_info#field:lgtud
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\dws_to_ads\dws到ads映射.md
+- from: table:DWD_SYS_ORG#field:ORG_LATTUD
+  to: table:ads_mkt_rec_info#field:lattud
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\dws_to_ads\dws到ads映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:ECIF_CUST_NO
+  to: table:dwd_cust_indv_info#field:cust_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:PARTY_NAME
+  to: table:dwd_cust_indv_info#field:cust_name
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:CERT_TYPE
+  to: table:dwd_cust_indv_info#field:cert_typ
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:CERT_NO
+  to: table:dwd_cust_indv_info#field:cert_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:CERT_ISSUE_DATE
+  to: table:dwd_cust_indv_info#field:cert_prd_vlid
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:CERT_DUE_DATE
+  to: table:dwd_cust_indv_info#field:cert_prd_vlid_end
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:CERT_ORG_AREA
+  to: table:dwd_cust_indv_info#field:cert_issuing_authority
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:OPEN_DATE
+  to: table:dwd_cust_indv_info#field:open_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:OPEN_ORG
+  to: table:dwd_cust_indv_info#field:open_org
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:NAT_CODE
+  to: table:dwd_cust_indv_info#field:nationality
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:PEOPLE
+  to: table:dwd_cust_indv_info#field:nation
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:MARITAL_STAT
+  to: table:dwd_cust_indv_info#field:mari_situ
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:HIGHEST_DEGREE
+  to: table:dwd_cust_indv_info#field:max_deg_edu
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_WORK#field:WORK_CORP
+  to: table:dwd_cust_indv_info#field:now_enter
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T01_P_CUST_INFO#field:PROFESSION
+  to: table:dwd_cust_indv_info#field:occu_cls
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ECIF_T03_A_TELE_INFO#field:PHONE_NO
+  to: table:dwd_cust_indv_info#field:phone_no
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:FLAT_ADDR#field:CONTACT_ADDRESS
+  to: table:dwd_cust_indv_info#field:contact_address
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:FLAT_ADDR#field:CONTACT_ADDRESS_DETAIL
+  to: table:dwd_cust_indv_info#field:contact_address_detail
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:FLAT_ADDR#field:ID_ADDRESS
+  to: table:dwd_cust_indv_info#field:id_address
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:FLAT_ADDR#field:ID_ADDRESS_DETAIL
+  to: table:dwd_cust_indv_info#field:id_address_detail
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:FLAT_ADDR#field:HOME_ADDRESS
+  to: table:dwd_cust_indv_info#field:home_address
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:FLAT_ADDR#field:HOME_ADDRESS_DETAIL
+  to: table:dwd_cust_indv_info#field:home_address_detail
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:FLAT_ADDR#field:RESIDENCE_ADDRESS
+  to: table:dwd_cust_indv_info#field:residence_address
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:FLAT_ADDR#field:RESIDENCE_ADDRESS_DETAIL
+  to: table:dwd_cust_indv_info#field:residence_address_detail
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:FLAT_ADDR#field:OFFICE_ADDRESS
+  to: table:dwd_cust_indv_info#field:office_address
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:FLAT_ADDR#field:OFFICE_ADDRESS_DETAIL
+  to: table:dwd_cust_indv_info#field:office_address_detail
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:KEHUHAOO
+  to: table:dwd_tx_aset#field:cust_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:ZHANGHAO
+  to: table:dwd_tx_aset#field:acct_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:CHAPBHAO
+  to: table:dwd_tx_aset#field:prdkt_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:QDAOLEIX
+  to: table:dwd_tx_aset#field:tx_chnl
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:JIAOYIRQ
+  to: table:dwd_tx_aset#field:tx_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:JIAOYISJ
+  to: table:dwd_tx_aset#field:tx_time
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:JIAOYBIZ
+  to: table:dwd_tx_aset#field:ccy_cd
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:JIAOYIJE
+  to: table:dwd_tx_aset#field:amt
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:JYYYJIGO
+  to: table:dwd_tx_aset#field:tx_org
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:CAOZGUIY
+  to: table:dwd_tx_aset#field:oprtr
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:JIEDAIBZ
+  to: table:dwd_tx_aset#field:loan_flg
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:ZHANGHYE
+  to: table:dwd_tx_aset#field:acct_bal
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:BEIZHUUU
+  to: table:dwd_tx_aset#field:tx_dsc
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:DUIFKHZH
+  to: table:dwd_tx_aset#field:opnt_acct
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:DUIFMINC
+  to: table:dwd_tx_aset#field:opnt_acct_name_fst
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:DUIFJGDM
+  to: table:dwd_tx_aset#field:opnt_bk_keep
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:DUIFJGMC
+  to: table:dwd_tx_aset#field:opnt_name_bk
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:KAIHJIGO
+  to: table:dwd_tx_aset#field:acct_blng_org
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPL_ZHMINX#field:KEHUZHAO
+  to: table:dwd_tx_aset#field:card_no
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:KEHUHAOO
+  to: table:dwd_acct_depo#field:cust_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:ZHANGHAO
+  to: table:dwd_acct_depo#field:acct_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:KEHUZHAO
+  to: table:dwd_acct_depo#field:card_no
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPF_CHPSHX#field:CHAPBHAO
+  to: table:dwd_acct_depo#field:prdkt_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPF_CHPSHX#field:CHANPSHM
+  to: table:dwd_acct_depo#field:prdkt_name
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_KEHUZH#field:ZHHUFENL
+  to: table:dwd_acct_depo#field:acct_typ
+  rule: (CASE<br>           WHEN T5.ZHHUFENL = '1' THEN '01'<br>           WHEN T5.ZHHUFENL
+    = '2' THEN '02'<br>           WHEN T5.ZHHUFENL = '3' THEN '03'<br>           WHEN
+    T5.ZHHUFENL = '4' THEN '04'<br>           ELSE T5.ZHHUFENL<br> END) ZHHUFENL
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:HUOBDAIH
+  to: table:dwd_acct_depo#field:ccy_cd
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:ZHHUYUEE
+  to: table:dwd_acct_depo#field:bal
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:KAIHJIGO
+  to: table:dwd_acct_depo#field:open_acct_org
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:KAIHRIQI
+  to: table:dwd_acct_depo#field:open_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:ZHIXLILV
+  to: table:dwd_acct_depo#field:rate_intri
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:CSQIXIRQ
+  to: table:dwd_acct_depo#field:intri_bgn_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:DOQIRIQI
+  to: table:dwd_acct_depo#field:expr_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:XIOHRIQI
+  to: table:dwd_acct_depo#field:acct_cloz_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:ZHHUZTAI
+  to: table:dwd_acct_depo#field:acct_state
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KCEV_KHPZHE#field:PINGZHZL
+  to: table:dwd_acct_depo#field:vchr_typ
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:CUNQIIII
+  to: table:dwd_acct_depo#field:cunq
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CBS_KDPA_ZHXINX#field:FZCPLEIX
+  to: table:dwd_acct_depo#field:fix_curnt_flg
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CUSTOMER_INFO#field:MFCUSTOMERID
+  to: table:dwd_acct_loan#field:cust_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_BUSINESS_ACCOUNT#field:AccountNo
+  to: table:dwd_acct_loan#field:acct_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_LOAN#field:BusinessType
+  to: table:dwd_acct_loan#field:prdkt_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_TYPE#field:TypeName
+  to: table:dwd_acct_loan#field:prdkt_name
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_TYPE#field:BaseTypeNo
+  to: table:dwd_acct_loan#field:prdkt_cate_big
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_LOAN#field:BusinessSum
+  to: table:dwd_acct_loan#field:loan_issu_amt
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_LOAN#field:PutoutDate
+  to: table:dwd_acct_loan#field:loan_issu_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_LOAN#field:NormalBalance+OverdueBalance
+  to: table:dwd_acct_loan#field:bal
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_RATE_SEGMENT#field:BusinessRate
+  to: table:dwd_acct_loan#field:rate_intri
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_LOAN#field:MaturityDate
+  to: table:dwd_acct_loan#field:expr_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_LOAN#field:LoanStatus
+  to: table:dwd_acct_loan#field:acct_state
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_LOAN#field:SerialNo
+  to: table:dwd_acct_loan#field:iou_no
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_LOAN#field:ACCRUEDINTEREST<br>OVERDUEINTEREST<br>PRINCIPALPENALTY<br>INTERESTPENALTY
+  to: table:dwd_acct_loan#field:int_arrears_ttl
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_RPT_SEGMENT#field:TermID
+  to: table:dwd_acct_loan#field:repay_typ
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_BUSINESS_ACCOUNT#field:AccountNo
+  to: table:dwd_acct_loan#field:repay_acct_no
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_LOAN#field:ClassifyResult
+  to: table:dwd_acct_loan#field:cate_5lvl
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:t1_cust_info#field:host_cust_no
+  to: table:dwd_acct_fin#field:cust_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:t1_cust_fnc_acct#field:acct_no
+  to: table:dwd_acct_fin#field:acct_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:t1_cust_fnc_acct#field:card_no
+  to: table:dwd_acct_fin#field:card_no
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:td_prod_info#field:REGIST_CODE
+  to: table:dwd_acct_fin#field:prdkt_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:td_prod_info#field:prod_name
+  to: table:dwd_acct_fin#field:prdkt_name
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:td_prod_info#field:PROD_TYPE
+  to: table:dwd_acct_fin#field:prdkt_cate_big
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:td_prod_info#field:ESTABLISH_DATE
+  to: table:dwd_acct_fin#field:estab_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:td_cust_vol#field:remain_vol
+  to: table:dwd_acct_fin#field:fin_amt
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:TD_PROD_NAV#field:TONOWCLIENTRATIO
+  to: table:dwd_acct_fin#field:rate_intri
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:t1_cust_fnc_acct#field:ACCT_STATUS
+  to: table:dwd_acct_fin#field:acct_state
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:TD_PROD_INFO#field:VALUE_DATE
+  to: table:dwd_acct_fin#field:intri_bgn_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:TD_PROD_INFO#field:WINDING_DATE
+  to: table:dwd_acct_fin#field:expr_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:TD_PROD_INFO#field:TANO
+  to: table:dwd_acct_fin#field:oprt_org
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T1_CUST_FNC_ACCT#field:ISS_BANK_CODE
+  to: table:dwd_acct_fin#field:chnl_no
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:TD_PROD_INFO#field:TANO
+  to: table:dwd_acct_fin#field:issu_org
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T1_CUST_FNC_ACCT#field:CRT_DATE
+  to: table:dwd_acct_fin#field:issu_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:TD_PROD_INFO#field:PROD_RISK_LEVEL
+  to: table:dwd_acct_fin#field:risk_lvl
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ib_list_plat#field:b.user_id
+  to: table:dwd_acct_insur#field:cust_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_BASE_INFO#field:c.ACC_NO
+  to: table:dwd_acct_insur#field:acct_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_PRODUCT_INFO#field:e.PRODUCT_ID
+  to: table:dwd_acct_insur#field:prdkt_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_PRODUCT_INFO#field:e.PRODUCT_NAME
+  to: table:dwd_acct_insur#field:prdkt_name
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_PRODUCT_INFO#field:e.PRODUCT_BIG_TYPE
+  to: table:dwd_acct_insur#field:prdkt_cate_big
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_BASE_INFO#field:c.CONT_NO
+  to: table:dwd_acct_insur#field:insur_bid_form_no
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_BASE_INFO#field:c.ACCEPT_DATE
+  to: table:dwd_acct_insur#field:tx_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_BASE_INFO#field:c.THROW_COM
+  to: table:dwd_acct_insur#field:tx_org
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_BASE_INFO#field:c.CONT_SOURCE
+  to: table:dwd_acct_insur#field:tx_chnl
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_BASE_INFO#field:c.THROW_COM
+  to: table:dwd_acct_insur#field:mkt_org
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_BASE_INFO#field:c.VALI_DATE
+  to: table:dwd_acct_insur#field:bgn_insur_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_INSURANCE_INFO#field:d.PAY_PER_UNIT
+  to: table:dwd_acct_insur#field:insur_period_typ
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_INSURANCE_INFO#field:d.PAY_PER_NUM
+  to: table:dwd_acct_insur#field:insur_period
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_INSURANCE_INFO#field:d.VALID_PER_UNIT
+  to: table:dwd_acct_insur#field:pay_period_typ
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_INSURANCE_INFO#field:d.VALID_PER_NUM
+  to: table:dwd_acct_insur#field:pay_period
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_INSURANCE_INFO#field:d.PAY_TYPE
+  to: table:dwd_acct_insur#field:pay_patrn
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_FEE_LIST#field:a.ORD_AMT
+  to: table:dwd_acct_insur#field:insur_amt
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_BASE_INFO#field:c.CONT_STATUS
+  to: table:dwd_acct_insur#field:policy_state
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:YBT_POLICY_FEE_LIST#field:a.TRAN_TYPE
+  to: table:dwd_acct_insur#field:persn_legal_bk_code
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T01_P_CUST_INFO#field:t0.ECIF_CUST_NO
+  to: table:dwd_cust_sign_ctrakt#field:cust_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T02_A_CUST_SIGN_REL#field:t1.SIGN_ACC_NO
+  to: table:dwd_cust_sign_ctrakt#field:ctrakt_acct
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T02_A_CUST_SIGN_REL#field:t1.SIGN_TYPE
+  to: table:dwd_cust_sign_ctrakt#field:ctrakt_typ
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T05_A_ACC_SIGN#field:t2.SIGN_DATE
+  to: table:dwd_cust_sign_ctrakt#field:ctrakt_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T05_A_ACC_SIGN#field:t2.SIGN_REL_PHONE
+  to: table:dwd_cust_sign_ctrakt#field:phone_no
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T05_A_ACC_SIGN#field:t2.SIGN_ORG
+  to: table:dwd_cust_sign_ctrakt#field:ctrakt_org
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T05_A_ACC_SIGN#field:t2.ATTN_NAME
+  to: table:dwd_cust_sign_ctrakt#field:ctrakt_oprtr
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T02_A_CUST_SIGN_REL#field:t1.SIGN_STATE
+  to: table:dwd_cust_sign_ctrakt#field:ctrakt_state
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CUSTOMER_INFO#field:MFCUSTOMERID
+  to: table:dwd_cust_indiv_crdt#field:cust_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CUSTOMER_INFO#field:CustomerName
+  to: table:dwd_cust_indiv_crdt#field:cust_name
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:Serialno
+  to: table:dwd_cust_indiv_crdt#field:crdt_agre_no
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:BusienssSum
+  to: table:dwd_cust_indiv_crdt#field:crdt_ttl_lmt
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:PutoutDate
+  to: table:dwd_cust_indiv_crdt#field:bgn_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:MaturityDate
+  to: table:dwd_cust_indiv_crdt#field:expr_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:CUSTOMER_INFO#field:MFCUSTOMERID
+  to: table:dwd_cust_ctrakt_info#field:cust_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:Serialno
+  to: table:dwd_cust_ctrakt_info#field:ctrakt_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:BusienssSum
+  to: table:dwd_cust_ctrakt_info#field:crdt_lmt
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:Balance
+  to: table:dwd_cust_ctrakt_info#field:loan_bal
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:VouchType
+  to: table:dwd_cust_ctrakt_info#field:guarant_mode
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:ClassifyResult
+  to: table:dwd_cust_ctrakt_info#field:cate_5lvl
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:BusinessCurrency
+  to: table:dwd_cust_ctrakt_info#field:ccy_cd
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:ACCT_RATE_SEGMENT#field:BusinessRate
+  to: table:dwd_cust_ctrakt_info#field:rate_intri
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:BusienssSum
+  to: table:dwd_cust_ctrakt_info#field:contr_amt
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:PutoutDate
+  to: table:dwd_cust_ctrakt_info#field:bgn_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:MaturityDate
+  to: table:dwd_cust_ctrakt_info#field:end_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:ManageUserID
+  to: table:dwd_cust_ctrakt_info#field:oprtr
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:BUSINESS_CONTRACT#field:ManageOrgID
+  to: table:dwd_cust_ctrakt_info#field:oprt_org
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T4_CUST_RISK_ASSESS_INFO#field:host_cust_no
+  to: table:dwd_cust_indiv_risk_invst#field:cust_id
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T4_CUST_RISK_ASSESS_INFO#field:CUST_RISK_LEVEL
+  to: table:dwd_cust_indiv_risk_invst#field:estim_rslt
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T01_P_CUST_INFO#field:CUST_EVAL_LEVEL
+  to: table:dwd_cust_indiv_risk_invst#field:score
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T4_CUST_RISK_ASSESS_INFO#field:CUST_RISK_LEVEL
+  to: table:dwd_cust_indiv_risk_invst#field:risk_lvl
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T4_CUST_RISK_ASSESS_INFO#field:ASSESS_DATE
+  to: table:dwd_cust_indiv_risk_invst#field:estim_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:T4_CUST_RISK_ASSESS_INFO#field:INVALID_DATE
+  to: table:dwd_cust_indiv_risk_invst#field:expr_date
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+- from: table:SYS_ORG#field:CREATR
+  to: table:dwd_sys_org#field:creatr
+  rule: ''
+  source_path: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\mapping\ods_to_dwd\ods到dwd映射.md
+unresolved_count: 0

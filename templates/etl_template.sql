@@ -1,6 +1,10 @@
 /*
  * ETL 模板
  * 参考文档: docs/06_ETL_Standard.md
+ * 
+ * 临时表使用规则：
+ * - 会话临时表（temp_）：CREATE TEMP TABLE，会话结束自动删除，适用于单步 ETL 任务
+ * - 物理临时表（TMP_）：CREATE TABLE IF NOT EXISTS，需手动清理，适用于存储过程
  */
 
 -- ====================
@@ -10,14 +14,14 @@
 -- 同步方式: [全量/增量]
 -- ====================
 
--- 步骤 1: Extract（抽取）
+-- 步骤 1: Extract（抽取）- 使用会话临时表
 CREATE TEMP TABLE temp_extract_[表名] AS
 SELECT 
     [字段名]
 FROM [源表]
 WHERE [条件];
 
--- 步骤 2: Transform（转换）
+-- 步骤 2: Transform（转换）- 使用会话临时表
 CREATE TEMP TABLE temp_transform_[表名] AS
 SELECT 
     [字段名],

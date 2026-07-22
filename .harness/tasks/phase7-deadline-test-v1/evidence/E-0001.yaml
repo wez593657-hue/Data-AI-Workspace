@@ -1,0 +1,8 @@
+evidence_id: E-0001
+task_id: phase7-deadline-test-v1
+phase: TEST_PASSED
+kind: test_matrix
+purpose: positive_case
+result: passed
+path: .harness/tasks/phase7-deadline-test-v1/test_cases.yaml
+summary: 静态测试矩阵覆盖11类规定场景

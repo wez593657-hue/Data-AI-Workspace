@@ -62,7 +62,8 @@
 | 事实表 | `fact_` | `fact_sales`, `fact_payment` |
 | 中间表 | `mid_` | `mid_customer_order` |
 | 日志表 | `log_` | `log_customer_operation` |
-| 临时表 | `temp_` | `temp_customer_batch` |
+| 会话临时表 | `temp_` | `temp_customer_batch` | `CREATE TEMP TABLE`，会话结束自动删除 |
+| 物理临时表 | `TMP_` | `TMP_CRM_ORDER_PENDING` | `CREATE TABLE IF NOT EXISTS`，存储过程中使用，需手动清理 |
 
 ### 7.4.5 数据分层命名规则
 

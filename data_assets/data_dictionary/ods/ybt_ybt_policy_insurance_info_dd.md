@@ -24,8 +24,8 @@
 | insurance_name | 【待确认】 | VARCHAR | 800 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_policy_insurance_info.insurance_name | 【待确认】 | 2026-07-17 |
 | insurance_type | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_policy_insurance_info.insurance_type | 【待确认】 | 2026-07-17 |
 | sum_buy_part | 【待确认】 | NUMERIC | 10 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_policy_insurance_info.sum_buy_part | 【待确认】 | 2026-07-17 |
-| sum_pre | 【待确认】 | NUMERIC | 17, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_policy_insurance_info.sum_pre | 【待确认】 | 2026-07-17 |
-| sum_cov | 【待确认】 | NUMERIC | 17, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_policy_insurance_info.sum_cov | 【待确认】 | 2026-07-17 |
+| sum_pre | 【待确认】 | NUMERIC | 17,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_policy_insurance_info.sum_pre | 【待确认】 | 2026-07-17 |
+| sum_cov | 【待确认】 | NUMERIC | 17,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_policy_insurance_info.sum_cov | 【待确认】 | 2026-07-17 |
 | pay_type | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_policy_insurance_info.pay_type | 【待确认】 | 2026-07-17 |
 | pay_freq | 【待确认】 | VARCHAR | 16 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_policy_insurance_info.pay_freq | 【待确认】 | 2026-07-17 |
 | pay_per_unit | 【待确认】 | VARCHAR | 16 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_policy_insurance_info.pay_per_unit | 【待确认】 | 2026-07-17 |

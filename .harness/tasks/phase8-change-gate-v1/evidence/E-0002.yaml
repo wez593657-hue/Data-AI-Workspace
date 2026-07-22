@@ -1,0 +1,8 @@
+evidence_id: E-0002
+task_id: phase8-change-gate-v1
+phase: FULL_VALIDATION_PASSED
+kind: configuration_validation
+purpose: full_validation
+result: passed
+command: Python编译、YAML解析、git diff --check
+details: 提交后完整工作区校验通过，跨层一致性、SQL、JSON、YAML和Git一致性全部通过

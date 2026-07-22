@@ -25,12 +25,12 @@
 | flowno | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.flowno | 【待确认】 | 2026-07-17 |
 | loanpredetailno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.loanpredetailno | 【待确认】 | 2026-07-17 |
 | vouchtypes | 【待确认】 | VARCHAR | 3000 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.vouchtypes | 【待确认】 | 2026-07-17 |
-| guarantyrate | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.guarantyrate | 【待确认】 | 2026-07-17 |
-| rateleft | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.rateleft | 【待确认】 | 2026-07-17 |
-| rateright | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.rateright | 【待确认】 | 2026-07-17 |
-| sumlimit | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.sumlimit | 【待确认】 | 2026-07-17 |
+| guarantyrate | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.guarantyrate | 【待确认】 | 2026-07-17 |
+| rateleft | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.rateleft | 【待确认】 | 2026-07-17 |
+| rateright | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.rateright | 【待确认】 | 2026-07-17 |
+| sumlimit | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.sumlimit | 【待确认】 | 2026-07-17 |
 | afterloanday | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.afterloanday | 【待确认】 | 2026-07-17 |
-| indafterloan | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.indafterloan | 【待确认】 | 2026-07-17 |
+| indafterloan | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.indafterloan | 【待确认】 | 2026-07-17 |
 | belongorg | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.belongorg | 【待确认】 | 2026-07-17 |
 | approveopinion | 【待确认】 | VARCHAR | 250 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.approveopinion | 【待确认】 | 2026-07-17 |
 | attribute1 | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_business_type.attribute1 | 【待确认】 | 2026-07-17 |

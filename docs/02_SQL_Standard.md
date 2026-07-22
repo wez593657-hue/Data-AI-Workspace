@@ -103,13 +103,14 @@ JOIN temp_order_summary t ON c.customer_id = t.customer_id;
 
 ### 2.3.1 表命名
 
-| 类型 | 前缀 | 示例 |
-|------|------|------|
-| 业务表 | `crm_` | `crm_customer`, `crm_order` |
-| 临时表 | `temp_` | `temp_order_summary` |
-| 中间表 | `mid_` | `mid_customer_order` |
-| 维度表 | `dim_` | `dim_product` |
-| 事实表 | `fact_` | `fact_sales` |
+| 类型 | 前缀 | 示例 | 说明 |
+|------|------|------|------|
+| 业务表 | `crm_` | `crm_customer`, `crm_order` | - |
+| 会话临时表 | `temp_` | `temp_order_summary` | `CREATE TEMP TABLE`，会话结束自动删除 |
+| 物理临时表 | `TMP_` | `TMP_CRM_ORDER_PENDING` | `CREATE TABLE IF NOT EXISTS`，存储过程中使用，需手动清理 |
+| 中间表 | `mid_` | `mid_customer_order` | - |
+| 维度表 | `dim_` | `dim_product` | - |
+| 事实表 | `fact_` | `fact_sales` | - |
 
 ### 2.3.2 字段命名
 
@@ -129,6 +130,28 @@ JOIN temp_order_summary t ON c.customer_id = t.customer_id;
 |------|------|------|
 | 表别名 | 表名首字母或缩写 | `crm_customer` → `c`, `crm_order` → `o` |
 | 列别名 | 清晰描述含义 | `SUM(order_amount)` → `total_amount` |
+
+### 2.3.4 字段数据类型选择
+
+字段数据类型遵循 [07_Data_Dictionary.md 7.4.3 数据类型统一](./07_Data_Dictionary.md#743-数据类型统一) 规范，SQL 中需遵守以下规则：
+
+| 用途 | 推荐类型 | SQL 示例 |
+|------|----------|----------|
+| ID/编码 | `VARCHAR(50)` | `customer_id VARCHAR(50)` |
+| 名称 | `VARCHAR(200)` | `customer_name VARCHAR(200)` |
+| 描述 | `VARCHAR(1000)` | `order_desc VARCHAR(1000)` |
+| 状态 | `VARCHAR(20)` | `order_status VARCHAR(20)` |
+| 金额 | `DECIMAL(18,2)` | `order_amount DECIMAL(18,2)` |
+| 整数 | `INT` / `BIGINT` | `order_count INT` |
+| 日期 | `DATE` | `order_date DATE` |
+| 时间戳 | `TIMESTAMP` | `create_time TIMESTAMP` |
+| 布尔 | `BOOLEAN` | `is_active BOOLEAN` |
+
+**数据类型使用规则**：
+- 金额类字段必须使用 `DECIMAL(18,2)`，禁止使用 `FLOAT`/`DOUBLE`（精度问题）
+- 时间类字段统一使用 `TIMESTAMP`，审计字段（create_time、update_time、etl_time）必须为此类型
+- 禁止在 WHERE 条件中对字段进行隐式类型转换，必须使用 `CAST` 显式转换
+- 禁止使用 `TEXT` 类型作为索引字段
 
 ## 2.4 格式规范
 

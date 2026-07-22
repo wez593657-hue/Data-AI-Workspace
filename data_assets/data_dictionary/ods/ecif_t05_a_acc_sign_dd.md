@@ -21,10 +21,10 @@
 | balance_dis_flag | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.balance_dis_flag | 【待确认】 | 2026-07-17 |
 | sign_org | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.sign_org | 【待确认】 | 2026-07-17 |
 | sign_oper | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.sign_oper | 【待确认】 | 2026-07-17 |
-| sign_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.sign_date | 【待确认】 | 2026-07-17 |
+| sign_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.sign_date | 【待确认】 | 2026-07-17 |
 | close_org | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.close_org | 【待确认】 | 2026-07-17 |
 | close_oper | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.close_oper | 【待确认】 | 2026-07-17 |
-| close_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.close_date | 【待确认】 | 2026-07-17 |
+| close_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.close_date | 【待确认】 | 2026-07-17 |
 | sign_rel_addr | 【待确认】 | VARCHAR | 160 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.sign_rel_addr | 【待确认】 | 2026-07-17 |
 | sign_rel_phone | 【待确认】 | VARCHAR | 36 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.sign_rel_phone | 【待确认】 | 2026-07-17 |
 | sign_rel_name | 【待确认】 | VARCHAR | 120 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t05_a_acc_sign.sign_rel_name | 【待确认】 | 2026-07-17 |

@@ -1,0 +1,7 @@
+evidence_id: E-0001
+phase: SCHEMA_CONSISTENCY
+kind: schema_consistency_check
+purpose: schema_consistency_check
+result: blocked
+details: 全量扫描：190张DDL、189份数据字典、610条Mapping；120项差异、610项未解析
+created_at: '2026-07-21T17:05:47+00:00'

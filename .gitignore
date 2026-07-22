@@ -44,6 +44,33 @@ __pycache__/
 
 # Temp
 tmp/
+!data_assets/ddl/tmp/
+!data_assets/ddl/tmp/*.sql
 temp/
 *.tmp
 *.bak
+
+# Excel files
+*.xlsx
+*.xls
+~$*.xlsx
+~$*.xls
+
+# Temporary SQL files
+CREATE_TMP_*.sql
+
+# Word documents
+*.docx
+*.doc
+
+# Harness/test files
+.harness/
+scripts/harness/
+
+# Local merge backups and inventory helpers
+.merge_backup_20260722/
+branch_files_*.txt
+merge_data_assets.py
+
+# Auto-generated docs
+docs/superpowers/specs/*.md

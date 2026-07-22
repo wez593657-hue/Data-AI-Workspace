@@ -1,0 +1,99 @@
+version: "0.2"
+workflows:
+  data_warehouse:
+    CREATED:
+      next: WORKSPACE_CHECKED
+      required_evidence: [workspace_status]
+    WORKSPACE_CHECKED:
+      next: REQUIREMENT_PARSED
+      required_evidence: [requirement_read]
+    REQUIREMENT_PARSED:
+      next: MEMORY_CARD_VERIFIED
+      required_evidence: [memory_card_check]
+    MEMORY_CARD_VERIFIED:
+      next: BUSINESS_RULES_CONFIRMED
+      required_evidence: [business_rules_confirmation]
+    BUSINESS_RULES_CONFIRMED:
+      next: DATA_LINEAGE_CONFIRMED
+      required_evidence: [lineage_analysis]
+    DATA_LINEAGE_CONFIRMED:
+      next: DDL_READY
+      required_evidence: [ddl_check]
+    DDL_READY:
+      next: DICTIONARY_READY
+      required_evidence: [dictionary_check]
+    DICTIONARY_READY:
+      next: MAPPING_READY
+      required_evidence: [mapping_check]
+    MAPPING_READY:
+      next: SQL_READY
+      required_evidence: [sql_check]
+    SQL_READY:
+      next: PROCEDURE_READY
+      required_evidence: [procedure_check]
+    PROCEDURE_READY:
+      next: ETL_READY
+      required_evidence: [etl_check]
+    ETL_READY:
+      next: REVERSE_LOGIC_PASSED
+      required_evidence: [reverse_logic_check]
+    REVERSE_LOGIC_PASSED:
+      next: TEST_PASSED
+      required_evidence: [test_report]
+    TEST_PASSED:
+      next: REVIEW_PASSED
+      required_evidence: [review_report]
+    REVIEW_PASSED:
+      next: USER_APPROVED
+      required_evidence: [user_approval]
+    USER_APPROVED:
+      next: FULL_VALIDATION_PASSED
+      required_evidence: [full_validation]
+    FULL_VALIDATION_PASSED:
+      next: COMMIT_ALLOWED
+      required_evidence: [commit_authorization]
+    COMMIT_ALLOWED:
+      next: PUSH_ALLOWED
+      required_evidence: [push_authorization]
+    PUSH_ALLOWED:
+      next: PR_APPROVED
+      required_evidence: [pr_approval]
+    PR_APPROVED:
+      next: COMPLETED
+      required_evidence: [release_record]
+  harness:
+    CREATED:
+      next: WORKSPACE_CHECKED
+      required_evidence: [workspace_status]
+    WORKSPACE_CHECKED:
+      next: IMPLEMENTATION_READY
+      required_evidence: [implementation_scope]
+    IMPLEMENTATION_READY:
+      next: QUICK_VALIDATION_PASSED
+      required_evidence: [quick_validation]
+    QUICK_VALIDATION_PASSED:
+      next: FULL_VALIDATION_PASSED
+      required_evidence: [full_validation]
+    FULL_VALIDATION_PASSED:
+      next: USER_APPROVED
+      required_evidence: [user_approval]
+    USER_APPROVED:
+      allowed_next: [NEXT_PHASE_ALLOWED, RELEASE_APPROVED]
+      required_evidence_by_target:
+        NEXT_PHASE_ALLOWED: [next_phase_authorization]
+        RELEASE_APPROVED: [release_approval]
+    NEXT_PHASE_ALLOWED:
+      next: IMPLEMENTATION_READY
+      required_evidence: [next_phase_scope]
+    IMPLEMENTATION_READY:
+      next: QUICK_VALIDATION_PASSED
+      required_evidence: [quick_validation]
+    QUICK_VALIDATION_PASSED:
+      next: FULL_VALIDATION_PASSED
+      required_evidence: [full_validation]
+    RELEASE_APPROVED:
+      next: COMMIT_ALLOWED
+      required_evidence: [commit_authorization]
+    COMMIT_ALLOWED:
+      next: COMPLETED
+      required_evidence: [completion_record]

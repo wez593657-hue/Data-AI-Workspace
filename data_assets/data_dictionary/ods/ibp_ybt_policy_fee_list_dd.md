@@ -22,8 +22,8 @@
 | ord_id | 【待确认】 | VARCHAR | 200 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_id | 【待确认】 | 2026-07-17 |
 | ord_ori_id | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_ori_id | 【待确认】 | 2026-07-17 |
 | ord_memo | 【待确认】 | VARCHAR | 2000 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_memo | 【待确认】 | 2026-07-17 |
-| ord_amt | 【待确认】 | NUMERIC | 17, 2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_amt | 【待确认】 | 2026-07-17 |
-| pre_amt | 【待确认】 | NUMERIC | 17, 2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.pre_amt | 【待确认】 | 2026-07-17 |
+| ord_amt | 【待确认】 | NUMERIC | 17,2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_amt | 【待确认】 | 2026-07-17 |
+| pre_amt | 【待确认】 | NUMERIC | 17,2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.pre_amt | 【待确认】 | 2026-07-17 |
 | ord_create_date | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_create_date | 【待确认】 | 2026-07-17 |
 | ord_create_time | 【待确认】 | VARCHAR | 24 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_create_time | 【待确认】 | 2026-07-17 |
 | ord_expires_date | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_expires_date | 【待确认】 | 2026-07-17 |
@@ -40,8 +40,8 @@
 | ord_payee_bank_no | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_payee_bank_no | 【待确认】 | 2026-07-17 |
 | ord_payee_bank_name | 【待确认】 | VARCHAR | 800 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_payee_bank_name | 【待确认】 | 2026-07-17 |
 | ord_part_pay_flag | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_part_pay_flag | 【待确认】 | 2026-07-17 |
-| ord_thr_sum_amt | 【待确认】 | NUMERIC | 17, 2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_thr_sum_amt | 【待确认】 | 2026-07-17 |
-| ord_thr_payed_amt | 【待确认】 | NUMERIC | 17, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_thr_payed_amt | 【待确认】 | 2026-07-17 |
+| ord_thr_sum_amt | 【待确认】 | NUMERIC | 17,2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_thr_sum_amt | 【待确认】 | 2026-07-17 |
+| ord_thr_payed_amt | 【待确认】 | NUMERIC | 17,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_thr_payed_amt | 【待确认】 | 2026-07-17 |
 | ord_tran_status | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.ord_tran_status | 【待确认】 | 2026-07-17 |
 | tran_type | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.tran_type | 【待确认】 | 2026-07-17 |
 | tran_soure | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_fee_list.tran_soure | 【待确认】 | 2026-07-17 |

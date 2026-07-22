@@ -65,8 +65,8 @@
 | cancel_date | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_info.cancel_date | 【待确认】 | 2026-07-17 |
 | last_org_trf_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_info.last_org_trf_id | 【待确认】 | 2026-07-17 |
 | last_cmg_trf_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_info.last_cmg_trf_id | 【待确认】 | 2026-07-17 |
-| month_deposit | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_info.month_deposit | 【待确认】 | 2026-07-17 |
-| season_deposit | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_info.season_deposit | 【待确认】 | 2026-07-17 |
+| month_deposit | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_info.month_deposit | 【待确认】 | 2026-07-17 |
+| season_deposit | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_info.season_deposit | 【待确认】 | 2026-07-17 |
 | shop_back_url | 【待确认】 | VARCHAR | 300 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_info.shop_back_url | 【待确认】 | 2026-07-17 |
 | yunhorn | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_info.yunhorn | 【待确认】 | 2026-07-17 |
 | expire_check_type | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_info.expire_check_type | 【待确认】 | 2026-07-17 |

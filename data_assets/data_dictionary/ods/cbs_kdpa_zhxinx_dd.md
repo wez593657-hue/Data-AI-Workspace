@@ -40,8 +40,8 @@
 | lancrymc | 【待确认】 | VARCHAR | 500 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.lancrymc | 【待确认】 | 2026-07-17 |
 | youxriqi | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.youxriqi | 【待确认】 | 2026-07-17 |
 | weiyxuho | 【待确认】 | NUMERIC | 19 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.weiyxuho | 【待确认】 | 2026-07-17 |
-| zhhuyuee | 【待确认】 | NUMERIC | 21, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zhhuyuee | 【待确认】 | 2026-07-17 |
-| shrizhye | 【待确认】 | NUMERIC | 21, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.shrizhye | 【待确认】 | 2026-07-17 |
+| zhhuyuee | 【待确认】 | NUMERIC | 21,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zhhuyuee | 【待确认】 | 2026-07-17 |
+| shrizhye | 【待确认】 | NUMERIC | 21,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.shrizhye | 【待确认】 | 2026-07-17 |
 | yegxriqi | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.yegxriqi | 【待确认】 | 2026-07-17 |
 | sccrriqi | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.sccrriqi | 【待确认】 | 2026-07-17 |
 | scywriqi | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.scywriqi | 【待确认】 | 2026-07-17 |
@@ -53,8 +53,8 @@
 | zhufldm2 | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zhufldm2 | 【待确认】 | 2026-07-17 |
 | zhufldm3 | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zhufldm3 | 【待确认】 | 2026-07-17 |
 | huansbiz | 【待确认】 | VARCHAR | 3 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.huansbiz | 【待确认】 | 2026-07-17 |
-| zuidlcye | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zuidlcye | 【待确认】 | 2026-07-17 |
-| zuixlcye | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zuixlcye | 【待确认】 | 2026-07-17 |
+| zuidlcye | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zuidlcye | 【待确认】 | 2026-07-17 |
+| zuixlcye | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zuixlcye | 【待确认】 | 2026-07-17 |
 | cunrkzhi | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.cunrkzhi | 【待确认】 | 2026-07-17 |
 | cunrkzff | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.cunrkzff | 【待确认】 | 2026-07-17 |
 | cunrclsx | 【待确认】 | VARCHAR | 32 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.cunrclsx | 【待确认】 | 2026-07-17 |
@@ -63,8 +63,8 @@
 | zdzqkzfs | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zdzqkzfs | 【待确认】 | 2026-07-17 |
 | kehuzhao | 【待确认】 | VARCHAR | 35 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.kehuzhao | 【待确认】 | 2026-07-17 |
 | zhcunfsh | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zhcunfsh | 【待确认】 | 2026-07-17 |
-| beiyjine | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.beiyjine | 【待确认】 | 2026-07-17 |
-| kaihjine | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.kaihjine | 【待确认】 | 2026-07-17 |
+| beiyjine | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.beiyjine | 【待确认】 | 2026-07-17 |
+| kaihjine | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.kaihjine | 【待确认】 | 2026-07-17 |
 | cunkzlei | 【待确认】 | VARCHAR | 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.cunkzlei | 【待确认】 | 2026-07-17 |
 | zhhuztai | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zhhuztai | 【待确认】 | 2026-07-17 |
 | yezztbbz | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.yezztbbz | 【待确认】 | 2026-07-17 |
@@ -103,12 +103,12 @@
 | jixipnlv | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.jixipnlv | 【待确认】 | 2026-07-17 |
 | tzlixibz | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.tzlixibz | 【待确认】 | 2026-07-17 |
 | lilvbhao | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.lilvbhao | 【待确认】 | 2026-07-17 |
-| zhixlilv | 【待确认】 | NUMERIC | 12, 7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zhixlilv | 【待确认】 | 2026-07-17 |
+| zhixlilv | 【待确认】 | NUMERIC | 12,7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.zhixlilv | 【待确认】 | 2026-07-17 |
 | lilvsffd | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.lilvsffd | 【待确认】 | 2026-07-17 |
-| leijlixi | 【待确认】 | NUMERIC | 20, 7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.leijlixi | 【待确认】 | 2026-07-17 |
-| jishuuuu | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.jishuuuu | 【待确认】 | 2026-07-17 |
-| yjyjlixi | 【待确认】 | NUMERIC | 20, 7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.yjyjlixi | 【待确认】 | 2026-07-17 |
-| yjyjjish | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.yjyjjish | 【待确认】 | 2026-07-17 |
+| leijlixi | 【待确认】 | NUMERIC | 20,7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.leijlixi | 【待确认】 | 2026-07-17 |
+| jishuuuu | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.jishuuuu | 【待确认】 | 2026-07-17 |
+| yjyjlixi | 【待确认】 | NUMERIC | 20,7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.yjyjlixi | 【待确认】 | 2026-07-17 |
+| yjyjjish | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.yjyjjish | 【待确认】 | 2026-07-17 |
 | shfoyouz | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.shfoyouz | 【待确认】 | 2026-07-17 |
 | shishbbz | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.shishbbz | 【待确认】 | 2026-07-17 |
 | yueegjbz | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.yueegjbz | 【待确认】 | 2026-07-17 |
@@ -120,7 +120,7 @@
 | beiyzd01 | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.beiyzd01 | 【待确认】 | 2026-07-17 |
 | beiyzd02 | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.beiyzd02 | 【待确认】 | 2026-07-17 |
 | beiyzd03 | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.beiyzd03 | 【待确认】 | 2026-07-17 |
-| beiyye01 | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.beiyye01 | 【待确认】 | 2026-07-17 |
+| beiyye01 | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.beiyye01 | 【待确认】 | 2026-07-17 |
 | beiyrq01 | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.beiyrq01 | 【待确认】 | 2026-07-17 |
 | kaihuqud | 【待确认】 | VARCHAR | 7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.kaihuqud | 【待确认】 | 2026-07-17 |
 | jitiywbm | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.jitiywbm | 【待确认】 | 2026-07-17 |
@@ -137,8 +137,8 @@
 | khzjlyzh | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.khzjlyzh | 【待确认】 | 2026-07-17 |
 | bjlxzrzh | 【待确认】 | VARCHAR | 35 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.bjlxzrzh | 【待确认】 | 2026-07-17 |
 | bxzrzhao | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.bxzrzhao | 【待确认】 | 2026-07-17 |
-| drjfxjje | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.drjfxjje | 【待确认】 | 2026-07-17 |
-| drjfzzje | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.drjfzzje | 【待确认】 | 2026-07-17 |
-| drdfxjje | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.drdfxjje | 【待确认】 | 2026-07-17 |
-| drdfzzje | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.drdfzzje | 【待确认】 | 2026-07-17 |
+| drjfxjje | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.drjfxjje | 【待确认】 | 2026-07-17 |
+| drjfzzje | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.drjfzzje | 【待确认】 | 2026-07-17 |
+| drdfxjje | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.drdfxjje | 【待确认】 | 2026-07-17 |
+| drdfzzje | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.drdfzzje | 【待确认】 | 2026-07-17 |
 | ryzd | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhxinx.ryzd | 【待确认】 | 2026-07-17 |

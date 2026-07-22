@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Field Lineage",
+  "type": "object",
+  "required": ["target", "source", "transform", "rule_ids"],
+  "properties": {
+    "target": {"type": "object", "required": ["table", "column"]},
+    "source": {"type": "array", "minItems": 1},
+    "transform": {"type": "string"},
+    "rule_ids": {"type": "array", "items": {"type": "string"}}
+  }
+}

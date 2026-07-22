@@ -25,8 +25,8 @@
 | is_default | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.ybt_sys_dict_data.is_default | 【待确认】 | 2026-07-17 |
 | status | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.ybt_sys_dict_data.status | 【待确认】 | 2026-07-17 |
 | create_by | 【待确认】 | VARCHAR | 64 | NULL | - | - | - | 【待确认】 | crmdm.ybt_sys_dict_data.create_by | 【待确认】 | 2026-07-17 |
-| create_time | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_sys_dict_data.create_time | 【待确认】 | 2026-07-17 |
+| create_time | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_sys_dict_data.create_time | 【待确认】 | 2026-07-17 |
 | update_by | 【待确认】 | VARCHAR | 64 | NULL | - | - | - | 【待确认】 | crmdm.ybt_sys_dict_data.update_by | 【待确认】 | 2026-07-17 |
-| update_time | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_sys_dict_data.update_time | 【待确认】 | 2026-07-17 |
+| update_time | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_sys_dict_data.update_time | 【待确认】 | 2026-07-17 |
 | remark | 【待确认】 | VARCHAR | 500 | NULL | - | - | - | 【待确认】 | crmdm.ybt_sys_dict_data.remark | 【待确认】 | 2026-07-17 |
 | ryzd | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.ybt_sys_dict_data.ryzd | 【待确认】 | 2026-07-17 |

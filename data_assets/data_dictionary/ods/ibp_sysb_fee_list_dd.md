@@ -29,12 +29,12 @@
 | pay_type | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.pay_type | 【待确认】 | 2026-07-17 |
 | pay_acct_no | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.pay_acct_no | 【待确认】 | 2026-07-17 |
 | pay_acct_name | 【待确认】 | VARCHAR | 400 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.pay_acct_name | 【待确认】 | 2026-07-17 |
-| total_amt | 【待确认】 | NUMERIC | 18, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.total_amt | 【待确认】 | 2026-07-17 |
+| total_amt | 【待确认】 | NUMERIC | 18,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.total_amt | 【待确认】 | 2026-07-17 |
 | pay_date | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.pay_date | 【待确认】 | 2026-07-17 |
 | start_date | 【待确认】 | VARCHAR | 6 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.start_date | 【待确认】 | 2026-07-17 |
 | end_date | 【待确认】 | VARCHAR | 6 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.end_date | 【待确认】 | 2026-07-17 |
-| base_amt | 【待确认】 | NUMERIC | 18, 2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.base_amt | 【待确认】 | 2026-07-17 |
-| amt | 【待确认】 | NUMERIC | 18, 2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.amt | 【待确认】 | 2026-07-17 |
+| base_amt | 【待确认】 | NUMERIC | 18,2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.base_amt | 【待确认】 | 2026-07-17 |
+| amt | 【待确认】 | NUMERIC | 18,2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.amt | 【待确认】 | 2026-07-17 |
 | tax_serial | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.tax_serial | 【待确认】 | 2026-07-17 |
 | bank_serial | 【待确认】 | VARCHAR | 160 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.bank_serial | 【待确认】 | 2026-07-17 |
 | print_count | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.print_count | 【待确认】 | 2026-07-17 |
@@ -60,7 +60,7 @@
 | dcmc | 【待确认】 | VARCHAR | 120 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.dcmc | 【待确认】 | 2026-07-17 |
 | chk_status | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.chk_status | 【待确认】 | 2026-07-17 |
 | trans_type | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.trans_type | 【待确认】 | 2026-07-17 |
-| chk_amt | 【待确认】 | NUMERIC | 18, 2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.chk_amt | 【待确认】 | 2026-07-17 |
+| chk_amt | 【待确认】 | NUMERIC | 18,2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.chk_amt | 【待确认】 | 2026-07-17 |
 | chk_date | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.chk_date | 【待确认】 | 2026-07-17 |
 | chk_memo | 【待确认】 | VARCHAR | 800 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.chk_memo | 【待确认】 | 2026-07-17 |
 | phone | 【待确认】 | VARCHAR | 60 | NULL | - | - | - | 【待确认】 | crmdm.ibp_sysb_fee_list.phone | 【待确认】 | 2026-07-17 |

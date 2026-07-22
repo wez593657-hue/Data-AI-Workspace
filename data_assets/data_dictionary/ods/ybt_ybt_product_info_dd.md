@@ -20,16 +20,16 @@
 | item_name | 【待确认】 | VARCHAR | 800 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.item_name | 【待确认】 | 2026-07-17 |
 | product_name | 【待确认】 | VARCHAR | 800 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.product_name | 【待确认】 | 2026-07-17 |
 | commission_type | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.commission_type | 【待确认】 | 2026-07-17 |
-| commission_ratio | 【待确认】 | NUMERIC | 6, 3 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.commission_ratio | 【待确认】 | 2026-07-17 |
+| commission_ratio | 【待确认】 | NUMERIC | 6,3 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.commission_ratio | 【待确认】 | 2026-07-17 |
 | risk_grade | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.risk_grade | 【待确认】 | 2026-07-17 |
 | product_big_type | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.product_big_type | 【待确认】 | 2026-07-17 |
 | product_lit_type | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.product_lit_type | 【待确认】 | 2026-07-17 |
 | product_remark | 【待确认】 | VARCHAR | 2000 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.product_remark | 【待确认】 | 2026-07-17 |
 | product_status | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.product_status | 【待确认】 | 2026-07-17 |
-| create_time | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.create_time | 【待确认】 | 2026-07-17 |
+| create_time | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.create_time | 【待确认】 | 2026-07-17 |
 | create_user | 【待确认】 | VARCHAR | 200 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.create_user | 【待确认】 | 2026-07-17 |
 | create_user_name | 【待确认】 | VARCHAR | 800 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.create_user_name | 【待确认】 | 2026-07-17 |
-| update_time | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.update_time | 【待确认】 | 2026-07-17 |
+| update_time | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.update_time | 【待确认】 | 2026-07-17 |
 | update_user | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.update_user | 【待确认】 | 2026-07-17 |
 | update_user_name | 【待确认】 | VARCHAR | 800 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.update_user_name | 【待确认】 | 2026-07-17 |
 | is_recommend | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_product_info.is_recommend | 【待确认】 | 2026-07-17 |

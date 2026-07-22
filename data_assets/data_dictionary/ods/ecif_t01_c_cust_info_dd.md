@@ -23,21 +23,21 @@
 | cust_enname | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.cust_enname | 【待确认】 | 2026-07-17 |
 | cust_spname | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.cust_spname | 【待确认】 | 2026-07-17 |
 | govn_cert_no | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.govn_cert_no | 【待确认】 | 2026-07-17 |
-| govn_efft_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.govn_efft_date | 【待确认】 | 2026-07-17 |
-| govn_expd_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.govn_expd_date | 【待确认】 | 2026-07-17 |
+| govn_efft_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.govn_efft_date | 【待确认】 | 2026-07-17 |
+| govn_expd_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.govn_expd_date | 【待确认】 | 2026-07-17 |
 | govn_review_year | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.govn_review_year | 【待确认】 | 2026-07-17 |
 | org_code | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.org_code | 【待确认】 | 2026-07-17 |
 | org_code_issu | 【待确认】 | VARCHAR | 60 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.org_code_issu | 【待确认】 | 2026-07-17 |
-| org_code_iss_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.org_code_iss_date | 【待确认】 | 2026-07-17 |
-| org_code_due_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.org_code_due_date | 【待确认】 | 2026-07-17 |
+| org_code_iss_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.org_code_iss_date | 【待确认】 | 2026-07-17 |
+| org_code_due_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.org_code_due_date | 【待确认】 | 2026-07-17 |
 | reg_org | 【待确认】 | VARCHAR | 60 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.reg_org | 【待确认】 | 2026-07-17 |
 | reg_country | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.reg_country | 【待确认】 | 2026-07-17 |
 | reg_province | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.reg_province | 【待确认】 | 2026-07-17 |
 | reg_area_code | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.reg_area_code | 【待确认】 | 2026-07-17 |
-| reg_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.reg_date | 【待确认】 | 2026-07-17 |
-| reg_cptl | 【待确认】 | NUMERIC | 20, 2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.reg_cptl | 【待确认】 | 2026-07-17 |
+| reg_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.reg_date | 【待确认】 | 2026-07-17 |
+| reg_cptl | 【待确认】 | NUMERIC | 20,2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.reg_cptl | 【待确认】 | 2026-07-17 |
 | reg_cptl_curr | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.reg_cptl_curr | 【待确认】 | 2026-07-17 |
-| paid_cptl | 【待确认】 | NUMERIC | 20, 2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.paid_cptl | 【待确认】 | 2026-07-17 |
+| paid_cptl | 【待确认】 | NUMERIC | 20,2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.paid_cptl | 【待确认】 | 2026-07-17 |
 | paid_cptl_curr | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.paid_cptl_curr | 【待确认】 | 2026-07-17 |
 | org_type | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.org_type | 【待确认】 | 2026-07-17 |
 | corp_attr | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.corp_attr | 【待确认】 | 2026-07-17 |
@@ -45,14 +45,14 @@
 | pay_no | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.pay_no | 【待确认】 | 2026-07-17 |
 | spe_inst_code | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.spe_inst_code | 【待确认】 | 2026-07-17 |
 | tax_reg_no | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.tax_reg_no | 【待确认】 | 2026-07-17 |
-| reg_expd_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.reg_expd_date | 【待确认】 | 2026-07-17 |
+| reg_expd_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.reg_expd_date | 【待确认】 | 2026-07-17 |
 | tax_area_no | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.tax_area_no | 【待确认】 | 2026-07-17 |
-| area_expd_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.area_expd_date | 【待确认】 | 2026-07-17 |
+| area_expd_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.area_expd_date | 【待确认】 | 2026-07-17 |
 | tax_org | 【待确认】 | VARCHAR | 60 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.tax_org | 【待确认】 | 2026-07-17 |
 | loan_card_flag | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.loan_card_flag | 【待确认】 | 2026-07-17 |
 | loan_card_no | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.loan_card_no | 【待确认】 | 2026-07-17 |
-| loan_card_due_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.loan_card_due_date | 【待确认】 | 2026-07-17 |
-| loan_card_chk_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.loan_card_chk_date | 【待确认】 | 2026-07-17 |
+| loan_card_due_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.loan_card_due_date | 【待确认】 | 2026-07-17 |
+| loan_card_chk_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.loan_card_chk_date | 【待确认】 | 2026-07-17 |
 | unit_credit_code | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.unit_credit_code | 【待确认】 | 2026-07-17 |
 | mang_dept | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.mang_dept | 【待确认】 | 2026-07-17 |
 | corp_subj | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.corp_subj | 【待确认】 | 2026-07-17 |
@@ -73,10 +73,10 @@
 | mng_operate_ownership | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.mng_operate_ownership | 【待确认】 | 2026-07-17 |
 | comp_size | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.comp_size | 【待确认】 | 2026-07-17 |
 | emp_num | 【待确认】 | NUMERIC | 10 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.emp_num | 【待确认】 | 2026-07-17 |
-| total_assets | 【待确认】 | NUMERIC | 20, 2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.total_assets | 【待确认】 | 2026-07-17 |
-| net_assets | 【待确认】 | NUMERIC | 20, 2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.net_assets | 【待确认】 | 2026-07-17 |
-| sell_sum | 【待确认】 | NUMERIC | 20, 2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.sell_sum | 【待确认】 | 2026-07-17 |
-| annual_income | 【待确认】 | NUMERIC | 20, 2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.annual_income | 【待确认】 | 2026-07-17 |
+| total_assets | 【待确认】 | NUMERIC | 20,2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.total_assets | 【待确认】 | 2026-07-17 |
+| net_assets | 【待确认】 | NUMERIC | 20,2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.net_assets | 【待确认】 | 2026-07-17 |
+| sell_sum | 【待确认】 | NUMERIC | 20,2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.sell_sum | 【待确认】 | 2026-07-17 |
+| annual_income | 【待确认】 | NUMERIC | 20,2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.annual_income | 【待确认】 | 2026-07-17 |
 | free_tax_flag | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.free_tax_flag | 【待确认】 | 2026-07-17 |
 | free_tax_limit | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.free_tax_limit | 【待确认】 | 2026-07-17 |
 | private_flag | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.private_flag | 【待确认】 | 2026-07-17 |
@@ -118,9 +118,9 @@
 | bank_svr_grade | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.bank_svr_grade | 【待确认】 | 2026-07-17 |
 | cust_eval_level | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.cust_eval_level | 【待确认】 | 2026-07-17 |
 | credit_level | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.credit_level | 【待确认】 | 2026-07-17 |
-| evaluate_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.evaluate_date | 【待确认】 | 2026-07-17 |
+| evaluate_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.evaluate_date | 【待确认】 | 2026-07-17 |
 | other_credit_level | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.other_credit_level | 【待确认】 | 2026-07-17 |
-| other_evaluate_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.other_evaluate_date | 【待确认】 | 2026-07-17 |
+| other_evaluate_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.other_evaluate_date | 【待确认】 | 2026-07-17 |
 | other_org_name | 【待确认】 | VARCHAR | 100 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.other_org_name | 【待确认】 | 2026-07-17 |
 | evaluate_level | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.evaluate_level | 【待确认】 | 2026-07-17 |
 | cust_level | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_cust_info.cust_level | 【待确认】 | 2026-07-17 |

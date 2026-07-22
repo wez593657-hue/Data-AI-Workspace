@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Structured Requirement",
+  "type": "object",
+  "required": ["requirement_id", "version", "rules"],
+  "properties": {
+    "requirement_id": {"type": "string"},
+    "version": {"type": "string"},
+    "rules": {"type": "array", "items": {"$ref": "business_rule.schema.json"}}
+  }
+}

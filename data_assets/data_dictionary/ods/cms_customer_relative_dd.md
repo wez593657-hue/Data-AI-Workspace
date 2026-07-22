@@ -23,9 +23,9 @@
 | certid | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.certid | 【待确认】 | 2026-07-17 |
 | fictitiousperson | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.fictitiousperson | 【待确认】 | 2026-07-17 |
 | currencytype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.currencytype | 【待确认】 | 2026-07-17 |
-| investmentsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.investmentsum | 【待确认】 | 2026-07-17 |
-| oughtsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.oughtsum | 【待确认】 | 2026-07-17 |
-| investmentprop | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.investmentprop | 【待确认】 | 2026-07-17 |
+| investmentsum | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.investmentsum | 【待确认】 | 2026-07-17 |
+| oughtsum | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.oughtsum | 【待确认】 | 2026-07-17 |
+| investmentprop | 【待确认】 | NUMERIC | 10,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.investmentprop | 【待确认】 | 2026-07-17 |
 | investdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.investdate | 【待确认】 | 2026-07-17 |
 | duty | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.duty | 【待确认】 | 2026-07-17 |
 | telephone | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.telephone | 【待确认】 | 2026-07-17 |
@@ -40,7 +40,7 @@
 | familyadd | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.familyadd | 【待确认】 | 2026-07-17 |
 | familyzip | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.familyzip | 【待确认】 | 2026-07-17 |
 | eduexperience | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.eduexperience | 【待确认】 | 2026-07-17 |
-| investyield | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.investyield | 【待确认】 | 2026-07-17 |
+| investyield | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.investyield | 【待确认】 | 2026-07-17 |
 | holddate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.holddate | 【待确认】 | 2026-07-17 |
 | engageterm | 【待确认】 | NUMERIC | 22 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.engageterm | 【待确认】 | 2026-07-17 |
 | holdstock | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_relative.holdstock | 【待确认】 | 2026-07-17 |

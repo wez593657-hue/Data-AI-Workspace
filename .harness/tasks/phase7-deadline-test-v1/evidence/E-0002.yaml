@@ -1,0 +1,8 @@
+evidence_id: E-0002
+task_id: phase7-deadline-test-v1
+phase: TEST_PASSED
+kind: test_matrix
+purpose: negative_case
+result: passed
+path: .harness/tasks/phase7-deadline-test-v1/test_cases.yaml
+summary: 反例、空值、无匹配和重复数据均已列入待执行矩阵

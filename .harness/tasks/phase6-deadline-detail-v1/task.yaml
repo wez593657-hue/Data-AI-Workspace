@@ -1,0 +1,32 @@
+schema_version: '0.1'
+task_id: phase6-deadline-detail-v1
+lifecycle: archived
+archive_reason: 到期承接阶段6历史审计任务，保留逻辑门禁报告和证据，不作为当前任务入口
+purpose: 阶段6：到期承接明细SQL与存储过程逻辑门禁
+workflow_profile: data_warehouse
+state: REVERSE_LOGIC_PASSED
+branch: feature/ai-repair-loop
+created_at: '2026-07-22T03:12:47+00:00'
+updated_at: '2026-07-22T03:36:24+00:00'
+evidence_ids:
+- E-0001
+- E-0002
+- E-0003
+- E-0004
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-22T03:12:47+00:00'
+- from: CREATED
+  to: BLOCKED
+  reason: 到期承接明细过程未通过阶段6逻辑门禁：存在CUST_HRAKY与目标DDL字段CUST_LVL不一致，且REQ-CUST-007、REQ-CUST-008明确标记待实现
+  at: '2026-07-22T03:16:53+00:00'
+- from: BLOCKED
+  to: CREATED
+  reason: 恢复条件已验证
+  at: '2026-07-22T03:36:24+00:00'
+- from: CREATED
+  to: REVERSE_LOGIC_PASSED
+  reason: logic gate 报告 status=passed，规则覆盖和反向逻辑检查通过

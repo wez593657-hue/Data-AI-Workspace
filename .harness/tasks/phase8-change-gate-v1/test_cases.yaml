@@ -1,0 +1,32 @@
+schema_version: '0.1'
+task_id: phase8-change-gate-v1
+status: passed
+cases:
+  - case_id: CHANGE-GUARD-001
+    name: 白名单内Harness文件
+    expected: passed
+    result: passed
+  - case_id: CHANGE-GUARD-002
+    name: 越权业务资产文件
+    expected: rejected
+    result: passed
+  - case_id: CHANGE-GUARD-003
+    name: 只读输入文件
+    expected: rejected
+    result: passed
+  - case_id: CHANGE-GUARD-004
+    name: 未确认Manifest
+    expected: rejected
+    result: passed
+  - case_id: CHANGE-GUARD-005
+    name: 空暂存区检查
+    expected: passed
+    result: passed
+  - case_id: CHANGE-GUARD-006
+    name: 未设置任务编号
+    expected: rejected
+    result: passed
+  - case_id: CHANGE-GUARD-007
+    name: Hook和CI使用同一检查器
+    expected: passed
+    result: passed

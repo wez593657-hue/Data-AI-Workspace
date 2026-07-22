@@ -1,0 +1,9 @@
+evidence_id: E-0003
+phase: WORKSPACE_CHECKED
+kind: file_read
+path: docs\superpowers\plans\2026-07-21-ai-data-warehouse-harness-implementation-plan.md
+sha256: cc670cf2050e8f4e79e2a6df22739030ba4f5fb699ce93e2f0bba1c0ab09c685
+purpose: implementation_plan
+repository_revision: cbe1cc67e5ae7cda75e646b021dfa7fb6b47e9cb
+result: passed
+created_at: '2026-07-21T15:45:17+00:00'

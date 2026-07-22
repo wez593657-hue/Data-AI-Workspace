@@ -24,8 +24,8 @@
 | jiedaibz | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpl_zhminx.jiedaibz | 【待确认】 | 2026-07-17 |
 | jiaoybiz | 【待确认】 | VARCHAR | 3 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpl_zhminx.jiaoybiz | 【待确认】 | 2026-07-17 |
 | chaohubz | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpl_zhminx.chaohubz | 【待确认】 | 2026-07-17 |
-| jiaoyije | 【待确认】 | NUMERIC | 17, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpl_zhminx.jiaoyije | 【待确认】 | 2026-07-17 |
-| zhanghye | 【待确认】 | NUMERIC | 21, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpl_zhminx.zhanghye | 【待确认】 | 2026-07-17 |
+| jiaoyije | 【待确认】 | NUMERIC | 17,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpl_zhminx.jiaoyije | 【待确认】 | 2026-07-17 |
+| zhanghye | 【待确认】 | NUMERIC | 21,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpl_zhminx.zhanghye | 【待确认】 | 2026-07-17 |
 | kehuzhao | 【待确认】 | VARCHAR | 35 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpl_zhminx.kehuzhao | 【待确认】 | 2026-07-17 |
 | zhhaoxuh | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpl_zhminx.zhhaoxuh | 【待确认】 | 2026-07-17 |
 | shifoudy | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpl_zhminx.shifoudy | 【待确认】 | 2026-07-17 |

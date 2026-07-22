@@ -1,0 +1,38 @@
+schema_version: '0.1'
+task_id: phase8-change-gate-v1
+user_confirmation: confirmed
+objective: 实现通用变更白名单、Hooks和CI门禁，不修改业务数据资产
+allowed_changes:
+  - path: scripts/harness/test_case_generator.py
+    purpose: 阶段7通用静态测试矩阵生成器
+  - path: scripts/harness/tests/test_phase7.py
+    purpose: 阶段7通用测试矩阵单元测试
+  - path: docs/superpowers/plans/2026-07-21-ai-data-warehouse-harness-implementation-plan.md
+    purpose: 同步阶段7通用测试矩阵规则
+  - path: docs/superpowers/specs/2026-07-21-ai-data-warehouse-harness-design.md
+    purpose: 同步阶段7通用测试矩阵设计
+  - path: .harness/tasks/phase7-deadline-test-v1/
+    purpose: 阶段7样例任务及证据
+  - path: scripts/harness/change_guard.py
+    purpose: 读取任务Manifest并校验Git变更范围
+  - path: scripts/harness/tests/test_change_guard.py
+    purpose: 变更门禁单元测试
+  - path: hooks/pre-commit
+    purpose: 接入提交前变更门禁
+  - path: hooks/pre-push
+    purpose: 接入推送前变更门禁
+  - path: .github/workflows/validate.yml
+    purpose: 接入CI变更门禁
+  - path: .github/workflows/push-check.yml
+    purpose: 接入推送校验门禁
+  - path: .github/workflows/pr-check.yml
+    purpose: 接入PR变更门禁
+  - path: .harness/policies/allowed_paths.yaml
+    purpose: 放行Harness自身Hooks和CI变更范围
+  - path: .harness/tasks/phase8-change-gate-v1/
+    purpose: 阶段8任务和证据
+read_only_inputs:
+  - scripts/workspace_validation.py
+  - scripts/harness/permission_guard.py
+  - scripts/harness/task_manager.py
+  - .harness/config.yaml

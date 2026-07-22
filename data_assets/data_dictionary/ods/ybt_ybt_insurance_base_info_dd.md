@@ -29,16 +29,16 @@
 | lowest_part | 【待确认】 | NUMERIC | 10 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.lowest_part | 【待确认】 | 2026-07-17 |
 | trial_method | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.trial_method | 【待确认】 | 2026-07-17 |
 | trial_type | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.trial_type | 【待确认】 | 2026-07-17 |
-| trialamt | 【待确认】 | NUMERIC | 17, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.trialamt | 【待确认】 | 2026-07-17 |
+| trialamt | 【待确认】 | NUMERIC | 17,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.trialamt | 【待确认】 | 2026-07-17 |
 | insurance_status | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.insurance_status | 【待确认】 | 2026-07-17 |
 | insurance_remark | 【待确认】 | VARCHAR | 2000 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.insurance_remark | 【待确认】 | 2026-07-17 |
-| create_time | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.create_time | 【待确认】 | 2026-07-17 |
+| create_time | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.create_time | 【待确认】 | 2026-07-17 |
 | create_user | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.create_user | 【待确认】 | 2026-07-17 |
 | create_user_name | 【待确认】 | VARCHAR | 800 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.create_user_name | 【待确认】 | 2026-07-17 |
-| update_time | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.update_time | 【待确认】 | 2026-07-17 |
+| update_time | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.update_time | 【待确认】 | 2026-07-17 |
 | update_user | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.update_user | 【待确认】 | 2026-07-17 |
 | update_user_name | 【待确认】 | VARCHAR | 800 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.update_user_name | 【待确认】 | 2026-07-17 |
-| accumulation_amt | 【待确认】 | NUMERIC | 17, 2 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.accumulation_amt | 【待确认】 | 2026-07-17 |
+| accumulation_amt | 【待确认】 | NUMERIC | 17,2 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.accumulation_amt | 【待确认】 | 2026-07-17 |
 | sttlmnt_pymnt_age | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.sttlmnt_pymnt_age | 【待确认】 | 2026-07-17 |
 | auto_pay_show_flag | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.auto_pay_show_flag | 【待确认】 | 2026-07-17 |
 | sttlmnt_pymnt_freq | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.ybt_ybt_insurance_base_info.sttlmnt_pymnt_freq | 【待确认】 | 2026-07-17 |

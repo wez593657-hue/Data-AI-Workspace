@@ -18,7 +18,7 @@
 | r_id | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_platform.r_id | 【待确认】 | 2026-07-17 |
 | platform_mct_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_platform.platform_mct_id | 【待确认】 | 2026-07-17 |
 | secondary_mct_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_platform.secondary_mct_id | 【待确认】 | 2026-07-17 |
-| secondary_fre_rate | 【待确认】 | NUMERIC | 16, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_platform.secondary_fre_rate | 【待确认】 | 2026-07-17 |
+| secondary_fre_rate | 【待确认】 | NUMERIC | 16,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_platform.secondary_fre_rate | 【待确认】 | 2026-07-17 |
 | create_user | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_platform.create_user | 【待确认】 | 2026-07-17 |
 | create_time | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_platform.create_time | 【待确认】 | 2026-07-17 |
 | update_user | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_platform.update_user | 【待确认】 | 2026-07-17 |

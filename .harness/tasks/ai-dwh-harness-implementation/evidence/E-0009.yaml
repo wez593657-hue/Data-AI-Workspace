@@ -1,0 +1,8 @@
+evidence_id: E-0009
+phase: QUICK_VALIDATION_PASSED
+kind: full_workspace_validation
+purpose: full_workspace_validation
+result: failed
+details: scripts/workspace_validation.py full：跨层一致性、SQL、JSON、YAML均通过；Git一致性检查因5个未跟踪Harness/设计文件失败。未执行git
+  add，保留用户索引状态。
+created_at: '2026-07-21T16:06:42+00:00'
