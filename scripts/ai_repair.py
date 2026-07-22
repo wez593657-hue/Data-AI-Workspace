@@ -14,6 +14,13 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+ALLOWED_PREFIXES = (
+    "data_assets/",
+    "requirements/",
+    "docs/",
+    "templates/",
+    "checklists/",
+)
 FORBIDDEN_PREFIXES = (
     ".github/",
     "scripts/",
@@ -61,6 +68,8 @@ def validate_patch(patch: str) -> None:
             raise ValueError(f"AI patch touches forbidden path: {normalized}")
         if normalized.startswith("/") or ".." in Path(normalized).parts:
             raise ValueError(f"AI patch contains unsafe path: {normalized}")
+        if not normalized.startswith(ALLOWED_PREFIXES):
+            raise ValueError(f"AI patch is outside allowed paths: {normalized}")
 
 
 def main() -> int:

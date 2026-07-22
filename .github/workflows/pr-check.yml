@@ -17,15 +17,21 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - name: 设置Python环境
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: 执行变更白名单检查
+        id: resolve-task
         env:
-          HARNESS_TASK_ID: phase8-change-gate-v1
-        run: python scripts/harness/change_guard.py --task-id "$HARNESS_TASK_ID" --scope commit
+          HARNESS_PR_BODY: ${{ github.event.pull_request.body }}
+          GITHUB_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          task_id=$(python scripts/harness/resolve_task.py --branch "$GITHUB_HEAD_REF" | sed -n 's/^task_id=//p')
+          test -n "$task_id"
+          echo "task_id=$task_id" >> "$GITHUB_OUTPUT"
+          python scripts/harness/change_guard.py --task-id "$task_id" --scope pr --base-ref "${{ github.event.pull_request.base.ref }}"
 
   checklist:
     name: PR 模板与变更边界
@@ -45,6 +51,9 @@ jobs:
             if (missing.length) {
               core.setFailed(`PR 模板缺少必填部分：${missing.join('、')}`);
             }
-            if (!/^(feat|fix|docs|refactor|style|test|chore|sync)(\([^\n]+\))?: .+/.test(pr.title)) {
+            if (!/<!--\s*harness-task-id\s*:\s*[a-z0-9][a-z0-9._-]{2,63}\s*-->/i.test(body)) {
+              core.setFailed('PR 正文必须包含有效的 harness-task-id 标识');
+            }
+            if (!/^(feat|fix|docs|refactor|style|perf|test|chore|build|ci|revert|sync)(\([^()\n]+\))?: .+/.test(pr.title)) {
               core.setFailed('PR 标题必须符合 <type>(scope): <subject> 格式');
             }

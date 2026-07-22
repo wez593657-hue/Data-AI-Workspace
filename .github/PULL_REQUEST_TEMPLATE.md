@@ -12,6 +12,8 @@
 
 请简要描述本次PR的内容和目的。
 
+<!-- harness-task-id: 在此填写当前 Harness 任务编号，例如 phase6-deadline-detail-v1 -->
+
 ## 关联需求
 
 - 需求文档: [需求文档索引.md](../requirements/需求文档索引.md)

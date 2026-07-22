@@ -39,6 +39,12 @@ jobs:
             core.setOutput('head_sha', pr.head.sha);
             core.setOutput('head_ref', pr.head.ref);
             core.setOutput('base_ref', pr.base.ref);
+            const marker = (pr.body || '').match(/<!--\s*harness-task-id\s*:\s*([a-z0-9][a-z0-9._-]{2,63})\s*-->/i);
+            if (!marker) {
+              core.setFailed(`PR #${pr.number} 缺少 harness-task-id 标识`);
+              return;
+            }
+            core.setOutput('task_id', marker[1]);
 
       - name: 计算修复次数
         id: attempt
@@ -144,6 +150,7 @@ jobs:
           ORIGINAL_PR: ${{ steps.attempt.outputs.original_pr }}
           BASE_REF: ${{ steps.pr.outputs.base_ref }}
           ATTEMPT: ${{ steps.attempt.outputs.attempt }}
+          TASK_ID: ${{ steps.pr.outputs.task_id }}
         with:
           script: |
             async function ensureLabel(name, color) {
@@ -159,11 +166,18 @@ jobs:
             const created = await github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `AI repair: PR #${process.env.ORIGINAL_PR}, attempt ${Number(process.env.ATTEMPT) + 1}`,
+              title: `fix(ai): repair PR #${process.env.ORIGINAL_PR} attempt ${Number(process.env.ATTEMPT) + 1}`,
               head,
               base: process.env.BASE_REF,
-              body: `自动修复分支，来源 PR #${process.env.ORIGINAL_PR}。\n\n` +
-                `本次为第 ${Number(process.env.ATTEMPT) + 1} 次修复尝试。必须重新通过完整校验和人工审批。`,
+              body: `<!-- harness-task-id: ${process.env.TASK_ID} -->\n\n` +
+                `## 类型\n\n- [x] Bug修复 (Bug Fix)\n\n` +
+                `## 描述\n\n自动修复 PR #${process.env.ORIGINAL_PR} 的校验失败。\n\n` +
+                `## 关联需求\n\n- 来源 PR: #${process.env.ORIGINAL_PR}\n\n` +
+                `## 变更范围\n\n- [x] 数据资产或需求文档\n\n` +
+                `## 检查清单\n\n- [ ] 已通过完整校验\n- [ ] 已完成代码审查\n\n` +
+                `## 测试结果\n\n待 GitHub Actions 重新执行完整校验。\n\n` +
+                `## 风险评估\n\n- 中风险\n\n` +
+                `## 审批人\n\n- [ ] 技术负责人审批通过\n- [ ] 业务负责人审批通过`,
             });
             await github.rest.issues.addLabels({
               owner: context.repo.owner,

@@ -17,7 +17,7 @@ fix_windows_encoding()
 COMMIT_MSG_FILE = sys.argv[1]
 
 VALID_TYPES = {
-    'feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'chore', 'build', 'ci', 'revert'
+    'feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'chore', 'build', 'ci', 'revert', 'sync'
 }
 
 MAX_SUBJECT_LENGTH = 50

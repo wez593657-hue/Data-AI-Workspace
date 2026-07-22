@@ -24,9 +24,14 @@ jobs:
         pip install pandas openpyxl xlrd
 
     - name: Harness 变更白名单门禁
+      id: resolve-task
       env:
-        HARNESS_TASK_ID: phase8-change-gate-v1
-      run: python scripts/harness/change_guard.py --task-id "$HARNESS_TASK_ID" --scope commit
+        GITHUB_REF_NAME: ${{ github.ref_name }}
+      run: |
+        task_id=$(python scripts/harness/resolve_task.py --branch "$GITHUB_REF_NAME" | sed -n 's/^task_id=//p')
+        test -n "$task_id"
+        echo "task_id=$task_id" >> "$GITHUB_OUTPUT"
+        python scripts/harness/change_guard.py --task-id "$task_id" --scope push
 
     - name: 执行数据资产一致性校验
       run: python scripts/validate_cross_layer_consistency.py
@@ -51,13 +56,13 @@ jobs:
             per_page: 10
           });
           
-          const validTypes = ['feat', 'fix', 'docs', 'refactor', 'style', 'test', 'chore', 'sync'];
-          const validFormat = /^(feat|fix|docs|refactor|style|test|chore|sync)\(.*\): .+/;
+          const validTypes = ['feat', 'fix', 'docs', 'refactor', 'style', 'perf', 'test', 'chore', 'build', 'ci', 'revert', 'sync'];
+          const validFormat = /^(feat|fix|docs|refactor|style|perf|test|chore|build|ci|revert|sync)(\([^()\n]+\))?: .+/;
           
           let invalidCommits = [];
           for (const commit of commits.data) {
             const message = commit.commit.message.split('\n')[0];
-            if (!validFormat.test(message)) {
+            if (!validFormat.test(message) || message.length > 50) {
               invalidCommits.push({
                 sha: commit.sha.substring(0, 7),
                 message: message
