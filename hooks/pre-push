@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import subprocess
+import sys
+import os
+
+BASE_DIR = subprocess.run(
+    ['git', 'rev-parse', '--show-toplevel'], capture_output=True, encoding='utf-8', errors='replace', check=True
+).stdout.strip()
+
+sys.path.insert(0, os.path.join(BASE_DIR, 'scripts'))
+
+from utils import fix_windows_encoding, safe_print, run_command
+
+def check_harness_changes():
+    task_id = os.environ.get('HARNESS_TASK_ID', '')
+    if not task_id:
+        safe_print('Harness 变更门禁失败: 必须设置 HARNESS_TASK_ID')
+        sys.exit(2)
+    result = subprocess.run(
+        [sys.executable, os.path.join(BASE_DIR, 'scripts', 'harness', 'change_guard.py'), '--task-id', task_id, '--scope', 'push'],
+        cwd=BASE_DIR,
+    )
+    if result.returncode != 0:
+        sys.exit(result.returncode)
+
+fix_windows_encoding()
+
+def main():
+    check_harness_changes()
+    safe_print("=" * 50)
+    safe_print("  Git Pre-Push Hook - 推送前检查")
+    safe_print("=" * 50)
+    
+    safe_print("\n1. 检查当前分支...")
+    stdout, stderr, rc = run_command(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
+    current_branch = stdout.strip()
+    safe_print(f"   当前分支: {current_branch}")
+    
+    protected_branches = ['master', 'main', 'develop']
+    if current_branch in protected_branches:
+        safe_print(f"   ✗ 禁止直接推送到保护分支: {current_branch}")
+        safe_print("   ✗ 请使用特性分支并通过PR提交")
+        safe_print("   ✗ 正确流程: git checkout -b feature/xxx → 开发 → git push origin feature/xxx → 创建PR")
+        sys.exit(1)
+    
+    safe_print("\n2. 检查本地提交数量...")
+    stdout, stderr, rc = run_command(['git', 'rev-list', '--count', f'HEAD..origin/{current_branch}'])
+    if rc != 0:
+        safe_print("   ⚠ 无法访问远程仓库，跳过提交数量检查")
+        safe_print("   ⚠ 请确保网络连接正常")
+    else:
+        try:
+            commits_ahead = int(stdout.strip()) if stdout.strip() else 0
+        except:
+            commits_ahead = 0
+        
+        if commits_ahead > 0:
+            safe_print("   ✗ 远程分支有新提交，请先拉取更新")
+            safe_print(f"   ✗ 执行: git pull origin {current_branch}")
+            sys.exit(1)
+        safe_print("   ✓ 提交数量检查通过")
+    
+    safe_print("\n3. 检测待推送的变更文件...")
+    stdout, stderr, rc = run_command(['git', 'diff', '--name-only', f'origin/{current_branch}...HEAD'])
+    if rc != 0:
+        safe_print("   ⚠ 无法检测远程分支变更，跳过变更检测")
+        has_data_changes = True
+        has_script_changes = True
+    else:
+        changed_files = [f.strip() for f in stdout.strip().split('\n') if f.strip()]
+        
+        if changed_files:
+            safe_print(f"   待推送变更文件: {len(changed_files)} 个")
+        
+        has_data_changes = any(f.startswith('data_assets/') for f in changed_files)
+        has_script_changes = any(f.startswith('scripts/') for f in changed_files)
+    
+    if has_data_changes or has_script_changes:
+        safe_print("\n4. 执行工作区完整校验...")
+        stdout, stderr, rc = run_command([sys.executable, 'scripts/workspace_validation.py', 'full'])
+        if rc != 0:
+            safe_print("   ✗ 工作区校验失败")
+            if stdout:
+                safe_print(stdout[-1000:] if len(stdout) > 1000 else stdout)
+            if stderr:
+                safe_print(f"   错误详情: {stderr}")
+            safe_print("   ✗ 请修复校验错误后重新推送")
+            sys.exit(1)
+        safe_print("   ✓ 工作区校验通过")
+    else:
+        safe_print("\n4. 无数据资产或脚本变更，跳过完整校验")
+    
+    safe_print("\n" + "=" * 50)
+    safe_print("  所有检查通过，可以推送!")
+    safe_print("=" * 50)
+    
+    sys.exit(0)
+
+if __name__ == "__main__":
+    main()

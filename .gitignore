@@ -67,5 +67,9 @@ CREATE_TMP_*.sql
 .harness/
 scripts/harness/
 
+# Local branch merge inventory helpers
+branch_files_*.txt
+merge_data_assets.py
+
 # Auto-generated docs
 docs/superpowers/specs/*.md

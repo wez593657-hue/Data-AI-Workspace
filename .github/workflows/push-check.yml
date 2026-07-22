@@ -1,0 +1,75 @@
+name: 推送检查
+
+on:
+  push:
+    branches: [ feature/**, bugfix/** ]
+
+jobs:
+  validate:
+    name: 自动校验
+    runs-on: ubuntu-latest
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 设置Python环境
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: 安装依赖
+      run: |
+        pip install pandas openpyxl xlrd
+
+    - name: Harness 变更白名单门禁
+      env:
+        HARNESS_TASK_ID: phase8-change-gate-v1
+      run: python scripts/harness/change_guard.py --task-id "$HARNESS_TASK_ID" --scope commit
+
+    - name: 执行数据资产一致性校验
+      run: python scripts/validate_consistency.py
+
+    - name: 执行文件生成校验
+      run: python scripts/validate_generated_files.py
+
+  commit-check:
+    name: 提交信息检查
+    runs-on: ubuntu-latest
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 检查提交信息格式
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const commits = await github.rest.repos.listCommits({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            sha: context.sha,
+            per_page: 10
+          });
+          
+          const validTypes = ['feat', 'fix', 'docs', 'refactor', 'style', 'test', 'chore', 'sync'];
+          const validFormat = /^(feat|fix|docs|refactor|style|test|chore|sync)\(.*\): .+/;
+          
+          let invalidCommits = [];
+          for (const commit of commits.data) {
+            const message = commit.commit.message.split('\n')[0];
+            if (!validFormat.test(message)) {
+              invalidCommits.push({
+                sha: commit.sha.substring(0, 7),
+                message: message
+              });
+            }
+          }
+          
+          if (invalidCommits.length > 0) {
+            throw new Error(`以下提交信息格式不正确:\n${invalidCommits.map(c => `${c.sha}: ${c.message}`).join('\n')}\n\n正确格式: <type>(scope): <subject>`);
+          }
+          
+          console.log('提交信息格式检查通过!');
