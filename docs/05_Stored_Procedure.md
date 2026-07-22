@@ -4,6 +4,17 @@
 
 本规范定义了 Kingbase 数据库存储过程的统一开发标准，确保存储过程的可维护性、可追溯性和安全性。
 
+### 模板优先原则
+
+开发存储过程时，**必须优先使用 `templates/` 目录下的存储过程模板文件**，模板文件优先级高于本规范文档中的示例代码。
+
+| 模板文件 | 路径 | 适用场景 |
+|----------|------|----------|
+| `procedure_template.sql` | [templates/procedure_template.sql](file:///d:/AI/AI-Workspace/Kingbase-CRM-AI-Development-Guide/templates/procedure_template.sql) | Kingbase/PostgreSQL 风格存储过程 |
+| `PRC_模板.sql` | [templates/PRC_模板.sql](file:///d:/AI/AI-Workspace/Kingbase-CRM-AI-Development-Guide/templates/PRC_模板.sql) | Oracle 兼容模式存储过程 |
+
+当 `templates/` 目录下存在存储过程模板时，必须基于模板文件进行开发，本规范文档仅作为规则约束和参考说明。
+
 ## 5.2 存储过程统一流程
 
 ```
@@ -27,7 +38,17 @@
 
 ## 5.3 存储过程模板
 
-### 5.3.1 基本结构
+### 5.3.1 模板选择规则
+
+开发存储过程时，**必须按照以下优先级选择模板**：
+
+1. **优先使用 `templates/` 目录下的模板文件**：
+   - Kingbase/PostgreSQL 风格：使用 [templates/procedure_template.sql](file:///d:/AI/AI-Workspace/Kingbase-CRM-AI-Development-Guide/templates/procedure_template.sql)
+   - Oracle 兼容模式：使用 [templates/PRC_模板.sql](file:///d:/AI/AI-Workspace/Kingbase-CRM-AI-Development-Guide/templates/PRC_模板.sql)
+
+2. **模板文件不存在时**：可参考本规范文档中的示例代码结构进行开发
+
+### 5.3.2 基本结构
 
 ```sql
 CREATE OR REPLACE PROCEDURE proc_crm_customer_update(
@@ -131,7 +152,7 @@ BEGIN
 END $$;
 ```
 
-### 5.3.2 调用方式
+### 5.3.3 调用方式
 
 ```sql
 -- 调用存储过程
@@ -272,58 +293,7 @@ RAISE NOTICE '输出: code=%, msg=%', p_result_code, p_result_msg;
 
 ## 5.8 临时表使用
 
-### 5.8.1 临时表分类
-
-| 类型 | 命名规范 | 说明 |
-|------|----------|------|
-| 会话级临时表 | `TEMP_*` | 存储过程内创建，会话结束自动销毁 |
-| 物理中间表 | `TMP_*` | 持久化临时表，存储过程外创建，需手动清理 |
-
-### 5.8.2 物理中间表（TMP_）建表语句生成规则
-
-**强制要求**：每次生成/更新存储过程时，必须同步生成/更新对应的临时表建表语句文件。
-
-**文件位置**：`data_assets/ddl/tmp/tmp_存储过程名.ddl`
-
-**文件命名规则**：`tmp_存储过程名.ddl`
-
-**建表语句规范**：
-- 使用 `CREATE TABLE IF NOT EXISTS` 语法
-- 字段类型、长度与存储过程中的 INSERT 语句保持一致
-- 添加字段注释说明
-- 按存储过程中的中间表处理顺序排列
-
-**示例**：
-
-```sql
--- ============================================================
--- 到期承接明细表存储过程临时表建表语句
--- 存储过程名称: PRO_ADS_CUST_DEADLINE_RMND_DTL
--- 需求版本: v2.2.0
--- ============================================================
-
--- 2.1 统计周期中间表
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_PERIOD (
-    STAT_PERD VARCHAR2(1),
-    BGN_DT DATE,
-    END_DT DATE
-);
-
--- 2.2 到期产品源中间表
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_MATURE_SRC (
-    CUST_ID VARCHAR2(64),
-    STATIS_TYP VARCHAR2(1),
-    ACCT_ID VARCHAR2(64),
-    PRDKT_ID VARCHAR2(64),
-    PRDKT_NAME VARCHAR2(200),
-    EXPR_AMT NUMBER(20,2),
-    EXPR_DT DATE,
-    PERSN_LEGAL_BK_CODE VARCHAR2(32),
-    ORG_ID VARCHAR2(64)
-);
-```
-
-### 5.8.3 临时表使用示例
+存储过程中使用的临时表统一采用 `TMP_` 前缀的物理表，命名格式为 `TMP_{结果表}_{用途}`。
 
 ```sql
 CREATE OR REPLACE PROCEDURE proc_crm_order_sync()
@@ -333,22 +303,22 @@ DECLARE
     v_batch_size INT := 1000;
 BEGIN
     -- 步骤 1: 创建临时表存储待同步数据
-    CREATE TEMP TABLE temp_pending_orders AS
+    CREATE TABLE IF NOT EXISTS TMP_CRM_ORDER_PENDING AS
     SELECT order_id, customer_id, order_amount
     FROM crm_order
     WHERE sync_status = 'PENDING';
 
-    RAISE NOTICE '待同步订单数量: %', (SELECT COUNT(*) FROM temp_pending_orders);
+    RAISE NOTICE '待同步订单数量: %', (SELECT COUNT(*) FROM TMP_CRM_ORDER_PENDING);
 
     -- 步骤 2: 分批处理
     LOOP
-        EXIT WHEN NOT EXISTS (SELECT 1 FROM temp_pending_orders);
+        EXIT WHEN NOT EXISTS (SELECT 1 FROM TMP_CRM_ORDER_PENDING);
 
         -- 处理一批数据
         UPDATE crm_order 
         SET sync_status = 'SYNCING'
         WHERE order_id IN (
-            SELECT order_id FROM temp_pending_orders LIMIT v_batch_size
+            SELECT order_id FROM TMP_CRM_ORDER_PENDING LIMIT v_batch_size
         );
 
         -- 模拟同步操作
@@ -360,30 +330,37 @@ BEGIN
         WHERE sync_status = 'SYNCING';
 
         -- 删除已处理数据
-        DELETE FROM temp_pending_orders 
+        DELETE FROM TMP_CRM_ORDER_PENDING 
         WHERE order_id IN (
             SELECT order_id FROM crm_order WHERE sync_status = 'SYNCED'
         );
 
-        RAISE NOTICE '已同步批次，剩余: %', (SELECT COUNT(*) FROM temp_pending_orders);
+        RAISE NOTICE '已同步批次，剩余: %', (SELECT COUNT(*) FROM TMP_CRM_ORDER_PENDING);
     END LOOP;
 
-    -- 步骤 3: 清理临时表（自动清理）
-    DROP TABLE IF EXISTS temp_pending_orders;
+    -- 步骤 3: 清理临时表（物理表需手动清理）
+    DROP TABLE IF EXISTS TMP_CRM_ORDER_PENDING;
 
 END $$;
 ```
 
 ## 5.9 存储过程命名规范
 
-| 类型 | 前缀 | 示例 |
-|------|------|------|
-| 查询类 | `proc_*_query` | `proc_crm_customer_query` |
-| 新增类 | `proc_*_insert` | `proc_crm_customer_insert` |
-| 更新类 | `proc_*_update` | `proc_crm_customer_update` |
-| 删除类 | `proc_*_delete` | `proc_crm_customer_delete` |
-| 同步类 | `proc_*_sync` | `proc_crm_order_sync` |
-| 统计类 | `proc_*_stat` | `proc_crm_sales_stat` |
+命名格式：`pro_{结果表}`
+
+| 层 | 示例 |
+|----|------|
+| DWD层 | `pro_dwd_cust_indv_info` |
+| DWS层 | `pro_dws_cust_deadline_rmnd` |
+| ADS层 | `pro_ads_cust_deadline_rmnd_dtl` |
+
+文件命名格式：`pro_{结果表}.sql`
+
+| 目录 | 示例文件 |
+|------|----------|
+| ods_to_dwd | `pro_dwd_cust_indv_info.sql` |
+| dwd_to_dws | `pro_dws_cust_deadline_rmnd.sql` |
+| dws_to_ads | `pro_ads_cust_deadline_rmnd_dtl.sql` |
 
 ## 5.10 禁止事项
 

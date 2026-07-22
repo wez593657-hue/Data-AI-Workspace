@@ -1,11 +1,29 @@
+# CODEOWNERS
+
+# 项目负责人
 *                                       @wez593657-hue
 
+# 文档模块
 /docs/                                   @wez593657-hue
+
+# 数据资产模块
 /data_assets/ddl/                        @wez593657-hue
 /data_assets/data_dictionary/            @wez593657-hue
 /data_assets/mapping/                    @wez593657-hue
 /data_assets/etl/                        @wez593657-hue
+/data_assets/stored_procedure/           @wez593657-hue
 
+# 需求文档
 /requirements/                           @wez593657-hue
 
-/temp/scripts/                           @wez593657-hue
+# 校验脚本
+/scripts/                                @wez593657-hue
+
+# 模板文件
+/templates/                              @wez593657-hue
+
+# 检查清单
+/checklists/                             @wez593657-hue
+
+# CI配置
+/.github/workflows/                      @wez593657-hue

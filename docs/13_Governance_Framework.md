@@ -118,7 +118,7 @@
 校验DDL文件的结构完整性。
 
 ```
-脚本: temp/scripts/validate_generated_files.py
+脚本: scripts/validate_generated_files.py
 ```
 
 ### 13.6.2 数据字典一致性校验
@@ -126,7 +126,7 @@
 校验DDL与数据字典的一致性。
 
 ```
-脚本: temp/scripts/validate_consistency.py
+脚本: scripts/validate_consistency.py
 ```
 
 ### 13.6.3 Mapping完整性校验
@@ -134,7 +134,7 @@
 校验Mapping文件的完整性。
 
 ```
-脚本: temp/scripts/analyze_missing_mapping.py
+脚本: scripts/analyze_missing_mapping.py
 ```
 
 ### 13.6.4 GitHub Actions
@@ -166,7 +166,7 @@
 详细审批标准见审批流程文档。
 
 ```
-文件: docs/12_Approval_Process.md
+文件: docs/15_Approval_Process.md
 ```
 
 ## 13.8 AI Agent 角色边界

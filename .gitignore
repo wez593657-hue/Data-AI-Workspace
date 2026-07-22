@@ -44,8 +44,28 @@ __pycache__/
 
 # Temp
 tmp/
+!data_assets/ddl/tmp/
+!data_assets/ddl/tmp/*.sql
 temp/
 *.tmp
 *.bak
-!data_assets/ddl/tmp/
-!data_assets/ddl/tmp/*
+
+# Excel files
+*.xlsx
+*.xls
+~$*.xlsx
+~$*.xls
+
+# Temporary SQL files
+CREATE_TMP_*.sql
+
+# Word documents
+*.docx
+*.doc
+
+# Harness/test files
+.harness/
+scripts/harness/
+
+# Auto-generated docs
+docs/superpowers/specs/*.md

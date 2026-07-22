@@ -140,7 +140,7 @@ SELECT
     (SELECT MAX(order_date) FROM crm_order o WHERE o.customer_id = c.customer_id) AS last_order_date
 FROM crm_customer c;
 
--- 优化后：使用临时表
+-- 优化后：使用会话临时表（temp_ 前缀，会话结束自动删除）
 CREATE TEMP TABLE temp_order_stats AS
 SELECT 
     customer_id,
