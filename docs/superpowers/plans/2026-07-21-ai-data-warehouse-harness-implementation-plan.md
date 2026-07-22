@@ -253,6 +253,8 @@ created_at: <timestamp>
 - `test_case_generator.py`；
 - 测试证据格式。
 
+测试矩阵生成器必须使用当前任务输入，不得写死任何需求的目标表或业务规则；规则缺失、未确认或来源不完整时必须输出 `UNRESOLVED`。
+
 测试矩阵至少包含：
 
 - 正例；

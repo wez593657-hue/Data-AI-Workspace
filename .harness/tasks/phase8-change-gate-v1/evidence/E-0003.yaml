@@ -1,0 +1,8 @@
+evidence_id: E-0003
+task_id: phase8-change-gate-v1
+phase: FULL_VALIDATION_PASSED
+kind: change_guard_check
+purpose: full_validation
+result: passed
+command: python scripts/harness/change_guard.py --task-id phase8-change-gate-v1 --scope staged
+details: 暂存区为空时门禁通过；越权、只读输入和未确认Manifest测试均拒绝

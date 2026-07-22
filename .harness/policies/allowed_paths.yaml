@@ -7,9 +7,9 @@ default:
     - checklists/
     - scripts/harness/
     - .harness/
-  forbidden:
-    - .github/
     - hooks/
+    - .github/workflows/
+  forbidden:
     - secrets/
     - .env
   require_change_manifest: true

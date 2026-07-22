@@ -13,9 +13,22 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'scripts'))
 
 from utils import fix_windows_encoding, safe_print, run_command
 
+def check_harness_changes():
+    task_id = os.environ.get('HARNESS_TASK_ID', '')
+    if not task_id:
+        safe_print('Harness 变更门禁失败: 必须设置 HARNESS_TASK_ID')
+        sys.exit(2)
+    result = subprocess.run(
+        [sys.executable, os.path.join(BASE_DIR, 'scripts', 'harness', 'change_guard.py'), '--task-id', task_id, '--scope', 'push'],
+        cwd=BASE_DIR,
+    )
+    if result.returncode != 0:
+        sys.exit(result.returncode)
+
 fix_windows_encoding()
 
 def main():
+    check_harness_changes()
     safe_print("=" * 50)
     safe_print("  Git Pre-Push Hook - 推送前检查")
     safe_print("=" * 50)

@@ -1,0 +1,8 @@
+evidence_id: E-0001
+task_id: phase8-change-gate-v1
+phase: QUICK_VALIDATION_PASSED
+kind: harness_unit_test
+purpose: quick_validation
+result: passed
+command: python -m unittest discover -s scripts/harness/tests -p test_*.py
+details: 21项Harness测试全部通过，包含变更白名单拒绝和允许场景

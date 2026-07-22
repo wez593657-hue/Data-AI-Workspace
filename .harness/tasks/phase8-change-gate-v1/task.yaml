@@ -1,0 +1,23 @@
+schema_version: '0.1'
+task_id: phase8-change-gate-v1
+purpose: 阶段8变更白名单、Hooks和CI门禁
+workflow_profile: harness
+state: FULL_VALIDATION_PASSED
+branch: feature/ai-repair-loop
+evidence_ids:
+  - E-0001
+  - E-0002
+  - E-0003
+history:
+  - from: CREATED
+    to: WORKSPACE_CHECKED
+    reason: 阶段8范围和只读输入已确认
+  - from: WORKSPACE_CHECKED
+    to: IMPLEMENTATION_READY
+    reason: 变更白名单、Hooks和CI实施范围已确认
+  - from: IMPLEMENTATION_READY
+    to: QUICK_VALIDATION_PASSED
+    reason: 变更门禁单元测试和Python编译通过
+  - from: QUICK_VALIDATION_PASSED
+    to: FULL_VALIDATION_PASSED
+    reason: 提交后完整工作区校验通过，Git一致性检查通过

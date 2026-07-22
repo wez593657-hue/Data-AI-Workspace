@@ -1,0 +1,20 @@
+schema_version: '0.1'
+task_id: phase7-deadline-test-v1
+status: static_matrix_ready
+generator_mode: generic_task_inputs
+rules_source: requirements/到期承接规则记忆卡片.md
+targets:
+  - ADS_CUST_DEADLINE_RMND_DTL
+  - ADS_CUST_DEADLINE_RMND_STATIS
+cases:
+  - {case_id: PHASE7-DEADLINE-TEST-V1-001, kind: positive, name: 正例, execution_status: out_of_scope}
+  - {case_id: PHASE7-DEADLINE-TEST-V1-002, kind: negative, name: 反例, execution_status: out_of_scope}
+  - {case_id: DEADLINE-003, kind: boundary_date, name: 边界日期, execution_status: out_of_scope}
+  - {case_id: DEADLINE-004, kind: boundary_amount, name: 边界金额, execution_status: out_of_scope}
+  - {case_id: DEADLINE-005, kind: null_value, name: 空值, execution_status: out_of_scope}
+  - {case_id: DEADLINE-006, kind: duplicate_data, name: 重复数据, execution_status: out_of_scope}
+  - {case_id: DEADLINE-007, kind: no_match, name: 无匹配关联, execution_status: out_of_scope}
+  - {case_id: DEADLINE-008, kind: multi_match, name: 多匹配关联, execution_status: out_of_scope}
+  - {case_id: DEADLINE-009, kind: historical_data, name: 历史数据, execution_status: out_of_scope}
+  - {case_id: DEADLINE-010, kind: rerun, name: 重复执行, execution_status: out_of_scope}
+  - {case_id: DEADLINE-011, kind: rollback, name: 异常回滚, execution_status: out_of_scope}

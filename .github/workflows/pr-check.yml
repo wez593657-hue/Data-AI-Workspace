@@ -10,6 +10,23 @@ permissions:
   pull-requests: read
 
 jobs:
+  harness-gate:
+    name: Harness 变更白名单门禁
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: 执行变更白名单检查
+        env:
+          HARNESS_TASK_ID: phase8-change-gate-v1
+        run: python scripts/harness/change_guard.py --task-id "$HARNESS_TASK_ID" --scope commit
+
   checklist:
     name: PR 模板与变更边界
     runs-on: ubuntu-latest
