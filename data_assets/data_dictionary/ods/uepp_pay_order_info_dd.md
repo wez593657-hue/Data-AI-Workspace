@@ -21,21 +21,21 @@
 | pay_type | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.pay_type | 【待确认】 | 2026-07-17 |
 | mct_id | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.mct_id | 【待确认】 | 2026-07-17 |
 | dit_id | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.dit_id | 【待确认】 | 2026-07-17 |
-| order_amt | 【待确认】 | NUMERIC | 16, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.order_amt | 【待确认】 | 2026-07-17 |
-| pay_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.pay_amt | 【待确认】 | 2026-07-17 |
-| dis_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.dis_amt | 【待确认】 | 2026-07-17 |
+| order_amt | 【待确认】 | NUMERIC | 16,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.order_amt | 【待确认】 | 2026-07-17 |
+| pay_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.pay_amt | 【待确认】 | 2026-07-17 |
+| dis_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.dis_amt | 【待确认】 | 2026-07-17 |
 | dis_auth_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.dis_auth_id | 【待确认】 | 2026-07-17 |
 | pay_time | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.pay_time | 【待确认】 | 2026-07-17 |
 | jungle_type | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.jungle_type | 【待确认】 | 2026-07-17 |
-| jungle_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.jungle_amt | 【待确认】 | 2026-07-17 |
+| jungle_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.jungle_amt | 【待确认】 | 2026-07-17 |
 | server_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.server_id | 【待确认】 | 2026-07-17 |
-| mct_fee | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.mct_fee | 【待确认】 | 2026-07-17 |
-| dit_fee | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.dit_fee | 【待确认】 | 2026-07-17 |
-| buyer_pay_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.buyer_pay_amt | 【待确认】 | 2026-07-17 |
+| mct_fee | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.mct_fee | 【待确认】 | 2026-07-17 |
+| dit_fee | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.dit_fee | 【待确认】 | 2026-07-17 |
+| buyer_pay_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.buyer_pay_amt | 【待确认】 | 2026-07-17 |
 | buyer_user_id | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.buyer_user_id | 【待确认】 | 2026-07-17 |
 | third_mch_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.third_mch_id | 【待确认】 | 2026-07-17 |
 | third_sub_mch_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.third_sub_mch_id | 【待确认】 | 2026-07-17 |
-| third_pay_fee | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.third_pay_fee | 【待确认】 | 2026-07-17 |
+| third_pay_fee | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.third_pay_fee | 【待确认】 | 2026-07-17 |
 | third_trade_no | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.third_trade_no | 【待确认】 | 2026-07-17 |
 | third_end_time | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.third_end_time | 【待确认】 | 2026-07-17 |
 | settle_date | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.settle_date | 【待确认】 | 2026-07-17 |
@@ -61,18 +61,18 @@
 | pay_card_type | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.pay_card_type | 【待确认】 | 2026-07-17 |
 | client_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.client_id | 【待确认】 | 2026-07-17 |
 | client_info | 【待确认】 | VARCHAR | 300 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.client_info | 【待确认】 | 2026-07-17 |
-| cost_rate | 【待确认】 | NUMERIC | 16, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.cost_rate | 【待确认】 | 2026-07-17 |
-| dit_fee_rate | 【待确认】 | NUMERIC | 16, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.dit_fee_rate | 【待确认】 | 2026-07-17 |
-| mct_fee_rate | 【待确认】 | NUMERIC | 16, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.mct_fee_rate | 【待确认】 | 2026-07-17 |
+| cost_rate | 【待确认】 | NUMERIC | 16,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.cost_rate | 【待确认】 | 2026-07-17 |
+| dit_fee_rate | 【待确认】 | NUMERIC | 16,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.dit_fee_rate | 【待确认】 | 2026-07-17 |
+| mct_fee_rate | 【待确认】 | NUMERIC | 16,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.mct_fee_rate | 【待确认】 | 2026-07-17 |
 | settle_flag | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.settle_flag | 【待确认】 | 2026-07-17 |
 | bala_flag | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.bala_flag | 【待确认】 | 2026-07-17 |
 | settle_serial_no | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.settle_serial_no | 【待确认】 | 2026-07-17 |
 | settle_update_date | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.settle_update_date | 【待确认】 | 2026-07-17 |
 | bala_update_date | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.bala_update_date | 【待确认】 | 2026-07-17 |
 | settle_type | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.settle_type | 【待确认】 | 2026-07-17 |
-| activity_rate | 【待确认】 | NUMERIC | 16, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.activity_rate | 【待确认】 | 2026-07-17 |
-| activity_fee | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.activity_fee | 【待确认】 | 2026-07-17 |
-| mct_real_fee | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.mct_real_fee | 【待确认】 | 2026-07-17 |
+| activity_rate | 【待确认】 | NUMERIC | 16,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.activity_rate | 【待确认】 | 2026-07-17 |
+| activity_fee | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.activity_fee | 【待确认】 | 2026-07-17 |
+| mct_real_fee | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.mct_real_fee | 【待确认】 | 2026-07-17 |
 | activity_id | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.activity_id | 【待确认】 | 2026-07-17 |
 | isscode | 【待确认】 | VARCHAR | 11 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.isscode | 【待确认】 | 2026-07-17 |
 | ip | 【待确认】 | VARCHAR | 16 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.ip | 【待确认】 | 2026-07-17 |
@@ -86,7 +86,7 @@
 | user_id | 【待确认】 | VARCHAR | 128 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.user_id | 【待确认】 | 2026-07-17 |
 | is_next_refund | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.is_next_refund | 【待确认】 | 2026-07-17 |
 | store_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.store_id | 【待确认】 | 2026-07-17 |
-| wal_acct_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.wal_acct_amt | 【待确认】 | 2026-07-17 |
+| wal_acct_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.wal_acct_amt | 【待确认】 | 2026-07-17 |
 | wal_acct_status | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.wal_acct_status | 【待确认】 | 2026-07-17 |
 | wal_acct_no | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.wal_acct_no | 【待确认】 | 2026-07-17 |
 | refund_mode | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_order_info.refund_mode | 【待确认】 | 2026-07-17 |

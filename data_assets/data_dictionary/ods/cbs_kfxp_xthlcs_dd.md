@@ -19,15 +19,15 @@
 | shenxriq | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.shenxriq | 【待确认】 | 2026-07-17 |
 | shenxshj | 【待确认】 | NUMERIC | 19 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.shenxshj | 【待确认】 | 2026-07-17 |
 | huobdaih | 【待确认】 | VARCHAR | 3 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.huobdaih | 【待确认】 | 2026-07-17 |
-| pjdanwei | 【待确认】 | NUMERIC | 12, 7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.pjdanwei | 【待确认】 | 2026-07-17 |
+| pjdanwei | 【待确认】 | NUMERIC | 12,7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.pjdanwei | 【待确认】 | 2026-07-17 |
 | huobfhao | 【待确认】 | VARCHAR | 4 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.huobfhao | 【待确认】 | 2026-07-17 |
-| mairujia | 【待确认】 | NUMERIC | 12, 7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.mairujia | 【待确认】 | 2026-07-17 |
-| maichjia | 【待确认】 | NUMERIC | 12, 7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.maichjia | 【待确认】 | 2026-07-17 |
-| zhngjjia | 【待确认】 | NUMERIC | 12, 7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.zhngjjia | 【待确认】 | 2026-07-17 |
-| caomrjia | 【待确认】 | NUMERIC | 12, 7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.caomrjia | 【待确认】 | 2026-07-17 |
-| caomcjia | 【待确认】 | NUMERIC | 12, 7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.caomcjia | 【待确认】 | 2026-07-17 |
-| ppmrujia | 【待确认】 | NUMERIC | 12, 7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.ppmrujia | 【待确认】 | 2026-07-17 |
-| ppmchjia | 【待确认】 | NUMERIC | 12, 7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.ppmchjia | 【待确认】 | 2026-07-17 |
+| mairujia | 【待确认】 | NUMERIC | 12,7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.mairujia | 【待确认】 | 2026-07-17 |
+| maichjia | 【待确认】 | NUMERIC | 12,7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.maichjia | 【待确认】 | 2026-07-17 |
+| zhngjjia | 【待确认】 | NUMERIC | 12,7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.zhngjjia | 【待确认】 | 2026-07-17 |
+| caomrjia | 【待确认】 | NUMERIC | 12,7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.caomrjia | 【待确认】 | 2026-07-17 |
+| caomcjia | 【待确认】 | NUMERIC | 12,7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.caomcjia | 【待确认】 | 2026-07-17 |
+| ppmrujia | 【待确认】 | NUMERIC | 12,7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.ppmrujia | 【待确认】 | 2026-07-17 |
+| ppmchjia | 【待确认】 | NUMERIC | 12,7 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.ppmchjia | 【待确认】 | 2026-07-17 |
 | beizhuxx | 【待确认】 | VARCHAR | 200 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.beizhuxx | 【待确认】 | 2026-07-17 |
 | weihguiy | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.weihguiy | 【待确认】 | 2026-07-17 |
 | weihjigo | 【待确认】 | VARCHAR | 10 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kfxp_xthlcs.weihjigo | 【待确认】 | 2026-07-17 |

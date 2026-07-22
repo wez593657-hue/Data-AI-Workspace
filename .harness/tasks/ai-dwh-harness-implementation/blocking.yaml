@@ -1,0 +1,17 @@
+status: RESUMED
+blocked_from: USER_APPROVED
+reason: 用户已批准继续开发，但当前 harness 工作流在 USER_APPROVED 后只允许进入 COMMIT_ALLOWED；没有“继续下一实施阶段”的状态。将继续开发视为提交授权会违反项目规则。
+category: continuous_iteration_state_missing
+evidence: 当前任务状态 USER_APPROVED；check-gate USER_APPROVED -> COMMIT_ALLOWED 返回缺少 commit_authorization；用户明确“继续”且证据
+  E-0011 说明不等同于 commit/push。
+impact: 无法在不绕过状态机的情况下继续实现需求版本、记忆卡片和读取清单阶段；不能执行 commit、push 或 PR。
+recommendation: 将 harness 工作流拆为开发循环和发布收尾：USER_APPROVED -> NEXT_PHASE_ALLOWED -> IMPLEMENTATION_READY，最终需要单独的
+  RELEASE_APPROVED -> COMMIT_ALLOWED -> COMPLETED；继续开发授权与提交授权分离。
+alternatives: 把用户的“继续”解释为提交授权；该方案违反明确授权边界，不采用。
+user_decision: 确认增加持续开发循环状态，继续实施下一阶段。
+recovery_condition: 状态机、门禁配置和测试支持 USER_APPROVED -> NEXT_PHASE_ALLOWED -> IMPLEMENTATION_READY，且
+  commit/push 仍需独立授权。
+created_at: '2026-07-21T16:14:18+00:00'
+recovery_evidence: state_machine.py、phase_gates.yaml、测试已支持 USER_APPROVED 分支到 NEXT_PHASE_ALLOWED
+  或 RELEASE_APPROVED，且两条路径证据独立。
+resumed_at: '2026-07-21T16:21:42+00:00'

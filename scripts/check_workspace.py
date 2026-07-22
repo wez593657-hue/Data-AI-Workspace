@@ -3,9 +3,9 @@
 import subprocess
 import sys
 
-def run_command(cmd):
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-    return result.stdout.strip(), result.stderr.strip(), result.returncode
+from utils import fix_windows_encoding, run_command
+
+fix_windows_encoding()
 
 def main():
     print("=" * 70)

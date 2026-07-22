@@ -34,12 +34,12 @@
 | cust_card_type | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.cust_card_type | 【待确认】 | 2026-07-17 |
 | exclusive_code | 【待确认】 | BPCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.exclusive_code | 【待确认】 | 2026-07-17 |
 | ori_trans_serno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.ori_trans_serno | 【待确认】 | 2026-07-17 |
-| agr_sav_rate | 【待确认】 | NUMERIC | 12, 5 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.agr_sav_rate | 【待确认】 | 2026-07-17 |
+| agr_sav_rate | 【待确认】 | NUMERIC | 12,5 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.agr_sav_rate | 【待确认】 | 2026-07-17 |
 | agr_term | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.agr_term | 【待确认】 | 2026-07-17 |
 | term_acct_no | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.term_acct_no | 【待确认】 | 2026-07-17 |
 | buy_type | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.buy_type | 【待确认】 | 2026-07-17 |
 | acct_no | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.acct_no | 【待确认】 | 2026-07-17 |
-| trans_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.trans_amt | 【待确认】 | 2026-07-17 |
+| trans_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.trans_amt | 【待确认】 | 2026-07-17 |
 | prod_code | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.prod_code | 【待确认】 | 2026-07-17 |
 | agent_name | 【待确认】 | VARCHAR | 128 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.agent_name | 【待确认】 | 2026-07-17 |
 | agent_id_type | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_cust_trans_log.agent_id_type | 【待确认】 | 2026-07-17 |

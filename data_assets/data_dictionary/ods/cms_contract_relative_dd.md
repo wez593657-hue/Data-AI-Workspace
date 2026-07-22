@@ -18,6 +18,6 @@
 | serialno | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.cms_contract_relative.serialno | 【待确认】 | 2026-07-17 |
 | objecttype | 【待确认】 | VARCHAR | 18 | NOT NULL | - | - | - | 【待确认】 | crmdm.cms_contract_relative.objecttype | 【待确认】 | 2026-07-17 |
 | objectno | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.cms_contract_relative.objectno | 【待确认】 | 2026-07-17 |
-| relativesum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_contract_relative.relativesum | 【待确认】 | 2026-07-17 |
+| relativesum | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_contract_relative.relativesum | 【待确认】 | 2026-07-17 |
 | relationstatus | 【待确认】 | VARCHAR | 3 | NULL | - | - | - | 【待确认】 | crmdm.cms_contract_relative.relationstatus | 【待确认】 | 2026-07-17 |
 | addtype | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.cms_contract_relative.addtype | 【待确认】 | 2026-07-17 |

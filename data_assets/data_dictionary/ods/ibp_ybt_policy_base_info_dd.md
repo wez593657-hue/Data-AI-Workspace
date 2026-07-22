@@ -33,8 +33,8 @@
 | cont_source | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.cont_source | 【待确认】 | 2026-07-17 |
 | risk_grade | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.risk_grade | 【待确认】 | 2026-07-17 |
 | commission_type | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.commission_type | 【待确认】 | 2026-07-17 |
-| commission_ratio | 【待确认】 | NUMERIC | 6, 3 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.commission_ratio | 【待确认】 | 2026-07-17 |
-| commissionamt | 【待确认】 | NUMERIC | 17, 2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.commissionamt | 【待确认】 | 2026-07-17 |
+| commission_ratio | 【待确认】 | NUMERIC | 6,3 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.commission_ratio | 【待确认】 | 2026-07-17 |
+| commissionamt | 【待确认】 | NUMERIC | 17,2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.commissionamt | 【待确认】 | 2026-07-17 |
 | acc_name | 【待确认】 | VARCHAR | 200 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.acc_name | 【待确认】 | 2026-07-17 |
 | acc_no | 【待确认】 | VARCHAR | 200 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.acc_no | 【待确认】 | 2026-07-17 |
 | get_pol_mode | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.get_pol_mode | 【待确认】 | 2026-07-17 |
@@ -61,7 +61,7 @@
 | job_notice | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.job_notice | 【待确认】 | 2026-07-17 |
 | health_notice | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.health_notice | 【待确认】 | 2026-07-17 |
 | policy_indicator | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.policy_indicator | 【待确认】 | 2026-07-17 |
-| total_faceamount | 【待确认】 | NUMERIC | 17, 2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.total_faceamount | 【待确认】 | 2026-07-17 |
+| total_faceamount | 【待确认】 | NUMERIC | 17,2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.total_faceamount | 【待确认】 | 2026-07-17 |
 | hesitate_end_date | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.hesitate_end_date | 【待确认】 | 2026-07-17 |
 | acc_transfer_num | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.acc_transfer_num | 【待确认】 | 2026-07-17 |
 | acc_eff_date | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.ibp_ybt_policy_base_info.acc_eff_date | 【待确认】 | 2026-07-17 |

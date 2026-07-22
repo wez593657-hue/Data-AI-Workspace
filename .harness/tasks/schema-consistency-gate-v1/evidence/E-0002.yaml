@@ -1,0 +1,9 @@
+evidence_id: E-0002
+phase: USER_DECISION
+kind: user_decision
+purpose: user_decision
+result: passed
+details: 临时表不需要数据字典；ADS_STAT_INDX_DATA按DDL和Excel核查为13字段；ADS_CUST_DEADLINE_RMND_DTL补齐CUST_LVL；DDL类型长度为准；日期统一DATE；Mapping
+  Markdown按Excel同步；ODS到DWD来源/字段/规则可为空；DWD到DWS、DWS到ADS必须有需求或存储过程证据；VARCHAR7(6)统一按DDL
+  VARCHAR(7)
+created_at: '2026-07-22T02:17:17+00:00'

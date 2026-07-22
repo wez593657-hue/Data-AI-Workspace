@@ -1,0 +1,7 @@
+evidence_id: E-0006
+phase: schema_consistency
+kind: rule_update
+purpose: 修正日期类型归一化规则
+result: passed
+details: 仅SYS、SYS.DATE、SYS.DATE统一为DATE；其它日期字段按Excel定义，当前三个DWD日期字段恢复为VARCHAR(10)
+created_at: '2026-07-22T02:58:10+00:00'

@@ -26,7 +26,7 @@
 | lilvbhao | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvbhao | 【待确认】 | 2026-07-17 |
 | lilvbhlx | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvbhlx | 【待确认】 | 2026-07-17 |
 | cencllbh | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.cencllbh | 【待确认】 | 2026-07-17 |
-| lilvdanc | 【待确认】 | NUMERIC | 17, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvdanc | 【待确认】 | 2026-07-17 |
+| lilvdanc | 【待确认】 | NUMERIC | 17,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvdanc | 【待确认】 | 2026-07-17 |
 | cencllcq | 【待确认】 | VARCHAR | 6 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.cencllcq | 【待确认】 | 2026-07-17 |
 | cunqiiii | 【待确认】 | VARCHAR | 6 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.cunqiiii | 【待确认】 | 2026-07-17 |
 | lilvcqbz | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvcqbz | 【待确认】 | 2026-07-17 |
@@ -36,20 +36,20 @@
 | llbhsxrq | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.llbhsxrq | 【待确认】 | 2026-07-17 |
 | lilvqdrq | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvqdrq | 【待确认】 | 2026-07-17 |
 | ymdflagg | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.ymdflagg | 【待确认】 | 2026-07-17 |
-| kaihlilv | 【待确认】 | NUMERIC | 12, 7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.kaihlilv | 【待确认】 | 2026-07-17 |
-| jizhunll | 【待确认】 | NUMERIC | 12, 7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.jizhunll | 【待确认】 | 2026-07-17 |
-| zhxililv | 【待确认】 | NUMERIC | 12, 7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.zhxililv | 【待确认】 | 2026-07-17 |
+| kaihlilv | 【待确认】 | NUMERIC | 12,7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.kaihlilv | 【待确认】 | 2026-07-17 |
+| jizhunll | 【待确认】 | NUMERIC | 12,7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.jizhunll | 【待确认】 | 2026-07-17 |
+| zhxililv | 【待确认】 | NUMERIC | 12,7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.zhxililv | 【待确认】 | 2026-07-17 |
 | lilvfdbz | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvfdbz | 【待确认】 | 2026-07-17 |
 | llfdonbz | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.llfdonbz | 【待确认】 | 2026-07-17 |
 | lilvfdlx | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvfdlx | 【待确认】 | 2026-07-17 |
-| lilvfdsz | 【待确认】 | NUMERIC | 12, 7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvfdsz | 【待确认】 | 2026-07-17 |
+| lilvfdsz | 【待确认】 | NUMERIC | 12,7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvfdsz | 【待确认】 | 2026-07-17 |
 | youhuibz | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.youhuibz | 【待确认】 | 2026-07-17 |
 | youhuilx | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.youhuilx | 【待确认】 | 2026-07-17 |
-| youhuisz | 【待确认】 | NUMERIC | 12, 7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.youhuisz | 【待确认】 | 2026-07-17 |
+| youhuisz | 【待确认】 | NUMERIC | 12,7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.youhuisz | 【待确认】 | 2026-07-17 |
 | lilvgxpl | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvgxpl | 【待确认】 | 2026-07-17 |
 | shcigxrq | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.shcigxrq | 【待确认】 | 2026-07-17 |
 | xacigxrq | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.xacigxrq | 【待确认】 | 2026-07-17 |
-| scjitilv | 【待确认】 | NUMERIC | 12, 7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.scjitilv | 【待确认】 | 2026-07-17 |
+| scjitilv | 【待确认】 | NUMERIC | 12,7 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.scjitilv | 【待确认】 | 2026-07-17 |
 | tzlixibz | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.tzlixibz | 【待确认】 | 2026-07-17 |
 | tzlilvbz | 【待确认】 | VARCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.tzlilvbz | 【待确认】 | 2026-07-17 |
 | lilvdmlx | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhlldy.lilvdmlx | 【待确认】 | 2026-07-17 |

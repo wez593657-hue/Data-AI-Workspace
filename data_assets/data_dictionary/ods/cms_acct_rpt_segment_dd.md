@@ -40,15 +40,15 @@
 | totalperiod | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.totalperiod | 【待确认】 | 2026-07-17 |
 | currentperiod | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.currentperiod | 【待确认】 | 2026-07-17 |
 | gaincyc | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.gaincyc | 【待确认】 | 2026-07-17 |
-| gainamount | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.gainamount | 【待确认】 | 2026-07-17 |
+| gainamount | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.gainamount | 【待确认】 | 2026-07-17 |
 | payfrequencytype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.payfrequencytype | 【待确认】 | 2026-07-17 |
 | payfrequencyunit | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.payfrequencyunit | 【待确认】 | 2026-07-17 |
 | payfrequency | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.payfrequency | 【待确认】 | 2026-07-17 |
 | segrptamountflag | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.segrptamountflag | 【待确认】 | 2026-07-17 |
-| segrptamount | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.segrptamount | 【待确认】 | 2026-07-17 |
-| segrptpercent | 【待确认】 | NUMERIC | 5, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.segrptpercent | 【待确认】 | 2026-07-17 |
-| seginstalmentamt | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.seginstalmentamt | 【待确认】 | 2026-07-17 |
-| segrptbalance | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.segrptbalance | 【待确认】 | 2026-07-17 |
+| segrptamount | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.segrptamount | 【待确认】 | 2026-07-17 |
+| segrptpercent | 【待确认】 | NUMERIC | 5,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.segrptpercent | 【待确认】 | 2026-07-17 |
+| seginstalmentamt | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.seginstalmentamt | 【待确认】 | 2026-07-17 |
+| segrptbalance | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.segrptbalance | 【待确认】 | 2026-07-17 |
 | firstinstalmentflag | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.firstinstalmentflag | 【待确认】 | 2026-07-17 |
 | finalinstalmentflag | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.finalinstalmentflag | 【待确认】 | 2026-07-17 |
 | gracedays | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rpt_segment.gracedays | 【待确认】 | 2026-07-17 |

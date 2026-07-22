@@ -1,0 +1,24 @@
+schema_version: '0.1'
+task_id: phase7-deadline-test-v1
+user_confirmation: confirmed
+objective: 将阶段7测试矩阵生成器通用化，并保留到期承接作为样例，不执行数据库测试和Explain
+evidence:
+  - requirements/到期承接规则记忆卡片.md
+  - data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_dtl.sql
+  - data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_statis.sql
+allowed_changes:
+  - path: scripts/harness/test_case_generator.py
+    purpose: 根据任务输入生成通用静态测试矩阵
+  - path: scripts/harness/tests/test_phase7.py
+    purpose: 阶段7静态测试矩阵单元测试
+  - path: .harness/tasks/phase7-deadline-test-v1/
+    purpose: 阶段7任务和测试矩阵证据
+read_only_inputs:
+  - requirements/到期承接规则记忆卡片.md
+  - data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_dtl.sql
+  - data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_statis.sql
+  - data_assets/ddl/ads/ads_cust_deadline_rmnd_dtl.sql
+  - data_assets/ddl/ads/ads_cust_deadline_rmnd_statis.sql
+  - data_assets/data_dictionary/ads/ads_cust_deadline_rmnd_dtl.md
+  - data_assets/data_dictionary/ads/ads_cust_deadline_rmnd_statis.md
+  - data_assets/mapping/dws_to_ads/ADS应用层数据模型_CRM_ V1.0.xlsx

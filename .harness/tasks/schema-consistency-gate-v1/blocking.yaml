@@ -1,0 +1,13 @@
+status: RESOLVED
+blocked_from: CREATED
+reason: 初始扫描发现8项模型字段差异及Mapping来源空缺，按用户确认规则修正模型并将三层Mapping空来源纳入可选未补齐记录
+category: schema_consistency
+evidence: .harness/tasks/schema-consistency-gate-v1/reports/schema-consistency.yaml；E-0001；E-0002；E-0004
+impact: 未修正的结构差异会影响DDL、数据字典和Mapping的字段级一致性；未经证据确认的后续层级业务逻辑不得被自动猜测
+recommendation: 允许当前三层Mapping来源和规则为空并持续记录；开始具体需求开发时，按需求文档或存储过程逐表补齐DWD到DWS、DWS到ADS的Excel和Markdown
+alternatives: 对无法证明的映射人工豁免（不推荐）；拆分为按目标表逐项确认的子任务
+user_decision: 仅将原类型为SYS、SYS.DATE、SYS."DATE"的字段规范为DATE；其它日期字段以Excel为准；三层Mapping来源和规则允许暂空，需求开发时再补齐
+recovery_condition: 已完成两个DWD表修正；全量扫描结构差异为0、阻塞性未解析项为0，schema consistency gate通过
+created_at: '2026-07-21T17:06:10+00:00'
+recovery_evidence: E-0005；reports/schema-consistency.yaml；check-schema-gate=passed
+resumed_at: '2026-07-22T02:47:58+00:00'

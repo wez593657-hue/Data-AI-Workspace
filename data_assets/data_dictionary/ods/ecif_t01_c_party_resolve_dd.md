@@ -20,8 +20,8 @@
 | cert_type | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_party_resolve.cert_type | 【待确认】 | 2026-07-17 |
 | cert_no | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_party_resolve.cert_no | 【待确认】 | 2026-07-17 |
 | cert_issue_org | 【待确认】 | VARCHAR | 60 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_party_resolve.cert_issue_org | 【待确认】 | 2026-07-17 |
-| cert_issue_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_party_resolve.cert_issue_date | 【待确认】 | 2026-07-17 |
-| cert_expd_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_party_resolve.cert_expd_date | 【待确认】 | 2026-07-17 |
+| cert_issue_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_party_resolve.cert_issue_date | 【待确认】 | 2026-07-17 |
+| cert_expd_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_party_resolve.cert_expd_date | 【待确认】 | 2026-07-17 |
 | main_cert_flag | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_party_resolve.main_cert_flag | 【待确认】 | 2026-07-17 |
 | cust_flag | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_party_resolve.cust_flag | 【待确认】 | 2026-07-17 |
 | last_updated_te | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_c_party_resolve.last_updated_te | 【待确认】 | 2026-07-17 |

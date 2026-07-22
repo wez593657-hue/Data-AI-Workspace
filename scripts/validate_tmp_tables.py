@@ -7,6 +7,10 @@ import re
 import sys
 from pathlib import Path
 
+from utils import fix_windows_encoding
+
+fix_windows_encoding()
+
 ROOT = Path(__file__).resolve().parents[1]
 PROCEDURE_DIR = ROOT / 'data_assets' / 'stored_procedure'
 MANIFEST_DIR = ROOT / 'governance' / 'tmp_tables'

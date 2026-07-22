@@ -1,0 +1,8 @@
+evidence_id: E-0012
+phase: USER_APPROVED
+kind: workflow_profile_extension
+purpose: workflow_profile_extension
+result: passed
+details: 已增加 NEXT_PHASE_ALLOWED 和 RELEASE_APPROVED 分支；USER_APPROVED 到下一阶段授权与 COMMIT_ALLOWED
+  分离；5项单元测试、编译和YAML解析通过。
+created_at: '2026-07-21T16:21:30+00:00'

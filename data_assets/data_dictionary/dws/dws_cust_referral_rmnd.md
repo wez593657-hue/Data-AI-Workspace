@@ -13,16 +13,16 @@
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 |--------|-------------|----------|------|----------|--------|------|------|----------|----------|
-| PK_ID | 主键 | VARCHAR2(40) | - | - | - | - | - | - | - |
-| MNGR_POST_ID | 客户经理编号 | VARCHAR2(20) | - | - | - | - | - | - | - |
-| REFERRER_CUST_ID | 转介人客户号 | VARCHAR2(20) | - | - | - | - | - | - | - |
-| REFERRER_NAME | 转介人名称 | VARCHAR2(120) | - | - | - | - | - | - | - |
-| REFEREE_CUST_ID | 被转介人客户号 | VARCHAR2(20) | - | - | - | - | - | - | - |
-| REFEREE_NAME | 被转介人名称 | VARCHAR2(120) | - | - | - | - | - | - | - |
-| RMND_TIME | 提醒时间 | VARCHAR2(20) | - | - | - | - | - | - | - |
-| RMND_INF | 提醒内容 | VARCHAR2(600) | - | - | - | - | - | - | - |
-| HDLE_STATE | 处理状态 0-未读 1-已读 | VARCHAR2(2) | - | - | - | - | - | - | - |
-| HDLE_TIME | 处理时间 | VARCHAR2(20) | - | - | - | - | - | - | - |
+| PK_ID | 主键 | VARCHAR | 40 | - | - | - | - | - | - |
+| MNGR_POST_ID | 客户经理编号 | VARCHAR | 20 | - | - | - | - | - | - |
+| REFERRER_CUST_ID | 转介人客户号 | VARCHAR | 20 | - | - | - | - | - | - |
+| REFERRER_NAME | 转介人名称 | VARCHAR | 120 | - | - | - | - | - | - |
+| REFEREE_CUST_ID | 被转介人客户号 | VARCHAR | 20 | - | - | - | - | - | - |
+| REFEREE_NAME | 被转介人名称 | VARCHAR | 120 | - | - | - | - | - | - |
+| RMND_TIME | 提醒时间 | VARCHAR | 20 | - | - | - | - | - | - |
+| RMND_INF | 提醒内容 | VARCHAR | 600 | - | - | - | - | - | - |
+| HDLE_STATE | 处理状态 0-未读 1-已读 | VARCHAR | 2 | - | - | - | - | - | - |
+| HDLE_TIME | 处理时间 | VARCHAR | 20 | - | - | - | - | - | - |
 
 ---
 *数据字典版本: v1.0 | 生成时间: 2026-07-17*

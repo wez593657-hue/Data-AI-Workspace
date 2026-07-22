@@ -21,7 +21,7 @@
 | acct | 【待确认】 | VARCHAR | 30 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_scsb_bat_detail.acct | 【待确认】 | 2026-07-17 |
 | id_no | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.ibp_scsb_bat_detail.id_no | 【待确认】 | 2026-07-17 |
 | id_type | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_scsb_bat_detail.id_type | 【待确认】 | 2026-07-17 |
-| amt | 【待确认】 | NUMERIC | 17, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_scsb_bat_detail.amt | 【待确认】 | 2026-07-17 |
+| amt | 【待确认】 | NUMERIC | 17,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ibp_scsb_bat_detail.amt | 【待确认】 | 2026-07-17 |
 | memo | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.ibp_scsb_bat_detail.memo | 【待确认】 | 2026-07-17 |
 | bank_no | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.ibp_scsb_bat_detail.bank_no | 【待确认】 | 2026-07-17 |
 | sb_serial | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.ibp_scsb_bat_detail.sb_serial | 【待确认】 | 2026-07-17 |

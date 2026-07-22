@@ -21,7 +21,7 @@
 | dongjbho | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpb_kouhua.dongjbho | 【待确认】 | 2026-07-17 |
 | kehuzhao | 【待确认】 | VARCHAR | 35 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpb_kouhua.kehuzhao | 【待确认】 | 2026-07-17 |
 | zhanghao | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpb_kouhua.zhanghao | 【待确认】 | 2026-07-17 |
-| kouhuaje | 【待确认】 | NUMERIC | 17, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpb_kouhua.kouhuaje | 【待确认】 | 2026-07-17 |
+| kouhuaje | 【待确认】 | NUMERIC | 17,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpb_kouhua.kouhuaje | 【待确认】 | 2026-07-17 |
 | dxzhxhao | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpb_kouhua.dxzhxhao | 【待确认】 | 2026-07-17 |
 | skrkhuzh | 【待确认】 | VARCHAR | 35 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpb_kouhua.skrkhuzh | 【待确认】 | 2026-07-17 |
 | skzhxuho | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpb_kouhua.skzhxuho | 【待确认】 | 2026-07-17 |

@@ -40,15 +40,15 @@
 | isrelacustomer | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.isrelacustomer | 【待确认】 | 2026-07-17 |
 | custriskleve | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.custriskleve | 【待确认】 | 2026-07-17 |
 | checkbasedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.checkbasedate | 【待确认】 | 2026-07-17 |
-| creditsum | 【待确认】 | NUMERIC | 24, 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.creditsum | 【待确认】 | 2026-07-17 |
+| creditsum | 【待确认】 | NUMERIC | 24,4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.creditsum | 【待确认】 | 2026-07-17 |
 | classifyresult | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.classifyresult | 【待确认】 | 2026-07-17 |
 | linetype | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.linetype | 【待确认】 | 2026-07-17 |
-| titularsum2 | 【待确认】 | NUMERIC | 24, 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.titularsum2 | 【待确认】 | 2026-07-17 |
-| titularsum1 | 【待确认】 | NUMERIC | 24, 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.titularsum1 | 【待确认】 | 2026-07-17 |
-| nominalcreditsum | 【待确认】 | NUMERIC | 24, 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.nominalcreditsum | 【待确认】 | 2026-07-17 |
-| nominalcreditbalance | 【待确认】 | NUMERIC | 24, 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.nominalcreditbalance | 【待确认】 | 2026-07-17 |
-| exposurecreditsum | 【待确认】 | NUMERIC | 24, 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.exposurecreditsum | 【待确认】 | 2026-07-17 |
-| exposurecreditbalance | 【待确认】 | NUMERIC | 24, 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.exposurecreditbalance | 【待确认】 | 2026-07-17 |
+| titularsum2 | 【待确认】 | NUMERIC | 24,4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.titularsum2 | 【待确认】 | 2026-07-17 |
+| titularsum1 | 【待确认】 | NUMERIC | 24,4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.titularsum1 | 【待确认】 | 2026-07-17 |
+| nominalcreditsum | 【待确认】 | NUMERIC | 24,4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.nominalcreditsum | 【待确认】 | 2026-07-17 |
+| nominalcreditbalance | 【待确认】 | NUMERIC | 24,4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.nominalcreditbalance | 【待确认】 | 2026-07-17 |
+| exposurecreditsum | 【待确认】 | NUMERIC | 24,4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.exposurecreditsum | 【待确认】 | 2026-07-17 |
+| exposurecreditbalance | 【待确认】 | NUMERIC | 24,4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.exposurecreditbalance | 【待确认】 | 2026-07-17 |
 | smesystemflag | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.smesystemflag | 【待确认】 | 2026-07-17 |
 | finalsmeflag | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.finalsmeflag | 【待确认】 | 2026-07-17 |
 | checkbaseriskdate | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_info.checkbaseriskdate | 【待确认】 | 2026-07-17 |

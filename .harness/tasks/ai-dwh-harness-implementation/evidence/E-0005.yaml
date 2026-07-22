@@ -1,0 +1,9 @@
+evidence_id: E-0005
+phase: WORKSPACE_CHECKED
+kind: file_read
+path: hooks\pre-commit
+sha256: b0aa07ca138eb7a84cf4c4d6b24190d3e19a0ab5c2e5655218e6fddc4579d664
+purpose: commit_gate
+repository_revision: cbe1cc67e5ae7cda75e646b021dfa7fb6b47e9cb
+result: passed
+created_at: '2026-07-21T15:45:26+00:00'

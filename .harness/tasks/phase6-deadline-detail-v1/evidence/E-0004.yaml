@@ -1,0 +1,8 @@
+evidence_id: E-0004
+phase: LOGIC_GATE_RECOVERED
+kind: user_confirmed_correction
+purpose: 记录用户确认 CUST_LVL、保险剔除和通知存款过滤已按要求实现
+result: passed
+details: 已将 ADS INSERT 目标字段 CUST_HRAKY 修正为 CUST_LVL；TAKE_AMT_30D 仅统计 DEPO/FIN 以排除保险；DWD_ACCT_DEPO
+  通过 PRDKT_CATE_BIG <> '04' 过滤通知存款；阶段 6 逻辑门禁报告通过。
+created_at: '2026-07-22T03:36:04+00:00'

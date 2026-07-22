@@ -97,9 +97,11 @@ Mapping
 
 | 转换方向 | 目录 | 命名规范 | 说明 |
 |----------|------|----------|------|
-| ODS → DWD | `data_assets/mapping/ods_to_dwd/` | `ods_to_dwd_{系统}_{表名}_mapping.md` | 原始数据到明细数据的转换规则 |
-| DWD → DWS | `data_assets/mapping/dwd_to_dws/` | `dwd_to_dws_{业务域}_{表名}_mapping.md` | 明细数据到汇总数据的转换规则 |
-| DWS → ADS | `data_assets/mapping/dws_to_ads/` | `dws_to_ads_{业务域}_{表名}_mapping.md` | 汇总数据到报表数据的转换规则 |
+| ODS → DWD | `data_assets/mapping/ods_to_dwd/` | `ods到dwd映射.md` 或 `ods_to_dwd_{系统}_{表名}_mapping.md` | 原始数据到明细数据的转换规则 |
+| DWD → DWS | `data_assets/mapping/dwd_to_dws/` | `dwd到dws映射.md` 或 `dwd_to_dws_{业务域}_{表名}_mapping.md` | 明细数据到汇总数据的转换规则 |
+| DWS → ADS | `data_assets/mapping/dws_to_ads/` | `dws到ads映射.md` 或 `dws_to_ads_{业务域}_{表名}_mapping.md` | 汇总数据到报表数据的转换规则 |
+
+> **说明**：项目支持两种命名方式。中文命名（如 `ods到dwd映射.md`）适用于包含多个表映射的汇总文档；英文命名（如 `ods_to_dwd_sap_customer_mapping.md`）适用于单表映射文档。
 
 **分层 Mapping 模板**:
 

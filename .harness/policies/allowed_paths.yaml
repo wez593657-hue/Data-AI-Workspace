@@ -1,0 +1,19 @@
+version: "0.1"
+default:
+  allowed:
+    - docs/
+    - requirements/
+    - templates/
+    - checklists/
+    - scripts/harness/
+    - .harness/
+    - hooks/
+    - .github/workflows/
+  forbidden:
+    - secrets/
+    - .env
+  require_change_manifest: true
+  require_user_confirmation: true
+  upstream_assets_read_only: true
+  target_table_scope_required: true
+  note: 用户确认后必须按任务 change_manifest.yaml 缩小到目标文件和目标表；未列入清单的文件只能读取

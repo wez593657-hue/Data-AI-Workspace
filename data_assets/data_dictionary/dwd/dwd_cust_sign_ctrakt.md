@@ -13,15 +13,15 @@
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 |--------|-------------|----------|------|----------|--------|------|------|----------|----------|
-| CUST_ID | 客户编号 | VARCHAR2(20) | - | - | - | - | - | - | - |
-| CTRAKT_ACCT | 签约账户 | VARCHAR2(40) | - | - | - | - | - | - | - |
-| CTRAKT_TYP | 签约类型 | VARCHAR2(6) | - | - | - | - | - | - | - |
-| CTRAKT_DATE | 签约日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
-| PHONE_NO | 手机号 | VARCHAR2(32) | - | - | - | - | - | - | - |
-| CTRAKT_ORG | 签约机构 | VARCHAR2(6) | - | - | - | - | - | - | - |
-| CTRAKT_OPRTR | 签约经办人 | VARCHAR2(20) | - | - | - | - | - | - | - |
-| CTRAKT_STATE | 签约状态 | VARCHAR2(2) | - | - | - | - | - | - | - |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | - | - | - | - | - | - | - |
+| CUST_ID | 客户编号 | VARCHAR | 20 | - | - | - | - | - | - |
+| CTRAKT_ACCT | 签约账户 | VARCHAR | 40 | - | - | - | - | - | - |
+| CTRAKT_TYP | 签约类型 | VARCHAR | 6 | - | - | - | - | - | - |
+| CTRAKT_DATE | 签约日期 | VARCHAR | 10 | - | - | - | - | - | - |
+| PHONE_NO | 手机号 | VARCHAR | 32 | - | - | - | - | - | - |
+| CTRAKT_ORG | 签约机构 | VARCHAR | 6 | - | - | - | - | - | - |
+| CTRAKT_OPRTR | 签约经办人 | VARCHAR | 20 | - | - | - | - | - | - |
+| CTRAKT_STATE | 签约状态 | VARCHAR | 2 | - | - | - | - | - | - |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 4 | - | - | - | - | - | - |
 
 ---
 *数据字典版本: v1.0 | 生成时间: 2026-07-17*

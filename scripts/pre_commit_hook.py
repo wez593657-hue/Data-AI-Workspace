@@ -5,15 +5,11 @@ import sys
 import os
 import argparse
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from utils import fix_windows_encoding, safe_print, run_command, get_staged_files, is_in_whitelist
 
-def safe_print(*args, **kwargs):
-    try:
-        print(*args, **kwargs)
-    except UnicodeEncodeError:
-        text = ' '.join(str(arg) for arg in args)
-        text = text.replace('✓', '[OK]').replace('✗', '[FAIL]').replace('⚠', '[WARN]')
-        print(text)
+fix_windows_encoding()
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 WHITELIST_PATTERNS = [
     'docs/',
@@ -32,18 +28,6 @@ DOC_REVIEW_PATTERNS = [
     'CONTRIBUTING.md'
 ]
 
-def run_command(cmd, cwd=None):
-    if cwd is None:
-        cwd = BASE_DIR
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=cwd)
-    return result.stdout, result.stderr, result.returncode
-
-def is_in_whitelist(filepath):
-    for pattern in WHITELIST_PATTERNS:
-        if filepath.startswith(pattern) or filepath == pattern.rstrip('/'):
-            return True
-    return False
-
 def is_doc_file(filepath):
     for pattern in DOC_REVIEW_PATTERNS:
         if filepath.startswith(pattern) or filepath == pattern.rstrip('/'):
@@ -52,10 +36,6 @@ def is_doc_file(filepath):
 
 def get_changed_files():
     return get_staged_files()
-
-def get_staged_files():
-    stdout, stderr, rc = run_command("git diff --cached --name-only")
-    return [f.strip() for f in stdout.strip().split('\n') if f.strip()]
 
 def has_data_asset_changes(files):
     data_asset_paths = [
@@ -140,53 +120,26 @@ def run_doc_review(changed_files=None):
     safe_print("   ✓ 文档变更审核通过")
     return True
 
-def run_consistency_check(quick_mode=False, changed_files=None):
-    safe_print("\n6. 执行数据资产一致性校验...")
+def run_workspace_validation(quick_mode=False):
+    safe_print("\n6. 执行工作区完整校验...")
     
-    if quick_mode and changed_files and not has_data_asset_changes(changed_files):
-        safe_print("   ✓ 无数据资产变更，跳过校验")
-        return True
-    
-    cmd = "python scripts/validate_consistency.py"
-    if quick_mode:
-        cmd += " --quick"
-    if changed_files:
-        changed_str = ' '.join(f'"{f}"' for f in changed_files)
-        cmd += f" --changed {changed_str}"
-    
+    cmd = f"python scripts/workspace_validation.py {'quick' if quick_mode else 'full'}"
     stdout, stderr, rc = run_command(cmd)
+    
+    if stdout:
+        safe_print(stdout)
+    
     if rc != 0:
-        safe_print("   ✗ 数据资产一致性校验失败")
+        safe_print("   ✗ 工作区校验失败")
         safe_print("   ✗ 请修复校验错误后重新提交")
+        safe_print("   ✗ 或运行: python scripts/ai_repair_loop.py 自动修复")
         return False
-    safe_print("   ✓ 数据资产一致性校验通过")
-    return True
-
-def run_generated_files_check(quick_mode=False, changed_files=None):
-    safe_print("\n7. 执行文件生成校验...")
-    
-    if quick_mode and changed_files and not has_data_asset_changes(changed_files):
-        safe_print("   ✓ 无数据资产变更，跳过校验")
-        return True
-    
-    cmd = "python scripts/validate_generated_files.py"
-    if quick_mode:
-        cmd += " --quick"
-    if changed_files:
-        changed_str = ' '.join(f'"{f}"' for f in changed_files)
-        cmd += f" --changed {changed_str}"
-    
-    stdout, stderr, rc = run_command(cmd)
-    if rc != 0:
-        safe_print("   ✗ 文件生成校验失败")
-        safe_print("   ✗ 请修复校验错误后重新提交")
-        return False
-    safe_print("   ✓ 文件生成校验通过")
+    safe_print("   ✓ 工作区校验通过")
     return True
 
 def main():
     parser = argparse.ArgumentParser(description='Git Pre-Commit Hook')
-    parser.add_argument('--mode', choices=['quick', 'full'], default='quick',
+    parser.add_argument('--mode', choices=['quick', 'full'], default='full',
                        help='校验模式: quick(快速)或full(完整)')
     args = parser.parse_args()
     
@@ -208,14 +161,10 @@ def main():
         sys.exit(1)
     
     if args.mode == 'full':
-        if not run_consistency_check(False, changed_files):
-            sys.exit(1)
-        if not run_generated_files_check(False, changed_files):
+        if not run_workspace_validation(False):
             sys.exit(1)
     else:
-        if not run_consistency_check(True, changed_files):
-            sys.exit(1)
-        if not run_generated_files_check(True, changed_files):
+        if not run_workspace_validation(True):
             sys.exit(1)
     
     safe_print("\n" + "=" * 70)

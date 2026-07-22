@@ -1,0 +1,14 @@
+status: RESUMED
+blocked_from: CREATED
+reason: 到期承接明细过程未通过阶段6逻辑门禁：存在CUST_HRAKY与目标DDL字段CUST_LVL不一致，且REQ-CUST-007、REQ-CUST-008明确标记待实现
+category: logic_consistency
+evidence: .harness/tasks/phase6-deadline-detail-v1/reports/logic-gate.yaml；E-0001；E-0002；E-0003
+impact: 直接执行可能导致ADS目标写入失败或字段语义错误；保险剔除和通知存款过滤规则尚未闭合，承接率结果可能不符合需求
+recommendation: 确认将存储过程INSERT目标列CUST_HRAKY修正为CUST_LVL；同时确认并实现REQ-CUST-007保险剔除和REQ-CUST-008通知存款过滤后重新执行阶段6门禁
+alternatives: 仅人工豁免并继续后续阶段（不推荐）；只修字段名、暂缓两条业务规则（仍不允许进入通过状态）
+user_decision: 确认修正 CUST_HRAKY 为 CUST_LVL，并确认 REQ-CUST-007 保险剔除、REQ-CUST-008 通知存款过滤已实现
+recovery_condition: 用户确认修正方案；存储过程、规则记忆卡片/需求映射同步；阶段6报告status=passed且阻塞项为0
+created_at: '2026-07-22T03:16:53+00:00'
+recovery_evidence: .harness/tasks/phase6-deadline-detail-v1/reports/logic-gate.yaml;
+  E-0004
+resumed_at: '2026-07-22T03:36:24+00:00'

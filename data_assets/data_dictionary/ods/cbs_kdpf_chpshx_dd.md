@@ -48,7 +48,7 @@
 | yxjiehbz | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpf_chpshx.yxjiehbz | 【待确认】 | 2026-07-17 |
 | yezztbbz | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpf_chpshx.yezztbbz | 【待确认】 | 2026-07-17 |
 | shfoxtzy | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpf_chpshx.shfoxtzy | 【待确认】 | 2026-07-17 |
-| zongeduu | 【待确认】 | NUMERIC | 17, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpf_chpshx.zongeduu | 【待确认】 | 2026-07-17 |
+| zongeduu | 【待确认】 | NUMERIC | 17,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpf_chpshx.zongeduu | 【待确认】 | 2026-07-17 |
 | jimbiaoz | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpf_chpshx.jimbiaoz | 【待确认】 | 2026-07-17 |
 | chenbzhx | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpf_chpshx.chenbzhx | 【待确认】 | 2026-07-17 |
 | cunkzlei | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpf_chpshx.cunkzlei | 【待确认】 | 2026-07-17 |

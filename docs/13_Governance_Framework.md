@@ -166,7 +166,7 @@
 详细审批标准见审批流程文档。
 
 ```
-文件: docs/12_Approval_Process.md
+文件: docs/15_Approval_Process.md
 ```
 
 ## 13.8 AI Agent 角色边界

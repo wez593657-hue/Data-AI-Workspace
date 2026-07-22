@@ -18,10 +18,10 @@
 | channel | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.channel | 【待确认】 | 2026-07-17 |
 | pay_type | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.pay_type | 【待确认】 | 2026-07-17 |
 | mct_id | 【待确认】 | VARCHAR | 40 | NOT NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.mct_id | 【待确认】 | 2026-07-17 |
-| fee_rate | 【待确认】 | NUMERIC | 16, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.fee_rate | 【待确认】 | 2026-07-17 |
+| fee_rate | 【待确认】 | NUMERIC | 16,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.fee_rate | 【待确认】 | 2026-07-17 |
 | server_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.server_id | 【待确认】 | 2026-07-17 |
-| amt_limit_min | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.amt_limit_min | 【待确认】 | 2026-07-17 |
-| amt_limit_max | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.amt_limit_max | 【待确认】 | 2026-07-17 |
+| amt_limit_min | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.amt_limit_min | 【待确认】 | 2026-07-17 |
+| amt_limit_max | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.amt_limit_max | 【待确认】 | 2026-07-17 |
 | pay_submct_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.pay_submct_id | 【待确认】 | 2026-07-17 |
 | remark | 【待确认】 | VARCHAR | 300 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.remark | 【待确认】 | 2026-07-17 |
 | limit_pay | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.limit_pay | 【待确认】 | 2026-07-17 |
@@ -31,10 +31,10 @@
 | update_user | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.update_user | 【待确认】 | 2026-07-17 |
 | update_time | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.update_time | 【待确认】 | 2026-07-17 |
 | feetype | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.feetype | 【待确认】 | 2026-07-17 |
-| fee_rate_credit_smallamt | 【待确认】 | NUMERIC | 16, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.fee_rate_credit_smallamt | 【待确认】 | 2026-07-17 |
-| fee_rate_credit_largeamt | 【待确认】 | NUMERIC | 16, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.fee_rate_credit_largeamt | 【待确认】 | 2026-07-17 |
-| fee_rate_debit_smallamt | 【待确认】 | NUMERIC | 16, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.fee_rate_debit_smallamt | 【待确认】 | 2026-07-17 |
-| fee_rate_debit_largeamt | 【待确认】 | NUMERIC | 16, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.fee_rate_debit_largeamt | 【待确认】 | 2026-07-17 |
+| fee_rate_credit_smallamt | 【待确认】 | NUMERIC | 16,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.fee_rate_credit_smallamt | 【待确认】 | 2026-07-17 |
+| fee_rate_credit_largeamt | 【待确认】 | NUMERIC | 16,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.fee_rate_credit_largeamt | 【待确认】 | 2026-07-17 |
+| fee_rate_debit_smallamt | 【待确认】 | NUMERIC | 16,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.fee_rate_debit_smallamt | 【待确认】 | 2026-07-17 |
+| fee_rate_debit_largeamt | 【待确认】 | NUMERIC | 16,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.fee_rate_debit_largeamt | 【待确认】 | 2026-07-17 |
 | check_status | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.check_status | 【待确认】 | 2026-07-17 |
 | line_type | 【待确认】 | VARCHAR | 10 | NOT NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.line_type | 【待确认】 | 2026-07-17 |
 | check_task_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_mct_channel_info.check_task_id | 【待确认】 | 2026-07-17 |

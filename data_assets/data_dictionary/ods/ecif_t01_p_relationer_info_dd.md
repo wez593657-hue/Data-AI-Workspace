@@ -16,12 +16,12 @@
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 数据来源 | 负责人 | 更新时间 |
 |--------|--------------|----------|------|----------|--------|------|------|----------|----------|--------|----------|
 | relation_id | 【待确认】 | BPCHAR | 20 | NOT NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.relation_id | 【待确认】 | 2026-07-17 |
-| cert_issue_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.cert_issue_date | 【待确认】 | 2026-07-17 |
-| cert_expd_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.cert_expd_date | 【待确认】 | 2026-07-17 |
+| cert_issue_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.cert_issue_date | 【待确认】 | 2026-07-17 |
+| cert_expd_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.cert_expd_date | 【待确认】 | 2026-07-17 |
 | cert_org_area | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.cert_org_area | 【待确认】 | 2026-07-17 |
 | nat_code | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.nat_code | 【待确认】 | 2026-07-17 |
 | gender | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.gender | 【待确认】 | 2026-07-17 |
-| birth_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.birth_date | 【待确认】 | 2026-07-17 |
+| birth_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.birth_date | 【待确认】 | 2026-07-17 |
 | educ_sign | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.educ_sign | 【待确认】 | 2026-07-17 |
 | econ_resur | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.econ_resur | 【待确认】 | 2026-07-17 |
 | work_corp | 【待确认】 | VARCHAR | 120 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.work_corp | 【待确认】 | 2026-07-17 |
@@ -31,7 +31,7 @@
 | profession | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.profession | 【待确认】 | 2026-07-17 |
 | poston | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.poston | 【待确认】 | 2026-07-17 |
 | tech_title | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.tech_title | 【待确认】 | 2026-07-17 |
-| year_salary | 【待确认】 | NUMERIC | 20, 2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.year_salary | 【待确认】 | 2026-07-17 |
+| year_salary | 【待确认】 | NUMERIC | 20,2 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.year_salary | 【待确认】 | 2026-07-17 |
 | home_addr | 【待确认】 | VARCHAR | 160 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.home_addr | 【待确认】 | 2026-07-17 |
 | post_cd | 【待确认】 | VARCHAR | 6 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.post_cd | 【待确认】 | 2026-07-17 |
 | find_addr | 【待确认】 | VARCHAR | 160 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t01_p_relationer_info.find_addr | 【待确认】 | 2026-07-17 |

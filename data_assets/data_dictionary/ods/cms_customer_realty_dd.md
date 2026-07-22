@@ -20,11 +20,11 @@
 | certificateno | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.certificateno | 【待确认】 | 2026-07-17 |
 | realtyname | 【待确认】 | VARCHAR | 100 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.realtyname | 【待确认】 | 2026-07-17 |
 | realtyattribute | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.realtyattribute | 【待确认】 | 2026-07-17 |
-| realtyarea | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.realtyarea | 【待确认】 | 2026-07-17 |
+| realtyarea | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.realtyarea | 【待确认】 | 2026-07-17 |
 | realtyadd | 【待确认】 | VARCHAR | 120 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.realtyadd | 【待确认】 | 2026-07-17 |
-| buildprice | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.buildprice | 【待确认】 | 2026-07-17 |
-| evaluateprice | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.evaluateprice | 【待确认】 | 2026-07-17 |
-| shareprop | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.shareprop | 【待确认】 | 2026-07-17 |
+| buildprice | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.buildprice | 【待确认】 | 2026-07-17 |
+| evaluateprice | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.evaluateprice | 【待确认】 | 2026-07-17 |
+| shareprop | 【待确认】 | NUMERIC | 10,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.shareprop | 【待确认】 | 2026-07-17 |
 | purchasedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.purchasedate | 【待确认】 | 2026-07-17 |
 | saledate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.saledate | 【待确认】 | 2026-07-17 |
 | mortagage | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.mortagage | 【待确认】 | 2026-07-17 |
@@ -37,10 +37,10 @@
 | realtycontractno | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.realtycontractno | 【待确认】 | 2026-07-17 |
 | realtyformat | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.realtyformat | 【待确认】 | 2026-07-17 |
 | realtyrank | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.realtyrank | 【待确认】 | 2026-07-17 |
-| realtyunitprice | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.realtyunitprice | 【待确认】 | 2026-07-17 |
+| realtyunitprice | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.realtyunitprice | 【待确认】 | 2026-07-17 |
 | completedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.completedate | 【待确认】 | 2026-07-17 |
-| downpayment | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.downpayment | 【待确认】 | 2026-07-17 |
-| downpaymentrate | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.downpaymentrate | 【待确认】 | 2026-07-17 |
+| downpayment | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.downpayment | 【待确认】 | 2026-07-17 |
+| downpaymentrate | 【待确认】 | NUMERIC | 10,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.downpaymentrate | 【待确认】 | 2026-07-17 |
 | downpaymentsource | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.downpaymentsource | 【待确认】 | 2026-07-17 |
 | realtyprovider | 【待确认】 | VARCHAR | 60 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.realtyprovider | 【待确认】 | 2026-07-17 |
 | buildstructure | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_customer_realty.buildstructure | 【待确认】 | 2026-07-17 |
