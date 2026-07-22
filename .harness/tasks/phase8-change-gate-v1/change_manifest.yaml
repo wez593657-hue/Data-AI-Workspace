@@ -31,6 +31,14 @@ allowed_changes:
     purpose: 放行Harness自身Hooks和CI变更范围
   - path: .harness/tasks/phase8-change-gate-v1/
     purpose: 阶段8任务和证据
+  - path: docs/superpowers/specs/2026-07-22-evidence-integrity-gate-design.md
+    purpose: 证据完整性门禁设计
+  - path: scripts/harness/evidence_integrity.py
+    purpose: 证据完整性校验实现
+  - path: scripts/harness/tests/test_evidence_integrity.py
+    purpose: 证据完整性校验测试
+  - path: scripts/run_full_validation.py
+    purpose: CI完整校验和报告入口
 read_only_inputs:
   - scripts/workspace_validation.py
   - scripts/harness/permission_guard.py

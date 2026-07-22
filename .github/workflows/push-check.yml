@@ -29,10 +29,7 @@ jobs:
       run: python scripts/harness/change_guard.py --task-id "$HARNESS_TASK_ID" --scope commit
 
     - name: 执行数据资产一致性校验
-      run: python scripts/validate_consistency.py
-
-    - name: 执行文件生成校验
-      run: python scripts/validate_generated_files.py
+      run: python scripts/validate_cross_layer_consistency.py
 
   commit-check:
     name: 提交信息检查
