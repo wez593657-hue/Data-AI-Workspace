@@ -10,6 +10,11 @@ AS
   -- 来源表: ADS_CUST_NEW_CUST_DTL, DWS_CUST_ASSE_LIAB, DWD_SYS_ORG
   -- 目标表: ADS_CUST_NEW_CUST_STATIS
   -- 适配数据库: Kingbase Oracle 兼容模式
+  -- 需求版本: v2.1.0
+  -- 关联需求: REQ-CUST-007
+  -- 变更记录:
+  --   v2.1.0: 1.新客定义改为使用DWD_CUST_INDV_INFO的OPEN_DATE字段
+  --           2.新客周期边界值改为左闭右开（0~30、30~100、100~180）
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '新客经营统计处理';
   V_PRC_NAME             VARCHAR(64)  := 'PRO_ADS_CUST_NEW_CUST_STATIS';

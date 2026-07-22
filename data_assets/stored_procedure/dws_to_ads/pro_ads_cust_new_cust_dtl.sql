@@ -6,10 +6,15 @@ AS
   ------------------------------------------------------------------
   -- 存储过程：新客经营明细处理
   -- 处理周期: 日
-  -- 过程描述: 以存款账户最早开户日期确定180天内新客，按0-30、31-100、101-180、全部四类统计
-  -- 来源表: DWD_CUST_INDV_INFO, DWD_ACCT_DEPO, DWS_CUST_LVL_INFO, DWS_CUST_ASSE_LIAB, DWD_CUST_INDV_KYC, ADS_MKT_REC_INFO
+  -- 过程描述: 以客户基本信息OPEN_DATE确定180天内新客，按0~30、30~100、100~180、全部四类统计
+  -- 来源表: DWD_CUST_INDV_INFO, DWS_CUST_LVL_INFO, DWS_CUST_ASSE_LIAB, DWD_CUST_INDV_KYC, ADS_MKT_REC_INFO
   -- 目标表: ADS_CUST_NEW_CUST_DTL
   -- 适配数据库: Kingbase Oracle 兼容模式
+  -- 需求版本: v2.1.0
+  -- 关联需求: REQ-CUST-007
+  -- 变更记录:
+  --   v2.1.0: 1.新客定义改为使用DWD_CUST_INDV_INFO的OPEN_DATE字段
+  --           2.新客周期边界值改为左闭右开（0~30、30~100、100~180）
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '新客经营明细处理';
   V_PRC_NAME             VARCHAR(64)  := 'PRO_ADS_CUST_NEW_CUST_DTL';
@@ -97,10 +102,10 @@ BEGIN
          c.CUST_NAME,
          l.CUST_LVL,
          CASE
-           WHEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - o.OPEN_DT <= 30 THEN '1'
-           WHEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - o.OPEN_DT <= 100 THEN '2'
-           WHEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - o.OPEN_DT <= 180 THEN '3'
-         END,
+        WHEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') < 30 THEN '1'
+        WHEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') < 100 THEN '2'
+        WHEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') <= 180 THEN '3'
+      END,
          NVL(a.DEPO_CURNT_DEPO_BAL, 0),
          NVL(a.FIXD_DEPO_BAL, 0),
          NVL(a.FIN_BAL, 0),
@@ -147,14 +152,6 @@ BEGIN
          c.HOST_CUST_MNGR_POST_ID,
          c.ORG_LEAD
     FROM DWD_CUST_INDV_INFO c
-    JOIN (
-          SELECT d.CUST_ID,
-                 MIN(TO_DATE(REPLACE(SUBSTR(d.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD')) OPEN_DT
-            FROM DWD_ACCT_DEPO d
-           WHERE d.OPEN_DATE IS NOT NULL
-           GROUP BY d.CUST_ID
-         ) o
-      ON o.CUST_ID = c.CUST_ID
     LEFT JOIN DWS_CUST_LVL_INFO l
       ON l.CUST_ID = c.CUST_ID
      AND l.DATA_DT = V_SYSDAT
@@ -164,7 +161,8 @@ BEGIN
      AND a.BAL_TYPE = '1'
     LEFT JOIN DWD_CUST_INDV_KYC k
       ON k.CUST_ID = c.CUST_ID
-   WHERE o.OPEN_DT BETWEEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - 180 AND TO_DATE(V_SYSDAT, 'YYYYMMDD');
+   WHERE c.OPEN_DATE IS NOT NULL
+     AND TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') BETWEEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - 180 AND TO_DATE(V_SYSDAT, 'YYYYMMDD');
 
   COMMIT;
 

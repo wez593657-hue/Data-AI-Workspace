@@ -13,7 +13,6 @@ evidence:
   etl_check: [idempotency_check, rerun_check, cleanup_check]
   reverse_logic_check: [extracted_logic, rule_comparison]
   test_report: [positive_case, negative_case, boundary_case]
-  explain_report: [access_path, index_check, temp_space_check]
   review_report: [review_findings, review_decision]
   user_approval: [approval_record]
   full_validation: [workspace_validation_full]

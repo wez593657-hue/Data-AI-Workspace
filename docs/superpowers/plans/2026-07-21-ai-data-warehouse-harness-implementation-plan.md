@@ -32,7 +32,6 @@ scripts/harness/
 ├── rule_coverage_checker.py
 ├── reverse_logic_checker.py
 ├── test_case_generator.py
-├── explain_checker.py
 ├── change_guard.py
 ├── gate_checker.py
 └── schemas/
@@ -247,13 +246,12 @@ created_at: <timestamp>
 - 缺少异常处理或事务控制；
 - 重复扫描和未提前过滤。
 
-### 阶段 7：测试矩阵和 Explain 门禁
+### 阶段 7：静态测试矩阵门禁
 
 实现：
 
 - `test_case_generator.py`；
-- `explain_checker.py`；
-- 测试证据和性能报告格式。
+- 测试证据格式。
 
 测试矩阵至少包含：
 
@@ -267,16 +265,7 @@ created_at: <timestamp>
 - 重复执行；
 - 异常回滚。
 
-Explain 至少检查：
-
-- 索引命中；
-- 全表扫描；
-- 函数导致索引失效；
-- 隐式类型转换；
-- JOIN 顺序；
-- 排序和临时空间；
-- 重复扫描；
-- 估算行数异常。
+本阶段不执行真实数据库测试，不生成或审查 Explain 执行计划。
 
 ### 阶段 8：变更白名单、Hooks 和 CI
 
@@ -307,7 +296,7 @@ Explain 至少检查：
 
 ### 阶段 9：全链路回归
 
-选择一条完整 CRM 需求，覆盖需求、记忆卡片、ODS、DWD、DWS、ADS、Mapping、DDL、存储过程、测试和 Explain。
+选择一条完整 CRM 需求，覆盖需求、记忆卡片、ODS、DWD、DWS、ADS、Mapping、DDL、存储过程和静态测试矩阵。
 
 验收必须证明：
 

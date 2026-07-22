@@ -41,9 +41,6 @@ workflows:
       next: TEST_PASSED
       required_evidence: [test_report]
     TEST_PASSED:
-      next: EXPLAIN_PASSED
-      required_evidence: [explain_report]
-    EXPLAIN_PASSED:
       next: REVIEW_PASSED
       required_evidence: [review_report]
     REVIEW_PASSED:

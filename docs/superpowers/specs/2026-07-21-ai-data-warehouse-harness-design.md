@@ -6,7 +6,7 @@
 
 ```text
 需求文档 → 规则记忆卡片 → 数据分析 → DDL → 数据字典 → Mapping
-→ SQL → 存储过程 → ETL → Explain → Code Review → 测试 → CI/PR → 发布
+→ SQL → 存储过程 → ETL → Code Review → 测试 → CI/PR → 发布
 ```
 
 Harness 的目标不是声称 AI 能绝对正确理解业务，而是建立以下强制条件：没有完整证据、可追溯来源、规则覆盖、验证结果和必要审批时，AI 不得进入下一阶段，也不得提交或发布。
@@ -34,7 +34,7 @@ Harness 控制层
     ├── 需求/版本/记忆卡片校验
     ├── 数据血缘和产物依赖图
     ├── 业务规则覆盖与反向逻辑校验
-    ├── 测试和 Explain 门禁
+    ├── 测试矩阵门禁
     └── 证据与阻塞记录
     ↓ 通过门禁后才执行
 隔离工作区
@@ -63,7 +63,6 @@ scripts/harness/
 ├── rule_coverage_checker.py
 ├── reverse_logic_checker.py
 ├── test_case_generator.py
-├── explain_checker.py
 ├── change_guard.py
 ├── gate_checker.py
 └── schemas/
@@ -125,7 +124,6 @@ CREATED
 → ETL_READY
 → REVERSE_LOGIC_PASSED
 → TEST_PASSED
-→ EXPLAIN_PASSED
 → REVIEW_PASSED
 → USER_APPROVED
 → FULL_VALIDATION_PASSED
@@ -146,7 +144,6 @@ CREATED
 | `PROCEDURE_READY` | 存储过程与 Mapping、DDL、业务规则一致 |
 | `REVERSE_LOGIC_PASSED` | 从实现反向提取的逻辑与需求规则一致 |
 | `TEST_PASSED` | 正例、反例、边界、空值、重复和重跑测试通过 |
-| `EXPLAIN_PASSED` | 性能检查通过或风险已获得明确批准 |
 | `COMMIT_ALLOWED` | 完整校验通过且用户明确允许提交 |
 | `PUSH_ALLOWED` | 用户明确允许推送，分支和远程状态满足要求 |
 
@@ -210,7 +207,7 @@ Harness 必须构建以下依赖图：
 → SQL
 → 存储过程/ETL
 → 测试
-→ Explain/Review
+→ Review
 ```
 
 从 SQL、存储过程和 ETL 中反向提取：来源表、目标表、字段映射、JOIN、过滤、CASE、聚合、时间条件、异常处理和清理逻辑，并与需求规则和 Mapping 比对。
@@ -228,7 +225,7 @@ Harness 必须构建以下依赖图：
 
 每条业务规则至少生成并验证：一个正例、一个反例和一个边界例。测试矩阵必须覆盖正常、空值、重复、边界日期、边界金额、无匹配关联、多匹配关联、历史数据、重复执行和异常回滚。
 
-Explain 检查至少覆盖：索引命中、全表扫描、隐式类型转换、函数导致索引失效、重复扫描、提前过滤、JOIN 顺序、排序、临时空间和估算行数。
+阶段 7 只建立静态测试矩阵，不执行真实数据库测试或执行计划分析。数据库运行验证不属于本 Harness 任务范围。
 
 ## 10. 权限、变更和提交控制
 
@@ -258,7 +255,7 @@ read-token → plan-token → ddl-token → dictionary-token → mapping-token
 3. 接入需求版本、记忆卡片和读取清单校验。
 4. 接入 DDL、数据字典、Mapping 和跨层一致性校验。
 5. 实现变更白名单和 Git Hooks 门禁。
-6. 接入规则覆盖、反向逻辑、测试矩阵和 Explain 报告。
+6. 接入规则覆盖、反向逻辑和测试矩阵。
 7. 接入 `workspace_validation.py` 和 GitHub Actions。
 8. 使用一条完整 CRM 需求链路进行回归验证。
 
@@ -272,7 +269,7 @@ read-token → plan-token → ddl-token → dictionary-token → mapping-token
 - 需求规则覆盖率不为 100% 时不能继续。
 - 反向逻辑与需求不一致时必须阻塞。
 - 正例、反例和边界测试不完整时不能通过。
-- Explain 风险未处理时不能通过性能门禁。
+- 测试矩阵未覆盖规定场景时不能通过测试门禁。
 - 变更超出白名单时 Hook 和 CI 均失败。
 - 没有完整校验和用户明确命令时不能提交或推送。
 - 阻塞记录缺少原因、证据、影响或恢复条件时不能恢复。

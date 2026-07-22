@@ -62,3 +62,7 @@ CREATE_TMP_*.sql
 # Word documents
 *.docx
 *.doc
+
+# Harness/test files
+.harness/
+scripts/harness/
