@@ -16,7 +16,7 @@ AS
   -- author :
   -- date   : 2026-07-15
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.1.0
+  -- 需求版本: v2.2.0
   -- 关联需求: REQ-CUST-001, REQ-CUST-002
   -- 变更记录:
   --   v2.1.0: 1.资产承接率统计周期从14天改为30天
@@ -25,6 +25,10 @@ AS
   --           4.客户承接率长期化产品已剔除保险：TAKE_AMT_30D 仅统计 DEPO/FIN
   --           5.定期存款承接率已过滤通知存款：PRDKT_CATE_BIG <> '04'
   --           6.DATA_DATE语义变更：统一使用周期结束日期（M-月末，Q-季末，N-年末），不再使用快照日期
+  --   v2.2.0: 1.计算粒度调整：因法人行有多个，一个客户在不同归属机构/法人行算多个客户，需分开计算
+  --           2.客户号+归属机构(经办机构)/法人机构才能算作一个计算单位
+  --           3.到期产品源、到期窗口、购买产品源、承接金额、AUM中间表均按客户+机构维度分组
+  --           4.法人行号和归属机构从账户表获取（DWD_ACCT_DEPO.OPEN_ACCT_ORG, DWD_ACCT_FIN.OPRT_ORG）
   ------------------------------------------------------------------
   ------------------------------------------------------------------
   --***************************************
@@ -174,42 +178,48 @@ BEGIN
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO TMP_CDR_DTL_MATURE_SRC (
-      CUST_ID,    -- 客户编号
-      STATIS_TYP, -- 承接类型：0-全部，1-存款，2-理财
-      ACCT_ID,    -- 账户
-      PRDKT_ID,   -- 产品编号
-      PRDKT_NAME, -- 产品名称
-      EXPR_AMT,   -- 到期金额
-      EXPR_DT     -- 到期日期
+      CUST_ID,             -- 客户编号
+      STATIS_TYP,          -- 承接类型：0-全部，1-存款，2-理财
+      ACCT_ID,             -- 账户
+      PRDKT_ID,            -- 产品编号
+      PRDKT_NAME,          -- 产品名称
+      EXPR_AMT,            -- 到期金额
+      EXPR_DT,             -- 到期日期
+      PERSN_LEGAL_BK_CODE, -- 法人行号
+      ORG_ID               -- 归属机构
   )
-  SELECT d.CUST_ID                                            AS CUST_ID,       -- 客户编号
-         '1'                                                  AS STATIS_TYP,    -- 承接类型：1-存款
-         d.ACCT_ID                                            AS ACCT_ID,       -- 账户
-         d.PRDKT_ID                                           AS PRDKT_ID,      -- 产品编号
-         d.PRDKT_NAME                                         AS PRDKT_NAME,    -- 产品名称
-         NVL(d.BAL, 0)                                        AS EXPR_AMT,      -- 到期金额
-         TO_DATE(REPLACE(SUBSTR(d.EXPR_DATE, 1, 10), '-', ''), 'yyyymmdd') AS EXPR_DT
+  SELECT d.CUST_ID                                            AS CUST_ID,             -- 客户编号
+         '1'                                                  AS STATIS_TYP,          -- 承接类型：1-存款
+         d.ACCT_ID                                            AS ACCT_ID,             -- 账户
+         d.PRDKT_ID                                           AS PRDKT_ID,            -- 产品编号
+         d.PRDKT_NAME                                         AS PRDKT_NAME,          -- 产品名称
+         NVL(d.BAL, 0)                                        AS EXPR_AMT,            -- 到期金额
+         TO_DATE(REPLACE(SUBSTR(d.EXPR_DATE, 1, 10), '-', ''), 'yyyymmdd') AS EXPR_DT,
+         d.PERSN_LEGAL_BK_CODE                                AS PERSN_LEGAL_BK_CODE, -- 法人行号
+         d.OPEN_ACCT_ORG                                      AS ORG_ID               -- 归属机构
     FROM DWD_ACCT_DEPO d                                      -- 存款账户
    WHERE d.FIX_CURNT_FLG = '1'                                -- 0-活期，1-定期
      AND NVL(d.PRDKT_CATE_BIG, '') <> '04'                    -- 剔除通知存款
      AND d.EXPR_DATE IS NOT NULL
   UNION ALL
-  SELECT f.CUST_ID                                            AS CUST_ID,       -- 客户编号
-         '2'                                                  AS STATIS_TYP,    -- 承接类型：2-理财
-         f.ACCT_ID                                            AS ACCT_ID,       -- 账户
-         f.PRDKT_ID                                           AS PRDKT_ID,      -- 产品编号
-         f.PRDKT_NAME                                         AS PRDKT_NAME,    -- 产品名称
-         NVL(f.FIN_AMT, 0)                                    AS EXPR_AMT,      -- 到期金额
-         TO_DATE(REPLACE(SUBSTR(f.EXPR_DATE, 1, 10), '-', ''), 'yyyymmdd') AS EXPR_DT
+  SELECT f.CUST_ID                                            AS CUST_ID,             -- 客户编号
+         '2'                                                  AS STATIS_TYP,          -- 承接类型：2-理财
+         f.ACCT_ID                                            AS ACCT_ID,             -- 账户
+         f.PRDKT_ID                                           AS PRDKT_ID,            -- 产品编号
+         f.PRDKT_NAME                                         AS PRDKT_NAME,          -- 产品名称
+         NVL(f.FIN_AMT, 0)                                    AS EXPR_AMT,            -- 到期金额
+         TO_DATE(REPLACE(SUBSTR(f.EXPR_DATE, 1, 10), '-', ''), 'yyyymmdd') AS EXPR_DT,
+         f.PERSN_LEGAL_BK_CODE                                AS PERSN_LEGAL_BK_CODE, -- 法人行号
+         f.OPRT_ORG                                           AS ORG_ID               -- 归属机构
     FROM DWD_ACCT_FIN f                                       -- 理财账户
    WHERE TRIM(f.EXPR_DATE) IS NOT NULL                        -- 有明确到期日的理财纳入到期范围；开放式理财分类代码待业务确认
-    AND AND NVL(F.PRDKT_CATE_BIG, '') NOT IN ('1','3');       --理财产品大类 1代销-开放 2代销-封闭  3自营-开放 4自营-封闭
+    AND NVL(f.PRDKT_CATE_BIG, '') NOT IN ('1','3');           --理财产品大类 1代销-开放 2代销-封闭  3自营-开放 4自营-封闭
 
-  -- 承接类型0：同客户存款和理财到期产品汇总。
+  -- 承接类型0：同客户存款和理财到期产品汇总（按客户+机构维度）。
   INSERT INTO TMP_CDR_DTL_MATURE_SRC (
-      CUST_ID, STATIS_TYP, ACCT_ID, PRDKT_ID, PRDKT_NAME, EXPR_AMT, EXPR_DT
+      CUST_ID, STATIS_TYP, ACCT_ID, PRDKT_ID, PRDKT_NAME, EXPR_AMT, EXPR_DT, PERSN_LEGAL_BK_CODE, ORG_ID
   )
-  SELECT CUST_ID, '0', ACCT_ID, PRDKT_ID, PRDKT_NAME, EXPR_AMT, EXPR_DT
+  SELECT CUST_ID, '0', ACCT_ID, PRDKT_ID, PRDKT_NAME, EXPR_AMT, EXPR_DT, PERSN_LEGAL_BK_CODE, ORG_ID
     FROM TMP_CDR_DTL_MATURE_SRC
    WHERE STATIS_TYP IN ('1', '2');
 
@@ -241,16 +251,18 @@ BEGIN
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO TMP_CDR_DTL_DUE_WIN (
-      STAT_PERD,       -- 统计周期：M-月，Q-季，N-年
-      BGN_DT,          -- 统计周期开始日期
-      END_DT,          -- 统计周期结束日期
-      CUST_ID,         -- 客户编号
-      STATIS_TYP,      -- 承接类型：0-全部，1-存款，2-理财
-      FIRST_EXPR_DT,   -- 本期第一笔到期日期
-      LAST_EXPR_DT,    -- 本期最后一笔到期日期
-      EXPR_AMT,        -- 已到期金额
-      MATURE_TTL_AMT,  -- 总到期金额
-      TAKE_END_DT_30D  -- 30天承接窗口结束日期
+      STAT_PERD,            -- 统计周期：M-月，Q-季，N-年
+      BGN_DT,               -- 统计周期开始日期
+      END_DT,               -- 统计周期结束日期
+      CUST_ID,              -- 客户编号
+      STATIS_TYP,           -- 承接类型：0-全部，1-存款，2-理财
+      FIRST_EXPR_DT,        -- 本期第一笔到期日期
+      LAST_EXPR_DT,         -- 本期最后一笔到期日期
+      EXPR_AMT,             -- 已到期金额
+      MATURE_TTL_AMT,       -- 总到期金额
+      TAKE_END_DT_30D,      -- 30天承接窗口结束日期
+      PERSN_LEGAL_BK_CODE,  -- 法人行号
+      ORG_ID                -- 归属机构
   )
   SELECT g.STAT_PERD,
          g.BGN_DT,
@@ -266,16 +278,22 @@ BEGIN
                FROM TMP_CDR_DTL_MATURE_SRC n
                WHERE n.CUST_ID = g.CUST_ID
                  AND n.STATIS_TYP = g.STATIS_TYP
+                 AND n.PERSN_LEGAL_BK_CODE = g.PERSN_LEGAL_BK_CODE
+                 AND n.ORG_ID = g.ORG_ID
                  AND n.EXPR_DT > g.LAST_EXPR_DT
                  AND n.EXPR_DT <= g.LAST_EXPR_DT + 30),
              g.LAST_EXPR_DT + 30
-         ) AS TAKE_END_DT_30D
+         ) AS TAKE_END_DT_30D,
+         g.PERSN_LEGAL_BK_CODE,
+         g.ORG_ID
     FROM (
           SELECT p.STAT_PERD,
                  p.BGN_DT,
                  p.END_DT,
                  m.CUST_ID,
                  m.STATIS_TYP,
+                 m.PERSN_LEGAL_BK_CODE,
+                 m.ORG_ID,
                  MIN(m.EXPR_DT) AS FIRST_EXPR_DT,
                  MAX(m.EXPR_DT) AS LAST_EXPR_DT,
                  SUM(CASE WHEN m.EXPR_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
@@ -284,7 +302,7 @@ BEGIN
             FROM TMP_CDR_DTL_MATURE_SRC m
             JOIN TMP_CDR_DTL_PERIOD p
               ON m.EXPR_DT BETWEEN p.BGN_DT AND p.END_DT
-           GROUP BY p.STAT_PERD, p.BGN_DT, p.END_DT, m.CUST_ID, m.STATIS_TYP
+           GROUP BY p.STAT_PERD, p.BGN_DT, p.END_DT, m.CUST_ID, m.STATIS_TYP, m.PERSN_LEGAL_BK_CODE, m.ORG_ID
          ) g;
 
   COMMIT;
@@ -315,32 +333,40 @@ BEGIN
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO TMP_CDR_DTL_PURCHASE_SRC (
-      CUST_ID,   -- 客户编号
-      PRDKT_TYP, -- 购买产品类型：DEPO-存款，FIN-理财，INSUR-保险
-      BUY_AMT,   -- 购买金额
-      BUY_DT     -- 购买日期
+      CUST_ID,             -- 客户编号
+      PRDKT_TYP,          -- 购买产品类型：DEPO-存款，FIN-理财，INSUR-保险
+      BUY_AMT,            -- 购买金额
+      BUY_DT,             -- 购买日期
+      PERSN_LEGAL_BK_CODE, -- 法人行号
+      ORG_ID               -- 归属机构
   )
-  SELECT d.CUST_ID                                            AS CUST_ID,       -- 客户编号
-         'DEPO'                                               AS PRDKT_TYP,     -- 购买产品类型：存款
-         NVL(d.BAL, 0)                                        AS BUY_AMT,       -- 购买金额
-         TO_DATE(REPLACE(SUBSTR(d.INTRI_BGN_DATE, 1, 10), '-', ''), 'yyyymmdd') AS BUY_DT
+  SELECT d.CUST_ID                                            AS CUST_ID,             -- 客户编号
+         'DEPO'                                               AS PRDKT_TYP,          -- 购买产品类型：存款
+         NVL(d.BAL, 0)                                        AS BUY_AMT,            -- 购买金额
+         TO_DATE(REPLACE(SUBSTR(d.INTRI_BGN_DATE, 1, 10), '-', ''), 'yyyymmdd') AS BUY_DT,
+         d.PERSN_LEGAL_BK_CODE                                AS PERSN_LEGAL_BK_CODE, -- 法人行号
+         d.OPEN_ACCT_ORG                                      AS ORG_ID               -- 归属机构
     FROM DWD_ACCT_DEPO d                                      -- 存款账户
    WHERE d.FIX_CURNT_FLG = '1'
      AND NVL(d.PRDKT_CATE_BIG, '#') <> '04'
      AND d.INTRI_BGN_DATE IS NOT NULL
   UNION ALL
-  SELECT f.CUST_ID                                            AS CUST_ID,       -- 客户编号
-         'FIN'                                                AS PRDKT_TYP,     -- 购买产品类型：理财
-         NVL(f.FIN_AMT, 0)                                    AS BUY_AMT,       -- 购买金额
-         TO_DATE(REPLACE(SUBSTR(COALESCE(f.ESTAB_DATE, f.INTRI_BGN_DATE, f.ISSU_DATE), 1, 10), '-', ''), 'yyyymmdd') AS BUY_DT
+  SELECT f.CUST_ID                                            AS CUST_ID,             -- 客户编号
+         'FIN'                                                AS PRDKT_TYP,          -- 购买产品类型：理财
+         NVL(f.FIN_AMT, 0)                                    AS BUY_AMT,            -- 购买金额
+         TO_DATE(REPLACE(SUBSTR(COALESCE(f.ESTAB_DATE, f.INTRI_BGN_DATE, f.ISSU_DATE), 1, 10), '-', ''), 'yyyymmdd') AS BUY_DT,
+         f.PERSN_LEGAL_BK_CODE                                AS PERSN_LEGAL_BK_CODE, -- 法人行号
+         f.OPRT_ORG                                           AS ORG_ID               -- 归属机构
     FROM DWD_ACCT_FIN f                                       -- 理财账户
    WHERE NVL(f.PRDKT_CATE_BIG, '#') <> '开放式理财'          -- 已知文字值；其他开放式理财分类代码待业务确认
      AND COALESCE(f.ESTAB_DATE, f.INTRI_BGN_DATE, f.ISSU_DATE) IS NOT NULL
   UNION ALL
-  SELECT i.CUST_ID                                            AS CUST_ID,       -- 客户编号
-         'INSUR'                                              AS PRDKT_TYP,     -- 购买产品类型：保险
-         NVL(i.INSUR_AMT, 0)                                  AS BUY_AMT,       -- 购买金额
-         TO_DATE(REPLACE(SUBSTR(COALESCE(i.TX_DATE, i.BGN_INSUR_DATE), 1, 10), '-', ''), 'yyyymmdd') AS BUY_DT
+  SELECT i.CUST_ID                                            AS CUST_ID,             -- 客户编号
+         'INSUR'                                              AS PRDKT_TYP,          -- 购买产品类型：保险
+         NVL(i.INSUR_AMT, 0)                                  AS BUY_AMT,            -- 购买金额
+         TO_DATE(REPLACE(SUBSTR(COALESCE(i.TX_DATE, i.BGN_INSUR_DATE), 1, 10), '-', ''), 'yyyymmdd') AS BUY_DT,
+         i.PERSN_LEGAL_BK_CODE                                AS PERSN_LEGAL_BK_CODE, -- 法人行号
+         i.ORG_ID                                             AS ORG_ID               -- 归属机构
     FROM DWD_ACCT_INSUR i                                     -- 保险账户
    WHERE COALESCE(i.TX_DATE, i.BGN_INSUR_DATE) IS NOT NULL;
 
@@ -372,14 +398,16 @@ BEGIN
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO TMP_CDR_DTL_TAKE_AMT (
-      STAT_PERD,         -- 统计周期：M-月，Q-季，N-年
-      CUST_ID,           -- 客户编号
-      STATIS_TYP,        -- 承接类型：0-全部，1-存款，2-理财
-      TAKE_AMT_30D,      -- 30天长期化产品承接金额
-      BUY_DEPO_AMT_30D,  -- 30天购买定期存款金额
-      BUY_FIN_AMT_30D,   -- 30天购买理财金额
-      BUY_INSUR_AMT_30D, -- 30天购买保险金额
-      FIRST_BUY_DT_30D   -- 30天窗口内首次购买日期
+      STAT_PERD,            -- 统计周期：M-月，Q-季，N-年
+      CUST_ID,              -- 客户编号
+      STATIS_TYP,           -- 承接类型：0-全部，1-存款，2-理财
+      TAKE_AMT_30D,         -- 30天长期化产品承接金额
+      BUY_DEPO_AMT_30D,     -- 30天购买定期存款金额
+      BUY_FIN_AMT_30D,      -- 30天购买理财金额
+      BUY_INSUR_AMT_30D,    -- 30天购买保险金额
+      FIRST_BUY_DT_30D,     -- 30天窗口内首次购买日期
+      PERSN_LEGAL_BK_CODE,  -- 法人行号
+      ORG_ID                -- 归属机构
   )
   SELECT w.STAT_PERD,
          w.CUST_ID,
@@ -398,12 +426,16 @@ BEGIN
                   THEN NVL(p.BUY_AMT, 0) ELSE 0 END) AS BUY_INSUR_AMT_30D,
          MIN(CASE WHEN p.PRDKT_TYP IN ('DEPO', 'FIN', 'INSUR')
                    AND p.BUY_DT BETWEEN w.FIRST_EXPR_DT AND w.TAKE_END_DT_30D
-                  THEN p.BUY_DT END) AS FIRST_BUY_DT_30D
+                  THEN p.BUY_DT END) AS FIRST_BUY_DT_30D,
+         w.PERSN_LEGAL_BK_CODE,
+         w.ORG_ID
     FROM TMP_CDR_DTL_DUE_WIN w
     LEFT JOIN TMP_CDR_DTL_PURCHASE_SRC p
       ON p.CUST_ID = w.CUST_ID
+     AND p.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
+     AND p.ORG_ID = w.ORG_ID
      AND p.BUY_DT BETWEEN w.FIRST_EXPR_DT AND w.TAKE_END_DT_30D
-   GROUP BY w.STAT_PERD, w.CUST_ID, w.STATIS_TYP;
+   GROUP BY w.STAT_PERD, w.CUST_ID, w.STATIS_TYP, w.PERSN_LEGAL_BK_CODE, w.ORG_ID;
 
   COMMIT;
 
@@ -491,38 +523,44 @@ BEGIN
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO TMP_CDR_DTL_AUM_BAL (
-      STAT_PERD, -- 统计周期：M-月，Q-季，N-年
-      CUST_ID,   -- 客户编号
-      STATIS_TYP, -- 承接类型：0-全部，1-存款，2-理财
-      AUM_TYP,   -- AUM类型：PREV-第一笔到期前一日，CURR-当前日
-      DATA_DATE, -- AUM数据日期
-      AUM_BAL    -- AUM余额
+      STAT_PERD,            -- 统计周期：M-月，Q-季，N-年
+      CUST_ID,              -- 客户编号
+      STATIS_TYP,           -- 承接类型：0-全部，1-存款，2-理财
+      AUM_TYP,              -- AUM类型：PREV-第一笔到期前一日，CURR-当前日
+      DATA_DATE,            -- AUM数据日期
+      AUM_BAL,              -- AUM余额
+      PERSN_LEGAL_BK_CODE,  -- 法人行号
+      ORG_ID                -- 归属机构
   )
   SELECT w.STAT_PERD                                         AS STAT_PERD,  -- 统计周期：M-月，Q-季，N-年
          w.CUST_ID                                           AS CUST_ID,    -- 客户编号
          w.STATIS_TYP                                        AS STATIS_TYP, -- 承接类型：0-全部，1-存款，2-理财
          'PREV'                                              AS AUM_TYP,    -- AUM类型：第一笔到期前一日
          TO_CHAR(w.FIRST_EXPR_DT - 1, 'yyyymmdd')            AS DATA_DATE,  -- AUM数据日期
-         SUM(NVL(h.AUM_BAL, 0))                              AS AUM_BAL     -- AUM余额
+         SUM(NVL(h.AUM_BAL, 0))                              AS AUM_BAL,    -- AUM余额
+         w.PERSN_LEGAL_BK_CODE                               AS PERSN_LEGAL_BK_CODE,
+         w.ORG_ID                                            AS ORG_ID
     FROM TMP_CDR_DTL_DUE_WIN w
     LEFT JOIN DWS_CUST_ASSE_LIAB h                           -- 客户资产负债表
       ON h.CUST_ID = w.CUST_ID
      AND h.DATA_DATE = TO_CHAR(w.FIRST_EXPR_DT - 1, 'yyyymmdd')
      AND h.BAL_TYPE = '1'                                    -- 余额类型
-   GROUP BY w.STAT_PERD, w.CUST_ID, w.STATIS_TYP, TO_CHAR(w.FIRST_EXPR_DT - 1, 'yyyymmdd')
+   GROUP BY w.STAT_PERD, w.CUST_ID, w.STATIS_TYP, TO_CHAR(w.FIRST_EXPR_DT - 1, 'yyyymmdd'), w.PERSN_LEGAL_BK_CODE, w.ORG_ID
   UNION ALL
   SELECT w.STAT_PERD                                         AS STAT_PERD,  -- 统计周期：M-月，Q-季，N-年
          w.CUST_ID                                           AS CUST_ID,    -- 客户编号
          w.STATIS_TYP                                        AS STATIS_TYP, -- 承接类型：1-存款，2-理财
          'CURR'                                              AS AUM_TYP,    -- AUM类型：当前日
          V_SYSDAT                                            AS DATA_DATE,  -- AUM数据日期
-         SUM(NVL(c.AUM_BAL, 0))                              AS AUM_BAL     -- AUM余额
+         SUM(NVL(c.AUM_BAL, 0))                              AS AUM_BAL,    -- AUM余额
+         w.PERSN_LEGAL_BK_CODE                               AS PERSN_LEGAL_BK_CODE,
+         w.ORG_ID                                            AS ORG_ID
     FROM TMP_CDR_DTL_DUE_WIN w
     LEFT JOIN DWS_CUST_ASSE_LIAB c                           -- 客户资产负债表
       ON c.CUST_ID = w.CUST_ID
      AND c.DATA_DATE = V_SYSDAT
      AND c.BAL_TYPE = '1'                                    -- 余额类型
-   GROUP BY w.STAT_PERD, w.CUST_ID, w.STATIS_TYP;
+   GROUP BY w.STAT_PERD, w.CUST_ID, w.STATIS_TYP, w.PERSN_LEGAL_BK_CODE, w.ORG_ID;
 
   COMMIT;
 
@@ -579,7 +617,7 @@ BEGIN
       ORG_ID                             -- 归属机构
   )
   SELECT
-      ci.PERSN_LEGAL_BK_CODE                                                   AS PERSN_LEGAL_BK_CODE,
+      w.PERSN_LEGAL_BK_CODE                                                    AS PERSN_LEGAL_BK_CODE,               -- 使用账户所属法人行号
       TO_CHAR(w.END_DT, 'yyyymmdd')                                           AS DATA_DATE,                         -- 周期结束日期（统一使用周期结束日）
       w.CUST_ID                                                                AS CUST_ID,                           -- 客户编号
       cb.CUST_NAME                                                             AS CUST_NAME,                         -- 客户名称
@@ -613,17 +651,19 @@ BEGIN
                  AND NVL(t.TAKE_AMT_30D, 0) / w.EXPR_AMT >= 0.8
            THEN '1' ELSE '0' END                                               AS UNDTAKE_STATE,                     -- 承接状态：30天长期化承接金额占已到期金额不低于80%
       NVL(t.BUY_INSUR_AMT_30D, 0)                                              AS FIXED_FIN_MATURE_TRAN_INSUR_AMT,   -- 30天到期转保险金额
-      (SELECT NVL(SUM(x.BUY_DEPO_AMT_30D), 0) FROM TMP_CDR_DTL_TAKE_AMT x WHERE x.CUST_ID = w.CUST_ID AND x.STATIS_TYP = '2') AS FIN_MATURE_TRAN_FIXED_AMT,         -- 理财到期30天转定期金额
-      (SELECT NVL(SUM(x.BUY_FIN_AMT_30D), 0) FROM TMP_CDR_DTL_TAKE_AMT x WHERE x.CUST_ID = w.CUST_ID AND x.STATIS_TYP = '1') AS FIXED_MATURE_TRAN_FIN_AMT,         -- 定期到期30天转理财金额
+      (SELECT NVL(SUM(x.BUY_DEPO_AMT_30D), 0) FROM TMP_CDR_DTL_TAKE_AMT x WHERE x.CUST_ID = w.CUST_ID AND x.STATIS_TYP = '2' AND x.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE AND x.ORG_ID = w.ORG_ID) AS FIN_MATURE_TRAN_FIXED_AMT, -- 理财到期30天转定期金额（按客户+机构维度）
+      (SELECT NVL(SUM(x.BUY_FIN_AMT_30D), 0) FROM TMP_CDR_DTL_TAKE_AMT x WHERE x.CUST_ID = w.CUST_ID AND x.STATIS_TYP = '1' AND x.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE AND x.ORG_ID = w.ORG_ID) AS FIXED_MATURE_TRAN_FIN_AMT, -- 定期到期30天转理财金额（按客户+机构维度）
       NVL(ap.AUM_BAL, 0)                                                       AS FRST_MATURE_PK_BF_DAY_AUM_BAL,     -- 本期第一笔到期产品前一日AUM余额
       TO_CHAR(w.LAST_EXPR_DT, 'yyyymmdd')                                      AS LAST_END_DATE,                     -- 本期最后一笔到期产品日期
       cb.POST_ID                                                               AS POST_ID,                           -- 管户经理
-      cb.ORG_ID                                                                AS ORG_ID                             -- 归属机构
+      w.ORG_ID                                                                 AS ORG_ID                             -- 使用账户所属归属机构
     FROM TMP_CDR_DTL_DUE_WIN w
     LEFT JOIN TMP_CDR_DTL_TAKE_AMT t
       ON t.STAT_PERD = w.STAT_PERD
      AND t.CUST_ID = w.CUST_ID
      AND t.STATIS_TYP = w.STATIS_TYP
+     AND t.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
+     AND t.ORG_ID = w.ORG_ID
     LEFT JOIN TMP_CDR_DTL_CUST_BASE cb
       ON cb.CUST_ID = w.CUST_ID
     LEFT JOIN TMP_CDR_DTL_AUM_BAL ap
@@ -631,7 +671,8 @@ BEGIN
      AND ap.CUST_ID = w.CUST_ID
      AND ap.STATIS_TYP = w.STATIS_TYP
      AND ap.AUM_TYP = 'PREV'
-    LEFT JOIN DWD_CUST_INDV_INFO ci ON ci.CUST_ID = w.CUST_ID;
+     AND ap.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
+     AND ap.ORG_ID = w.ORG_ID;
 
   -- 当前周期只保留最新跑批快照；历史只保留对应期末，且最多三年。
   DELETE FROM ADS_CUST_DEADLINE_RMND_DTL d

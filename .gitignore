@@ -66,3 +66,6 @@ CREATE_TMP_*.sql
 # Harness/test files
 .harness/
 scripts/harness/
+
+# Auto-generated docs
+docs/superpowers/specs/*.md

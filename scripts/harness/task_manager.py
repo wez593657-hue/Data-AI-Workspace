@@ -22,6 +22,7 @@ from .state_machine import (
     validate_transition,
 )
 from .state_integrity import StateIntegrityError, state_seal, validate_task_integrity
+from .evidence_integrity import EvidenceIntegrityError, validate_evidence
 
 
 TASK_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{2,63}$")
@@ -149,6 +150,16 @@ def add_evidence(root: Path, task_id: str, evidence: dict[str, Any]) -> dict[str
         raise TaskError("证据必须包含 evidence_id")
     if evidence_id in payload.get("evidence_ids", []):
         raise TaskError(f"证据编号已存在: {evidence_id}")
+    try:
+        validate_evidence(
+            evidence,
+            task_id=task_id,
+            evidence_path=directory / "evidence" / f"{evidence_id}.yaml",
+            task_dir=directory,
+            repo_root=root,
+        )
+    except EvidenceIntegrityError as error:
+        raise TaskError(f"证据完整性校验失败: {error}") from error
     write_yaml(directory / "evidence" / f"{evidence_id}.yaml", evidence)
     record_event(directory, {"event": "evidence_recorded", "evidence_id": evidence_id})
     payload.setdefault("evidence_ids", []).append(evidence_id)
@@ -170,6 +181,16 @@ def add_file_read_evidence(
     evidence = record_file_read(
         directory, evidence_id, phase, root / path, root, purpose
     )
+    try:
+        validate_evidence(
+            evidence,
+            task_id=task_id,
+            evidence_path=directory / "evidence" / f"{evidence_id}.yaml",
+            task_dir=directory,
+            repo_root=root,
+        )
+    except EvidenceIntegrityError as error:
+        raise TaskError(f"文件证据完整性校验失败: {error}") from error
     payload.setdefault("evidence_ids", []).append(evidence_id)
     save_task(directory, payload)
     return evidence

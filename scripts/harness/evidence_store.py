@@ -75,6 +75,7 @@ def record_file_read(
         raise FileNotFoundError(f"读取证据目标不是文件: {path}")
     evidence = {
         "evidence_id": evidence_id,
+        "task_id": task_dir.name,
         "phase": phase,
         "kind": "file_read",
         "path": str(resolved.relative_to(repo_root.resolve())),

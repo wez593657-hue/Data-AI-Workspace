@@ -1,5 +1,7 @@
 schema_version: '0.1'
 task_id: phase6-deadline-detail-v1
+lifecycle: archived
+archive_reason: 到期承接阶段6历史审计任务，保留逻辑门禁报告和证据，不作为当前任务入口
 purpose: 阶段6：到期承接明细SQL与存储过程逻辑门禁
 workflow_profile: data_warehouse
 state: REVERSE_LOGIC_PASSED

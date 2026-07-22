@@ -1,0 +1,23 @@
+schema_version: '0.1'
+task_id: phase9-deadline-regression-v1
+lifecycle: archived
+archive_reason: 到期承接阶段9历史回归任务，保留全链路报告和证据，不作为当前任务入口
+purpose: 阶段9到期承接全链路静态回归
+workflow_profile: harness
+state: FULL_VALIDATION_PASSED
+branch: feature/ai-repair-loop
+evidence_ids:
+  - E-0001
+  - E-0002
+  - E-0003
+  - E-0004
+history:
+  - from: CREATED
+    to: WORKSPACE_CHECKED
+    reason: 已确认到期承接全链路输入和只读范围
+  - from: WORKSPACE_CHECKED
+    to: IMPLEMENTATION_READY
+    reason: 已确认静态回归范围，不执行数据库运行验证
+  - from: IMPLEMENTATION_READY
+    to: FULL_VALIDATION_PASSED
+    reason: 全链路证据、阻塞能力和静态测试矩阵校验通过

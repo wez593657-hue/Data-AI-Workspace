@@ -1,4 +1,6 @@
 version: "0.1"
+evidence_policy:
+  max_age_days: 30
 evidence:
   workspace_status: [git_status, git_branch, remote_sync]
   requirement_read: [file_read, version_read, source_section]

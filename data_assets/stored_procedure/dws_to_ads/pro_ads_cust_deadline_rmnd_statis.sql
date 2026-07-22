@@ -11,7 +11,7 @@ AS
   -- 来源表: ADS_CUST_DEADLINE_RMND_DTL, DWS_CUST_ASSE_LIAB, DWD_SYS_ORG
   -- 目标表: ADS_CUST_DEADLINE_RMND_STATIS
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.1.0
+  -- 需求版本: v2.2.0
   -- 关联需求: REQ-CUST-002
   -- 变更记录:
   --   v2.1.0: 1.理财转存款转化率和存款转理财转化率指标已实现
@@ -19,6 +19,8 @@ AS
   --           3.客户承接率长期化产品剔除保险（待实现，已做注释）
   --           4.定期存款承接率需确认通知存款过滤（待实现，已做注释）
   --           5.DATA_DATE语义变更：统一使用周期结束日期（M-月末，Q-季末，N-年末），清理逻辑同步更新
+  --   v2.2.0: 1.客户数统计改为按客户+机构维度去重：COUNT(DISTINCT CUST_ID || '_' || ORG_ID)
+  --           2.承接状态统计同步改为按客户+机构维度去重
   ------------------------------------------------------------------
   V_PRC_DESC VARCHAR(100) := '到期承接统计表处理';
   V_PRC_NAME VARCHAR(64) := 'PRO_ADS_CUST_DEADLINE_RMND_STATIS';
@@ -179,13 +181,13 @@ BEGIN
          s.STATIS_OBJ,
          s.STAT_PERD,
          s.STATIS_TYP,
-         COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID END),
-         COUNT(DISTINCT CASE WHEN s.MATURE_TTL_AMT > 0 THEN s.CUST_ID END),
+         COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID || '_' || s.ORG_ID END),
+         COUNT(DISTINCT CASE WHEN s.MATURE_TTL_AMT > 0 THEN s.CUST_ID || '_' || s.ORG_ID END),
          SUM(s.EXPR_AMT),
          SUM(s.MATURE_TTL_AMT),
-         CASE WHEN COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID END) = 0 THEN 0
-              ELSE ROUND(COUNT(DISTINCT CASE WHEN s.CUST_TAKE_FLG = '1' THEN s.CUST_ID END)
-                         / COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID END) * 100, 2)
+         CASE WHEN COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID || '_' || s.ORG_ID END) = 0 THEN 0
+              ELSE ROUND(COUNT(DISTINCT CASE WHEN s.CUST_TAKE_FLG = '1' THEN s.CUST_ID || '_' || s.ORG_ID END)
+                         / COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID || '_' || s.ORG_ID END) * 100, 2)
          END,
          CASE WHEN SUM(s.FRST_MATURE_PK_BF_DAY_AUM_BAL) = 0 THEN 0
               ELSE ROUND(SUM(s.CURR_AUM_BAL) / SUM(s.FRST_MATURE_PK_BF_DAY_AUM_BAL) * 100, 2)

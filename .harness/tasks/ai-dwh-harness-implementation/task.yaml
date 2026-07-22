@@ -1,5 +1,7 @@
 schema_version: '0.1'
 task_id: ai-dwh-harness-implementation
+lifecycle: archived
+archive_reason: Harness总体建设历史记录，保留审计证据，不作为当前任务入口
 purpose: 持续实施 AI 数据仓库开发 Harness
 state: COMPLETED
 branch: feature/ai-repair-loop

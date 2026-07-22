@@ -8,6 +8,7 @@ from typing import Any
 import yaml
 
 from .evidence_store import read_yaml
+from .evidence_integrity import EvidenceIntegrityError, validate_evidence_set
 from .state_machine import validate_transition
 from .task_manager import load_task
 
@@ -60,7 +61,18 @@ def check_gate(root: Path, task_id: str, target: str) -> dict[str, Any]:
         raise GateError(f"门禁策略不允许状态迁移: {source} -> {target}")
     required_by_target = policy.get("required_evidence_by_target", {})
     required = list(required_by_target.get(target, policy.get("required_evidence", [])))
-    evidence = _evidence_payloads(directory)
+    evidence_policy = _policy(root).get("evidence_policy", {})
+    try:
+        evidence = validate_evidence_set(
+            directory / "evidence",
+            task_id=task_id,
+            task_dir=directory,
+            repo_root=root,
+            expected_ids=task.get("evidence_ids", []),
+            max_age_days=int(evidence_policy.get("max_age_days", 30)),
+        )
+    except EvidenceIntegrityError as error:
+        raise GateError(f"证据完整性校验失败: {error}") from error
     purposes = {str(item.get("purpose", "")) for item in evidence}
     missing = [item for item in required if item not in purposes]
     if missing:
