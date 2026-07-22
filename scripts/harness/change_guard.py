@@ -26,7 +26,7 @@ def _normalize(path: str) -> str:
     return path.replace("\\", "/").lstrip("./")
 
 
-def collect_changed_files(root: Path, scope: str = "worktree") -> list[str]:
+def collect_changed_files(root: Path, scope: str = "worktree", base_ref: str = "") -> list[str]:
     if scope == "staged":
         commands = (["git", "diff", "--cached", "--name-only"],)
     elif scope == "commit":
@@ -37,6 +37,10 @@ def collect_changed_files(root: Path, scope: str = "worktree") -> list[str]:
             text=True, encoding="utf-8", check=False
         ).stdout.strip()
         commands = (["git", "diff", "--name-only", f"origin/{branch}...HEAD"],)
+    elif scope == "pr":
+        if not base_ref.strip():
+            raise ChangeGuardError("PR 变更检查必须提供 base_ref")
+        commands = (["git", "diff", "--name-only", f"origin/{base_ref}...HEAD"],)
     else:
         commands = (
             ["git", "diff", "--name-only", "HEAD"],
@@ -96,15 +100,21 @@ def validate_manifest_changes(
     }
 
 
-def check_task_changes(root: Path, task_id: str, scope: str = "worktree") -> dict[str, Any]:
+def check_task_changes(
+    root: Path, task_id: str, scope: str = "worktree", base_ref: str = ""
+) -> dict[str, Any]:
     if not task_id.strip():
         raise ChangeGuardError("必须提供 HARNESS_TASK_ID 或 --task-id")
     task_dir = root / ".harness" / "tasks" / task_id
     manifest_path = task_dir / "change_manifest.yaml"
     if not manifest_path.is_file():
         raise ChangeGuardError(f"任务缺少 change_manifest.yaml: {task_id}")
-    report = validate_manifest_changes(read_yaml(manifest_path), collect_changed_files(root, scope))
+    report = validate_manifest_changes(
+        read_yaml(manifest_path), collect_changed_files(root, scope, base_ref)
+    )
     report["scope"] = scope
+    if base_ref:
+        report["base_ref"] = base_ref
     report["task_id"] = task_id
     return report
 
@@ -112,14 +122,19 @@ def check_task_changes(root: Path, task_id: str, scope: str = "worktree") -> dic
 def main() -> int:
     parser = argparse.ArgumentParser(description="Harness task-scoped change guard")
     parser.add_argument("--task-id", required=True)
-    parser.add_argument("--scope", choices=["staged", "commit", "push", "worktree"], default="worktree")
+    parser.add_argument(
+        "--scope",
+        choices=["staged", "commit", "push", "pr", "worktree"],
+        default="worktree",
+    )
+    parser.add_argument("--base-ref", default="")
     args = parser.parse_args()
     root_result = subprocess.run(
         ["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True
     )
     root = Path(root_result.stdout.strip()).resolve()
     try:
-        result = check_task_changes(root, args.task_id, args.scope)
+        result = check_task_changes(root, args.task_id, args.scope, args.base_ref)
     except (ChangeGuardError, FileNotFoundError, ValueError) as error:
         print(f"Harness 变更门禁失败: {error}")
         return 2

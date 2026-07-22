@@ -1,0 +1,28 @@
+schema_version: '0.1'
+task_id: harness-governance-hardening-v1
+user_confirmation: confirmed
+objective: 分阶段整改 Harness 任务解析、变更范围、AI 修复、Hook、CLI 和 PR 门禁
+allowed_changes:
+  - path: .github/PULL_REQUEST_TEMPLATE.md
+    purpose: 增加 Harness 任务标识
+  - path: .github/workflows/
+    purpose: 修正 CI、PR 和 AI 修复门禁
+  - path: .gitignore
+    purpose: 保证 Harness 源码和任务状态可提交
+  - path: hooks/commit-msg
+    purpose: 统一提交信息规则
+  - path: scripts/ai_repair.py
+    purpose: 限制 AI 修复补丁允许路径
+  - path: scripts/harness/
+    purpose: 任务解析、变更范围和 CLI 门禁实现及测试
+  - path: .harness/tasks/harness-governance-hardening-v1/
+    purpose: 本次整改任务 Manifest 和证据
+read_only_inputs:
+  - data_assets/
+  - requirements/
+  - templates/
+  - docs/
+  - data_assets/stored_procedure/
+forbidden_changes:
+  - .env
+  - .git/

@@ -27,6 +27,27 @@ from .task_manager import (
     resume_task,
     transition_task,
 )
+from .change_guard import ChangeGuardError, validate_manifest_changes
+from .evidence_store import read_yaml
+from .state_machine import BLOCKED
+
+
+def authorize_sync(root, task_id: str, required_paths: list[str]) -> tuple[dict, dict]:
+    """Require an active, confirmed task before a CLI sync mutates files."""
+    directory, task = load_task(root, task_id)
+    if str(task.get("lifecycle", "")).lower() == "archived":
+        raise TaskError(f"任务已归档，不能执行文件同步: {task_id}")
+    if task.get("state") in {BLOCKED, "COMPLETED", "PR_APPROVED"}:
+        raise TaskError(f"任务当前状态不允许执行文件同步: {task.get('state')}")
+    manifest_path = directory / "change_manifest.yaml"
+    if not manifest_path.is_file():
+        raise TaskError(f"任务缺少 change_manifest.yaml: {task_id}")
+    manifest = read_yaml(manifest_path)
+    try:
+        validate_manifest_changes(manifest, required_paths)
+    except ChangeGuardError as error:
+        raise TaskError(f"同步目标未获得任务授权: {error}") from error
+    return task, manifest
 
 
 def parser() -> argparse.ArgumentParser:
@@ -79,8 +100,10 @@ def parser() -> argparse.ArgumentParser:
     logic.add_argument("--target-ddl", default="")
 
     sync_mapping = subparsers.add_parser("sync-mapping-md", help="按三个Mapping Excel重新生成Markdown")
+    sync_mapping.add_argument("task_id")
 
     sync_assets = subparsers.add_parser("sync-dictionary-types", help="按DDL同步数据字典类型、长度并统一DATE")
+    sync_assets.add_argument("task_id")
 
     read = subparsers.add_parser("record-read", help="记录文件读取证据")
     read.add_argument("task_id")
@@ -156,9 +179,29 @@ def main(argv: list[str] | None = None) -> int:
                 root / args.target_ddl if args.target_ddl else None,
             )
         elif args.command == "sync-mapping-md":
+            _, manifest = authorize_sync(
+                root,
+                args.task_id,
+                [
+                    "data_assets/mapping/ods_to_dwd/ods到dwd映射.md",
+                    "data_assets/mapping/dwd_to_dws/dwd到dws映射.md",
+                    "data_assets/mapping/dws_to_ads/dws到ads映射.md",
+                ],
+            )
             result = sync_mapping_markdown(root)
+            validate_manifest_changes(
+                manifest, [item["output"] for item in result]
+            )
         elif args.command == "sync-dictionary-types":
+            _, manifest = authorize_sync(
+                root,
+                args.task_id,
+                ["data_assets/ddl/", "data_assets/data_dictionary/"],
+            )
             result = sync_dictionary_types(root)
+            validate_manifest_changes(
+                manifest, [item["path"] for item in result]
+            )
         elif args.command == "record-read":
             result = add_file_read_evidence(
                 root, args.task_id, args.evidence_id, args.phase, args.path, args.purpose
@@ -199,6 +242,7 @@ def main(argv: list[str] | None = None) -> int:
         TaskError,
         GateError,
         ValidationError,
+        ChangeGuardError,
         RequirementError,
         MemoryCardError,
         ManifestError,

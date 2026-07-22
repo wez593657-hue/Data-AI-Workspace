@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 from scripts.harness.change_guard import ChangeGuardError, validate_manifest_changes
 
@@ -36,3 +37,9 @@ class ChangeGuardTests(unittest.TestCase):
     def test_empty_change_scope_is_allowed(self):
         result = validate_manifest_changes(self.manifest, [])
         self.assertEqual(result["changed_files"], [])
+
+    def test_pr_scope_requires_base_ref(self):
+        from scripts.harness.change_guard import collect_changed_files
+
+        with self.assertRaises(ChangeGuardError):
+            collect_changed_files(Path.cwd(), "pr")

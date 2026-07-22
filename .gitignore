@@ -63,14 +63,10 @@ CREATE_TMP_*.sql
 *.docx
 *.doc
 
-# Harness/test files
-.harness/
-scripts/harness/
+# Harness source and task state are versioned; only local reports are ignored.
+.harness/validation-report-*.txt
 
 # Local merge backups and inventory helpers
 .merge_backup_20260722/
 branch_files_*.txt
 merge_data_assets.py
-
-# Auto-generated docs
-docs/superpowers/specs/*.md
