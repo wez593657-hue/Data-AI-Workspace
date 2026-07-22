@@ -1,0 +1,7 @@
+evidence_id: E-0003
+phase: REVERSE_LOGIC_PASSED
+kind: reverse_logic_check
+purpose: 到期承接明细目标字段反向校验
+result: blocked
+details: ADS_CUST_DEADLINE_RMND_DTL目标DDL字段为CUST_LVL，存储过程INSERT目标列使用CUST_HRAKY，字段不一致
+created_at: '2026-07-22T03:16:53+00:00'

@@ -12,4 +12,8 @@ default:
     - hooks/
     - secrets/
     - .env
-  note: 用户确认后仍需按任务 change_manifest.yaml 缩小范围
+  require_change_manifest: true
+  require_user_confirmation: true
+  upstream_assets_read_only: true
+  target_table_scope_required: true
+  note: 用户确认后必须按任务 change_manifest.yaml 缩小到目标文件和目标表；未列入清单的文件只能读取

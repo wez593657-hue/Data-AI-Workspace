@@ -181,53 +181,53 @@
 
 ### ADS_CUST_DEADLINE_RMND_DTL
 
-| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
-|----------|----------------|--------------|------|--------|----------|
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  |  |
-| DATA_DATE | 数据日期 | VARCHAR2(8) |  |  |  |
-| CUST_ID | 客户编号 | VARCHAR2(20) |  |  |  |
-| CUST_NAME | 客户名称 | VARCHAR2(100) |  |  |  |
-| CUST_LVL | 客户等级 | VARCHAR2(2) |  |  |  |
-| DEPO_CURNT_DEPO_BAL | 活期余额 | NUMBER(20,2) |  |  |  |
-| FIXD_DEPO_BAL | 定期余额 | NUMBER(20,2) |  |  |  |
-| FIN_AMT | 理财余额 | NUMBER(20,2) |  |  |  |
-| STAT_PERD | 统计周期 | VARCHAR2(2) |  |  |  |
-| STATIS_TYP | 承接类型1-存款2-理财 | VARCHAR2(2) |  |  |  |
-| EXPR_AMT | 到期金额 | NUMBER(20,2) |  |  |  |
-| MATURE_TTL_AMT | 到期总金额 | NUMBER(20,2) |  |  |  |
-| TAKE_RATE | 承接率 | NUMBER(10,2) |  |  |  |
-| FIX_DEPO_MATURE_AMT | 定期存款到期金额 | NUMBER(20,2) |  |  |  |
-| FIX_DEPO_MATURE_TTL_AMT | 定期存款到期总金额 | NUMBER(20,2) |  |  |  |
-| FIX_DEPO_TAKE_RATE | 定期存款承接率 | NUMBER(10,2) |  |  |  |
-| CNTCT_STATE | 接触状态 | VARCHAR2(1) |  |  |  |
-| UNDTAKE_STATE | 承接状态 | VARCHAR2(1) |  |  |  |
-| FIXED_FIN_MATURE_TRAN_INSUR_AMT | 定期理财到期转保险金额 | NUMBER(20,2) |  |  |  |
-| FIN_MATURE_TRAN_FIXED_AMT | 理财到期转定期金额 | NUMBER(20,2) |  |  |  |
-| FIXED_MATURE_TRAN_FIN_AMT | 定期到期转理财金额 | NUMBER(20,2) |  |  |  |
-| FRST_MATURE_PK_BF_DAY_AUM_BAL | 本期第一笔到期产品前一日AUM余额 | NUMBER(20,2) |  |  |  |
-| LAST_END_DATE | 本期最后一笔到期产品日期 | VARCHAR2(8) |  |  |  |
-| POST_ID | 管户经理 | VARCHAR2(20) |  |  |  |
-| ORG_ID | 归属机构 | VARCHAR2(7) |  |  |  |
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源系统表名 | 源表别名 | 源系统字段英文名 | 源系统字段中文名 | 映射规则 |
+|----------|----------------|--------------|------------|----------|------------------|------------------|----------|
+| PERSN_LEGAL_BK_CODE | 法人行号 |  | DWD_CUST_INDV_INFO | ci | PERSN_LEGAL_BK_CODE | 法人行号 | 直接取客户基本信息法人行号 |
+| DATA_DATE | 数据日期 |  | TMP_CDR_DTL_DUE_WIN | w | END_DT | 统计周期结束日期 | 按 M/Q/N 周期生成，格式化为 yyyymmdd |
+| CUST_ID | 客户编号 |  | TMP_CDR_DTL_DUE_WIN | w | CUST_ID | 客户编号 | 直接取到期窗口客户编号 |
+| CUST_NAME | 客户名称 |  | TMP_CDR_DTL_CUST_BASE | cb | CUST_NAME | 客户名称 | 直接取客户基础中间表 |
+| CUST_LVL | 客户等级 |  | TMP_CDR_DTL_CUST_BASE | cb | CUST_LVL | 客户等级 | 由 DWD_CUST_INDV_INFO.CUST_HRAKY 映射为 CUST_LVL 后取值 |
+| DEPO_CURNT_DEPO_BAL | 活期余额 |  | TMP_CDR_DTL_CUST_BASE | cb | DEPO_CURNT_DEPO_BAL | 活期余额 | 直接取客户余额中间表 |
+| FIXD_DEPO_BAL | 定期余额 |  | TMP_CDR_DTL_CUST_BASE | cb | FIXD_DEPO_BAL | 定期余额 | 直接取客户余额中间表 |
+| FIN_AMT | 理财余额 |  | TMP_CDR_DTL_CUST_BASE | cb | FIN_AMT | 理财余额 | 直接取客户余额中间表 |
+| STAT_PERD | 统计周期 |  | TMP_CDR_DTL_DUE_WIN | w | STAT_PERD | 统计周期 | 直接取到期窗口统计周期 |
+| STATIS_TYP | 承接类型1-存款2-理财 |  | TMP_CDR_DTL_DUE_WIN | w | STATIS_TYP | 承接类型 | 1 存款、2 理财、0 汇总 |
+| EXPR_AMT | 到期金额 |  | TMP_CDR_DTL_DUE_WIN | w | EXPR_AMT | 已到期金额 | 直接取窗口已到期金额 |
+| MATURE_TTL_AMT | 到期总金额 |  | TMP_CDR_DTL_DUE_WIN | w | MATURE_TTL_AMT | 到期总金额 | 直接取窗口到期总金额 |
+| TAKE_RATE | 承接率 |  | TMP_CDR_DTL_TAKE_AMT | t | TAKE_AMT_30D | 30天承接金额 | ROUND(NVL(t.TAKE_AMT_30D,0)/w.EXPR_AMT*100,2)，EXPR_AMT=0 时为 0 |
+| FIX_DEPO_MATURE_AMT | 定期存款到期金额 |  | TMP_CDR_DTL_DUE_WIN | w | EXPR_AMT | 到期金额 | STATIS_TYP=1 时取 EXPR_AMT，否则为 0 |
+| FIX_DEPO_MATURE_TTL_AMT | 定期存款到期总金额 |  | TMP_CDR_DTL_DUE_WIN | w | MATURE_TTL_AMT | 到期总金额 | STATIS_TYP=1 时取 MATURE_TTL_AMT，否则为 0 |
+| FIX_DEPO_TAKE_RATE | 定期存款承接率 |  | TMP_CDR_DTL_TAKE_AMT | t | BUY_DEPO_AMT_30D | 30天购买定期存款金额 | STATIS_TYP=1 时按 BUY_DEPO_AMT_30D/EXPR_AMT 计算 |
+| CNTCT_STATE | 接触状态 |  | ADS_MKT_REC_INFO | m | CUST_ID,MKT_TIME | 客户营销记录 | 存在 MKT_TIME 且不晚于跑批日则为 1，否则为 0 |
+| UNDTAKE_STATE | 承接状态 |  | TMP_CDR_DTL_TAKE_AMT | t | TAKE_AMT_30D | 30天承接金额 | TAKE_AMT_30D/EXPR_AMT >= 0.8 则为 1，否则为 0 |
+| FIXED_FIN_MATURE_TRAN_INSUR_AMT | 定期理财到期转保险金额 |  | TMP_CDR_DTL_TAKE_AMT | t | BUY_INSUR_AMT_30D | 30天购买保险金额 | 仅作为保险转化金额；保险不计入 TAKE_AMT_30D |
+| FIN_MATURE_TRAN_FIXED_AMT | 理财到期转定期金额 |  | TMP_CDR_DTL_TAKE_AMT | x | BUY_DEPO_AMT_30D | 30天购买定期存款金额 | 客户维度汇总 x.STATIS_TYP=2 的 BUY_DEPO_AMT_30D |
+| FIXED_MATURE_TRAN_FIN_AMT | 定期到期转理财金额 |  | TMP_CDR_DTL_TAKE_AMT | x | BUY_FIN_AMT_30D | 30天购买理财金额 | 客户维度汇总 x.STATIS_TYP=1 的 BUY_FIN_AMT_30D |
+| FRST_MATURE_PK_BF_DAY_AUM_BAL | 本期第一笔到期产品前一日AUM余额 |  | TMP_CDR_DTL_AUM_BAL | ap | AUM_BAL | 到期前一日AUM余额 | 取 AUM_TYP=PREV 的 AUM_BAL |
+| LAST_END_DATE | 本期最后一笔到期产品日期 |  | TMP_CDR_DTL_DUE_WIN | w | LAST_EXPR_DT | 最后一笔到期日期 | 格式化为 yyyymmdd |
+| POST_ID | 管户经理 |  | TMP_CDR_DTL_CUST_BASE | cb | POST_ID | 管户经理职位编号 | 直接取客户基础中间表 |
+| ORG_ID | 归属机构 |  | TMP_CDR_DTL_CUST_BASE | cb | ORG_ID | 归属机构 | 直接取客户基础中间表 |
 
 ### ADS_CUST_DEADLINE_RMND_STATIS
 
-| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
-|----------|----------------|--------------|------|--------|----------|
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  |  |
-| DATA_DATE | 数据日期 | VARCHAR2(8) |  |  |  |
-| STATIS_OBJ | 统计对象 | VARCHAR2(20) |  |  |  |
-| STATIS_CYCLE | 统计周期 | VARCHAR2(2) |  |  |  |
-| STATIS_TYP | 承接类型1-存款2-理财 | VARCHAR2(2) |  |  |  |
-| EXPR_CUST_CNT | 已到期客户数 | NUMBER(8) |  |  |  |
-| TTL_EXPR_CUST_CNT | 总到期客户数 | NUMBER(8) |  |  |  |
-| EXPR_AMT | 已到期金额 | NUMBER(20,2) |  |  |  |
-| TTL_EXPR_AMT | 总到期金额 | NUMBER(20,2) |  |  |  |
-| CUST_UNDTAKE_RATE | 客户承接率 | NUMBER(20,2) |  |  |  |
-| ASSET_KEEP_RATE | 资产留存率 | NUMBER(20,2) |  |  |  |
-| ASSET_UNDTAKE_RATE | 资产承接率 | NUMBER(20,2) |  |  |  |
-| DEPO_TO_FIN_CONVRS_RATE | 存款转理财转化率 | NUMBER(20,2) |  |  |  |
-| INSUR_CONVRS_RATE | 保险转化率 | NUMBER(20,2) |  |  |  |
-| FIN_TO_DEPO_CONVRS_RATE | 理财转存款转化率 | NUMBER(20,2) |  |  |  |
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源系统表名 | 源表别名 | 源系统字段英文名 | 源系统字段中文名 | 映射规则 |
+|----------|----------------|--------------|------------|----------|------------------|------------------|----------|
+| PERSN_LEGAL_BK_CODE | 法人行号 |  | TMP_CDR_STAT_SRC | s | PERSN_LEGAL_BK_CODE | 法人行号 | 直接取统计来源中间表 |
+| DATA_DATE | 数据日期 |  | TMP_CDR_STAT_SRC | s | DATA_DATE | 数据日期 | 直接取统计来源中间表 |
+| STATIS_OBJ | 统计对象 |  | TMP_CDR_STAT_SRC | s | STATIS_OBJ | 统计对象 | 机构维度取机构层级展开结果，客户经理维度取 POST_ID |
+| STATIS_CYCLE | 统计周期 |  | TMP_CDR_STAT_SRC | s | STAT_PERD | 统计周期 | 由明细统计周期映射为统计周期 |
+| STATIS_TYP | 承接类型1-存款2-理财 |  | TMP_CDR_STAT_SRC | s | STATIS_TYP | 承接类型 | 直接取统计来源中间表 |
+| EXPR_CUST_CNT | 已到期客户数 |  | TMP_CDR_STAT_SRC | s | EXPR_AMT,CUST_ID | 已到期金额、客户编号 | COUNT(DISTINCT CUST_ID) WHERE EXPR_AMT>0 |
+| TTL_EXPR_CUST_CNT | 总到期客户数 |  | TMP_CDR_STAT_SRC | s | MATURE_TTL_AMT,CUST_ID | 到期总金额、客户编号 | COUNT(DISTINCT CUST_ID) WHERE MATURE_TTL_AMT>0 |
+| EXPR_AMT | 已到期金额 |  | TMP_CDR_STAT_SRC | s | EXPR_AMT | 已到期金额 | SUM(EXPR_AMT) |
+| TTL_EXPR_AMT | 总到期金额 |  | TMP_CDR_STAT_SRC | s | MATURE_TTL_AMT | 到期总金额 | SUM(MATURE_TTL_AMT) |
+| CUST_UNDTAKE_RATE | 客户承接率 |  | TMP_CDR_STAT_SRC | s | CUST_TAKE_FLG,CUST_ID,EXPR_AMT | 客户承接标志、客户编号、已到期金额 | 承接客户数/已到期客户数*100 |
+| ASSET_KEEP_RATE | 资产留存率 |  | TMP_CDR_STAT_SRC | s | CURR_AUM_BAL,FRST_MATURE_PK_BF_DAY_AUM_BAL | 当前AUM、到期前一日AUM | SUM(CURR_AUM_BAL)/SUM(FRST_MATURE_PK_BF_DAY_AUM_BAL)*100 |
+| ASSET_UNDTAKE_RATE | 资产承接率 |  | TMP_CDR_STAT_SRC | s | EXPR_AMT,TAKE_RATE_30D | 已到期金额、30天承接率 | SUM(EXPR_AMT*TAKE_RATE_30D/100)/SUM(EXPR_AMT)*100 |
+| DEPO_TO_FIN_CONVRS_RATE | 存款转理财转化率 |  | TMP_CDR_STAT_SRC | s | FIXED_MATURE_TRAN_FIN_AMT,EXPR_AMT | 定期到期转理财金额、到期金额 | SUM(FIXED_MATURE_TRAN_FIN_AMT)/SUM(EXPR_AMT)*100 |
+| INSUR_CONVRS_RATE | 保险转化率 |  | TMP_CDR_STAT_SRC | s | FIXED_FIN_MATURE_TRAN_INSUR_AMT,EXPR_AMT | 理财到期转保险金额、到期金额 | SUM(FIXED_FIN_MATURE_TRAN_INSUR_AMT)/SUM(EXPR_AMT)*100 |
+| FIN_TO_DEPO_CONVRS_RATE | 理财转存款转化率 |  | TMP_CDR_STAT_SRC | s | FIN_MATURE_TRAN_FIXED_AMT,EXPR_AMT | 理财到期转定期金额、到期金额 | SUM(FIN_MATURE_TRAN_FIXED_AMT)/SUM(EXPR_AMT)*100 |
 
 ### ADS_CUST_LOST_DTL
 

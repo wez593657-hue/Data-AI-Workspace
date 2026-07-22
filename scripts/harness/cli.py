@@ -8,6 +8,7 @@ import sys
 from datetime import datetime, timezone
 
 from .gate_checker import GateError, check_gate, check_schema_consistency_gate
+from .logic_gate import run_logic_gate
 from .asset_sync import sync_dictionary_types
 from .memory_card_guard import MemoryCardError, verify_memory_card
 from .mapping_excel_sync import sync_mapping_markdown
@@ -70,6 +71,12 @@ def parser() -> argparse.ArgumentParser:
 
     consistency_gate = subparsers.add_parser("check-schema-gate", help="检查一致性报告是否允许通过门禁")
     consistency_gate.add_argument("task_id")
+
+    logic = subparsers.add_parser("check-logic-gate", help="执行SQL/存储过程规则覆盖和反向逻辑门禁")
+    logic.add_argument("task_id")
+    logic.add_argument("requirement")
+    logic.add_argument("procedure")
+    logic.add_argument("--target-ddl", default="")
 
     sync_mapping = subparsers.add_parser("sync-mapping-md", help="按三个Mapping Excel重新生成Markdown")
 
@@ -140,6 +147,14 @@ def main(argv: list[str] | None = None) -> int:
             result = run_schema_consistency(root, args.task_id)
         elif args.command == "check-schema-gate":
             result = check_schema_consistency_gate(root, args.task_id)
+        elif args.command == "check-logic-gate":
+            result = run_logic_gate(
+                root,
+                args.task_id,
+                root / args.requirement,
+                root / args.procedure,
+                root / args.target_ddl if args.target_ddl else None,
+            )
         elif args.command == "sync-mapping-md":
             result = sync_mapping_markdown(root)
         elif args.command == "sync-dictionary-types":

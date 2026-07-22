@@ -1,0 +1,7 @@
+evidence_id: E-0001
+phase: REQUIREMENT_PARSED
+kind: requirement_read
+purpose: 到期承接明细需求和规则版本
+result: passed
+details: requirements/到期承接规则记忆卡片.md，最新版本v2.1.0，覆盖REQ-CUST-001、003至008
+created_at: '2026-07-22T03:16:53+00:00'

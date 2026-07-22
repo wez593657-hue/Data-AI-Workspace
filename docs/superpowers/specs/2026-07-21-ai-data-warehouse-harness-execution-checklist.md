@@ -68,3 +68,22 @@
 任务状态：阶段 5 一致性门禁通过
 任务结束说明：两个DWD模型已按用户确认规则修正；空Mapping不再阻塞，后续业务Mapping按需求文档和存储过程逐表补齐。
 ```
+
+## 9. 阶段 6 执行记录：到期承接明细逻辑门禁
+
+| 项目 | 结果 | 证据 |
+|------|------|------|
+| 测试任务 | 已创建并阻塞 | `.harness/tasks/phase6-deadline-detail-v1/` |
+| 测试对象 | 到期承接明细存储过程 | `data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_dtl.sql` |
+| 需求版本 | 已识别 | `requirements/到期承接规则记忆卡片.md`，v2.1.0 |
+| 规则覆盖 | 5项通过、2项阻塞 | REQ-CUST-001、003、004、005、006通过；REQ-CUST-007、008待实现 |
+| 反向逻辑 | 阻塞 | 存储过程目标列使用 `CUST_HRAKY`，ADS目标DDL字段为 `CUST_LVL` |
+| Harness代码 | 已完成最小实现 | `rule_coverage_checker.py`、`reverse_logic_checker.py`、`logic_gate.py` |
+| 单元测试 | 已完成 | 14/14通过 |
+
+### 阶段 6 阻塞与恢复记录
+
+- 初始阻塞原因：ADS `INSERT` 目标列使用 `CUST_HRAKY`，而 ADS DDL 和数据字典字段为 `CUST_LVL`；REQ-CUST-007 和 REQ-CUST-008 尚保留待实现标记。
+- 用户确认：到期承接的 `CUST_HRAKY` 修正为 `CUST_LVL`；REQ-CUST-007 已实现保险剔除；REQ-CUST-008 已实现通知存款过滤。
+- 已执行修正：存储过程目标列改为 `CUST_LVL`；`TAKE_AMT_30D` 仅统计 `DEPO/FIN`；定期存款来源通过 `PRDKT_CATE_BIG <> '04'` 排除通知存款；需求记忆卡片和需求-代码映射追踪表同步更新。
+- 当前结论：阶段 6 逻辑门禁报告为 `passed`，7 条规则全部通过，目标字段检查通过且阻塞项为 0。详见 `.harness/tasks/phase6-deadline-detail-v1/reports/logic-gate.yaml` 和证据 `E-0004`。

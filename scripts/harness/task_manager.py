@@ -78,6 +78,24 @@ def save_task(directory: Path, payload: dict[str, Any]) -> None:
     write_yaml(directory / "task.yaml", payload)
 
 
+def require_change_manifest(root: Path, directory: Path) -> None:
+    policy_path = root / ".harness" / "policies" / "allowed_paths.yaml"
+    policy = read_yaml(policy_path) if policy_path.exists() else {}
+    default_policy = policy.get("default", {}) if isinstance(policy, dict) else {}
+    if not default_policy.get("require_change_manifest", False):
+        return
+    manifest_path = directory / "change_manifest.yaml"
+    if not manifest_path.exists():
+        raise TaskError("任务缺少 change_manifest.yaml，未确认目标文件和只读上游范围")
+    manifest = read_yaml(manifest_path)
+    if manifest.get("user_confirmation") != "confirmed":
+        raise TaskError("change_manifest.yaml 未记录用户确认")
+    if not manifest.get("allowed_changes"):
+        raise TaskError("change_manifest.yaml 缺少 allowed_changes")
+    if not manifest.get("read_only_inputs"):
+        raise TaskError("change_manifest.yaml 缺少 read_only_inputs")
+
+
 def create_task(
     root: Path, task_id: str, purpose: str, workflow_profile: str = "data_warehouse"
 ) -> dict[str, Any]:
@@ -162,6 +180,7 @@ def transition_task(root: Path, task_id: str, target: str, reason: str) -> dict[
     transition = validate_transition(source, target, workflow)
     evidence_ids = payload.get("evidence_ids", [])
     validate_required_evidence(target, evidence_ids, workflow)
+    require_change_manifest(root, directory)
     payload["state"] = transition.target
     payload.setdefault("history", []).append(
         {"from": source, "to": target, "reason": reason, "at": utc_now()}

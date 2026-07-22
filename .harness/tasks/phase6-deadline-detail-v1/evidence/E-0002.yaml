@@ -1,0 +1,7 @@
+evidence_id: E-0002
+phase: PROCEDURE_READY
+kind: procedure_check
+purpose: 到期承接明细存储过程静态逻辑检查
+result: blocked
+details: 过程存在事务/异常处理；规则覆盖REQ-CUST-001、003、004、005、006通过；REQ-CUST-007、008待实现
+created_at: '2026-07-22T03:16:53+00:00'

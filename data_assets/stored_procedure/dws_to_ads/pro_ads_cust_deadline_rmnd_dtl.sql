@@ -22,8 +22,8 @@ AS
   --   v2.1.0: 1.资产承接率统计周期从14天改为30天
   --           2.到期窗口计算逻辑调整为取下一笔到期日减1（如果30天内有下一笔到期），否则取最后一笔到期日+30
   --           3.理财到期转定期金额和定期到期转理财金额计算逻辑优化（跨STATIS_TYP统计）
-  --           4.客户承接率长期化产品剔除保险（待实现，已做注释）
-  --           5.定期存款承接率需确认通知存款过滤（待实现，已做注释）
+  --           4.客户承接率长期化产品已剔除保险：TAKE_AMT_30D 仅统计 DEPO/FIN
+  --           5.定期存款承接率已过滤通知存款：PRDKT_CATE_BIG <> '04'
   --           6.DATA_DATE语义变更：统一使用周期结束日期（M-月末，Q-季末，N-年末），不再使用快照日期
   ------------------------------------------------------------------
   ------------------------------------------------------------------
@@ -191,7 +191,7 @@ BEGIN
          TO_DATE(REPLACE(SUBSTR(d.EXPR_DATE, 1, 10), '-', ''), 'yyyymmdd') AS EXPR_DT
     FROM DWD_ACCT_DEPO d                                      -- 存款账户
    WHERE d.FIX_CURNT_FLG = '1'                                -- 0-活期，1-定期
-     AND NVL(d.PRDKT_CATE_BIG, '#') <> '04'                   -- 剔除通知存款
+     AND NVL(d.PRDKT_CATE_BIG, '') <> '04'                    -- 剔除通知存款
      AND d.EXPR_DATE IS NOT NULL
   UNION ALL
   SELECT f.CUST_ID                                            AS CUST_ID,       -- 客户编号
@@ -202,8 +202,8 @@ BEGIN
          NVL(f.FIN_AMT, 0)                                    AS EXPR_AMT,      -- 到期金额
          TO_DATE(REPLACE(SUBSTR(f.EXPR_DATE, 1, 10), '-', ''), 'yyyymmdd') AS EXPR_DT
     FROM DWD_ACCT_FIN f                                       -- 理财账户
-   WHERE f.EXPR_DATE IS NOT NULL                             -- 有明确到期日的理财纳入到期范围；开放式理财分类代码待业务确认
-     AND TRIM(f.EXPR_DATE) IS NOT NULL;
+   WHERE TRIM(f.EXPR_DATE) IS NOT NULL                        -- 有明确到期日的理财纳入到期范围；开放式理财分类代码待业务确认
+    AND AND NVL(F.PRDKT_CATE_BIG, '') NOT IN ('1','3');       --理财产品大类 1代销-开放 2代销-封闭  3自营-开放 4自营-封闭
 
   -- 承接类型0：同客户存款和理财到期产品汇总。
   INSERT INTO TMP_CDR_DTL_MATURE_SRC (
@@ -556,7 +556,7 @@ BEGIN
       DATA_DATE,                         -- 数据日期
       CUST_ID,                           -- 客户编号
       CUST_NAME,                         -- 客户名称
-      CUST_HRAKY,                        -- 客户等级
+      CUST_LVL,                          -- 客户等级
       DEPO_CURNT_DEPO_BAL,               -- 活期余额
       FIXD_DEPO_BAL,                     -- 定期余额
       FIN_AMT,                           -- 理财余额

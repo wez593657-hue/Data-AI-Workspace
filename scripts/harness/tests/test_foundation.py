@@ -13,6 +13,8 @@ from scripts.harness.state_machine import StateTransitionError, validate_transit
 from scripts.harness.permission_guard import PermissionError, validate_paths
 from scripts.harness.schema_consistency import parse_ddl, parse_dictionary, parse_mapping, run_schema_consistency
 from scripts.harness.asset_sync import _display_type
+from scripts.harness.rule_coverage_checker import check_rule_coverage
+from scripts.harness.reverse_logic_checker import check_reverse_logic
 from scripts.harness.gate_checker import GateError, check_schema_consistency_gate
 from scripts.harness.task_manager import (
     TaskError,
@@ -158,6 +160,25 @@ class SchemaConsistencyTests(unittest.TestCase):
         self.assertEqual(_display_type('SYS.DATE')[0], 'DATE')
         self.assertEqual(_display_type('SYS."DATE"')[0], 'DATE')
         self.assertEqual(_display_type('VARCHAR(10)'), ('VARCHAR', '10'))
+
+    def test_logic_gate_blocks_explicit_pending_rules(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            requirement = root / "requirement.md"
+            procedure = root / "procedure.sql"
+            requirement.write_text("版本：v2.1.0\nREQ-CUST-007 客户承接率剔除保险\n", encoding="utf-8")
+            procedure.write_text("-- 待实现：客户承接率长期化产品剔除保险\nCOMMIT;\nEXCEPTION WHEN OTHERS THEN ROLLBACK;", encoding="utf-8")
+            result = check_rule_coverage(requirement, procedure, {"REQ-CUST-007": ("客户承接率剔除保险", r"待实现.*保险")})
+            self.assertEqual(result["status"], "blocked")
+            self.assertEqual(result["requirement_version"], "v2.1.0")
+
+    def test_reverse_logic_rejects_select_star_and_missing_join_condition(self):
+        with tempfile.TemporaryDirectory() as directory:
+            procedure = Path(directory) / "procedure.sql"
+            procedure.write_text("SELECT * FROM A JOIN B;", encoding="utf-8")
+            result = check_reverse_logic(procedure)
+            self.assertEqual(result["status"], "blocked")
+            self.assertEqual({item["kind"] for item in result["checks"]["issues"]}, {"select_star", "join_condition_missing", "transaction_missing", "exception_handling_missing"})
 
     def test_parsers_handle_project_formats(self):
         with tempfile.TemporaryDirectory() as directory:
