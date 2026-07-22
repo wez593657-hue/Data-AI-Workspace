@@ -47,3 +47,5 @@ tmp/
 temp/
 *.tmp
 *.bak
+!data_assets/ddl/tmp/
+!data_assets/ddl/tmp/*

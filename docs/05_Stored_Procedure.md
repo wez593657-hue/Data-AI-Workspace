@@ -272,6 +272,59 @@ RAISE NOTICE '输出: code=%, msg=%', p_result_code, p_result_msg;
 
 ## 5.8 临时表使用
 
+### 5.8.1 临时表分类
+
+| 类型 | 命名规范 | 说明 |
+|------|----------|------|
+| 会话级临时表 | `TEMP_*` | 存储过程内创建，会话结束自动销毁 |
+| 物理中间表 | `TMP_*` | 持久化临时表，存储过程外创建，需手动清理 |
+
+### 5.8.2 物理中间表（TMP_）建表语句生成规则
+
+**强制要求**：每次生成/更新存储过程时，必须同步生成/更新对应的临时表建表语句文件。
+
+**文件位置**：`data_assets/ddl/tmp/tmp_存储过程名.ddl`
+
+**文件命名规则**：`tmp_存储过程名.ddl`
+
+**建表语句规范**：
+- 使用 `CREATE TABLE IF NOT EXISTS` 语法
+- 字段类型、长度与存储过程中的 INSERT 语句保持一致
+- 添加字段注释说明
+- 按存储过程中的中间表处理顺序排列
+
+**示例**：
+
+```sql
+-- ============================================================
+-- 到期承接明细表存储过程临时表建表语句
+-- 存储过程名称: PRO_ADS_CUST_DEADLINE_RMND_DTL
+-- 需求版本: v2.2.0
+-- ============================================================
+
+-- 2.1 统计周期中间表
+CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_PERIOD (
+    STAT_PERD VARCHAR2(1),
+    BGN_DT DATE,
+    END_DT DATE
+);
+
+-- 2.2 到期产品源中间表
+CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_MATURE_SRC (
+    CUST_ID VARCHAR2(64),
+    STATIS_TYP VARCHAR2(1),
+    ACCT_ID VARCHAR2(64),
+    PRDKT_ID VARCHAR2(64),
+    PRDKT_NAME VARCHAR2(200),
+    EXPR_AMT NUMBER(20,2),
+    EXPR_DT DATE,
+    PERSN_LEGAL_BK_CODE VARCHAR2(32),
+    ORG_ID VARCHAR2(64)
+);
+```
+
+### 5.8.3 临时表使用示例
+
 ```sql
 CREATE OR REPLACE PROCEDURE proc_crm_order_sync()
 LANGUAGE plpgsql
