@@ -31,31 +31,31 @@
 | settledate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.settledate | 【待确认】 | 2026-07-17 |
 | autopayflag | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.autopayflag | 【待确认】 | 2026-07-17 |
 | currency | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.currency | 【待确认】 | 2026-07-17 |
-| fixpayprincipalamt | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.fixpayprincipalamt | 【待确认】 | 2026-07-17 |
-| fixpayinstalmentamt | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.fixpayinstalmentamt | 【待确认】 | 2026-07-17 |
-| payprincipalamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.payprincipalamt | 【待确认】 | 2026-07-17 |
-| actualpayprincipalamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpayprincipalamt | 【待确认】 | 2026-07-17 |
-| waiveprincipalamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waiveprincipalamt | 【待确认】 | 2026-07-17 |
-| principalbalance | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.principalbalance | 【待确认】 | 2026-07-17 |
-| payinterestamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.payinterestamt | 【待确认】 | 2026-07-17 |
-| actualpayinterestamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpayinterestamt | 【待确认】 | 2026-07-17 |
-| waiveinterestamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waiveinterestamt | 【待确认】 | 2026-07-17 |
-| payprincipalpenaltyamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.payprincipalpenaltyamt | 【待确认】 | 2026-07-17 |
-| actualpayprincipalpenaltyamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpayprincipalpenaltyamt | 【待确认】 | 2026-07-17 |
-| waiveprincipalpenaltyamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waiveprincipalpenaltyamt | 【待确认】 | 2026-07-17 |
-| payinterestpenaltyamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.payinterestpenaltyamt | 【待确认】 | 2026-07-17 |
-| actualpayinterestpenaltyamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpayinterestpenaltyamt | 【待确认】 | 2026-07-17 |
-| waiveinterestpenaltyamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waiveinterestpenaltyamt | 【待确认】 | 2026-07-17 |
+| fixpayprincipalamt | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.fixpayprincipalamt | 【待确认】 | 2026-07-17 |
+| fixpayinstalmentamt | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.fixpayinstalmentamt | 【待确认】 | 2026-07-17 |
+| payprincipalamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.payprincipalamt | 【待确认】 | 2026-07-17 |
+| actualpayprincipalamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpayprincipalamt | 【待确认】 | 2026-07-17 |
+| waiveprincipalamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waiveprincipalamt | 【待确认】 | 2026-07-17 |
+| principalbalance | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.principalbalance | 【待确认】 | 2026-07-17 |
+| payinterestamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.payinterestamt | 【待确认】 | 2026-07-17 |
+| actualpayinterestamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpayinterestamt | 【待确认】 | 2026-07-17 |
+| waiveinterestamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waiveinterestamt | 【待确认】 | 2026-07-17 |
+| payprincipalpenaltyamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.payprincipalpenaltyamt | 【待确认】 | 2026-07-17 |
+| actualpayprincipalpenaltyamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpayprincipalpenaltyamt | 【待确认】 | 2026-07-17 |
+| waiveprincipalpenaltyamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waiveprincipalpenaltyamt | 【待确认】 | 2026-07-17 |
+| payinterestpenaltyamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.payinterestpenaltyamt | 【待确认】 | 2026-07-17 |
+| actualpayinterestpenaltyamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpayinterestpenaltyamt | 【待确认】 | 2026-07-17 |
+| waiveinterestpenaltyamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waiveinterestpenaltyamt | 【待确认】 | 2026-07-17 |
 | status | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.status | 【待确认】 | 2026-07-17 |
 | finishdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.finishdate | 【待确认】 | 2026-07-17 |
 | remark | 【待确认】 | VARCHAR | 400 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.remark | 【待确认】 | 2026-07-17 |
 | direction | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.direction | 【待确认】 | 2026-07-17 |
-| payfeeamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.payfeeamt | 【待确认】 | 2026-07-17 |
-| actualpayfeeamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpayfeeamt | 【待确认】 | 2026-07-17 |
-| waivefeeamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waivefeeamt | 【待确认】 | 2026-07-17 |
+| payfeeamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.payfeeamt | 【待确认】 | 2026-07-17 |
+| actualpayfeeamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpayfeeamt | 【待确认】 | 2026-07-17 |
+| waivefeeamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waivefeeamt | 【待确认】 | 2026-07-17 |
 | fixpayinterestflag | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.fixpayinterestflag | 【待确认】 | 2026-07-17 |
 | fixpayprincipaldate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.fixpayprincipaldate | 【待确认】 | 2026-07-17 |
-| paygraceinteamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.paygraceinteamt | 【待确认】 | 2026-07-17 |
-| actualpaygraceinteamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpaygraceinteamt | 【待确认】 | 2026-07-17 |
-| waivegraceinteamt | 【待确认】 | NUMERIC | 24, 2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waivegraceinteamt | 【待确认】 | 2026-07-17 |
+| paygraceinteamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.paygraceinteamt | 【待确认】 | 2026-07-17 |
+| actualpaygraceinteamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.actualpaygraceinteamt | 【待确认】 | 2026-07-17 |
+| waivegraceinteamt | 【待确认】 | NUMERIC | 24,2 | NULL | 0.00 | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.waivegraceinteamt | 【待确认】 | 2026-07-17 |
 | oldpstype | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_payment_schedule.oldpstype | 【待确认】 | 2026-07-17 |

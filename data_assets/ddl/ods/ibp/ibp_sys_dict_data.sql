@@ -21,9 +21,9 @@ CREATE TABLE crmdm.ibp_sys_dict_data (
     is_default bpchar(1) NULL,
     status bpchar(1) NULL,
     create_by varchar(64) NULL,
-    create_time sys."date" NULL,
+    create_time DATE NULL,
     update_by varchar(64) NULL,
-    update_time sys."date" NULL,
+    update_time DATE NULL,
     remark varchar(500) NULL,
     ryzd varchar(1) NULL,
     CONSTRAINT pk_ibp_sys_dict_data PRIMARY KEY (dict_code)

@@ -29,10 +29,10 @@
 | rateunit | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.rateunit | 【待确认】 | 2026-07-17 |
 | baserategrade | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.baserategrade | 【待确认】 | 2026-07-17 |
 | baseratetype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.baseratetype | 【待确认】 | 2026-07-17 |
-| baserate | 【待确认】 | NUMERIC | 12, 8 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.baserate | 【待确认】 | 2026-07-17 |
+| baserate | 【待确认】 | NUMERIC | 12,8 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.baserate | 【待确认】 | 2026-07-17 |
 | ratefloattype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.ratefloattype | 【待确认】 | 2026-07-17 |
-| ratefloat | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.ratefloat | 【待确认】 | 2026-07-17 |
-| businessrate | 【待确认】 | NUMERIC | 12, 8 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.businessrate | 【待确认】 | 2026-07-17 |
+| ratefloat | 【待确认】 | NUMERIC | 10,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.ratefloat | 【待确认】 | 2026-07-17 |
+| businessrate | 【待确认】 | NUMERIC | 12,8 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.businessrate | 【待确认】 | 2026-07-17 |
 | repricetype | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.repricetype | 【待确认】 | 2026-07-17 |
 | repricetermunit | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.repricetermunit | 【待确认】 | 2026-07-17 |
 | repriceterm | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_rate_segment.repriceterm | 【待确认】 | 2026-07-17 |

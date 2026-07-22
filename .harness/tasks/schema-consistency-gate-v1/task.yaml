@@ -1,0 +1,29 @@
+schema_version: '0.1'
+task_id: schema-consistency-gate-v1
+purpose: 阶段5：全量DDL、数据字典和Mapping一致性门禁
+workflow_profile: harness
+state: CREATED
+branch: feature/ai-repair-loop
+created_at: '2026-07-21T17:03:32+00:00'
+updated_at: '2026-07-22T02:58:10+00:00'
+evidence_ids:
+- E-0001
+- E-0002
+- E-0003
+- E-0004
+- E-0005
+- E-0006
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-21T17:03:32+00:00'
+- from: CREATED
+  to: BLOCKED
+  reason: 全量DDL、数据字典和Mapping一致性扫描发现未处理差异和未解析Mapping，不能通过阶段5门禁
+  at: '2026-07-21T17:06:10+00:00'
+- from: BLOCKED
+  to: CREATED
+  reason: 恢复条件已验证
+  at: '2026-07-22T02:47:58+00:00'

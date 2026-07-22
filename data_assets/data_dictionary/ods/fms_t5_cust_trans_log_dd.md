@@ -51,18 +51,18 @@
 | prod_risk_level | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.prod_risk_level | 【待确认】 | 2026-07-17 |
 | prod_code | 【待确认】 | VARCHAR | 32 | NOT NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.prod_code | 【待确认】 | 2026-07-17 |
 | prod_child_no | 【待确认】 | NUMERIC | 8 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.prod_child_no | 【待确认】 | 2026-07-17 |
-| nav | 【待确认】 | NUMERIC | 12, 6 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.nav | 【待确认】 | 2026-07-17 |
+| nav | 【待确认】 | NUMERIC | 12,6 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.nav | 【待确认】 | 2026-07-17 |
 | cur | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.cur | 【待确认】 | 2026-07-17 |
-| app_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.app_amt | 【待确认】 | 2026-07-17 |
-| app_vol | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.app_vol | 【待确认】 | 2026-07-17 |
-| ack_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.ack_amt | 【待确认】 | 2026-07-17 |
-| ack_vol | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.ack_vol | 【待确认】 | 2026-07-17 |
-| discount | 【待确认】 | NUMERIC | 7, 4 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.discount | 【待确认】 | 2026-07-17 |
-| feeamt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.feeamt | 【待确认】 | 2026-07-17 |
-| back_fee | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.back_fee | 【待确认】 | 2026-07-17 |
-| redeem_fee | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.redeem_fee | 【待确认】 | 2026-07-17 |
-| interest | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.interest | 【待确认】 | 2026-07-17 |
-| interest_tax | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.interest_tax | 【待确认】 | 2026-07-17 |
+| app_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.app_amt | 【待确认】 | 2026-07-17 |
+| app_vol | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.app_vol | 【待确认】 | 2026-07-17 |
+| ack_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.ack_amt | 【待确认】 | 2026-07-17 |
+| ack_vol | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.ack_vol | 【待确认】 | 2026-07-17 |
+| discount | 【待确认】 | NUMERIC | 7,4 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.discount | 【待确认】 | 2026-07-17 |
+| feeamt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.feeamt | 【待确认】 | 2026-07-17 |
+| back_fee | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.back_fee | 【待确认】 | 2026-07-17 |
+| redeem_fee | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.redeem_fee | 【待确认】 | 2026-07-17 |
+| interest | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.interest | 【待确认】 | 2026-07-17 |
+| interest_tax | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.interest_tax | 【待确认】 | 2026-07-17 |
 | cust_manager | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.cust_manager | 【待确认】 | 2026-07-17 |
 | fm_manager | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.fm_manager | 【待确认】 | 2026-07-17 |
 | ori_trans_serno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.ori_trans_serno | 【待确认】 | 2026-07-17 |
@@ -114,5 +114,5 @@
 | host_date | 【待确认】 | BPCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.host_date | 【待确认】 | 2026-07-17 |
 | busi_type | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.busi_type | 【待确认】 | 2026-07-17 |
 | backup_date | 【待确认】 | BPCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.backup_date | 【待确认】 | 2026-07-17 |
-| income | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.income | 【待确认】 | 2026-07-17 |
+| income | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.income | 【待确认】 | 2026-07-17 |
 | ryzd | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_cust_trans_log.ryzd | 【待确认】 | 2026-07-17 |

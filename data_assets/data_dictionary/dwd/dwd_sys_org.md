@@ -13,26 +13,26 @@
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 |--------|-------------|----------|------|----------|--------|------|------|----------|----------|
-| ORG_ID | 机构编号 | VARCHAR2 | 7 | 非空 | - | - | - | - | - |
-| SUP_ORG_ID | 上级机构编号 | VARCHAR2 | 7 | 可空 | - | - | - | - | - |
-| ORG_PATH | 机构路径 | VARCHAR2 | 200 | 可空 | - | - | - | - | - |
-| ORG_NAME | 机构名称 | VARCHAR2 | 100 | 可空 | - | - | - | - | - |
-| SUP_ORG_NAME | 上级机构名称 | VARCHAR2 | 100 | 可空 | - | - | - | - | - |
-| DIRECT_UNDER_ORG | 直属机构 | VARCHAR2 | 7 | 可空 | - | - | - | - | - |
-| ORG_TYP | 机构类型 | VARCHAR2 | 10 | 可空 | - | - | - | - | - |
-| ORG_HARCY | 机构层级 | VARCHAR2 | 10 | 可空 | - | - | - | - | - |
-| ORG_ADDRS | 机构地址 | VARCHAR2 | 800 | 可空 | - | - | - | - | - |
-| ORG_STATE | 机构状态 | VARCHAR2 | 1 | 可空 | - | - | - | - | - |
-| DSPLY_SEQ | 显示顺序 | VARCHAR(100) | - | - | - | - | - | - | - |
-| CREATR | 创建人 | VARCHAR2 | 64 | 可空 | - | - | - | - | - |
-| CREAT_TIME | 创建时间 | VARCHAR2 | 20 | 可空 | - | - | - | - | - |
-| CREAT_ORG | 创建机构 | VARCHAR2 | 7 | 可空 | - | - | - | - | - |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 | 4 | 可空 | - | - | - | - | - |
-| HR_MS_ORG_ID | 人力资源系统机构号 | VARCHAR2 | 80 | 可空 | - | - | - | - | - |
-| ORG_LGTUD | 机构经度 | VARCHAR2 | 30 | 可空 | - | - | - | - | - |
-| ORG_LATTUD | 机构纬度 | VARCHAR2 | 30 | 可空 | - | - | - | - | - |
-| ORG_RSPONR | 机构负责人 | VARCHAR2 | 40 | 可空 | - | - | - | - | - |
-| ORG_TEL | 机构电话 | VARCHAR2 | 30 | 可空 | - | - | - | - | - |
+| ORG_ID | 机构编号 | VARCHAR | 7 | 非空 | - | - | - | - | - |
+| SUP_ORG_ID | 上级机构编号 | VARCHAR | 7 | 可空 | - | - | - | - | - |
+| ORG_PATH | 机构路径 | VARCHAR | 200 | 可空 | - | - | - | - | - |
+| ORG_NAME | 机构名称 | VARCHAR | 100 | 可空 | - | - | - | - | - |
+| SUP_ORG_NAME | 上级机构名称 | VARCHAR | 100 | 可空 | - | - | - | - | - |
+| DIRECT_UNDER_ORG | 直属机构 | VARCHAR | 7 | 可空 | - | - | - | - | - |
+| ORG_TYP | 机构类型 | VARCHAR | 10 | 可空 | - | - | - | - | - |
+| ORG_HARCY | 机构层级 | VARCHAR | 10 | 可空 | - | - | - | - | - |
+| ORG_ADDRS | 机构地址 | VARCHAR | 800 | 可空 | - | - | - | - | - |
+| ORG_STATE | 机构状态 | VARCHAR | 1 | 可空 | - | - | - | - | - |
+| DSPLY_SEQ | 显示顺序 | VARCHAR | 100 | - | - | - | - | - | - |
+| CREATR | 创建人 | VARCHAR | 64 | 可空 | - | - | - | - | - |
+| CREAT_TIME | 创建时间 | VARCHAR | 20 | 可空 | - | - | - | - | - |
+| CREAT_ORG | 创建机构 | VARCHAR | 7 | 可空 | - | - | - | - | - |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 4 | 可空 | - | - | - | - | - |
+| HR_MS_ORG_ID | 人力资源系统机构号 | VARCHAR | 80 | 可空 | - | - | - | - | - |
+| ORG_LGTUD | 机构经度 | VARCHAR | 30 | 可空 | - | - | - | - | - |
+| ORG_LATTUD | 机构纬度 | VARCHAR | 30 | 可空 | - | - | - | - | - |
+| ORG_RSPONR | 机构负责人 | VARCHAR | 40 | 可空 | - | - | - | - | - |
+| ORG_TEL | 机构电话 | VARCHAR | 30 | 可空 | - | - | - | - | - |
 
 ---
 *数据字典版本: v1.0 | 生成时间: 2026-07-17*

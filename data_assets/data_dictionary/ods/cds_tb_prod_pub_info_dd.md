@@ -43,10 +43,10 @@
 | account_no | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.account_no | 【待确认】 | 2026-07-17 |
 | is_exclusive | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.is_exclusive | 【待确认】 | 2026-07-17 |
 | exclusive_count | 【待确认】 | NUMERIC | 10 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.exclusive_count | 【待确认】 | 2026-07-17 |
-| min_deposit_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.min_deposit_amt | 【待确认】 | 2026-07-17 |
-| step_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.step_amt | 【待确认】 | 2026-07-17 |
-| min_hold_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.min_hold_amt | 【待确认】 | 2026-07-17 |
-| max_hold_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.max_hold_amt | 【待确认】 | 2026-07-17 |
+| min_deposit_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.min_deposit_amt | 【待确认】 | 2026-07-17 |
+| step_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.step_amt | 【待确认】 | 2026-07-17 |
+| min_hold_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.min_hold_amt | 【待确认】 | 2026-07-17 |
+| max_hold_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.max_hold_amt | 【待确认】 | 2026-07-17 |
 | inc_due | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.inc_due | 【待确认】 | 2026-07-17 |
 | crt_user | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.crt_user | 【待确认】 | 2026-07-17 |
 | crt_orgno | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.crt_orgno | 【待确认】 | 2026-07-17 |
@@ -58,5 +58,5 @@
 | upd_time | 【待确认】 | BPCHAR | 6 | NOT NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.upd_time | 【待确认】 | 2026-07-17 |
 | is_boutique | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.is_boutique | 【待确认】 | 2026-07-17 |
 | prod_flag | 【待确认】 | BPCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.prod_flag | 【待确认】 | 2026-07-17 |
-| seven_notice_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.seven_notice_amt | 【待确认】 | 2026-07-17 |
+| seven_notice_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.seven_notice_amt | 【待确认】 | 2026-07-17 |
 | ryzd | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cds_tb_prod_pub_info.ryzd | 【待确认】 | 2026-07-17 |

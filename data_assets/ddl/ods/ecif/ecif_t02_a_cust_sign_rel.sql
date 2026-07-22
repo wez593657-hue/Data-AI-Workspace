@@ -31,7 +31,7 @@ CREATE TABLE crmdm.ecif_t02_a_cust_sign_rel (
     role_id bpchar(20) NULL,
     role_tab_id bpchar(8) NULL,
     acc_name varchar(200) NULL,
-    expd_date sys."date" NULL,
+    expd_date DATE NULL,
     sign_info_ext_1 varchar(30) NULL,
     sign_info_ext_2 varchar(30) NULL,
     sign_info_ext_3 varchar(30) NULL,

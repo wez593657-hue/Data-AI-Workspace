@@ -21,7 +21,7 @@
 | payee_id | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.ybt_czdf_bat_detail.payee_id | 【待确认】 | 2026-07-17 |
 | payee_name | 【待确认】 | VARCHAR | 128 | NULL | - | - | - | 【待确认】 | crmdm.ybt_czdf_bat_detail.payee_name | 【待确认】 | 2026-07-17 |
 | coll_account | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.ybt_czdf_bat_detail.coll_account | 【待确认】 | 2026-07-17 |
-| amt | 【待确认】 | NUMERIC | 20, 2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_czdf_bat_detail.amt | 【待确认】 | 2026-07-17 |
+| amt | 【待确认】 | NUMERIC | 20,2 | NOT NULL | - | - | - | 【待确认】 | crmdm.ybt_czdf_bat_detail.amt | 【待确认】 | 2026-07-17 |
 | remark | 【待确认】 | VARCHAR | 240 | NULL | - | - | - | 【待确认】 | crmdm.ybt_czdf_bat_detail.remark | 【待确认】 | 2026-07-17 |
 | core_send_serial | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.ybt_czdf_bat_detail.core_send_serial | 【待确认】 | 2026-07-17 |
 | core_ref_serial | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.ybt_czdf_bat_detail.core_ref_serial | 【待确认】 | 2026-07-17 |

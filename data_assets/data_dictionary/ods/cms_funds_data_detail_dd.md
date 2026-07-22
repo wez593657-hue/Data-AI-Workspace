@@ -18,4 +18,4 @@
 | serialno | 【待确认】 | VARCHAR | 32 | NOT NULL | - | - | - | 【待确认】 | crmdm.cms_funds_data_detail.serialno | 【待确认】 | 2026-07-17 |
 | relativeserialno | 【待确认】 | VARCHAR | 32 | NOT NULL | - | - | - | 【待确认】 | crmdm.cms_funds_data_detail.relativeserialno | 【待确认】 | 2026-07-17 |
 | zhaiyao | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.cms_funds_data_detail.zhaiyao | 【待确认】 | 2026-07-17 |
-| jkfse | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_funds_data_detail.jkfse | 【待确认】 | 2026-07-17 |
+| jkfse | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_funds_data_detail.jkfse | 【待确认】 | 2026-07-17 |

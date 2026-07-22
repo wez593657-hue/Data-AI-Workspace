@@ -13,20 +13,20 @@
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 |--------|-------------|----------|------|----------|--------|------|------|----------|----------|
-| jigouhao | 【待补充】 | varchar(10) | - | - | - | - | - | - | - |
-| farendma | 【待补充】 | varchar(4) | - | - | - | - | - | - | - |
-| fenhdaim | 【待补充】 | varchar(30) | - | - | - | - | - | - | - |
-| jigoleix | 【待补充】 | varchar(30) | - | - | - | - | - | - | - |
-| jigouzwm | 【待补充】 | varchar(500) | - | - | - | - | - | - | - |
-| dizhiiii | 【待补充】 | varchar(500) | - | - | - | - | - | - | - |
-| youzhnbm | 【待补充】 | varchar(10) | - | - | - | - | - | - | - |
-| dianhhma | 【待补充】 | varchar(20) | - | - | - | - | - | - | - |
-| weihriqi | 【待补充】 | varchar(8) | - | - | - | - | - | - | - |
-| weihshij | 【待补充】 | varchar(9) | - | - | - | - | - | - | - |
-| jingduxx | 【待补充】 | varchar(30) | - | - | - | - | - | - | - |
-| weiduxxz | 【待补充】 | varchar(30) | - | - | - | - | - | - | - |
-| yewugxjg | 【待补充】 | varchar(30) | - | - | - | - | - | - | - |
-| yewugxjb | 【待补充】 | numeric(3) | - | - | - | - | - | - | - |
+| jigouhao | 【待补充】 | VARCHAR | 10 | - | - | - | - | - | - |
+| farendma | 【待补充】 | VARCHAR | 4 | - | - | - | - | - | - |
+| fenhdaim | 【待补充】 | VARCHAR | 30 | - | - | - | - | - | - |
+| jigoleix | 【待补充】 | VARCHAR | 30 | - | - | - | - | - | - |
+| jigouzwm | 【待补充】 | VARCHAR | 500 | - | - | - | - | - | - |
+| dizhiiii | 【待补充】 | VARCHAR | 500 | - | - | - | - | - | - |
+| youzhnbm | 【待补充】 | VARCHAR | 10 | - | - | - | - | - | - |
+| dianhhma | 【待补充】 | VARCHAR | 20 | - | - | - | - | - | - |
+| weihriqi | 【待补充】 | VARCHAR | 8 | - | - | - | - | - | - |
+| weihshij | 【待补充】 | VARCHAR | 9 | - | - | - | - | - | - |
+| jingduxx | 【待补充】 | VARCHAR | 30 | - | - | - | - | - | - |
+| weiduxxz | 【待补充】 | VARCHAR | 30 | - | - | - | - | - | - |
+| yewugxjg | 【待补充】 | VARCHAR | 30 | - | - | - | - | - | - |
+| yewugxjb | 【待补充】 | NUMERIC | 3 | - | - | - | - | - | - |
 
 ---
 *数据字典版本: v1.0 | 生成时间: 2026-07-17*

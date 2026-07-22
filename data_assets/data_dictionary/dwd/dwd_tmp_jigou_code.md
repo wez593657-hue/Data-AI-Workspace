@@ -13,23 +13,23 @@
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 |--------|-------------|----------|------|----------|--------|------|------|----------|----------|
-| org_id | 【待补充】 | varchar(7) | - | - | - | - | - | - | - |
-| sup_org_id | 【待补充】 | varchar(7) | - | - | - | - | - | - | - |
-| org_name | 【待补充】 | varchar(500) | - | - | - | - | - | - | - |
-| direct_under_org | 【待补充】 | varchar(7) | - | - | - | - | - | - | - |
-| org_typ | 【待补充】 | varchar(2) | - | - | - | - | - | - | - |
-| org_addrs | 【待补充】 | varchar(800) | - | - | - | - | - | - | - |
-| org_state | 【待补充】 | varchar(1) | - | - | - | - | - | - | - |
-| dsply_seq | 【待补充】 | numeric(19) | - | - | - | - | - | - | - |
-| creatr | 【待补充】 | varchar(64) | - | - | - | - | - | - | - |
-| creat_time | 【待补充】 | varchar(20) | - | - | - | - | - | - | - |
-| creat_org | 【待补充】 | varchar(7) | - | - | - | - | - | - | - |
-| persn_legal_bk_code | 【待补充】 | varchar(30) | - | - | - | - | - | - | - |
-| hr_ms_org_id | 【待补充】 | varchar(80) | - | - | - | - | - | - | - |
-| org_lgtud | 【待补充】 | varchar(30) | - | - | - | - | - | - | - |
-| org_lattud | 【待补充】 | varchar(30) | - | - | - | - | - | - | - |
-| org_rsponr | 【待补充】 | varchar(40) | - | - | - | - | - | - | - |
-| org_tel | 【待补充】 | varchar(30) | - | - | - | - | - | - | - |
+| org_id | 【待补充】 | VARCHAR | 7 | - | - | - | - | - | - |
+| sup_org_id | 【待补充】 | VARCHAR | 7 | - | - | - | - | - | - |
+| org_name | 【待补充】 | VARCHAR | 500 | - | - | - | - | - | - |
+| direct_under_org | 【待补充】 | VARCHAR | 7 | - | - | - | - | - | - |
+| org_typ | 【待补充】 | VARCHAR | 2 | - | - | - | - | - | - |
+| org_addrs | 【待补充】 | VARCHAR | 800 | - | - | - | - | - | - |
+| org_state | 【待补充】 | VARCHAR | 1 | - | - | - | - | - | - |
+| dsply_seq | 【待补充】 | NUMERIC | 19 | - | - | - | - | - | - |
+| creatr | 【待补充】 | VARCHAR | 64 | - | - | - | - | - | - |
+| creat_time | 【待补充】 | VARCHAR | 20 | - | - | - | - | - | - |
+| creat_org | 【待补充】 | VARCHAR | 7 | - | - | - | - | - | - |
+| persn_legal_bk_code | 【待补充】 | VARCHAR | 30 | - | - | - | - | - | - |
+| hr_ms_org_id | 【待补充】 | VARCHAR | 80 | - | - | - | - | - | - |
+| org_lgtud | 【待补充】 | VARCHAR | 30 | - | - | - | - | - | - |
+| org_lattud | 【待补充】 | VARCHAR | 30 | - | - | - | - | - | - |
+| org_rsponr | 【待补充】 | VARCHAR | 40 | - | - | - | - | - | - |
+| org_tel | 【待补充】 | VARCHAR | 30 | - | - | - | - | - | - |
 
 ---
 *数据字典版本: v1.0 | 生成时间: 2026-07-17*

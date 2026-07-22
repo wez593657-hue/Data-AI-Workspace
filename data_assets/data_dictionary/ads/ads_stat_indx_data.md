@@ -14,19 +14,19 @@
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| INDX_CODE | 指标编码 | VARCHAR2 | 100 | 【待确认】 | - | - | - | - | 指标编码 |
-| DATA_BLNG | 数据归属 | VARCHAR2 | 100 | 【待确认】 | - | - | - | - | 数据归属 |
-| STATIS_DIM | 统计维度 | VARCHAR2 | 100 | 【待确认】 | - | - | - | - | 统计维度 |
-| STATIS_CALIB | 统计口径 | VARCHAR2 | 100 | 【待确认】 | - | - | - | - | 统计口径 |
+| INDX_CODE | 指标编码 | VARCHAR | 100 | 【待确认】 | - | - | - | - | 指标编码 |
+| DATA_BLNG | 数据归属 | VARCHAR | 100 | 【待确认】 | - | - | - | - | 数据归属 |
+| STATIS_DIM | 统计维度 | VARCHAR | 100 | 【待确认】 | - | - | - | - | 统计维度 |
+| STATIS_CALIB | 统计口径 | VARCHAR | 100 | 【待确认】 | - | - | - | - | 统计口径 |
 | CURNT_VAL | 本期值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 本期值 |
 | TERM_LAST_VAL | 上期值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 上期值 |
 | MTH_END_VAL | 月末值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 月末值 |
 | YR_BGN_VAL | 年初值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 年初值 |
 | MTH_LAST_END_AVG_DAY_VAL | 上月末日均值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 上月末日均值 |
 | YR_LAST_END_AVG_DAY_VAL | 上年末日均值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 上年末日均值 |
-| DATA_DATE | 数据日期 | VARCHAR2 | 10 | 【待确认】 | - | - | - | - | 数据日期 |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 | 30 | 【待确认】 | - | - | - | - | 法人行号 |
-| ID | [NULL] | VARCHAR2 | 10 | 【待确认】 | - | - | - | - | [NULL] |
+| DATA_DATE | 数据日期 | VARCHAR | 10 | 【待确认】 | - | - | - | - | 数据日期 |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 30 | 【待确认】 | - | - | - | - | 法人行号 |
+| ID | [NULL] | VARCHAR | 10 | 【待确认】 | - | - | - | - | [NULL] |
 
 ---
 

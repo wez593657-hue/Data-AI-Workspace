@@ -42,10 +42,10 @@
 | rcv_pay | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.rcv_pay | 【待确认】 | 2026-07-17 |
 | curr_cd | 【待确认】 | VARCHAR | 3 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.curr_cd | 【待确认】 | 2026-07-17 |
 | is_local_curr | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.is_local_curr | 【待确认】 | 2026-07-17 |
-| tr_amt | 【待确认】 | NUMERIC | 30, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.tr_amt | 【待确认】 | 2026-07-17 |
-| tr_cny_amt | 【待确认】 | NUMERIC | 30, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.tr_cny_amt | 【待确认】 | 2026-07-17 |
-| tr_usd_amt | 【待确认】 | NUMERIC | 30, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.tr_usd_amt | 【待确认】 | 2026-07-17 |
-| tr_bal_amt | 【待确认】 | NUMERIC | 30, 4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.tr_bal_amt | 【待确认】 | 2026-07-17 |
+| tr_amt | 【待确认】 | NUMERIC | 30,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.tr_amt | 【待确认】 | 2026-07-17 |
+| tr_cny_amt | 【待确认】 | NUMERIC | 30,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.tr_cny_amt | 【待确认】 | 2026-07-17 |
+| tr_usd_amt | 【待确认】 | NUMERIC | 30,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.tr_usd_amt | 【待确认】 | 2026-07-17 |
+| tr_bal_amt | 【待确认】 | NUMERIC | 30,4 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.tr_bal_amt | 【待确认】 | 2026-07-17 |
 | tr_country | 【待确认】 | VARCHAR | 3 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.tr_country | 【待确认】 | 2026-07-17 |
 | tr_area | 【待确认】 | VARCHAR | 6 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.tr_area | 【待确认】 | 2026-07-17 |
 | fund_use | 【待确认】 | VARCHAR | 256 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.fund_use | 【待确认】 | 2026-07-17 |
@@ -97,7 +97,7 @@
 | clct_sts | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.clct_sts | 【待确认】 | 2026-07-17 |
 | bh_valid | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.bh_valid | 【待确认】 | 2026-07-17 |
 | bs_valid | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.bs_valid | 【待确认】 | 2026-07-17 |
-| due_dt | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.due_dt | 【待确认】 | 2026-07-17 |
+| due_dt | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.due_dt | 【待确认】 | 2026-07-17 |
 | rsrv_01 | 【待确认】 | VARCHAR | 48 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.rsrv_01 | 【待确认】 | 2026-07-17 |
 | rsrv_02 | 【待确认】 | VARCHAR | 48 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.rsrv_02 | 【待确认】 | 2026-07-17 |
 | rsrv_03 | 【待确认】 | VARCHAR | 48 | NULL | - | - | - | 【待确认】 | crmdm.uepp_pay_aml_order_info.rsrv_03 | 【待确认】 | 2026-07-17 |

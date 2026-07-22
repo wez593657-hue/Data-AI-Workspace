@@ -33,7 +33,7 @@
 | socs_acct_name | 【待确认】 | VARCHAR | 100 | NULL | - | - | - | 【待确认】 | crmdm.ibp_lssb_trans_detail.socs_acct_name | 【待确认】 | 2026-07-17 |
 | socs_acct_no | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.ibp_lssb_trans_detail.socs_acct_no | 【待确认】 | 2026-07-17 |
 | date_no | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.ibp_lssb_trans_detail.date_no | 【待确认】 | 2026-07-17 |
-| tran_amt | 【待确认】 | NUMERIC | 12, 2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_lssb_trans_detail.tran_amt | 【待确认】 | 2026-07-17 |
+| tran_amt | 【待确认】 | NUMERIC | 12,2 | NULL | - | - | - | 【待确认】 | crmdm.ibp_lssb_trans_detail.tran_amt | 【待确认】 | 2026-07-17 |
 | remark | 【待确认】 | VARCHAR | 100 | NULL | - | - | - | 【待确认】 | crmdm.ibp_lssb_trans_detail.remark | 【待确认】 | 2026-07-17 |
 | core_send_serial | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.ibp_lssb_trans_detail.core_send_serial | 【待确认】 | 2026-07-17 |
 | core_ref_serial | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.ibp_lssb_trans_detail.core_ref_serial | 【待确认】 | 2026-07-17 |

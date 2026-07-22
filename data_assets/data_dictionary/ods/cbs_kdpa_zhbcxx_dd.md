@@ -45,9 +45,9 @@
 | beiyzd01 | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.beiyzd01 | 【待确认】 | 2026-07-17 |
 | beiyzd02 | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.beiyzd02 | 【待确认】 | 2026-07-17 |
 | beiyzd03 | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.beiyzd03 | 【待确认】 | 2026-07-17 |
-| beiyye01 | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.beiyye01 | 【待确认】 | 2026-07-17 |
-| beiyye02 | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.beiyye02 | 【待确认】 | 2026-07-17 |
-| beiyye03 | 【待确认】 | NUMERIC | 21, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.beiyye03 | 【待确认】 | 2026-07-17 |
+| beiyye01 | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.beiyye01 | 【待确认】 | 2026-07-17 |
+| beiyye02 | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.beiyye02 | 【待确认】 | 2026-07-17 |
+| beiyye03 | 【待确认】 | NUMERIC | 21,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.beiyye03 | 【待确认】 | 2026-07-17 |
 | ljplhsbz | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.ljplhsbz | 【待确认】 | 2026-07-17 |
 | zhphbzhi | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.zhphbzhi | 【待确认】 | 2026-07-17 |
 | ylzhmmbz | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.ylzhmmbz | 【待确认】 | 2026-07-17 |
@@ -68,7 +68,7 @@
 | kaihlius | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.kaihlius | 【待确认】 | 2026-07-17 |
 | xiohriqi | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.xiohriqi | 【待确认】 | 2026-07-17 |
 | xiahlius | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.xiahlius | 【待确认】 | 2026-07-17 |
-| xiaohuje | 【待确认】 | NUMERIC | 17, 2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.xiaohuje | 【待确认】 | 2026-07-17 |
+| xiaohuje | 【待确认】 | NUMERIC | 17,2 | NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.xiaohuje | 【待确认】 | 2026-07-17 |
 | weihguiy | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.weihguiy | 【待确认】 | 2026-07-17 |
 | weihjigo | 【待确认】 | VARCHAR | 12 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.weihjigo | 【待确认】 | 2026-07-17 |
 | weihriqi | 【待确认】 | VARCHAR | 8 | NOT NULL | - | - | - | 【待确认】 | crmdm.cbs_kdpa_zhbcxx.weihriqi | 【待确认】 | 2026-07-17 |

@@ -24,9 +24,9 @@
 | linecontractno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.linecontractno | 【待确认】 | 2026-07-17 |
 | customerid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.customerid | 【待确认】 | 2026-07-17 |
 | customername | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.customername | 【待确认】 | 2026-07-17 |
-| linesum1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.linesum1 | 【待确认】 | 2026-07-17 |
-| linesum2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.linesum2 | 【待确认】 | 2026-07-17 |
-| linesum3 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.linesum3 | 【待确认】 | 2026-07-17 |
+| linesum1 | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.linesum1 | 【待确认】 | 2026-07-17 |
+| linesum2 | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.linesum2 | 【待确认】 | 2026-07-17 |
+| linesum3 | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.linesum3 | 【待确认】 | 2026-07-17 |
 | currency | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.currency | 【待确认】 | 2026-07-17 |
 | lineeffdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.lineeffdate | 【待确认】 | 2026-07-17 |
 | lineeffflag | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.lineeffflag | 【待确认】 | 2026-07-17 |
@@ -48,8 +48,8 @@
 | parentlineid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.parentlineid | 【待确认】 | 2026-07-17 |
 | useorgid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.useorgid | 【待确认】 | 2026-07-17 |
 | useorgname | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.useorgname | 【待确认】 | 2026-07-17 |
-| bailratio | 【待确认】 | NUMERIC | 10, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.bailratio | 【待确认】 | 2026-07-17 |
+| bailratio | 【待确认】 | NUMERIC | 10,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.bailratio | 【待确认】 | 2026-07-17 |
 | businesstype | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.businesstype | 【待确认】 | 2026-07-17 |
-| usedsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.usedsum | 【待确认】 | 2026-07-17 |
-| usablesum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.usablesum | 【待确认】 | 2026-07-17 |
+| usedsum | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.usedsum | 【待确认】 | 2026-07-17 |
+| usablesum | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.usablesum | 【待确认】 | 2026-07-17 |
 | calculatetime | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_cl_info.calculatetime | 【待确认】 | 2026-07-17 |

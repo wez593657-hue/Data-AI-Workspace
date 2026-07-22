@@ -12,12 +12,12 @@
 
 CREATE TABLE crmdm.ecif_t01_p_relationer_info (
     relation_id bpchar(20) NOT NULL,
-    cert_issue_date sys."date" NULL,
-    cert_expd_date sys."date" NULL,
+    cert_issue_date DATE NULL,
+    cert_expd_date DATE NULL,
     cert_org_area varchar(30) NULL,
     nat_code varchar(30) NULL,
     gender varchar(30) NULL,
-    birth_date sys."date" NULL,
+    birth_date DATE NULL,
     educ_sign varchar(30) NULL,
     econ_resur varchar(30) NULL,
     work_corp varchar(120) NULL,

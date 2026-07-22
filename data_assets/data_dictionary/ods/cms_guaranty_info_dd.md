@@ -21,7 +21,7 @@
 | ownerid | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.ownerid | 【待确认】 | 2026-07-17 |
 | ownername | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.ownername | 【待确认】 | 2026-07-17 |
 | ownertype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.ownertype | 【待确认】 | 2026-07-17 |
-| rate | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.rate | 【待确认】 | 2026-07-17 |
+| rate | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.rate | 【待确认】 | 2026-07-17 |
 | custguarantytype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.custguarantytype | 【待确认】 | 2026-07-17 |
 | subjectno | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.subjectno | 【待确认】 | 2026-07-17 |
 | relativeaccount | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.relativeaccount | 【待确认】 | 2026-07-17 |
@@ -32,9 +32,9 @@
 | guarantyownway | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyownway | 【待确认】 | 2026-07-17 |
 | guarantyusing | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyusing | 【待确认】 | 2026-07-17 |
 | guarantylocation | 【待确认】 | VARCHAR | 300 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantylocation | 【待确认】 | 2026-07-17 |
-| guarantyamount | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyamount | 【待确认】 | 2026-07-17 |
-| guarantyamount1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyamount1 | 【待确认】 | 2026-07-17 |
-| guarantyamount2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyamount2 | 【待确认】 | 2026-07-17 |
+| guarantyamount | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyamount | 【待确认】 | 2026-07-17 |
+| guarantyamount1 | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyamount1 | 【待确认】 | 2026-07-17 |
+| guarantyamount2 | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyamount2 | 【待确认】 | 2026-07-17 |
 | guarantyresouce | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyresouce | 【待确认】 | 2026-07-17 |
 | guarantydate | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantydate | 【待确认】 | 2026-07-17 |
 | begindate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.begindate | 【待确认】 | 2026-07-17 |
@@ -45,18 +45,18 @@
 | aboutotherid3 | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.aboutotherid3 | 【待确认】 | 2026-07-17 |
 | aboutotherid4 | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.aboutotherid4 | 【待确认】 | 2026-07-17 |
 | purpose | 【待确认】 | VARCHAR | 300 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.purpose | 【待确认】 | 2026-07-17 |
-| aboutsum1 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.aboutsum1 | 【待确认】 | 2026-07-17 |
-| aboutsum2 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.aboutsum2 | 【待确认】 | 2026-07-17 |
-| aboutrate | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.aboutrate | 【待确认】 | 2026-07-17 |
+| aboutsum1 | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.aboutsum1 | 【待确认】 | 2026-07-17 |
+| aboutsum2 | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.aboutsum2 | 【待确认】 | 2026-07-17 |
+| aboutrate | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.aboutrate | 【待确认】 | 2026-07-17 |
 | guarantyana | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyana | 【待确认】 | 2026-07-17 |
-| guarantyprice | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyprice | 【待确认】 | 2026-07-17 |
+| guarantyprice | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyprice | 【待确认】 | 2026-07-17 |
 | evalmethod | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.evalmethod | 【待确认】 | 2026-07-17 |
 | evalorgid | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.evalorgid | 【待确认】 | 2026-07-17 |
 | evalorgname | 【待确认】 | VARCHAR | 120 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.evalorgname | 【待确认】 | 2026-07-17 |
 | evaldate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.evaldate | 【待确认】 | 2026-07-17 |
-| evalnetvalue | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.evalnetvalue | 【待确认】 | 2026-07-17 |
-| confirmvalue | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.confirmvalue | 【待确认】 | 2026-07-17 |
-| guarantyrate | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyrate | 【待确认】 | 2026-07-17 |
+| evalnetvalue | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.evalnetvalue | 【待确认】 | 2026-07-17 |
+| confirmvalue | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.confirmvalue | 【待确认】 | 2026-07-17 |
+| guarantyrate | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyrate | 【待确认】 | 2026-07-17 |
 | thirdparty1 | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.thirdparty1 | 【待确认】 | 2026-07-17 |
 | thirdparty2 | 【待确认】 | VARCHAR | 2000 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.thirdparty2 | 【待确认】 | 2026-07-17 |
 | thirdparty3 | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.thirdparty3 | 【待确认】 | 2026-07-17 |
@@ -85,10 +85,10 @@
 | loancardno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.loancardno | 【待确认】 | 2026-07-17 |
 | guarantycurrency | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantycurrency | 【待确认】 | 2026-07-17 |
 | evalcurrency | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.evalcurrency | 【待确认】 | 2026-07-17 |
-| guarantydescribe4 | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantydescribe4 | 【待确认】 | 2026-07-17 |
+| guarantydescribe4 | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantydescribe4 | 【待确认】 | 2026-07-17 |
 | evaldate1 | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.evaldate1 | 【待确认】 | 2026-07-17 |
 | evaldate2 | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.evaldate2 | 【待确认】 | 2026-07-17 |
-| guarantyvalue | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyvalue | 【待确认】 | 2026-07-17 |
+| guarantyvalue | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.guarantyvalue | 【待确认】 | 2026-07-17 |
 | useyear | 【待确认】 | NUMERIC | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.useyear | 【待确认】 | 2026-07-17 |
 | enddate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.enddate | 【待确认】 | 2026-07-17 |
 | isreverse | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_guaranty_info.isreverse | 【待确认】 | 2026-07-17 |

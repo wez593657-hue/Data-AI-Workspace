@@ -35,7 +35,7 @@
 | role_id | 【待确认】 | BPCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t02_a_cust_sign_rel.role_id | 【待确认】 | 2026-07-17 |
 | role_tab_id | 【待确认】 | BPCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t02_a_cust_sign_rel.role_tab_id | 【待确认】 | 2026-07-17 |
 | acc_name | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t02_a_cust_sign_rel.acc_name | 【待确认】 | 2026-07-17 |
-| expd_date | 【待确认】 | SYS | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t02_a_cust_sign_rel.expd_date | 【待确认】 | 2026-07-17 |
+| expd_date | 【待确认】 | DATE | - | NULL | - | - | - | 【待确认】 | crmdm.ecif_t02_a_cust_sign_rel.expd_date | 【待确认】 | 2026-07-17 |
 | sign_info_ext_1 | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t02_a_cust_sign_rel.sign_info_ext_1 | 【待确认】 | 2026-07-17 |
 | sign_info_ext_2 | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t02_a_cust_sign_rel.sign_info_ext_2 | 【待确认】 | 2026-07-17 |
 | sign_info_ext_3 | 【待确认】 | VARCHAR | 30 | NULL | - | - | - | 【待确认】 | crmdm.ecif_t02_a_cust_sign_rel.sign_info_ext_3 | 【待确认】 | 2026-07-17 |

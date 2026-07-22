@@ -1,0 +1,7 @@
+evidence_id: E-0005
+phase: schema_consistency
+kind: final_schema_consistency_report
+purpose: 修正两个DWD表并允许三层Mapping来源为空后的最终一致性报告
+result: passed
+details: DDL与数据字典结构差异为0；阻塞性未解析Mapping为0；667条Mapping来源或规则暂空，仅作可选未补齐记录
+created_at: '2026-07-22T02:47:58+00:00'

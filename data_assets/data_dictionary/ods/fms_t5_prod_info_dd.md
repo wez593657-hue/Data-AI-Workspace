@@ -28,10 +28,10 @@
 | legal_code | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.legal_code | 【待确认】 | 2026-07-17 |
 | def_div_method | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.def_div_method | 【待确认】 | 2026-07-17 |
 | div_chg_flag | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.div_chg_flag | 【待确认】 | 2026-07-17 |
-| min_div_amt | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.min_div_amt | 【待确认】 | 2026-07-17 |
-| max_size | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.max_size | 【待确认】 | 2026-07-17 |
-| min_size | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.min_size | 【待确认】 | 2026-07-17 |
-| hold_quota | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.hold_quota | 【待确认】 | 2026-07-17 |
+| min_div_amt | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.min_div_amt | 【待确认】 | 2026-07-17 |
+| max_size | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.max_size | 【待确认】 | 2026-07-17 |
+| min_size | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.min_size | 【待确认】 | 2026-07-17 |
+| hold_quota | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.hold_quota | 【待确认】 | 2026-07-17 |
 | quota_dime | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.quota_dime | 【待确认】 | 2026-07-17 |
 | sale_status | 【待确认】 | BPCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.sale_status | 【待确认】 | 2026-07-17 |
 | can_booking | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.can_booking | 【待确认】 | 2026-07-17 |
@@ -53,23 +53,23 @@
 | series_code | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.series_code | 【待确认】 | 2026-07-17 |
 | series_num | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.series_num | 【待确认】 | 2026-07-17 |
 | profit_type | 【待确认】 | BPCHAR | 1 | NOT NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.profit_type | 【待确认】 | 2026-07-17 |
-| nav | 【待确认】 | NUMERIC | 12, 6 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.nav | 【待确认】 | 2026-07-17 |
+| nav | 【待确认】 | NUMERIC | 12,6 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.nav | 【待确认】 | 2026-07-17 |
 | nav_date | 【待确认】 | BPCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.nav_date | 【待确认】 | 2026-07-17 |
 | auto_winding_flag | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.auto_winding_flag | 【待确认】 | 2026-07-17 |
 | rasie_type | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.rasie_type | 【待确认】 | 2026-07-17 |
-| subs_quota | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.subs_quota | 【待确认】 | 2026-07-17 |
-| apply_quota | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.apply_quota | 【待确认】 | 2026-07-17 |
-| redeem_quota | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.redeem_quota | 【待确认】 | 2026-07-17 |
+| subs_quota | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.subs_quota | 【待确认】 | 2026-07-17 |
+| apply_quota | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.apply_quota | 【待确认】 | 2026-07-17 |
+| redeem_quota | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.redeem_quota | 【待确认】 | 2026-07-17 |
 | recover_apply_quota | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.recover_apply_quota | 【待确认】 | 2026-07-17 |
 | recover_redeem_quota | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.recover_redeem_quota | 【待确认】 | 2026-07-17 |
 | cust_group | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.cust_group | 【待确认】 | 2026-07-17 |
-| prod_quota | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.prod_quota | 【待确认】 | 2026-07-17 |
+| prod_quota | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.prod_quota | 【待确认】 | 2026-07-17 |
 | subs_redeem_flag | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.subs_redeem_flag | 【待确认】 | 2026-07-17 |
 | winding_pay_date | 【待确认】 | BPCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.winding_pay_date | 【待确认】 | 2026-07-17 |
 | winding_pay_days | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.winding_pay_days | 【待确认】 | 2026-07-17 |
 | specification_status | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.specification_status | 【待确认】 | 2026-07-17 |
 | protocol_status | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.protocol_status | 【待确认】 | 2026-07-17 |
-| rasie_quota | 【待确认】 | NUMERIC | 16, 2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.rasie_quota | 【待确认】 | 2026-07-17 |
+| rasie_quota | 【待确认】 | NUMERIC | 16,2 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.rasie_quota | 【待确认】 | 2026-07-17 |
 | money_pay_day | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.money_pay_day | 【待确认】 | 2026-07-17 |
 | has_waver_period | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.has_waver_period | 【待确认】 | 2026-07-17 |
 | prod_comp_type | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.fms_t5_prod_info.prod_comp_type | 【待确认】 | 2026-07-17 |

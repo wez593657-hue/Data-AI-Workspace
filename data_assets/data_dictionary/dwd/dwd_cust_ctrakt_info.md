@@ -13,21 +13,21 @@
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 |--------|-------------|----------|------|----------|--------|------|------|----------|----------|
-| CUST_ID | 客户编号 | VARCHAR(100) | - | - | - | - | - | - | - |
-| CTRAKT_ID | 合同编号 | VARCHAR(100) | - | - | - | - | - | - | - |
-| LOAN_ACCT | 贷款账号 | VARCHAR(100) | - | - | - | - | - | - | - |
-| CRDT_LMT | 授信额度 | VARCHAR(100) | - | - | - | - | - | - | - |
-| LOAN_BAL | 贷款余额 | VARCHAR(100) | - | - | - | - | - | - | - |
-| GUARANT_MODE | 担保方式 | VARCHAR(100) | - | - | - | - | - | - | - |
-| CATE_5LVL | 五级分类 | VARCHAR(100) | - | - | - | - | - | - | - |
-| CCY_CD | 币种 | VARCHAR(100) | - | - | - | - | - | - | - |
-| RATE_INTRI | 利率 | VARCHAR(100) | - | - | - | - | - | - | - |
-| CONTR_AMT | 合同金额 | VARCHAR(100) | - | - | - | - | - | - | - |
-| BGN_DATE | 发放日期 | VARCHAR(100) | - | - | - | - | - | - | - |
-| END_DATE | 结束日期 | VARCHAR(100) | - | - | - | - | - | - | - |
-| OPRTR | 经办人 | VARCHAR(100) | - | - | - | - | - | - | - |
-| OPRT_ORG | 经办机构 | VARCHAR(7) | - | - | - | - | - | - | - |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR(100) | - | - | - | - | - | - | - |
+| CUST_ID | 客户编号 | VARCHAR | 100 | - | - | - | - | - | - |
+| CTRAKT_ID | 合同编号 | VARCHAR | 100 | - | - | - | - | - | - |
+| LOAN_ACCT | 贷款账号 | VARCHAR | 100 | - | - | - | - | - | - |
+| CRDT_LMT | 授信额度 | VARCHAR | 100 | - | - | - | - | - | - |
+| LOAN_BAL | 贷款余额 | VARCHAR | 100 | - | - | - | - | - | - |
+| GUARANT_MODE | 担保方式 | VARCHAR | 100 | - | - | - | - | - | - |
+| CATE_5LVL | 五级分类 | VARCHAR | 100 | - | - | - | - | - | - |
+| CCY_CD | 币种 | VARCHAR | 100 | - | - | - | - | - | - |
+| RATE_INTRI | 利率 | VARCHAR | 100 | - | - | - | - | - | - |
+| CONTR_AMT | 合同金额 | VARCHAR | 100 | - | - | - | - | - | - |
+| BGN_DATE | 发放日期 | VARCHAR | 100 | - | - | - | - | - | - |
+| END_DATE | 结束日期 | VARCHAR | 100 | - | - | - | - | - | - |
+| OPRTR | 经办人 | VARCHAR | 100 | - | - | - | - | - | - |
+| OPRT_ORG | 经办机构 | VARCHAR | 7 | - | - | - | - | - | - |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 100 | - | - | - | - | - | - |
 
 ---
 *数据字典版本: v1.0 | 生成时间: 2026-07-17*

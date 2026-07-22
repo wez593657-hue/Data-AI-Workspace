@@ -8,7 +8,7 @@
 | 开始时间 | 2026-07-21 |
 | 当前分支 | feature/ai-repair-loop |
 | 目标分支 | feature/ai-repair-loop |
-| 当前状态 | 进行中 |
+| 当前状态 | 阶段 5 一致性门禁已通过，后续业务Mapping按需求逐表补齐 |
 
 ## 2. 验收标准
 
@@ -31,19 +31,40 @@
 | 编写本任务清单 | 已完成 | 本文件 | 清单已建立并同步维护 |
 | 设计文档自检 | 已完成 | Markdown 结构检查、内容检查、占位符检查、`git diff --check` | 全部通过 |
 | 用户审阅 | 已完成 | 对话确认 | 用户已批准设计，进入实施计划阶段 |
-| 编写实施计划 | 进行中 | `docs/superpowers/plans/2026-07-21-ai-data-warehouse-harness-implementation-plan.md` | 已拆分为状态机、证据、需求、血缘、跨层校验、逻辑、测试、Hooks/CI 和回归阶段 |
+| 编写实施计划 | 已完成 | `docs/superpowers/plans/2026-07-21-ai-data-warehouse-harness-implementation-plan.md` | 已拆分为状态机、证据、需求、血缘、跨层校验、逻辑、测试、Hooks/CI 和回归阶段 |
 
-## 4. 当前边界
+## 5. 阶段 5 执行记录：DDL、数据字典和 Mapping 门禁
 
-本阶段只生成设计文档和执行记录，不生成 Harness 实现代码，不修改业务数据资产，不执行 commit、push 或 PR。
+| 项目 | 结果 | 证据 |
+|------|------|------|
+| 设计确认 | 已完成 | `docs/superpowers/specs/2026-07-22-schema-consistency-gate-design.md` |
+| 字段级解析器 | 已完成 | `scripts/harness/schema_consistency.py` |
+| 明确 Mapping 血缘图 | 已完成 | `scripts/harness/artifact_graph.py`、任务报告 `artifact-graph.yaml` |
+| CLI 和门禁 | 已完成 | `check-schema-consistency`、`check-schema-gate` |
+| 单元测试 | 已完成 | 11/11 通过 |
+| 工作区完整校验 | 已完成 | `python scripts/workspace_validation.py full` 全部通过 |
+| 用户补齐规则确认 | 已完成 | E-0002、当前规则：临时表免数据字典；DDL类型长度为准；仅SYS/SYS.DATE/SYS."DATE"规范为DATE，其它日期以Excel为准；三层Mapping来源可空 |
+| Excel→Mapping Markdown 同步 | 已完成 | ODS→DWD 247 条、DWD→DWS 114 条、DWS→ADS 307 条 |
+| 全量基线复核 | 已通过 | 163 张非临时DDL、189份数据字典、668条Mapping；结构差异0、阻塞性未解析0；667条来源/规则空缺按当前规则记录为可选未补齐 |
 
-## 5. 阻塞记录
+### 阶段 5 恢复说明
 
-当前无阻塞。
+- 阻塞任务：`.harness/tasks/schema-consistency-gate-v1/`
+- 处理结果：补齐 `DWD_CUST_INDV_INFO.OPEN_DATE`、`OPEN_ORG`，并按 Excel 重建 `DWD_CUST_INDIV_RISK_INVST` 的 8 个字段；DDL、数据字典和 ODS→DWD Markdown 已同步。
+- 门禁结果：结构差异 0；阻塞性未解析 Mapping 0；三层 Mapping 共有 667 条来源或规则暂空，仅作为可选未补齐记录。
+- 后续规则：开始具体需求开发后，按需求文档或存储过程逐表补齐 DWD→DWS、DWS→ADS 的 Excel 和 Markdown；不确定业务逻辑仍必须阻塞并说明原因。
 
-## 6. 任务结束状态
+## 6. 当前边界
+
+本阶段已允许按用户明确规则修改指定 Harness 和数据资产；当前仍不执行 commit、push 或 PR。对无法由需求文档或存储过程证明的业务映射不自动补齐。
+
+## 7. 历史阻塞记录
+
+阶段 5 初始阻塞、恢复证据和当前结论已记录在 `.harness/tasks/schema-consistency-gate-v1/blocking.yaml`。
+
+## 8. 任务结束状态
 
 ```text
-任务状态：进行中
-任务结束说明：设计已获用户批准，实施计划已建立，等待实施授权。
+任务状态：阶段 5 一致性门禁通过
+任务结束说明：两个DWD模型已按用户确认规则修正；空Mapping不再阻塞，后续业务Mapping按需求文档和存储过程逐表补齐。
 ```

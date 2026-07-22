@@ -16,6 +16,23 @@ class GateError(ValueError):
     """Raised when a phase gate is not satisfied."""
 
 
+def check_schema_consistency_gate(root: Path, task_id: str) -> dict[str, Any]:
+    """Accept only a current, complete and clean schema consistency report."""
+    directory, _ = load_task(root, task_id)
+    report = read_yaml(directory / "reports" / "schema-consistency.yaml")
+    if report.get("status") != "passed":
+        raise GateError(
+            "DDL、数据字典和Mapping一致性报告未通过: "
+            f"差异 {len(report.get('differences', []))} 项，"
+            f"未解析 {len(report.get('unresolved', []))} 项"
+        )
+    if report.get("differences") or report.get("unresolved"):
+        raise GateError("一致性报告包含未处理差异或未解析项")
+    if not report.get("inputs") or not report.get("summary"):
+        raise GateError("一致性报告缺少输入文件哈希或汇总结果")
+    return {"task_id": task_id, "gate": "schema_consistency", "result": "passed", "summary": report["summary"]}
+
+
 def _policy(root: Path) -> dict[str, Any]:
     path = root / ".harness" / "policies" / "phase_gates.yaml"
     with path.open("r", encoding="utf-8") as handle:

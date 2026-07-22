@@ -13,21 +13,21 @@
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 |--------|-------------|----------|------|----------|--------|------|------|----------|----------|
-| data_date | 【待补充】 | varchar(8) | - | - | - | - | - | - | - |
-| persn_legal_bk_code | 法人行号 | varchar(7) | - | - | - | - | - | - | - |
-| oprt_org | 归属机构 | varchar(7) | - | - | - | - | - | - | - |
-| cust_id | 【待补充】 | varchar(20) | - | - | - | - | - | - | - |
-| acct_id | 【待补充】 | varchar(40) | - | - | - | - | - | - | - |
-| prdkt_id | 【待补充】 | varchar(40) | - | - | - | - | - | - | - |
-| prdkt_cate_big | 【待补充】 | varchar(40) | - | - | - | - | - | - | - |
-| prdkt_typ | 【待补充】 | varchar(1) | - | - | - | - | - | - | - |
-| bal | 【待补充】 | numeric | - | - | - | - | - | - | - |
-| mth_bal | 【待补充】 | numeric | - | - | - | - | - | - | - |
-| qrt_bal | 【待补充】 | numeric | - | - | - | - | - | - | - |
-| yar_bal | 【待补充】 | numeric | - | - | - | - | - | - | - |
-| mth_days | 【待补充】 | numeric | - | - | - | - | - | - | - |
-| qrt_days | 【待补充】 | numeric | - | - | - | - | - | - | - |
-| yar_days | 【待补充】 | numeric | - | - | - | - | - | - | - |
+| data_date | 【待补充】 | VARCHAR | 8 | - | - | - | - | - | - |
+| persn_legal_bk_code | 法人行号 | VARCHAR | 7 | - | - | - | - | - | - |
+| oprt_org | 归属机构 | VARCHAR | 7 | - | - | - | - | - | - |
+| cust_id | 【待补充】 | VARCHAR | 20 | - | - | - | - | - | - |
+| acct_id | 【待补充】 | VARCHAR | 40 | - | - | - | - | - | - |
+| prdkt_id | 【待补充】 | VARCHAR | 40 | - | - | - | - | - | - |
+| prdkt_cate_big | 【待补充】 | VARCHAR | 40 | - | - | - | - | - | - |
+| prdkt_typ | 【待补充】 | VARCHAR | 1 | - | - | - | - | - | - |
+| bal | 【待补充】 | NUMERIC | 20,2 | - | - | - | - | - | - |
+| mth_bal | 【待补充】 | NUMERIC | 20,2 | - | - | - | - | - | - |
+| qrt_bal | 【待补充】 | NUMERIC | 20,2 | - | - | - | - | - | - |
+| yar_bal | 【待补充】 | NUMERIC | 20,2 | - | - | - | - | - | - |
+| mth_days | 【待补充】 | NUMERIC | 20,2 | - | - | - | - | - | - |
+| qrt_days | 【待补充】 | NUMERIC | 20,2 | - | - | - | - | - | - |
+| yar_days | 【待补充】 | NUMERIC | 20,2 | - | - | - | - | - | - |
 
 ---
 *数据字典版本: v1.1 | 生成时间: 2026-07-21*

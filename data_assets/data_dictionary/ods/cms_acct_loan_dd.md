@@ -25,7 +25,7 @@
 | specificid | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.specificid | 【待确认】 | 2026-07-17 |
 | versionid | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.versionid | 【待确认】 | 2026-07-17 |
 | currency | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.currency | 【待确认】 | 2026-07-17 |
-| businesssum | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.businesssum | 【待确认】 | 2026-07-17 |
+| businesssum | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.businesssum | 【待确认】 | 2026-07-17 |
 | putoutdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.putoutdate | 【待确认】 | 2026-07-17 |
 | maturitydate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.maturitydate | 【待确认】 | 2026-07-17 |
 | originalmaturitydate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.originalmaturitydate | 【待确认】 | 2026-07-17 |
@@ -42,15 +42,15 @@
 | applyserialno | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.applyserialno | 【待确认】 | 2026-07-17 |
 | businessstatus | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.businessstatus | 【待确认】 | 2026-07-17 |
 | maxoverduedays | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.maxoverduedays | 【待确认】 | 2026-07-17 |
-| normalbalance | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.normalbalance | 【待确认】 | 2026-07-17 |
-| overduebalance | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.overduebalance | 【待确认】 | 2026-07-17 |
-| accruedinterest | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.accruedinterest | 【待确认】 | 2026-07-17 |
-| overdueinterest | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.overdueinterest | 【待确认】 | 2026-07-17 |
-| principalpenalty | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.principalpenalty | 【待确认】 | 2026-07-17 |
-| interestpenalty | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.interestpenalty | 【待确认】 | 2026-07-17 |
-| overduefee | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.overduefee | 【待确认】 | 2026-07-17 |
+| normalbalance | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.normalbalance | 【待确认】 | 2026-07-17 |
+| overduebalance | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.overduebalance | 【待确认】 | 2026-07-17 |
+| accruedinterest | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.accruedinterest | 【待确认】 | 2026-07-17 |
+| overdueinterest | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.overdueinterest | 【待确认】 | 2026-07-17 |
+| principalpenalty | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.principalpenalty | 【待确认】 | 2026-07-17 |
+| interestpenalty | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.interestpenalty | 【待确认】 | 2026-07-17 |
+| overduefee | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.overduefee | 【待确认】 | 2026-07-17 |
 | impairmentflag | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.impairmentflag | 【待确认】 | 2026-07-17 |
-| graceinteestamt | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.graceinteestamt | 【待确认】 | 2026-07-17 |
+| graceinteestamt | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.graceinteestamt | 【待确认】 | 2026-07-17 |
 | loanratetermid | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.loanratetermid | 【待确认】 | 2026-07-17 |
 | gracedays | 【待确认】 | NUMERIC | - | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.gracedays | 【待确认】 | 2026-07-17 |
 | currentrpttermid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.currentrpttermid | 【待确认】 | 2026-07-17 |
@@ -58,13 +58,13 @@
 | occurtype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.occurtype | 【待确认】 | 2026-07-17 |
 | vouchtype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.vouchtype | 【待确认】 | 2026-07-17 |
 | businessloantype | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.businessloantype | 【待确认】 | 2026-07-17 |
-| lastdaynormalbalance | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdaynormalbalance | 【待确认】 | 2026-07-17 |
-| lastdayoverduebalance | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayoverduebalance | 【待确认】 | 2026-07-17 |
-| lastdayaccruedinterest | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayaccruedinterest | 【待确认】 | 2026-07-17 |
-| lastdayoverdueinterest | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayoverdueinterest | 【待确认】 | 2026-07-17 |
-| lastdayprincipalpenalty | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayprincipalpenalty | 【待确认】 | 2026-07-17 |
-| lastdayinterestpenalty | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayinterestpenalty | 【待确认】 | 2026-07-17 |
-| lastdayoverduefee | 【待确认】 | NUMERIC | 24, 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayoverduefee | 【待确认】 | 2026-07-17 |
+| lastdaynormalbalance | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdaynormalbalance | 【待确认】 | 2026-07-17 |
+| lastdayoverduebalance | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayoverduebalance | 【待确认】 | 2026-07-17 |
+| lastdayaccruedinterest | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayaccruedinterest | 【待确认】 | 2026-07-17 |
+| lastdayoverdueinterest | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayoverdueinterest | 【待确认】 | 2026-07-17 |
+| lastdayprincipalpenalty | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayprincipalpenalty | 【待确认】 | 2026-07-17 |
+| lastdayinterestpenalty | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayinterestpenalty | 【待确认】 | 2026-07-17 |
+| lastdayoverduefee | 【待确认】 | NUMERIC | 24,2 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.lastdayoverduefee | 【待确认】 | 2026-07-17 |
 | dongjbho | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.dongjbho | 【待确认】 | 2026-07-17 |
 | corpuspaymethod | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.corpuspaymethod | 【待确认】 | 2026-07-17 |
 | autopayflag | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_acct_loan.autopayflag | 【待确认】 | 2026-07-17 |

@@ -19,10 +19,10 @@
 | cust_no | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.cust_no | 【待确认】 | 2026-07-17 |
 | user_time | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.user_time | 【待确认】 | 2026-07-17 |
 | sence_code | 【待确认】 | VARCHAR | 16 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.sence_code | 【待确认】 | 2026-07-17 |
-| rebat_value | 【待确认】 | NUMERIC | 22, 2 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.rebat_value | 【待确认】 | 2026-07-17 |
+| rebat_value | 【待确认】 | NUMERIC | 22,2 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.rebat_value | 【待确认】 | 2026-07-17 |
 | status | 【待确认】 | BPCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.status | 【待确认】 | 2026-07-17 |
 | recode_no | 【待确认】 | VARCHAR | 32 | NOT NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.recode_no | 【待确认】 | 2026-07-17 |
-| trans_amt | 【待确认】 | NUMERIC | 22, 2 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.trans_amt | 【待确认】 | 2026-07-17 |
-| payed_value | 【待确认】 | NUMERIC | 22, 2 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.payed_value | 【待确认】 | 2026-07-17 |
+| trans_amt | 【待确认】 | NUMERIC | 22,2 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.trans_amt | 【待确认】 | 2026-07-17 |
+| payed_value | 【待确认】 | NUMERIC | 22,2 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.payed_value | 【待确认】 | 2026-07-17 |
 | refund_remark | 【待确认】 | VARCHAR | 3000 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.refund_remark | 【待确认】 | 2026-07-17 |
 | ryzd | 【待确认】 | VARCHAR | 1 | NULL | - | - | - | 【待确认】 | crmdm.mbk_mkp_rebat_recode.ryzd | 【待确认】 | 2026-07-17 |

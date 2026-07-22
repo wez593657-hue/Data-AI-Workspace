@@ -7,10 +7,13 @@ import json
 import sys
 from datetime import datetime, timezone
 
-from .gate_checker import GateError, check_gate
+from .gate_checker import GateError, check_gate, check_schema_consistency_gate
+from .asset_sync import sync_dictionary_types
 from .memory_card_guard import MemoryCardError, verify_memory_card
+from .mapping_excel_sync import sync_mapping_markdown
 from .read_manifest import ManifestError, validate_manifest
 from .requirement_parser import RequirementError, parse_requirement
+from .schema_consistency import SchemaConsistencyError, run_schema_consistency
 from .validation import ValidationError, validate_task
 from .task_manager import (
     TaskError,
@@ -61,6 +64,16 @@ def parser() -> argparse.ArgumentParser:
 
     manifest = subparsers.add_parser("check-manifest", help="检查读取清单顺序和文件")
     manifest.add_argument("path")
+
+    consistency = subparsers.add_parser("check-schema-consistency", help="执行全量DDL、数据字典和Mapping一致性校验")
+    consistency.add_argument("task_id")
+
+    consistency_gate = subparsers.add_parser("check-schema-gate", help="检查一致性报告是否允许通过门禁")
+    consistency_gate.add_argument("task_id")
+
+    sync_mapping = subparsers.add_parser("sync-mapping-md", help="按三个Mapping Excel重新生成Markdown")
+
+    sync_assets = subparsers.add_parser("sync-dictionary-types", help="按DDL同步数据字典类型、长度并统一DATE")
 
     read = subparsers.add_parser("record-read", help="记录文件读取证据")
     read.add_argument("task_id")
@@ -123,6 +136,14 @@ def main(argv: list[str] | None = None) -> int:
             result = verify_memory_card(root / args.requirement)
         elif args.command == "check-manifest":
             result = validate_manifest(root / args.path, root)
+        elif args.command == "check-schema-consistency":
+            result = run_schema_consistency(root, args.task_id)
+        elif args.command == "check-schema-gate":
+            result = check_schema_consistency_gate(root, args.task_id)
+        elif args.command == "sync-mapping-md":
+            result = sync_mapping_markdown(root)
+        elif args.command == "sync-dictionary-types":
+            result = sync_dictionary_types(root)
         elif args.command == "record-read":
             result = add_file_read_evidence(
                 root, args.task_id, args.evidence_id, args.phase, args.path, args.purpose
@@ -166,6 +187,7 @@ def main(argv: list[str] | None = None) -> int:
         RequirementError,
         MemoryCardError,
         ManifestError,
+        SchemaConsistencyError,
         FileNotFoundError,
         ValueError,
     ) as error:

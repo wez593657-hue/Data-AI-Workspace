@@ -13,25 +13,25 @@
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
 |--------|-------------|----------|------|----------|--------|------|------|----------|----------|
-| CUST_ID | 客户编号 | VARCHAR2(20) | - | - | - | - | - | - | - |
-| CUST_TYP | 客户类型 | VARCHAR2(6) | - | - | - | - | - | - | - |
-| ACCT_ID | 账号 | VARCHAR2(40) | - | - | - | - | - | - | - |
-| PRDKT_ID | 产品编号 | VARCHAR2(40) | - | - | - | - | - | - | - |
-| PRDKT_NAME | 产品名称 | VARCHAR2(100) | - | - | - | - | - | - | - |
-| PRDKT_CATE_BIG | 产品大类 | VARCHAR2(60) | - | - | - | - | - | - | - |
-| LOAN_ISSU_AMT | 借据金额 | NUMBER(20,2) | - | - | - | - | - | - | - |
-| LOAN_ISSU_DATE | 贷款发放日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
-| BAL | 余额 | NUMBER(20,2) | - | - | - | - | - | - | - |
-| RATE_INTRI | 利率 | NUMBER(10,4) | - | - | - | - | - | - | - |
-| EXPR_DATE | 到期日期 | VARCHAR2(10) | - | - | - | - | - | - | - |
-| ACCT_STATE | 账户状态 | VARCHAR2(10) | - | - | - | - | - | - | - |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | - | - | - | - | - | - | - |
-| OPRT_ORG | 经办机构 | VARCHAR2(7) | - | - | - | - | - | - | - |
-| IOU_NO | 借据号 | VARCHAR2(100) | - | - | - | - | - | - | - |
-| INT_ARREARS_TTL | 欠息(合计) | NUMBER(20,2) | - | - | - | - | - | - | - |
-| REPAY_TYP | 还款方式 | VARCHAR2(4) | - | - | - | - | - | - | - |
-| REPAY_ACCT_NO | 还款账号 | VARCHAR2(30) | - | - | - | - | - | - | - |
-| CATE_5LVL | 五级分类 | VARCHAR2(2) | - | - | - | - | - | - | - |
+| CUST_ID | 客户编号 | VARCHAR | 20 | - | - | - | - | - | - |
+| CUST_TYP | 客户类型 | VARCHAR | 6 | - | - | - | - | - | - |
+| ACCT_ID | 账号 | VARCHAR | 40 | - | - | - | - | - | - |
+| PRDKT_ID | 产品编号 | VARCHAR | 40 | - | - | - | - | - | - |
+| PRDKT_NAME | 产品名称 | VARCHAR | 100 | - | - | - | - | - | - |
+| PRDKT_CATE_BIG | 产品大类 | VARCHAR | 60 | - | - | - | - | - | - |
+| LOAN_ISSU_AMT | 借据金额 | NUMBER | 20,2 | - | - | - | - | - | - |
+| LOAN_ISSU_DATE | 贷款发放日期 | VARCHAR | 10 | - | - | - | - | - | - |
+| BAL | 余额 | NUMBER | 20,2 | - | - | - | - | - | - |
+| RATE_INTRI | 利率 | NUMBER | 10,4 | - | - | - | - | - | - |
+| EXPR_DATE | 到期日期 | VARCHAR | 10 | - | - | - | - | - | - |
+| ACCT_STATE | 账户状态 | VARCHAR | 10 | - | - | - | - | - | - |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 4 | - | - | - | - | - | - |
+| OPRT_ORG | 经办机构 | VARCHAR | 7 | - | - | - | - | - | - |
+| IOU_NO | 借据号 | VARCHAR | 100 | - | - | - | - | - | - |
+| INT_ARREARS_TTL | 欠息(合计) | NUMBER | 20,2 | - | - | - | - | - | - |
+| REPAY_TYP | 还款方式 | VARCHAR | 4 | - | - | - | - | - | - |
+| REPAY_ACCT_NO | 还款账号 | VARCHAR | 30 | - | - | - | - | - | - |
+| CATE_5LVL | 五级分类 | VARCHAR | 2 | - | - | - | - | - | - |
 
 ---
 *数据字典版本: v1.0 | 生成时间: 2026-07-17*

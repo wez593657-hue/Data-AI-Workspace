@@ -32,13 +32,13 @@
 | mostbusiness | 【待确认】 | VARCHAR | 1600 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.mostbusiness | 【待确认】 | 2026-07-17 |
 | budgettype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.budgettype | 【待确认】 | 2026-07-17 |
 | rccurrency | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.rccurrency | 【待确认】 | 2026-07-17 |
-| registercapital | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.registercapital | 【待确认】 | 2026-07-17 |
+| registercapital | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.registercapital | 【待确认】 | 2026-07-17 |
 | pccurrency | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.pccurrency | 【待确认】 | 2026-07-17 |
-| paiclupcapital | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.paiclupcapital | 【待确认】 | 2026-07-17 |
+| paiclupcapital | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.paiclupcapital | 【待确认】 | 2026-07-17 |
 | fundsource | 【待确认】 | VARCHAR | 200 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.fundsource | 【待确认】 | 2026-07-17 |
-| totalassets | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.totalassets | 【待确认】 | 2026-07-17 |
-| netassets | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.netassets | 【待确认】 | 2026-07-17 |
-| annualincome | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.annualincome | 【待确认】 | 2026-07-17 |
+| totalassets | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.totalassets | 【待确认】 | 2026-07-17 |
+| netassets | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.netassets | 【待确认】 | 2026-07-17 |
+| annualincome | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.annualincome | 【待确认】 | 2026-07-17 |
 | creditdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.creditdate | 【待确认】 | 2026-07-17 |
 | licenseno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.licenseno | 【待确认】 | 2026-07-17 |
 | licensedate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.licensedate | 【待确认】 | 2026-07-17 |
@@ -114,12 +114,12 @@
 | superloancardno | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.superloancardno | 【待确认】 | 2026-07-17 |
 | supercerttype | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.supercerttype | 【待确认】 | 2026-07-17 |
 | smeindustrytype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.smeindustrytype | 【待确认】 | 2026-07-17 |
-| sellsum | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.sellsum | 【待确认】 | 2026-07-17 |
+| sellsum | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.sellsum | 【待确认】 | 2026-07-17 |
 | supercertid | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.supercertid | 【待确认】 | 2026-07-17 |
 | officecountrycode | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.officecountrycode | 【待确认】 | 2026-07-17 |
 | officeregioncode | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.officeregioncode | 【待确认】 | 2026-07-17 |
 | registerzip | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.registerzip | 【待确认】 | 2026-07-17 |
-| limitck | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.limitck | 【待确认】 | 2026-07-17 |
+| limitck | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.limitck | 【待确认】 | 2026-07-17 |
 | sillerent | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.sillerent | 【待确认】 | 2026-07-17 |
 | industrialadjust | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.industrialadjust | 【待确认】 | 2026-07-17 |
 | industrialupgrading | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.industrialupgrading | 【待确认】 | 2026-07-17 |
@@ -136,13 +136,13 @@
 | webaddecifid | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.webaddecifid | 【待确认】 | 2026-07-17 |
 | unitycreditcode | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.unitycreditcode | 【待确认】 | 2026-07-17 |
 | entnature | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.entnature | 【待确认】 | 2026-07-17 |
-| otherreceivables | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.otherreceivables | 【待确认】 | 2026-07-17 |
+| otherreceivables | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.otherreceivables | 【待确认】 | 2026-07-17 |
 | czarea | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.czarea | 【待确认】 | 2026-07-17 |
 | listingtype | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.listingtype | 【待确认】 | 2026-07-17 |
 | listingcountry | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.listingcountry | 【待确认】 | 2026-07-17 |
 | listingcorpnumber | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.listingcorpnumber | 【待确认】 | 2026-07-17 |
 | financedate | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.financedate | 【待确认】 | 2026-07-17 |
-| totaldebt | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.totaldebt | 【待确认】 | 2026-07-17 |
+| totaldebt | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.totaldebt | 【待确认】 | 2026-07-17 |
 | officeaddcode | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.officeaddcode | 【待确认】 | 2026-07-17 |
 | jxscope | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.jxscope | 【待确认】 | 2026-07-17 |
 | openaccontlicense | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.openaccontlicense | 【待确认】 | 2026-07-17 |
@@ -150,7 +150,7 @@
 | ratingfirmriting | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.ratingfirmriting | 【待确认】 | 2026-07-17 |
 | bankshareholder | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.bankshareholder | 【待确认】 | 2026-07-17 |
 | listingplace | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.listingplace | 【待确认】 | 2026-07-17 |
-| interbankquota | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.interbankquota | 【待确认】 | 2026-07-17 |
+| interbankquota | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.interbankquota | 【待确认】 | 2026-07-17 |
 | taxpayerid | 【待确认】 | VARCHAR | 50 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.taxpayerid | 【待确认】 | 2026-07-17 |
 | standardevlaresult | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.standardevlaresult | 【待确认】 | 2026-07-17 |
 | moodyevlaresult | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.moodyevlaresult | 【待确认】 | 2026-07-17 |
@@ -160,16 +160,16 @@
 | fitchratresult | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.fitchratresult | 【待确认】 | 2026-07-17 |
 | hightechent | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.hightechent | 【待确认】 | 2026-07-17 |
 | accountbussdate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.accountbussdate | 【待确认】 | 2026-07-17 |
-| otherreceive | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.otherreceive | 【待确认】 | 2026-07-17 |
+| otherreceive | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.otherreceive | 【待确认】 | 2026-07-17 |
 | department | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.department | 【待确认】 | 2026-07-17 |
 | interregion | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.interregion | 【待确认】 | 2026-07-17 |
 | countryrisk | 【待确认】 | VARCHAR | 18 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.countryrisk | 【待确认】 | 2026-07-17 |
 | certificatenum | 【待确认】 | VARCHAR | 32 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.certificatenum | 【待确认】 | 2026-07-17 |
 | isfirstloanuser | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.isfirstloanuser | 【待确认】 | 2026-07-17 |
 | firstloandate | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.firstloandate | 【待确认】 | 2026-07-17 |
-| lastyearemployees | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.lastyearemployees | 【待确认】 | 2026-07-17 |
-| lastyearbusinessincome | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.lastyearbusinessincome | 【待确认】 | 2026-07-17 |
-| lastyeartotalassets | 【待确认】 | NUMERIC | 24, 6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.lastyeartotalassets | 【待确认】 | 2026-07-17 |
+| lastyearemployees | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.lastyearemployees | 【待确认】 | 2026-07-17 |
+| lastyearbusinessincome | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.lastyearbusinessincome | 【待确认】 | 2026-07-17 |
+| lastyeartotalassets | 【待确认】 | NUMERIC | 24,6 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.lastyeartotalassets | 【待确认】 | 2026-07-17 |
 | systemscope | 【待确认】 | VARCHAR | 10 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.systemscope | 【待确认】 | 2026-07-17 |
 | isspecialandnew | 【待确认】 | VARCHAR | 2 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.isspecialandnew | 【待确认】 | 2026-07-17 |
 | belonggroupname | 【待确认】 | VARCHAR | 80 | NULL | - | - | - | 【待确认】 | crmdm.cms_ent_info.belonggroupname | 【待确认】 | 2026-07-17 |

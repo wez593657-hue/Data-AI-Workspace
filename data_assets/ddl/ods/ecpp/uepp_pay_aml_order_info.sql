@@ -97,7 +97,7 @@ CREATE TABLE crmdm.uepp_pay_aml_order_info (
     clct_sts varchar(1) NULL,
     bh_valid varchar(1) NULL,
     bs_valid varchar(1) NULL,
-    due_dt sys."date" NULL,
+    due_dt DATE NULL,
     rsrv_01 varchar(48) NULL,
     rsrv_02 varchar(48) NULL,
     rsrv_03 varchar(48) NULL,
