@@ -1,0 +1,10 @@
+evidence_id: E-0008
+task_id: maturity-takeover-real-run-v1
+phase: REQUIREMENT_PARSED
+kind: file_read
+path: requirements\需求-代码映射追踪表.md
+sha256: e08bae36efa5110e0e31ae67eaef77583aa9b23f1e9dde3663e558dae5cc60b2
+purpose: 读取需求与代码追踪关系
+repository_revision: e9b3612138393e1ad26aed8e569c0c46ded69fbe
+result: passed
+created_at: '2026-07-23T02:04:34+00:00'

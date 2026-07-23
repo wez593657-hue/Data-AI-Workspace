@@ -1,0 +1,10 @@
+evidence_id: E-0015
+task_id: maturity-takeover-real-run-v1
+phase: DICTIONARY_READY
+kind: file_read
+path: data_assets\data_dictionary\ads\ads_cust_deadline_rmnd_statis.md
+sha256: d9e0fe888a320d21a922c49eb2caaf321c8901aca6a2d0cc6bd15db890f96cc5
+purpose: 读取到期承接统计数据字典
+repository_revision: e9b3612138393e1ad26aed8e569c0c46ded69fbe
+result: passed
+created_at: '2026-07-23T02:04:38+00:00'

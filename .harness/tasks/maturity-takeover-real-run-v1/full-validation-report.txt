@@ -1,0 +1,128 @@
+================================================================================
+工作区完整校验
+================================================================================
+
+============================================================
+1. 文档变更审核
+============================================================
+✓ 无文档变更，跳过审核
+
+
+✓ 文档变更审核通过
+
+============================================================
+2. 跨层一致性校验
+============================================================
+================================================================================
+跨层一致性校验
+================================================================================
+
+=== DDL vs 数据字典 一致性校验 ===
+  ✓ [dwd] dwd_acct_depo: DDL与数据字典字段一致
+  ✓ [dwd] dwd_acct_depo_his: DDL与数据字典字段一致
+  ✓ [dwd] dwd_acct_fin: DDL与数据字典字段一致
+  ✓ [dwd] dwd_acct_fin_his: DDL与数据字典字段一致
+  ✓ [dwd] dwd_acct_insur: DDL与数据字典字段一致
+  ✓ [dwd] dwd_acct_insur_his: DDL与数据字典字段一致
+  ✓ [dwd] dwd_acct_loan: DDL与数据字典字段一致
+  ✓ [dwd] dwd_acct_loan_his: DDL与数据字典字段一致
+  ✓ [dwd] dwd_crm_sys_xthlcs: DDL与数据字典字段一致
+  ✓ [dwd] dwd_cust_ctrakt_info: DDL与数据字典字段一致
+  ✓ [dwd] dwd_cust_indiv_crdt: DDL与数据字典字段一致
+  ✓ [dwd] dwd_cust_indiv_risk_invst: DDL与数据字典字段一致
+  ✓ [dwd] dwd_cust_indv_info: DDL与数据字典字段一致
+  ✓ [dwd] dwd_cust_indv_kyc: DDL与数据字典字段一致
+  ✓ [dwd] dwd_cust_sign_ctrakt: DDL与数据字典字段一致
+  ✓ [dwd] dwd_prdkt_info: DDL与数据字典字段一致
+  ✓ [dwd] dwd_sys_org: DDL与数据字典字段一致
+  ✓ [dwd] dwd_tmp_jigou_base: DDL与数据字典字段一致
+  ✓ [dwd] dwd_tmp_jigou_code: DDL与数据字典字段一致
+  ✓ [dwd] dwd_tmp_jigou_path: DDL与数据字典字段一致
+  ✓ [dwd] dwd_tx_aset: DDL与数据字典字段一致
+  ✓ [dws] dws_cust_asse_liab: DDL与数据字典字段一致
+  ✓ [dws] dws_cust_asse_liab_cumu: DDL与数据字典字段一致
+  ✓ [dws] dws_cust_asse_liab_cumu_his: DDL与数据字典字段一致
+  ✓ [dws] dws_cust_capital_rmnd: DDL与数据字典字段一致
+  ✓ [dws] dws_cust_care_rmnd: DDL与数据字典字段一致
+  ✓ [dws] dws_cust_deadline_rmnd: DDL与数据字典字段一致
+  ✓ [dws] dws_cust_indiv_referral: DDL与数据字典字段一致
+  ✓ [dws] dws_cust_lvl_info: DDL与数据字典字段一致
+  ✓ [dws] dws_cust_referral_rmnd: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_deadline_rmnd_dtl: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_deadline_rmnd_statis: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_indv_poten: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_lost_dtl: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_lost_statis: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_new_cust_dtl: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_new_cust_statis: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_others_rmnd: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_potn_upgrade_cust_dtl: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_potn_upgrade_statis: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_prdkt_rcmd: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_sleep_wake_dtl: DDL与数据字典字段一致
+  ✓ [ads] ads_cust_sleep_wake_statis: DDL与数据字典字段一致
+  ✓ [ads] ads_mkt_act_tsk_mon: DDL与数据字典字段一致
+  ✓ [ads] ads_mkt_act_tsk_mon_zb: DDL与数据字典字段一致
+  ✓ [ads] ads_mkt_rec_info: DDL与数据字典字段一致
+  ✓ [ads] ads_mkt_task_indx_sub_cmplt: DDL与数据字典字段一致
+  ✓ [ads] ads_mkt_tsk_info: DDL与数据字典字段一致
+  ✓ [ads] ads_report_0001: DDL与数据字典字段一致
+  ✓ [ads] ads_stat_indx_data: DDL与数据字典字段一致
+
+=== ODS DDL 与数据字典一致性校验 ===
+  ✓ ODS DDL与数据字典字段一致性校验完成
+
+=== 数据字典 vs Mapping 一致性校验 ===
+  ✓ 数据字典与Mapping字段一致
+
+=== 表命名规范校验 ===
+  ✓ 表命名规范校验完成
+
+=== TMP_ 表审核清单校验 ===
+  ✓ TMP_ 审核清单校验完成
+
+================================================================================
+
+✓ 所有校验通过
+
+
+✓ 跨层一致性校验通过
+
+============================================================
+3. SQL语法检查
+============================================================
+  ✓ SQL语法检查通过
+
+============================================================
+4. JSON格式检查
+============================================================
+  ✓ JSON格式检查通过
+
+============================================================
+5. YAML格式检查
+============================================================
+  ✓ YAML格式检查通过
+
+============================================================
+6. Git一致性检查
+============================================================
+  ✗ 存在未跟踪文件: 5 个
+    - .harness/tasks/maturity-takeover-real-run-v1/
+    - data_assets/stored_procedure/ods_to_dwd/PRO_DWD_ACCT_FIN.sql
+    - data_assets/stored_procedure/ods_to_dwd/PRO_DWD_ACCT_INSUR.sql
+    - data_assets/stored_procedure/ods_to_dwd/PRO_DWD_CUST_CTRAKT_INFO.sql
+    - data_assets/stored_procedure/ods_to_dwd/PRO_DWD_CUST_INDIV_CRDT.sql
+  ✗ 请使用 git add 添加或 .gitignore 忽略
+
+================================================================================
+校验结果汇总
+================================================================================
+  文档变更审核: ✓ 通过
+  跨层一致性校验: ✓ 通过
+  SQL语法检查: ✓ 通过
+  JSON格式检查: ✓ 通过
+  YAML格式检查: ✓ 通过
+  Git一致性检查: ✗ 失败
+
+================================================================================
+✗ 部分校验未通过

@@ -1,0 +1,10 @@
+evidence_id: E-0013
+task_id: maturity-takeover-real-run-v1
+phase: DDL_READY
+kind: file_read
+path: data_assets\ddl\ads\ads_cust_deadline_rmnd_statis.sql
+sha256: 97d6ce9c3368144ca992a15e3b38ccd13398e830fe5a0f6e0e3b3859a3096803
+purpose: 读取到期承接统计DDL
+repository_revision: e9b3612138393e1ad26aed8e569c0c46ded69fbe
+result: passed
+created_at: '2026-07-23T02:04:37+00:00'

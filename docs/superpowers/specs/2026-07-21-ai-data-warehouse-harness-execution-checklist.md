@@ -74,7 +74,7 @@
 | 项目 | 结果 | 证据 |
 |------|------|------|
 | 测试任务 | 已创建并阻塞 | `.harness/tasks/phase6-deadline-detail-v1/` |
-| 测试对象 | 到期承接明细存储过程 | `data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_dtl.sql` |
+| 测试对象 | 到期承接明细存储过程 | `data_assets/stored_procedure/dws_to_ads/PRC_ads_cust_deadline_rmnd_dtl.sql` |
 | 需求版本 | 已识别 | `requirements/到期承接规则记忆卡片.md`，v2.1.0 |
 | 规则覆盖 | 5项通过、2项阻塞 | REQ-CUST-001、003、004、005、006通过；REQ-CUST-007、008待实现 |
 | 反向逻辑 | 阻塞 | 存储过程目标列使用 `CUST_HRAKY`，ADS目标DDL字段为 `CUST_LVL` |

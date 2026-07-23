@@ -1,0 +1,10 @@
+evidence_id: E-0003
+task_id: maturity-takeover-real-run-v1
+phase: WORKSPACE_CHECKED
+kind: file_read
+path: .harness\policies\required_evidence.yaml
+sha256: f1bcb4a1052a3e70060536031e33a0288b7c64314e34ddce07d3bc34193f0abb
+purpose: 记录证据要求规则
+repository_revision: e9b3612138393e1ad26aed8e569c0c46ded69fbe
+result: passed
+created_at: '2026-07-23T02:04:32+00:00'

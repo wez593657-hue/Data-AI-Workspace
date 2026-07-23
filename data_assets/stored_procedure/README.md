@@ -15,9 +15,9 @@ stored_procedure/
 
 | 层 | 示例 |
 |----|------|
-| DWD层 | `pro_dwd_cust_indv_info.sql` |
-| DWS层 | `pro_dws_cust_deadline_rmnd.sql` |
-| ADS层 | `pro_ads_cust_deadline_rmnd_dtl.sql` |
+| DWD层 | `PRC_dwd_cust_indv_info.sql` |
+| DWS层 | `PRC_dws_cust_deadline_rmnd.sql` |
+| ADS层 | `PRC_ads_cust_deadline_rmnd_dtl.sql` |
 
 ## 开发规范
 
@@ -33,6 +33,6 @@ stored_procedure/
 
 | 目录 | 用途 | 示例文件 |
 |------|------|----------|
-| ods_to_dwd | ODS原始数据清洗转换到DWD | `pro_dwd_cust_indv_info.sql` |
-| dwd_to_dws | DWD明细数据聚合到DWS | `pro_dws_cust_deadline_rmnd.sql` |
-| dws_to_ads | DWS汇总数据生成ADS报表 | `pro_ads_cust_deadline_rmnd_dtl.sql` |
+| ods_to_dwd | ODS原始数据清洗转换到DWD | `PRC_dwd_cust_indv_info.sql` |
+| dwd_to_dws | DWD明细数据聚合到DWS | `PRC_dws_cust_deadline_rmnd.sql` |
+| dws_to_ads | DWS汇总数据生成ADS报表 | `PRC_ads_cust_deadline_rmnd_dtl.sql` |

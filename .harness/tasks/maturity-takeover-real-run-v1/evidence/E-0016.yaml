@@ -1,0 +1,10 @@
+evidence_id: E-0016
+task_id: maturity-takeover-real-run-v1
+phase: PROCEDURE_READY
+kind: file_read
+path: data_assets\stored_procedure\dws_to_ads\pro_ads_cust_deadline_rmnd_dtl.sql
+sha256: f955b24baefa266bdebfb07151c0b4749f04aff50448b083b96916aef50342e3
+purpose: 读取到期承接明细存储过程
+repository_revision: e9b3612138393e1ad26aed8e569c0c46ded69fbe
+result: passed
+created_at: '2026-07-23T02:04:39+00:00'

@@ -1,0 +1,10 @@
+evidence_id: E-0006
+task_id: maturity-takeover-real-run-v1
+phase: REQUIREMENT_PARSED
+kind: file_read
+path: requirements\05_经营管理.md
+sha256: 28ed21f22b5ef968795931f3d3d5f6726644fda9b4e48be9f6e672afa2ad7d1b
+purpose: 读取到期承接正式需求章节
+repository_revision: e9b3612138393e1ad26aed8e569c0c46ded69fbe
+result: passed
+created_at: '2026-07-23T02:04:33+00:00'

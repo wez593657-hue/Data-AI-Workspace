@@ -1,0 +1,10 @@
+evidence_id: E-0001
+task_id: maturity-takeover-real-run-v1
+phase: WORKSPACE_CHECKED
+kind: file_read
+path: .harness\config.yaml
+sha256: 3e0ea5969e684d15ce740b713744185108e048602d8e15da24a775c6d254908a
+purpose: 记录本次测试读取的Harness项目规则
+repository_revision: e9b3612138393e1ad26aed8e569c0c46ded69fbe
+result: passed
+created_at: '2026-07-23T01:18:34+00:00'

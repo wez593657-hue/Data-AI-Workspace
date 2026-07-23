@@ -1,0 +1,10 @@
+evidence_id: E-0011
+task_id: maturity-takeover-real-run-v1
+phase: MAPPING_READY
+kind: file_read
+path: data_assets\mapping\dws_to_ads\dws到ads映射.md
+sha256: ce0859f4e93d3ad3f639689b07a4ada845c5d130a6456cccfddbd5ce4972b262
+purpose: 读取DWS到ADS Mapping Markdown
+repository_revision: e9b3612138393e1ad26aed8e569c0c46ded69fbe
+result: passed
+created_at: '2026-07-23T02:04:36+00:00'

@@ -5,7 +5,7 @@ AI 可以在特性分支生成存储过程和 `TMP_` 表。每张 TMP_ 表在提
 ```json
 {
   "table_name": "TMP_DWD_CUSTOMER_STAGE",
-  "procedure": "pro_dwd_customer.sql",
+  "procedure": "PRC_dwd_customer.sql",
   "purpose": "客户数据分阶段处理",
   "source_tables": ["ods_customer"],
   "columns": [

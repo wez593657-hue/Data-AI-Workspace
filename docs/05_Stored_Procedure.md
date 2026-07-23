@@ -350,17 +350,17 @@ END $$;
 
 | 层 | 示例 |
 |----|------|
-| DWD层 | `pro_dwd_cust_indv_info` |
-| DWS层 | `pro_dws_cust_deadline_rmnd` |
-| ADS层 | `pro_ads_cust_deadline_rmnd_dtl` |
+| DWD层 | `PRC_dwd_cust_indv_info` |
+| DWS层 | `PRC_dws_cust_deadline_rmnd` |
+| ADS层 | `PRC_ads_cust_deadline_rmnd_dtl` |
 
 文件命名格式：`pro_{结果表}.sql`
 
 | 目录 | 示例文件 |
 |------|----------|
-| ods_to_dwd | `pro_dwd_cust_indv_info.sql` |
-| dwd_to_dws | `pro_dws_cust_deadline_rmnd.sql` |
-| dws_to_ads | `pro_ads_cust_deadline_rmnd_dtl.sql` |
+| ods_to_dwd | `PRC_dwd_cust_indv_info.sql` |
+| dwd_to_dws | `PRC_dws_cust_deadline_rmnd.sql` |
+| dws_to_ads | `PRC_ads_cust_deadline_rmnd_dtl.sql` |
 
 ## 5.10 禁止事项
 

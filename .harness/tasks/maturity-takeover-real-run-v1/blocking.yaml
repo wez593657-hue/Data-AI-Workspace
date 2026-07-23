@@ -1,0 +1,13 @@
+status: BLOCKED
+blocked_from: CREATED
+reason: 真实需求流程测试被Harness门禁阻塞：1)通用record命令生成证据缺少task_id，无法记录workspace_status等阶段证据；2)需求解析器对05_经营管理.md及规则记忆卡片的版本历史、跨模块重复REQ编号直接报重复，无法进入需求解析/记忆卡片校验；3)全量工作区校验受任务证据目录及4个既有未跟踪存储过程影响而失败。
+category: harness实现缺陷与工作区状态
+evidence: parse-requirement 05_经营管理.md失败：需求文件存在重复规则编号REQ-CUST-001；check-memory-card
+  05_经营管理.md失败：未找到唯一对应记忆卡片；record E-0018/E-0019失败：证据不属于当前任务；schema-consistency passed；logic-gate
+  passed；run_full_validation失败于Git一致性检查。
+impact: 无法按状态机完成从WORKSPACE_CHECKED到FULL_VALIDATION_PASSED的正式链路，不能宣称需求开发流程测试完成或允许提交推送。
+recommendation: 修复record证据生成补充task_id；需求解析按目标需求章节/规则表去重并支持指定记忆卡片；清理或纳入既有未跟踪存储过程后重新运行全量校验。
+alternatives: 保持当前阻塞并输出失败报告；或用户确认后新建Harness修复任务，先修复门禁再重跑本测试。
+user_decision: 待用户确认是否建立Harness修复任务
+recovery_condition: 上述三个问题均有代码/工作区修复证据，且重新执行清单、解析、记忆卡片、状态链和全量校验全部通过。
+created_at: '2026-07-23T02:07:30+00:00'

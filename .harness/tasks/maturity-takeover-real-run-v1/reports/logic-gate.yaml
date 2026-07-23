@@ -1,0 +1,87 @@
+schema_version: '0.1'
+task_id: maturity-takeover-real-run-v1
+created_at: '2026-07-23T02:06:49+00:00'
+status: passed
+rule_coverage:
+  requirement: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\requirements\到期承接规则记忆卡片.md
+  procedure: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\stored_procedure\dws_to_ads\pro_ads_cust_deadline_rmnd_dtl.sql
+  requirement_version: v2.1.0
+  rules:
+  - rule_id: REQ-CUST-001
+    description: 到期承接明细表
+    source_declared: true
+    implementation_match: true
+    pending_marker: false
+    status: passed
+  - rule_id: REQ-CUST-003
+    description: 30天承接窗口
+    source_declared: true
+    implementation_match: true
+    pending_marker: false
+    status: passed
+  - rule_id: REQ-CUST-004
+    description: 下一笔到期日减1窗口规则
+    source_declared: true
+    implementation_match: true
+    pending_marker: false
+    status: passed
+  - rule_id: REQ-CUST-005
+    description: 理财转存款转化率/金额
+    source_declared: true
+    implementation_match: true
+    pending_marker: false
+    status: passed
+  - rule_id: REQ-CUST-006
+    description: 存款转理财转化率/金额
+    source_declared: true
+    implementation_match: true
+    pending_marker: false
+    status: passed
+  - rule_id: REQ-CUST-007
+    description: 客户承接率剔除保险
+    source_declared: true
+    implementation_match: true
+    pending_marker: false
+    status: passed
+  - rule_id: REQ-CUST-008
+    description: 定期存款承接率排除通知存款
+    source_declared: true
+    implementation_match: true
+    pending_marker: false
+    status: passed
+  status: passed
+reverse_logic:
+  procedure: D:\AI\AI-Workspace\Kingbase-CRM-AI-Development-Guide\data_assets\stored_procedure\dws_to_ads\pro_ads_cust_deadline_rmnd_dtl.sql
+  targets:
+  - ADS_CUST_DEADLINE_RMND_DTL
+  - TMP_CDR_DTL_AUM_BAL
+  - TMP_CDR_DTL_CUST_BASE
+  - TMP_CDR_DTL_DUE_WIN
+  - TMP_CDR_DTL_MATURE_SRC
+  - TMP_CDR_DTL_PERIOD
+  - TMP_CDR_DTL_PURCHASE_SRC
+  - TMP_CDR_DTL_TAKE_AMT
+  sources:
+  - ADS_CUST_DEADLINE_RMND_DTL
+  - ADS_MKT_REC_INFO
+  - DWD_ACCT_DEPO
+  - DWD_ACCT_FIN
+  - DWD_ACCT_INSUR
+  - DWD_CUST_INDV_INFO
+  - DWS_CUST_ASSE_LIAB
+  - TMP_CDR_DTL_AUM_BAL
+  - TMP_CDR_DTL_CUST_BASE
+  - TMP_CDR_DTL_DUE_WIN
+  - TMP_CDR_DTL_MATURE_SRC
+  - TMP_CDR_DTL_PERIOD
+  - TMP_CDR_DTL_PURCHASE_SRC
+  - TMP_CDR_DTL_TAKE_AMT
+  - dual
+  checks:
+    issues: []
+    target_field_check:
+      status: passed
+      missing_in_ddl: []
+      insert_field_count: 25
+  status: passed
+blocking_reasons: []

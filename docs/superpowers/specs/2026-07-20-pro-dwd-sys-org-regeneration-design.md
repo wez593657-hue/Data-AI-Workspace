@@ -1,8 +1,8 @@
-# PRO_DWD_SYS_ORG Regeneration Design
+# PRC_DWD_SYS_ORG Regeneration Design
 
 ## Goal
 
-Regenerate `PRO_DWD_SYS_ORG` so that it produces the CRM organization hierarchy from `cbs_kbrp_jgcshu` and `cbs_kbrp_jggxii` without hard-coded organization identifiers for missing relationship records.
+Regenerate `PRC_DWD_SYS_ORG` so that it produces the CRM organization hierarchy from `cbs_kbrp_jgcshu` and `cbs_kbrp_jggxii` without hard-coded organization identifiers for missing relationship records.
 
 ## Parent Resolution
 

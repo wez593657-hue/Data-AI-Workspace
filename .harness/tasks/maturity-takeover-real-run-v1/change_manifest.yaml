@@ -1,0 +1,81 @@
+schema_version: '0.1'
+task_id: maturity-takeover-real-run-v1
+user_confirmation: confirmed
+objective: 到期承接真实需求开发流程全链路测试，不修改业务资产，不执行真实数据库和Explain
+allowed_changes:
+  - path: .harness/tasks/maturity-takeover-real-run-v1/
+    purpose: 仅写入本次测试任务状态、读取证据、校验报告和流程记录
+read_only_inputs:
+  - requirements/需求文档索引.md
+  - requirements/05_经营管理.md
+  - requirements/03_客户管理.md
+  - requirements/到期承接规则记忆卡片.md
+  - requirements/需求-代码映射追踪表.md
+  - .harness/config.yaml
+  - .harness/policies/phase_gates.yaml
+  - .harness/policies/required_evidence.yaml
+  - .harness/policies/allowed_paths.yaml
+  - data_assets/ddl/ads/ads_cust_deadline_rmnd_dtl.sql
+  - data_assets/ddl/ads/ads_cust_deadline_rmnd_statis.sql
+  - data_assets/data_dictionary/ads/ads_cust_deadline_rmnd_dtl.md
+  - data_assets/data_dictionary/ads/ads_cust_deadline_rmnd_statis.md
+  - data_assets/mapping/dws_to_ads/ADS应用层数据模型_CRM_ V1.0.xlsx
+  - data_assets/mapping/dws_to_ads/dws到ads映射.md
+  - data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_dtl.sql
+  - data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_statis.sql
+read_order:
+  - path: .harness/config.yaml
+    purpose: project_rules
+    required: true
+  - path: .harness/policies/phase_gates.yaml
+    purpose: project_rules
+    required: true
+  - path: .harness/policies/required_evidence.yaml
+    purpose: project_rules
+    required: true
+  - path: .harness/policies/allowed_paths.yaml
+    purpose: project_rules
+    required: true
+  - path: requirements/需求文档索引.md
+    purpose: requirement
+    required: true
+  - path: requirements/05_经营管理.md
+    purpose: requirement
+    required: true
+  - path: requirements/03_客户管理.md
+    purpose: requirement
+    required: true
+  - path: requirements/需求-代码映射追踪表.md
+    purpose: requirement
+    required: true
+  - path: requirements/到期承接规则记忆卡片.md
+    purpose: memory_card
+    required: true
+  - path: data_assets/mapping/dws_to_ads/ADS应用层数据模型_CRM_ V1.0.xlsx
+    purpose: dws_to_ads_mapping
+    required: true
+  - path: data_assets/mapping/dws_to_ads/dws到ads映射.md
+    purpose: dws_to_ads_mapping
+    required: true
+  - path: data_assets/ddl/ads/ads_cust_deadline_rmnd_dtl.sql
+    purpose: ads_dictionary
+    required: true
+  - path: data_assets/ddl/ads/ads_cust_deadline_rmnd_statis.sql
+    purpose: ads_dictionary
+    required: true
+  - path: data_assets/data_dictionary/ads/ads_cust_deadline_rmnd_dtl.md
+    purpose: ads_dictionary
+    required: true
+  - path: data_assets/data_dictionary/ads/ads_cust_deadline_rmnd_statis.md
+    purpose: ads_dictionary
+    required: true
+  - path: data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_dtl.sql
+    purpose: existing_implementation
+    required: true
+  - path: data_assets/stored_procedure/dws_to_ads/pro_ads_cust_deadline_rmnd_statis.sql
+    purpose: existing_implementation
+    required: true
+forbidden_actions:
+  - 真实数据库执行
+  - Explain执行计划
+  - 修改到期承接业务资产

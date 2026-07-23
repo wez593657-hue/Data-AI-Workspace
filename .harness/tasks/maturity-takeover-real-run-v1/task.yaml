@@ -1,0 +1,38 @@
+schema_version: '0.1'
+task_id: maturity-takeover-real-run-v1
+purpose: 到期承接真实需求开发流程全链路测试，不修改业务资产，不执行真实数据库和Explain
+workflow_profile: data_warehouse
+state: BLOCKED
+branch: master
+created_at: '2026-07-23T01:15:22+00:00'
+updated_at: '2026-07-23T02:07:30+00:00'
+evidence_ids:
+- E-0001
+- E-0002
+- E-0003
+- E-0004
+- E-0005
+- E-0006
+- E-0007
+- E-0008
+- E-0009
+- E-0010
+- E-0011
+- E-0012
+- E-0013
+- E-0014
+- E-0015
+- E-0016
+- E-0017
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-23T01:15:22+00:00'
+- from: CREATED
+  to: BLOCKED
+  reason: 真实需求流程测试被Harness门禁阻塞：1)通用record命令生成证据缺少task_id，无法记录workspace_status等阶段证据；2)需求解析器对05_经营管理.md及规则记忆卡片的版本历史、跨模块重复REQ编号直接报重复，无法进入需求解析/记忆卡片校验；3)全量工作区校验受任务证据目录及4个既有未跟踪存储过程影响而失败。
+  at: '2026-07-23T02:07:30+00:00'
+state_seal: 75cba37c5882997e03d79770d9787cf101b40ab4463cc2f31910997271fa0b3f
+blocked_from: CREATED

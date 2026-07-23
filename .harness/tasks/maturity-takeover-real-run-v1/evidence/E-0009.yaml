@@ -1,0 +1,10 @@
+evidence_id: E-0009
+task_id: maturity-takeover-real-run-v1
+phase: MEMORY_CARD_VERIFIED
+kind: file_read
+path: requirements\到期承接规则记忆卡片.md
+sha256: f5474395a591b2f7e7c11d08c93f7d22598c214590d64847c8e36afed0980b89
+purpose: 读取到期承接规则记忆卡片
+repository_revision: e9b3612138393e1ad26aed8e569c0c46ded69fbe
+result: passed
+created_at: '2026-07-23T02:04:35+00:00'

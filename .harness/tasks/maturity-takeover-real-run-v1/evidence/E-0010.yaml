@@ -1,0 +1,10 @@
+evidence_id: E-0010
+task_id: maturity-takeover-real-run-v1
+phase: MAPPING_READY
+kind: file_read
+path: data_assets\mapping\dws_to_ads\ADS应用层数据模型_CRM_ V1.0.xlsx
+sha256: 68ad16204de405359c0f1cb76b83ac2c195741a9a829342b4669b413209d21b2
+purpose: 读取DWS到ADS Mapping Excel
+repository_revision: e9b3612138393e1ad26aed8e569c0c46ded69fbe
+result: passed
+created_at: '2026-07-23T02:04:35+00:00'
