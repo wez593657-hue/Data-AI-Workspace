@@ -4,6 +4,7 @@
 import subprocess
 import sys
 import os
+from pathlib import Path
 
 BASE_DIR = subprocess.run(
     ['git', 'rev-parse', '--show-toplevel'], capture_output=True, encoding='utf-8', errors='replace', check=True
@@ -57,7 +58,7 @@ def main():
                 safe_print("   ✗ 远程 master 有本地未包含的新提交，请先同步后再推送")
                 sys.exit(1)
         try:
-            report = validate_push(BASE_DIR, remote_sha, local_sha)
+            report = validate_push(Path(BASE_DIR), remote_sha, local_sha)
         except (PublishGuardError, FileNotFoundError, ValueError) as error:
             safe_print(f"   ✗ {error}")
             sys.exit(1)
