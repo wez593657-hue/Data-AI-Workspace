@@ -12,8 +12,18 @@ BASE_DIR = subprocess.run(
 sys.path.insert(0, os.path.join(BASE_DIR, 'scripts'))
 
 from utils import fix_windows_encoding, safe_print, run_command
+from harness.publish_guard import ZERO_SHA, PublishGuardError, validate_push
 
 fix_windows_encoding()
+
+def read_push_updates():
+    updates = []
+    for line in sys.stdin:
+        values = line.strip().split()
+        if len(values) == 4:
+            updates.append(values)
+    return updates
+
 
 def main():
     safe_print("=" * 50)
@@ -26,41 +36,41 @@ def main():
     safe_print(f"   当前分支: {current_branch}")
     
     safe_print("   ✓ 当前仓库采用主分支直接开发和推送流程")
-    
-    safe_print("\n2. 检查本地提交数量...")
-    stdout, stderr, rc = run_command(['git', 'rev-list', '--count', f'HEAD..origin/{current_branch}'])
-    if rc != 0:
-        safe_print("   ⚠ 无法访问远程仓库，跳过提交数量检查")
-        safe_print("   ⚠ 请确保网络连接正常")
-    else:
-        try:
-            commits_ahead = int(stdout.strip()) if stdout.strip() else 0
-        except:
-            commits_ahead = 0
-        
-        if commits_ahead > 0:
-            safe_print("   ✗ 远程分支有新提交，请先拉取更新")
-            safe_print(f"   ✗ 执行: git pull origin {current_branch}")
+
+    updates = read_push_updates()
+    if not updates:
+        safe_print("   ✗ 未读取到 Git push ref 更新信息")
+        sys.exit(1)
+
+    safe_print("\n2. 执行 Harness 发布门禁...")
+    all_changed_files = []
+    for local_ref, local_sha, remote_ref, remote_sha in updates:
+        if remote_sha == ZERO_SHA:
+            safe_print(f"   ✓ 允许删除远程引用: {remote_ref}")
+            continue
+        if remote_ref != "refs/heads/master":
+            safe_print(f"   ✗ 禁止推送非 master 分支: {remote_ref}")
             sys.exit(1)
-        safe_print("   ✓ 提交数量检查通过")
-    
-    safe_print("\n3. 检测待推送的变更文件...")
-    stdout, stderr, rc = run_command(['git', 'diff', '--name-only', f'origin/{current_branch}...HEAD'])
-    if rc != 0:
-        safe_print("   ⚠ 无法检测远程分支变更，跳过变更检测")
-        has_data_changes = True
-        has_script_changes = True
-    else:
-        changed_files = [f.strip() for f in stdout.strip().split('\n') if f.strip()]
-        
-        if changed_files:
-            safe_print(f"   待推送变更文件: {len(changed_files)} 个")
-        
-        has_data_changes = any(f.startswith('data_assets/') for f in changed_files)
-        has_script_changes = any(f.startswith('scripts/') for f in changed_files)
+        if remote_sha != ZERO_SHA:
+            ancestor_check = run_command(["git", "merge-base", "--is-ancestor", remote_sha, local_sha])
+            if ancestor_check[2] != 0:
+                safe_print("   ✗ 远程 master 有本地未包含的新提交，请先同步后再推送")
+                sys.exit(1)
+        try:
+            report = validate_push(BASE_DIR, remote_sha, local_sha)
+        except (PublishGuardError, FileNotFoundError, ValueError) as error:
+            safe_print(f"   ✗ {error}")
+            sys.exit(1)
+        changed_files = report.get("changed_files", [])
+        all_changed_files.extend(changed_files)
+        safe_print(f"   ✓ 任务 {report['task_id']} 状态为 {report['state']}")
+        safe_print(f"   ✓ 待推送提交: {report.get('revision_count', 0)} 个，文件: {len(changed_files)} 个")
+
+    has_data_changes = any(f.startswith('data_assets/') for f in all_changed_files)
+    has_script_changes = any(f.startswith('scripts/') for f in all_changed_files)
     
     if has_data_changes or has_script_changes:
-        safe_print("\n4. 执行工作区完整校验...")
+        safe_print("\n3. 执行工作区完整校验...")
         stdout, stderr, rc = run_command([sys.executable, 'scripts/workspace_validation.py', 'full'])
         if rc != 0:
             safe_print("   ✗ 工作区校验失败")
@@ -72,7 +82,7 @@ def main():
             sys.exit(1)
         safe_print("   ✓ 工作区校验通过")
     else:
-        safe_print("\n4. 无数据资产或脚本变更，跳过完整校验")
+        safe_print("\n3. 无数据资产或脚本变更，跳过完整校验")
     
     safe_print("\n" + "=" * 50)
     safe_print("  所有检查通过，可以推送!")

@@ -1,0 +1,9 @@
+schema_version: '0.1'
+task_id: harness-publish-gate-20260723
+purpose: 补强 Harness 发布门禁并发布当前全部工作区改动
+workflow_profile: harness
+state: PUSH_ALLOWED
+branch: master
+evidence_ids: []
+allowed_paths: []
+forbidden_paths: []

@@ -23,5 +23,11 @@ jobs:
       run: |
         pip install pandas openpyxl xlrd
 
+    - name: Harness 发布门禁
+      env:
+        BEFORE_SHA: ${{ github.event.before }}
+        AFTER_SHA: ${{ github.sha }}
+      run: python scripts/harness/publish_guard.py --old "$BEFORE_SHA" --new "$AFTER_SHA"
+
     - name: 执行数据一致性校验
       run: python scripts/validate_cross_layer_consistency.py

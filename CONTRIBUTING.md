@@ -89,6 +89,16 @@ ls -la .git/hooks/
 <footer>
 ```
 
+发布到 `master` 的每个提交必须在提交正文中包含任务编号 trailer，且同一次推送中的所有提交必须使用同一个任务编号：
+
+```text
+sync: 同步Mapping模型
+
+Task-ID: schema-change-20260723
+```
+
+发布门禁要求对应 Harness 任务存在、状态为 `PUSH_ALLOWED`，并且待推送文件全部位于任务 `change_manifest.yaml` 的允许范围内。
+
 ## 门禁规则
 
 ### 第一层：仓库规则
@@ -138,6 +148,7 @@ ls -la .git/hooks/
 
 - `master` 是唯一开发和发布分支，允许用户确认后直接推送。
 - 不使用 PR、CODEOWNERS 或分支保护作为提交门禁。
+- `pre-push` 和 GitHub Actions 会校验 `Task-ID`、Harness 发布状态和变更清单。
 
 ## 流程约束
 

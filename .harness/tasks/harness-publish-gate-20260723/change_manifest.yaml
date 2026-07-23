@@ -1,0 +1,29 @@
+schema_version: '0.1'
+task_id: harness-publish-gate-20260723
+user_confirmation: confirmed
+objective: 补强 Harness 发布门禁，并提交推送当前全部工作区改动
+allowed_changes:
+  - path: .github/
+    purpose: 接入 GitHub Actions 发布门禁
+  - path: .harness/tasks/harness-publish-gate-20260723/
+    purpose: 当前发布任务和变更清单
+  - path: CONTRIBUTING.md
+    purpose: 更新提交和推送规则
+  - path: data_assets/
+    purpose: 用户授权提交的当前全部数据资产改动
+  - path: docs/superpowers/specs/2026-07-23-harness-publish-gate-design.md
+    purpose: 发布门禁设计记录
+  - path: hooks/pre-push
+    purpose: 接入本地发布门禁
+  - path: scripts/harness/publish_guard.py
+    purpose: 共享发布门禁实现
+  - path: scripts/harness/tests/test_publish_guard.py
+    purpose: 发布门禁测试
+read_only_inputs:
+  - .harness/config.yaml
+  - .harness/policies/allowed_paths.yaml
+  - scripts/harness/change_guard.py
+  - scripts/harness/task_manager.py
+forbidden_changes:
+  - path: secrets/
+    purpose: 禁止修改敏感配置

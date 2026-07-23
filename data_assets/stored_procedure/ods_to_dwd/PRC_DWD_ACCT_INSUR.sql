@@ -50,7 +50,7 @@ begin
   )
   SELECT
     b.user_id           AS CUST_ID,            -- 核心客户号
-    NULL                AS CUST_TYP,           -- 客户类型
+    '1'                 AS CUST_TYP,           -- 客户类型
     c.ACC_NO            AS ACCT_ID,            -- 保险关联账号
     e.PRODUCT_ID        AS PRDKT_ID,           -- 保险产品编号
     e.PRODUCT_NAME      AS PRDKT_NAME,         -- 保险产品名称
@@ -60,12 +60,12 @@ begin
     c.THROW_COM         AS TX_ORG,             -- 交易机构
     c.CONT_SOURCE       AS TX_CHNL,            -- 交易渠道
     c.THROW_COM         AS MKT_ORG,            -- 归属机构
-    TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYY-MM-DD'), 'YYYY-MM-DD') AS BGN_INSUR_DATE, -- 保险起保日期，统一返回 VARCHAR2(10)
+    TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYY-MM-DD'), 'YYYYMMDD') AS BGN_INSUR_DATE, -- 保险起保日期，统一返回 VARCHAR2(8)
     CASE
           WHEN d.VALID_PER_UNIT = '-1' THEN '9999-12-31'
           WHEN d.VALID_PER_UNIT = '0'
            AND REGEXP_LIKE(f.CERT_ID, '^[0-9]{17}[0-9Xx]$')
-          THEN TO_CHAR(ADD_MONTHS(TO_DATE(SUBSTR(f.CERT_ID, 7, 8), 'YYYYMMDD'), 12 * d.VALID_PER_NUM), 'YYYY-MM-DD')
+          THEN TO_CHAR(ADD_MONTHS(TO_DATE(SUBSTR(f.CERT_ID, 7, 8), 'YYYYMMDD'), 12 * d.VALID_PER_NUM), 'YYYYMMDD')
           WHEN d.VALID_PER_UNIT = '0'
            AND REGEXP_LIKE(f.CERT_ID, '^[0-9]{15}$')
           THEN TO_CHAR(ADD_MONTHS(TO_DATE('19' || SUBSTR(f.CERT_ID, 7, 6), 'YYYYMMDD'), 12 * d.VALID_PER_NUM), 'YYYY-MM-DD')
@@ -96,10 +96,7 @@ begin
     a.ORD_AMT           AS INSUR_AMT,          -- 保险保费金额
     c.CONT_STATUS       AS POLICY_STATE,       -- 保险单状态
     a.TRAN_TYPE         AS TX_TYP,             -- 交易类型
-    NULL                AS PERSN_LEGAL_BK_CODE, -- 法人行号
-    NULL                AS INSUR_MTH_AVG,      -- 月日均保费
-    NULL                AS INSUR_QRT_AVG,      -- 季日均保费
-    NULL                AS INSUR_YR_AVG        -- 年日均保费
+    NULL                AS PERSN_LEGAL_BK_CODE -- 法人行号
   FROM YBT_POLICY_FEE_LIST a                -- 保单交易明细表
   INNER JOIN IBP_IB_LIST_PLAT b                 -- 交易流水表
     ON a.ord_pay_serial = b.plat_serial

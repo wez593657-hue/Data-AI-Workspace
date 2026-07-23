@@ -94,7 +94,8 @@ BEGIN
     FROM CBS_kbrp_jgcshu c               -- 机构参数表
     LEFT JOIN cbs_kbrp_jggxii g          -- 机构关系表
       ON c.FARENDMA = g.FARENDMA
-     AND c.JIGOUHAO = g.JIGOUHAO;
+     AND c.JIGOUHAO = g.JIGOUHAO
+     AND G.;
 
   -- 记录第1段结束时间和耗时
   OUTCDE      := 0;

@@ -82,7 +82,10 @@ BEGIN
       t2.SIGN_ORG        AS CTRAKT_ORG,           -- 签约机构
       t2.ATTN_NAME       AS CTRAKT_OPRTR,         -- 签约经办人
       t1.SIGN_STATE      AS CTRAKT_STATE,         -- 签约状态
-      '9999'             AS PERSN_LEGAL_BK_CODE   -- 法人行号
+      CASE WHEN t2.SIGN_ORG LIKE '15%' THEN '1500' 
+      	   WHEN t2.SIGN_ORG LIKE '12%' THEN '1200'
+      	   WHEN t2.SIGN_ORG LIKE '18%' THEN '1800'
+      	   ELSE '9999' END            AS PERSN_LEGAL_BK_CODE   -- 法人行号
     FROM ECIF_T01_P_CUST_INFO t0                  -- 客户信息
    INNER JOIN ECIF_T02_A_CUST_SIGN_REL t1         -- 参与人与业务签约的关系
       ON t0.PARTY_ID = t1.PARTY_ID
