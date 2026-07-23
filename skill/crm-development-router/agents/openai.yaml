@@ -1,0 +1,4 @@
+interface:
+  display_name: "CRM Development Router"
+  short_description: "Route CRM requests to controlled requirement or schema workflows"
+  default_prompt: "Identify the CRM workflow from the user's command, create the correct Harness task, and enforce every stage and review gate."

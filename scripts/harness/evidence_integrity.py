@@ -49,8 +49,11 @@ def validate_evidence(
     expected = {str(item).strip() for item in expected_purposes if str(item).strip()}
     if expected and purpose not in expected:
         raise EvidenceIntegrityError(f"证据 {evidence_id} 的 purpose 不符合当前阶段: {purpose}")
-    if str(evidence.get("result", "")).strip() != "passed":
-        raise EvidenceIntegrityError(f"证据 {evidence_id} 的 result 必须为 passed")
+    result = str(evidence.get("result", "")).strip()
+    if result not in {"passed", "failed", "blocked"}:
+        raise EvidenceIntegrityError(f"证据 {evidence_id} 的 result 无效: {result}")
+    if result != "passed" and evidence.get("kind") != "review":
+        raise EvidenceIntegrityError(f"非审核证据 {evidence_id} 的 result 必须为 passed")
     revision = str(evidence.get("repository_revision", "")).strip()
     if not _REVISION_PATTERN.fullmatch(revision):
         raise EvidenceIntegrityError(f"证据 {evidence_id} 缺少有效 repository_revision")

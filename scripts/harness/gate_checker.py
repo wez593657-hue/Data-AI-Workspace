@@ -17,6 +17,35 @@ class GateError(ValueError):
     """Raised when a phase gate is not satisfied."""
 
 
+_REVIEW_STAGES = {
+    "REQUIREMENT_REVIEW_PASSED": "requirement_review",
+    "PROCEDURE_REVIEW_PASSED": "procedure_review",
+    "ASSETS_REVIEW_PASSED": "schema_consistency_review",
+}
+
+
+def _validate_review_gate(
+    source: str, target: str, evidence: list[dict[str, Any]], required: list[str]
+) -> None:
+    purpose = _REVIEW_STAGES.get(source)
+    if not purpose:
+        return
+    reviews = [item for item in evidence if item.get("kind") == "review" and item.get("purpose") == purpose]
+    if not reviews:
+        raise GateError(f"审核阶段 {source} 缺少结构化审核证据: {purpose}")
+    review = reviews[-1]
+    result = str(review.get("result", "")).strip()
+    if target in {"MATERIALS_SUPPLEMENTED", "PROCEDURE_IMPLEMENTED", "CHANGE_SCOPE_IDENTIFIED"}:
+        if result != "failed":
+            raise GateError(f"审核退回 {source} -> {target} 必须记录 result=failed")
+        if not review.get("issues") or review.get("return_to") != target:
+            raise GateError("审核失败证据必须包含 issues，并将 return_to 指向退回阶段")
+    elif result != "passed":
+        raise GateError(f"审核通过 {source} -> {target} 必须记录 result=passed")
+    if not review.get("checked_files") or not review.get("rules_checked"):
+        raise GateError("审核证据必须包含 checked_files 和 rules_checked")
+
+
 def check_schema_consistency_gate(root: Path, task_id: str) -> dict[str, Any]:
     """Accept only a current, complete and clean schema consistency report."""
     directory, _ = load_task(root, task_id)
@@ -79,6 +108,7 @@ def check_gate(root: Path, task_id: str, target: str) -> dict[str, Any]:
         raise GateError(
             f"阶段 {source} -> {target} 缺少证据类型: {', '.join(missing)}"
         )
+    _validate_review_gate(source, target, evidence, required)
     return {
         "task_id": task_id,
         "source": source,

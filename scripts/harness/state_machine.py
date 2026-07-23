@@ -40,11 +40,61 @@ HARNESS_STATES = (
     "COMPLETED",
 )
 
+REQUIREMENT_DEVELOPMENT_STATES = (
+    "CREATED",
+    "REQUIREMENT_ANALYZED",
+    "SCOPE_CONFIRMED",
+    "PROJECT_SCANNED",
+    "TABLE_LINEAGE_IDENTIFIED",
+    "SOURCE_CAPABILITY_ANALYZED",
+    "FIELD_GAP_CONFIRMED",
+    "MATERIALS_SUPPLEMENTED",
+    "REQUIREMENT_REVIEW_PASSED",
+    "MEMORY_CARD_UPDATED",
+    "PROCEDURE_IMPLEMENTED",
+    "PROCEDURE_REVIEW_PASSED",
+    "TMP_TABLES_GENERATED",
+    "FULL_VALIDATION_PASSED",
+    "USER_APPROVED",
+    "COMMIT_ALLOWED",
+    "PUSH_ALLOWED",
+    "COMPLETED",
+)
+
+SCHEMA_CHANGE_STATES = (
+    "CREATED",
+    "MAPPING_EXCEL_ANALYZED",
+    "RELATED_FILES_SCANNED",
+    "CHANGE_SCOPE_IDENTIFIED",
+    "USER_SCOPE_CONFIRMED",
+    "ASSETS_UPDATED",
+    "ASSETS_REVIEW_PASSED",
+    "FULL_VALIDATION_PASSED",
+    "USER_APPROVED",
+    "COMMIT_ALLOWED",
+    "PUSH_ALLOWED",
+    "COMPLETED",
+)
+
 WORKFLOW_STATES = {
     "data_warehouse": DATA_WAREHOUSE_STATES,
     "harness": HARNESS_STATES,
+    "requirement_development": REQUIREMENT_DEVELOPMENT_STATES,
+    "schema_change": SCHEMA_CHANGE_STATES,
 }
 STATES = DATA_WAREHOUSE_STATES
+
+_EXPLICIT_NEXT = {
+    "requirement_development": {
+        "FIELD_GAP_CONFIRMED": {"REQUIREMENT_REVIEW_PASSED", "MATERIALS_SUPPLEMENTED"},
+        "REQUIREMENT_REVIEW_PASSED": {"MEMORY_CARD_UPDATED", "MATERIALS_SUPPLEMENTED"},
+        "PROCEDURE_REVIEW_PASSED": {"TMP_TABLES_GENERATED", "PROCEDURE_IMPLEMENTED"},
+        "MATERIALS_SUPPLEMENTED": {"SOURCE_CAPABILITY_ANALYZED"},
+    },
+    "schema_change": {
+        "ASSETS_REVIEW_PASSED": {"FULL_VALIDATION_PASSED", "CHANGE_SCOPE_IDENTIFIED"},
+    },
+}
 
 BLOCKED = "BLOCKED"
 _NEXT = {state: STATES[index + 1] for index, state in enumerate(STATES[:-1])}
@@ -77,6 +127,9 @@ def expected_next(state: str, workflow: str = "data_warehouse") -> str | None:
 
 
 def allowed_next(state: str, workflow: str = "data_warehouse") -> set[str]:
+    explicit = _EXPLICIT_NEXT.get(workflow, {}).get(state)
+    if explicit is not None:
+        return set(explicit)
     next_state = expected_next(state, workflow)
     return {next_state} if next_state else set()
 

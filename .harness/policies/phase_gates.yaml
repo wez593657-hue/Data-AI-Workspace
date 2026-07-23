@@ -41,26 +41,20 @@ workflows:
       next: TEST_PASSED
       required_evidence: [test_report]
     TEST_PASSED:
-      next: REVIEW_PASSED
-      required_evidence: [review_report]
-    REVIEW_PASSED:
       next: USER_APPROVED
-      required_evidence: [user_approval]
+      required_evidence: [test_report]
     USER_APPROVED:
       next: FULL_VALIDATION_PASSED
-      required_evidence: [full_validation]
+      required_evidence: [user_approval]
     FULL_VALIDATION_PASSED:
       next: COMMIT_ALLOWED
-      required_evidence: [commit_authorization]
+      required_evidence: [full_validation]
     COMMIT_ALLOWED:
       next: PUSH_ALLOWED
-      required_evidence: [push_authorization]
+      required_evidence: [commit_authorization]
     PUSH_ALLOWED:
-      next: PR_APPROVED
-      required_evidence: [pr_approval]
-    PR_APPROVED:
       next: COMPLETED
-      required_evidence: [release_record]
+      required_evidence: [push_authorization]
   harness:
     CREATED:
       next: WORKSPACE_CHECKED
@@ -97,3 +91,97 @@ workflows:
     COMMIT_ALLOWED:
       next: COMPLETED
       required_evidence: [completion_record]
+  requirement_development:
+    CREATED:
+      next: REQUIREMENT_ANALYZED
+      required_evidence: [workflow_routing]
+    REQUIREMENT_ANALYZED:
+      next: SCOPE_CONFIRMED
+      required_evidence: [requirement_analysis]
+    SCOPE_CONFIRMED:
+      next: PROJECT_SCANNED
+      required_evidence: [scope_confirmation]
+    PROJECT_SCANNED:
+      next: TABLE_LINEAGE_IDENTIFIED
+      required_evidence: [project_scan]
+    TABLE_LINEAGE_IDENTIFIED:
+      next: SOURCE_CAPABILITY_ANALYZED
+      required_evidence: [table_lineage]
+    SOURCE_CAPABILITY_ANALYZED:
+      next: FIELD_GAP_CONFIRMED
+      required_evidence: [source_capability]
+    FIELD_GAP_CONFIRMED:
+      allowed_next: [REQUIREMENT_REVIEW_PASSED, MATERIALS_SUPPLEMENTED]
+      required_evidence_by_target:
+        REQUIREMENT_REVIEW_PASSED: [field_gap_confirmation]
+        MATERIALS_SUPPLEMENTED: [field_gap_confirmation]
+    MATERIALS_SUPPLEMENTED:
+      next: SOURCE_CAPABILITY_ANALYZED
+      required_evidence: [materials_supplement]
+    REQUIREMENT_REVIEW_PASSED:
+      allowed_next: [MEMORY_CARD_UPDATED, MATERIALS_SUPPLEMENTED]
+      required_evidence_by_target:
+        MEMORY_CARD_UPDATED: [requirement_review]
+        MATERIALS_SUPPLEMENTED: [requirement_review]
+    MEMORY_CARD_UPDATED:
+      next: PROCEDURE_IMPLEMENTED
+      required_evidence: [memory_card_update]
+    PROCEDURE_IMPLEMENTED:
+      next: PROCEDURE_REVIEW_PASSED
+      required_evidence: [procedure_implementation]
+    PROCEDURE_REVIEW_PASSED:
+      allowed_next: [TMP_TABLES_GENERATED, PROCEDURE_IMPLEMENTED]
+      required_evidence_by_target:
+        TMP_TABLES_GENERATED: [procedure_review]
+        PROCEDURE_IMPLEMENTED: [procedure_review]
+    TMP_TABLES_GENERATED:
+      next: FULL_VALIDATION_PASSED
+      required_evidence: [temporary_table_generation]
+    FULL_VALIDATION_PASSED:
+      next: USER_APPROVED
+      required_evidence: [full_validation]
+    USER_APPROVED:
+      next: COMMIT_ALLOWED
+      required_evidence: [user_approval]
+    COMMIT_ALLOWED:
+      next: PUSH_ALLOWED
+      required_evidence: [commit_authorization]
+    PUSH_ALLOWED:
+      next: COMPLETED
+      required_evidence: [push_authorization]
+  schema_change:
+    CREATED:
+      next: MAPPING_EXCEL_ANALYZED
+      required_evidence: [workflow_routing]
+    MAPPING_EXCEL_ANALYZED:
+      next: RELATED_FILES_SCANNED
+      required_evidence: [mapping_excel_analysis]
+    RELATED_FILES_SCANNED:
+      next: CHANGE_SCOPE_IDENTIFIED
+      required_evidence: [related_files_scan]
+    CHANGE_SCOPE_IDENTIFIED:
+      next: USER_SCOPE_CONFIRMED
+      required_evidence: [change_scope]
+    USER_SCOPE_CONFIRMED:
+      next: ASSETS_UPDATED
+      required_evidence: [scope_confirmation]
+    ASSETS_UPDATED:
+      next: ASSETS_REVIEW_PASSED
+      required_evidence: [asset_update]
+    ASSETS_REVIEW_PASSED:
+      allowed_next: [FULL_VALIDATION_PASSED, CHANGE_SCOPE_IDENTIFIED]
+      required_evidence_by_target:
+        FULL_VALIDATION_PASSED: [schema_consistency_review]
+        CHANGE_SCOPE_IDENTIFIED: [schema_consistency_review]
+    FULL_VALIDATION_PASSED:
+      next: USER_APPROVED
+      required_evidence: [full_validation]
+    USER_APPROVED:
+      next: COMMIT_ALLOWED
+      required_evidence: [user_approval]
+    COMMIT_ALLOWED:
+      next: PUSH_ALLOWED
+      required_evidence: [commit_authorization]
+    PUSH_ALLOWED:
+      next: COMPLETED
+      required_evidence: [push_authorization]

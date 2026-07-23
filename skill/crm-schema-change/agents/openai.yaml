@@ -1,0 +1,4 @@
+interface:
+  display_name: "CRM Schema Change"
+  short_description: "Execute the controlled CRM schema synchronization workflow"
+  default_prompt: "Execute the schema change workflow from Mapping Excel analysis through user-confirmed asset update and consistency review."

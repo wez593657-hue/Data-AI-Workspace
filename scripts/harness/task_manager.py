@@ -59,6 +59,21 @@ def branch_name(root: Path) -> str:
     return result.stdout.strip() or "DETACHED"
 
 
+def require_master_branch(root: Path) -> None:
+    """Prevent new controlled tasks from being created outside master."""
+    probe = subprocess.run(
+        ["git", "rev-parse", "--is-inside-work-tree"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        check=False,
+    )
+    if probe.returncode == 0 and branch_name(root) != "master":
+        raise TaskError("当前开发流程只能在 master 分支执行")
+
+
 def task_dir(root: Path, task_id: str) -> Path:
     if not TASK_ID_PATTERN.fullmatch(task_id):
         raise TaskError("任务编号必须使用 3-64 位小写字母、数字、点、下划线或连字符")
@@ -106,6 +121,7 @@ def require_change_manifest(root: Path, directory: Path) -> None:
 def create_task(
     root: Path, task_id: str, purpose: str, workflow_profile: str = "data_warehouse"
 ) -> dict[str, Any]:
+    require_master_branch(root)
     if workflow_profile not in WORKFLOW_STATES:
         raise TaskError(f"未知工作流类型: {workflow_profile}")
     directory = task_dir(root, task_id)
@@ -197,6 +213,7 @@ def add_file_read_evidence(
 
 
 def transition_task(root: Path, task_id: str, target: str, reason: str) -> dict[str, Any]:
+    require_master_branch(root)
     directory, payload = load_task(root, task_id)
     try:
         validate_task_integrity(payload, require_seal=True)

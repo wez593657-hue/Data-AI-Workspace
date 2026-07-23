@@ -35,6 +35,19 @@ class EvidenceIntegrityTests(unittest.TestCase):
             validate_evidence(evidence, task_id=task_dir.name, evidence_path=evidence_path,
                               task_dir=task_dir, repo_root=root)
 
+    def test_failed_review_evidence_is_allowed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            task_dir = root / ".harness" / "tasks" / "demo-task"
+            evidence_path = task_dir / "evidence" / "E-0001.yaml"
+            source = root / "input.txt"
+            source.write_text("source", encoding="utf-8")
+            evidence_path.parent.mkdir(parents=True)
+            evidence = self._evidence(root, task_dir, source)
+            evidence.update({"kind": "review", "purpose": "procedure_review", "result": "failed"})
+            validate_evidence(evidence, task_id=task_dir.name, evidence_path=evidence_path,
+                              task_dir=task_dir, repo_root=root)
+
     def test_wrong_task_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

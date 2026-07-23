@@ -93,8 +93,9 @@ def _check_whitespace(root: Path) -> dict[str, Any]:
 
 def validate_task(root: Path, task_id: str) -> dict[str, Any]:
     _, task = load_task(root, task_id)
-    if task.get("workflow_profile") != "harness":
-        raise ValidationError("scoped harness validation 只适用于 workflow_profile=harness")
+    profile = task.get("workflow_profile")
+    if profile not in {"harness", "requirement_development", "schema_change"}:
+        raise ValidationError(f"当前 workflow_profile 不支持 Harness 完整校验: {profile}")
     checks = [
         _check_python_compile(root),
         _check_unit_tests(root),
@@ -102,7 +103,7 @@ def validate_task(root: Path, task_id: str) -> dict[str, Any]:
         _check_whitespace(root),
     ]
     passed = all(check["passed"] for check in checks)
-    result = {"task_id": task_id, "workflow_profile": "harness", "passed": passed, "checks": checks}
+    result = {"task_id": task_id, "workflow_profile": profile, "passed": passed, "checks": checks}
     if not passed:
         raise ValidationError(json.dumps(result, ensure_ascii=False))
     return result

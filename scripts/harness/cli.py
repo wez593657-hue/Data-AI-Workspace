@@ -16,6 +16,7 @@ from .read_manifest import ManifestError, validate_manifest
 from .requirement_parser import RequirementError, parse_requirement
 from .schema_consistency import SchemaConsistencyError, run_schema_consistency
 from .validation import ValidationError, validate_task
+from .workflow_router import WorkflowRoutingError, route_command
 from .task_manager import (
     TaskError,
     add_file_read_evidence,
@@ -27,7 +28,7 @@ from .task_manager import (
     transition_task,
 )
 from .change_guard import ChangeGuardError, validate_manifest_changes
-from .evidence_store import read_yaml
+from .evidence_store import git_revision, read_yaml
 from .state_machine import BLOCKED
 
 
@@ -56,14 +57,24 @@ def parser() -> argparse.ArgumentParser:
     create = subparsers.add_parser("create", help="创建任务")
     create.add_argument("task_id")
     create.add_argument("--purpose", required=True)
-    create.add_argument("--workflow-profile", choices=["data_warehouse", "harness"], default="data_warehouse")
+    create.add_argument(
+        "--workflow-profile",
+        choices=["requirement_development", "schema_change", "data_warehouse", "harness"],
+        default="requirement_development",
+    )
 
     profile = subparsers.add_parser("set-profile", help="设置任务工作流类型")
     profile.add_argument("task_id")
-    profile.add_argument("workflow_profile", choices=["data_warehouse", "harness"])
+    profile.add_argument(
+        "workflow_profile",
+        choices=["requirement_development", "schema_change", "data_warehouse", "harness"],
+    )
 
     status = subparsers.add_parser("status", help="查看任务")
     status.add_argument("task_id")
+
+    route = subparsers.add_parser("route", help="根据用户命令选择 CRM 开发流程")
+    route.add_argument("command_text")
 
     transition = subparsers.add_parser("transition", help="迁移任务状态")
     transition.add_argument("task_id")
@@ -119,6 +130,11 @@ def parser() -> argparse.ArgumentParser:
     evidence.add_argument("--purpose", required=True)
     evidence.add_argument("--result", choices=["passed", "failed", "blocked"], default="passed")
     evidence.add_argument("--details", default="")
+    evidence.add_argument("--review-type", default="")
+    evidence.add_argument("--return-to", default="")
+    evidence.add_argument("--checked-file", action="append", default=[])
+    evidence.add_argument("--rule", action="append", default=[])
+    evidence.add_argument("--issue", action="append", default=[])
 
     block = subparsers.add_parser("block", help="阻塞任务")
     block.add_argument("task_id")
@@ -153,6 +169,8 @@ def main(argv: list[str] | None = None) -> int:
             result = set_workflow_profile(root, args.task_id, args.workflow_profile)
         elif args.command == "status":
             _, result = load_task(root, args.task_id)
+        elif args.command == "route":
+            result = route_command(args.command_text)
         elif args.command == "transition":
             result = transition_task(root, args.task_id, args.target, args.reason)
         elif args.command == "check-gate":
@@ -208,13 +226,25 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "record":
             details = {
                 "evidence_id": args.evidence_id,
+                "task_id": args.task_id,
                 "phase": args.phase,
                 "kind": args.kind,
                 "purpose": args.purpose,
                 "result": args.result,
                 "details": args.details,
+                "repository_revision": git_revision(root),
                 "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             }
+            if args.kind == "review":
+                details.update(
+                    {
+                        "review_type": args.review_type,
+                        "return_to": args.return_to,
+                        "checked_files": args.checked_file,
+                        "rules_checked": args.rule,
+                        "issues": args.issue,
+                    }
+                )
             from .task_manager import add_evidence
 
             result = add_evidence(root, args.task_id, details)
@@ -246,6 +276,7 @@ def main(argv: list[str] | None = None) -> int:
         MemoryCardError,
         ManifestError,
         SchemaConsistencyError,
+        WorkflowRoutingError,
         FileNotFoundError,
         ValueError,
     ) as error:

@@ -54,6 +54,38 @@ class StateMachineTests(unittest.TestCase):
         with self.assertRaises(StateTransitionError):
             validate_transition("WORKSPACE_CHECKED", "REQUIREMENT_PARSED", "harness")
 
+    def test_requirement_workflow_allows_material_review_loop_but_not_skips(self):
+        self.assertEqual(
+            validate_transition("CREATED", "REQUIREMENT_ANALYZED", "requirement_development").target,
+            "REQUIREMENT_ANALYZED",
+        )
+        self.assertEqual(
+            validate_transition("FIELD_GAP_CONFIRMED", "MATERIALS_SUPPLEMENTED", "requirement_development").target,
+            "MATERIALS_SUPPLEMENTED",
+        )
+        self.assertEqual(
+            validate_transition("MATERIALS_SUPPLEMENTED", "SOURCE_CAPABILITY_ANALYZED", "requirement_development").target,
+            "SOURCE_CAPABILITY_ANALYZED",
+        )
+        self.assertEqual(
+            validate_transition("FIELD_GAP_CONFIRMED", "REQUIREMENT_REVIEW_PASSED", "requirement_development").target,
+            "REQUIREMENT_REVIEW_PASSED",
+        )
+        with self.assertRaises(StateTransitionError):
+            validate_transition("CREATED", "PROCEDURE_IMPLEMENTED", "requirement_development")
+
+    def test_schema_workflow_requires_scope_confirmation_and_supports_review_return(self):
+        self.assertEqual(
+            validate_transition("CHANGE_SCOPE_IDENTIFIED", "USER_SCOPE_CONFIRMED", "schema_change").target,
+            "USER_SCOPE_CONFIRMED",
+        )
+        self.assertEqual(
+            validate_transition("ASSETS_REVIEW_PASSED", "CHANGE_SCOPE_IDENTIFIED", "schema_change").target,
+            "CHANGE_SCOPE_IDENTIFIED",
+        )
+        with self.assertRaises(StateTransitionError):
+            validate_transition("CHANGE_SCOPE_IDENTIFIED", "ASSETS_UPDATED", "schema_change")
+
     def test_path_capability_rejects_forbidden_and_unlisted_paths(self):
         violations = validate_paths(
             ["scripts/harness/cli.py", ".github/workflows/validate.yml", "data_assets/a.sql"],

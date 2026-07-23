@@ -1,0 +1,4 @@
+interface:
+  display_name: "CRM Requirement Development"
+  short_description: "Execute the controlled CRM requirement development workflow"
+  default_prompt: "Execute the requirement development workflow with memory cards, source capability analysis, reviews, procedure generation, and Harness gates."
