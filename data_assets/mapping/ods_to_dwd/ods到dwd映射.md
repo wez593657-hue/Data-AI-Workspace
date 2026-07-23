@@ -3,7 +3,7 @@
 ## 映射来源
 
 - Excel：`data_assets/mapping/ods_to_dwd/DWD明细层数据模型_CRM_ V1.0.xlsx`
-- Excel SHA-256：`2eaa2dd83074013c2054b7a292507282ae0831db5675bf9b8f8c09fdcfb16c01`
+- Excel SHA-256：`3161081c682fd1f222df781053ca8798dcd1355cf62356f6db7975f3b137a412`
 
 ## 映射概览
 
@@ -15,10 +15,12 @@
 | DWD_ACCT_LOAN | 19 |
 | DWD_CRM_SYS_XTHLCS | 5 |
 | DWD_CUST_CTRAKT_INFO | 15 |
+| DWD_CUST_DORMANT_ACCOUT | 3 |
 | DWD_CUST_INDIV_CRDT | 9 |
 | DWD_CUST_INDIV_RISK_INVST | 8 |
 | DWD_CUST_INDV_INFO | 39 |
 | DWD_CUST_INDV_KYC | 27 |
+| DWD_CUST_MAN | 9 |
 | DWD_CUST_SIGN_CTRAKT | 9 |
 | DWD_PRDKT_INFO | 12 |
 | DWD_SYS_ORG | 20 |
@@ -241,7 +243,7 @@
 | BGN_DATE | 开始日期 | VARCHAR2(10) | BUSINESS_CONTRACT | PutoutDate |  |
 | EXPR_DATE | 到期日期 | VARCHAR2(10) | BUSINESS_CONTRACT | MaturityDate |  |
 | CRDT_STATUS | 授信状态 | VARCHAR2(20) |  |  |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(30) |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(7) |  |  |  |
 
 ### DWD_CUST_CTRAKT_INFO
 
@@ -261,7 +263,7 @@
 | END_DATE | 结束日期 | VARCHAR2(10) | BUSINESS_CONTRACT | MaturityDate |  |
 | OPRTR | 经办人 | VARCHAR2(30) | BUSINESS_CONTRACT | ManageUserID |  |
 | OPRT_ORG | 经办机构 | VARCHAR2(7) | BUSINESS_CONTRACT | ManageOrgID |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(30) |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(7) |  |  |  |
 
 ### DWD_CUST_INDIV_RISK_INVST
 
@@ -274,7 +276,7 @@
 | RISK_LVL | 风险级别 | VARCHAR2(6) | T4_CUST_RISK_ASSESS_INFO | CUST_RISK_LEVEL |  |
 | ESTIM_DATE | 评估日期 | VARCHAR2(10) | T4_CUST_RISK_ASSESS_INFO | ASSESS_DATE |  |
 | EXPR_DATE | 到期日期 | VARCHAR2(10) | T4_CUST_RISK_ASSESS_INFO | INVALID_DATE |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(30) |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(7) |  |  |  |
 
 ### DWD_SYS_ORG
 
@@ -342,6 +344,28 @@
 | CREATR | 创建人 | VARCHAR2 |  |  |  |
 | CREAT_ORG | 创建机构 | VARCHAR2 |  |  |  |
 | CREAT_TIME | 创建时间 | VARCHAR2 |  |  |  |
+
+### DWD_CUST_DORMANT_ACCOUT
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| DATA_DATE | 数据日期 | VARCHAR2 |  |  |  |
+| CUST_ID | 客户编号 | VARCHAR2 |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+
+### DWD_CUST_MAN
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| CUST_ID | 客户编号 | VARCHAR2 |  |  |  |
+| MNGR_POST_ID | 客户经理编号 | VARCHAR2 |  |  |  |
+| ORG_ID | 机构编号 | VARCHAR2 |  |  |  |
+| MNG_TYP | 管理类型(1-理财管户，2-信贷管户) | VARCHAR2 |  |  |  |
+| MODF_TIME | 变更时间 | VARCHAR2 |  |  |  |
+| MODF_TYP | 变更类型 | VARCHAR2 |  |  |  |
+| DATA_SRC | 数据来源 | VARCHAR2 |  |  |  |
+| VALID_DATE | 有效日期 | VARCHAR2 |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
 
 ---
 

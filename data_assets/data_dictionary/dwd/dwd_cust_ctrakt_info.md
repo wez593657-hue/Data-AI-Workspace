@@ -27,7 +27,7 @@
 | END_DATE | 结束日期 | VARCHAR | 100 | - | - | - | - | - | - |
 | OPRTR | 经办人 | VARCHAR | 100 | - | - | - | - | - | - |
 | OPRT_ORG | 经办机构 | VARCHAR | 7 | - | - | - | - | - | - |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 100 | - | - | - | - | - | - |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 7 | - | - | - | - | - | - |
 
 ---
 *数据字典版本: v1.0 | 生成时间: 2026-07-17*

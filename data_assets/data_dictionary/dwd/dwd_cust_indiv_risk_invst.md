@@ -20,7 +20,7 @@
 | RISK_LVL | 风险级别 | VARCHAR | 6 | - | - | - | - | - | 风险级别 |
 | ESTIM_DATE | 评估日期 | VARCHAR | 10 | - | - | - | - | - | 评估日期 |
 | EXPR_DATE | 到期日期 | VARCHAR | 10 | - | - | - | - | - | 到期日期 |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 30 | - | - | - | - | - | 法人行号 |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 7 | - | - | - | - | - | 法人行号 |
 
 ---
 *数据字典版本: v1.0 | 生成时间: 2026-07-22*

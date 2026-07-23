@@ -1,0 +1,14 @@
+schema_version: '0.1'
+task_id: dwd-model-sync-20260723
+user_confirmation: confirmed
+objective: 同步 DWD 模型 Excel、Mapping Markdown、DDL、数据字典，并提交推送全部当前工作区改动
+allowed_changes:
+  - path: .harness/tasks/dwd-model-sync-20260723/change_manifest.yaml
+    purpose: 本次提交变更范围登记
+  - path: data_assets/
+    purpose: 用户确认的全部数据资产改动
+read_only_inputs:
+  - .harness/config.yaml
+forbidden_changes:
+  - path: secrets/
+    purpose: 禁止修改敏感配置

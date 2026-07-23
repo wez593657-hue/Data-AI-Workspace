@@ -1,8 +1,7 @@
-CREATE OR REPLACE PROCEDURE PRC_ADS_CUST_DEADLINE_RMND_STATIS(
-    V_SYSDAT IN VARCHAR,
-    OUTCDE   OUT INTEGER
-)
-AS
+-- DROP PROCEDURE crmdm.prc_ads_cust_deadline_rmnd_statis(in varchar, out int4);
+
+CREATE OR REPLACE PROCEDURE crmdm.prc_ads_cust_deadline_rmnd_statis(v_sysdat varchar, outcde OUT integer)
+AS 
   ------------------------------------------------------------------
   -- 存储过程名称: 到期承接统计表处理
   -- 存储过程编号: PRC_ADS_CUST_DEADLINE_RMND_STATIS
@@ -16,9 +15,9 @@ AS
   -- 变更记录:
   --   v2.1.0: 1.理财转存款转化率和存款转理财转化率指标已实现
   --           2.统计维度0-全部、1-存款、2-理财已实现
-  --           3.客户承接率长期化产品剔除保险（待实现，已做注释）
-  --           4.定期存款承接率需确认通知存款过滤（待实现，已做注释）
-  --           5.DATA_DATE语义变更：统一使用周期结束日期（M-月末，Q-季末，N-年末），清理逻辑同步更新
+  --           3.客户承接率长期化产品剔除保险(待实现,已做注释)
+  --           4.定期存款承接率需确认通知存款过滤(待实现,已做注释)
+  --           5.DATA_DATE语义变更：统一使用周期结束日期(M-月末,Q-季末,N-年末),清理逻辑同步更新
   --   v2.2.0: 1.客户数统计改为按客户+机构维度去重：COUNT(DISTINCT CUST_ID || '_' || ORG_ID)
   --           2.承接状态统计同步改为按客户+机构维度去重
   ------------------------------------------------------------------
@@ -96,13 +95,14 @@ BEGIN
          NVL(a.CURR_AUM_BAL, 0)
     FROM ADS_CUST_DEADLINE_RMND_DTL d
     LEFT JOIN (
-        SELECT x.CUST_ID, SUM(NVL(x.AUM_BAL, 0)) AS CURR_AUM_BAL
+        SELECT x.CUST_ID, X.PERSN_LEGAL_BK_CODE,SUM(NVL(x.AUM_BAL, 0)) AS CURR_AUM_BAL
           FROM DWS_CUST_ASSE_LIAB x
          WHERE x.DATA_DATE = V_SYSDAT
            AND x.BAL_TYPE = '1'
-         GROUP BY x.CUST_ID
+         GROUP BY x.CUST_ID, X.PERSN_LEGAL_BK_CODE
     ) a
       ON a.CUST_ID = d.CUST_ID
+      AND A.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE
    WHERE (d.STAT_PERD = 'M' AND d.DATA_DATE IN (TO_CHAR(LAST_DAY(TO_DATE(V_SYSDAT, 'yyyymmdd')), 'yyyymmdd'), TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -1)), 'yyyymmdd')))
       OR (d.STAT_PERD = 'Q' AND d.DATA_DATE IN (TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q'), 3) - 1, 'yyyymmdd'), TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q') - 1, 'yyyymmdd')))
       OR (d.STAT_PERD = 'N' AND d.DATA_DATE IN (TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY'), 12) - 1, 'yyyymmdd'), TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY') - 1, 'yyyymmdd')));
@@ -205,7 +205,7 @@ BEGIN
               ELSE ROUND(SUM(s.FIN_MATURE_TRAN_FIXED_AMT) / SUM(s.EXPR_AMT) * 100, 2)
          END
     FROM TMP_CDR_STAT_SRC s
-   GROUP BY s.PERSN_LEGAL_BK_CODE, s.STATIS_OBJ, s.STAT_PERD, s.STATIS_TYP;
+   GROUP BY s.PERSN_LEGAL_BK_CODE,s.DATA_DATE, s.STATIS_OBJ, s.STAT_PERD, s.STATIS_TYP;
 
   DELETE FROM ADS_CUST_DEADLINE_RMND_STATIS t
    WHERE t.DATA_DATE NOT IN (
@@ -241,5 +241,6 @@ EXCEPTION
     V_LOG_FLG := OUTCDE;
     SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
     RAISE;
-END;
-/
+END
+
+;

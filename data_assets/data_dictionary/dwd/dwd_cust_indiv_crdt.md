@@ -21,7 +21,7 @@
 | BGN_DATE | 开始日期 | VARCHAR | 100 | - | - | - | - | - | - |
 | EXPR_DATE | 到期日期 | VARCHAR | 100 | - | - | - | - | - | - |
 | CRDT_STATUS | 授信状态 | VARCHAR | 100 | - | - | - | - | - | - |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 100 | - | - | - | - | - | - |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 7 | - | - | - | - | - | - |
 
 ---
 *数据字典版本: v1.0 | 生成时间: 2026-07-17*
