@@ -45,7 +45,7 @@ def main():
     safe_print("\n2. 执行 Harness 发布门禁...")
     all_changed_files = []
     for local_ref, local_sha, remote_ref, remote_sha in updates:
-        if remote_sha == ZERO_SHA:
+        if local_sha == ZERO_SHA:
             safe_print(f"   ✓ 允许删除远程引用: {remote_ref}")
             continue
         if remote_ref != "refs/heads/master":
