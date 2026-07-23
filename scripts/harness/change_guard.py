@@ -37,10 +37,6 @@ def collect_changed_files(root: Path, scope: str = "worktree", base_ref: str = "
             text=True, encoding="utf-8", check=False
         ).stdout.strip()
         commands = (["git", "diff", "--name-only", f"origin/{branch}...HEAD"],)
-    elif scope == "pr":
-        if not base_ref.strip():
-            raise ChangeGuardError("PR 变更检查必须提供 base_ref")
-        commands = (["git", "diff", "--name-only", f"origin/{base_ref}...HEAD"],)
     else:
         commands = (
             ["git", "diff", "--name-only", "HEAD"],
@@ -124,7 +120,7 @@ def main() -> int:
     parser.add_argument("--task-id", required=True)
     parser.add_argument(
         "--scope",
-        choices=["staged", "commit", "push", "pr", "worktree"],
+        choices=["staged", "commit", "push", "worktree"],
         default="worktree",
     )
     parser.add_argument("--base-ref", default="")

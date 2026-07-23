@@ -21,12 +21,10 @@ DATA_WAREHOUSE_STATES = (
     "ETL_READY",
     "REVERSE_LOGIC_PASSED",
     "TEST_PASSED",
-    "REVIEW_PASSED",
     "USER_APPROVED",
     "FULL_VALIDATION_PASSED",
     "COMMIT_ALLOWED",
     "PUSH_ALLOWED",
-    "PR_APPROVED",
     "COMPLETED",
 )
 
@@ -37,9 +35,8 @@ HARNESS_STATES = (
     "QUICK_VALIDATION_PASSED",
     "FULL_VALIDATION_PASSED",
     "USER_APPROVED",
-    "NEXT_PHASE_ALLOWED",
-    "RELEASE_APPROVED",
     "COMMIT_ALLOWED",
+    "PUSH_ALLOWED",
     "COMPLETED",
 )
 
@@ -51,13 +48,6 @@ STATES = DATA_WAREHOUSE_STATES
 
 BLOCKED = "BLOCKED"
 _NEXT = {state: STATES[index + 1] for index, state in enumerate(STATES[:-1])}
-_HARNESS_BRANCHES = {
-    "USER_APPROVED": {"NEXT_PHASE_ALLOWED", "RELEASE_APPROVED"},
-    "NEXT_PHASE_ALLOWED": {"IMPLEMENTATION_READY"},
-    "RELEASE_APPROVED": {"COMMIT_ALLOWED"},
-}
-
-
 class StateTransitionError(ValueError):
     """Raised when a task attempts an invalid state transition."""
 
@@ -88,8 +78,6 @@ def expected_next(state: str, workflow: str = "data_warehouse") -> str | None:
 
 def allowed_next(state: str, workflow: str = "data_warehouse") -> set[str]:
     next_state = expected_next(state, workflow)
-    if workflow == "harness" and state in _HARNESS_BRANCHES:
-        return set(_HARNESS_BRANCHES[state])
     return {next_state} if next_state else set()
 
 

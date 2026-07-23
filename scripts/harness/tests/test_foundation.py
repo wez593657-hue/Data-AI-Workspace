@@ -44,16 +44,12 @@ class StateMachineTests(unittest.TestCase):
             "IMPLEMENTATION_READY",
         )
         self.assertEqual(
-            validate_transition("USER_APPROVED", "NEXT_PHASE_ALLOWED", "harness").target,
-            "NEXT_PHASE_ALLOWED",
+            validate_transition("USER_APPROVED", "COMMIT_ALLOWED", "harness").target,
+            "COMMIT_ALLOWED",
         )
         self.assertEqual(
-            validate_transition("USER_APPROVED", "RELEASE_APPROVED", "harness").target,
-            "RELEASE_APPROVED",
-        )
-        self.assertEqual(
-            validate_transition("NEXT_PHASE_ALLOWED", "IMPLEMENTATION_READY", "harness").target,
-            "IMPLEMENTATION_READY",
+            validate_transition("COMMIT_ALLOWED", "PUSH_ALLOWED", "harness").target,
+            "PUSH_ALLOWED",
         )
         with self.assertRaises(StateTransitionError):
             validate_transition("WORKSPACE_CHECKED", "REQUIREMENT_PARSED", "harness")

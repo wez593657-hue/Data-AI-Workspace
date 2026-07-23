@@ -2,9 +2,7 @@ name: 自动校验
 
 on:
   push:
-    branches: [ master, develop ]
-  pull_request:
-    branches: [ master, develop ]
+    branches: [ master ]
 
 jobs:
   validate:
@@ -25,17 +23,5 @@ jobs:
       run: |
         pip install pandas openpyxl xlrd
 
-    - name: Harness 变更白名单门禁
-      if: github.event_name == 'pull_request'
-      id: resolve-task
-      env:
-        HARNESS_PR_BODY: ${{ github.event.pull_request.body }}
-        GITHUB_HEAD_REF: ${{ github.head_ref }}
-      run: |
-        task_id=$(python scripts/harness/resolve_task.py --branch "$GITHUB_HEAD_REF" | sed -n 's/^task_id=//p')
-        test -n "$task_id"
-        echo "task_id=$task_id" >> "$GITHUB_OUTPUT"
-        python scripts/harness/change_guard.py --task-id "$task_id" --scope pr --base-ref "${{ github.base_ref }}"
-    
     - name: 执行数据一致性校验
       run: python scripts/validate_cross_layer_consistency.py

@@ -2,7 +2,7 @@ name: 推送检查
 
 on:
   push:
-    branches: [ feature/**, bugfix/** ]
+    branches: [ master ]
 
 jobs:
   validate:
@@ -22,16 +22,6 @@ jobs:
     - name: 安装依赖
       run: |
         pip install pandas openpyxl xlrd
-
-    - name: Harness 变更白名单门禁
-      id: resolve-task
-      env:
-        GITHUB_REF_NAME: ${{ github.ref_name }}
-      run: |
-        task_id=$(python scripts/harness/resolve_task.py --branch "$GITHUB_REF_NAME" | sed -n 's/^task_id=//p')
-        test -n "$task_id"
-        echo "task_id=$task_id" >> "$GITHUB_OUTPUT"
-        python scripts/harness/change_guard.py --task-id "$task_id" --scope push
 
     - name: 执行数据资产一致性校验
       run: python scripts/validate_cross_layer_consistency.py

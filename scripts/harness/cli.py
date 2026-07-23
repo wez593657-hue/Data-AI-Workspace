@@ -20,7 +20,6 @@ from .task_manager import (
     TaskError,
     add_file_read_evidence,
     block_task,
-    branch_name,
     create_task,
     load_task,
     repo_root,
@@ -37,7 +36,7 @@ def authorize_sync(root, task_id: str, required_paths: list[str]) -> tuple[dict,
     directory, task = load_task(root, task_id)
     if str(task.get("lifecycle", "")).lower() == "archived":
         raise TaskError(f"任务已归档，不能执行文件同步: {task_id}")
-    if task.get("state") in {BLOCKED, "COMPLETED", "PR_APPROVED"}:
+    if task.get("state") in {BLOCKED, "COMPLETED"}:
         raise TaskError(f"任务当前状态不允许执行文件同步: {task.get('state')}")
     manifest_path = directory / "change_manifest.yaml"
     if not manifest_path.is_file():
