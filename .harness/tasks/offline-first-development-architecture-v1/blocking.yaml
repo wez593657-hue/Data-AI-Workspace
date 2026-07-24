@@ -1,0 +1,15 @@
+status: RESUMED
+blocked_from: FULL_VALIDATION_PASSED
+reason: 影响分析发现离线规则 R-001 与当前真实目标模型无法建立字段级对应关系
+category: unresolved_business_mapping
+evidence: .harness/tasks/offline-first-development-architecture-v1/reports/impact-analysis.json;
+  E-0005
+impact: 无法确认该规则应实现到哪个真实字段，继续生成会导致逻辑跑偏
+recommendation: 确认 R-001 是否仅为离线示例；若不是，请提供真实需求来源、输入字段和目标字段映射
+alternatives: 将 R-001 标记为离线演示规则并移出业务影响分析；不推荐人工豁免后继续
+user_decision: 确认 R-001 仅作为离线演示规则，不纳入真实业务影响分析
+recovery_condition: 用户确认规则性质或补充真实字段映射，重新生成 impact-analysis 报告且 unresolved=0
+created_at: '2026-07-23T15:57:43+00:00'
+recovery_evidence: '.harness/tasks/offline-first-development-architecture-v1/reports/impact-analysis.json:
+  result=passed, unresolved=0'
+resumed_at: '2026-07-23T16:02:04+00:00'

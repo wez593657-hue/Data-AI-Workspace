@@ -1,0 +1,148 @@
+schema_version: '0.1'
+task_id: offline-first-development-architecture-v1
+mode: single_task_continuous_phases
+current_phase: completed
+next_action: await_explicit_commit_authorization
+phase_order:
+  - offline_rule_validation
+  - impact_analysis
+  - rule_coverage
+  - property_and_idempotency_tests
+  - kingbase_dialect_check
+  - risk_based_gates
+  - report_and_ci_integration
+  - documentation_and_migration
+phases:
+  - id: offline_rule_validation
+    sequence: 1
+    status: completed
+    objective: Establish offline business-rule validation without a database connection.
+    allowed_paths:
+      - validation/
+      - scripts/harness/offline_validation.py
+      - scripts/harness/cli.py
+      - scripts/harness/tests/test_offline_validation.py
+      - docs/offline-validation.md
+      - .harness/tasks/offline-first-development-architecture-v1/
+    acceptance_commands:
+      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+      - python -m scripts.harness offline-validate --report validation/reports/offline-report.json
+      - python scripts/workspace_validation.py quick
+      - python scripts/validate_cross_layer_consistency.py
+      - python -m py_compile scripts/harness/offline_validation.py scripts/harness/cli.py scripts/harness/tests/test_offline_validation.py
+    evidence:
+      - E-0001
+      - E-0002
+      - E-0003
+      - E-0004
+  - id: impact_analysis
+    sequence: 2
+    status: completed
+    objective: Trace each confirmed rule to fields, DDL, mapping, SQL, procedures, and tests.
+    allowed_paths:
+      - scripts/harness/
+      - scripts/harness/tests/
+      - .harness/tasks/offline-first-development-architecture-v1/
+      - docs/
+    acceptance_commands:
+      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+      - python -m scripts.harness impact-analyze --report .harness/tasks/offline-first-development-architecture-v1/reports/impact-analysis.json
+      - python -m scripts.harness validate offline-first-development-architecture-v1
+    evidence:
+      - E-0005
+      - E-0006
+  - id: rule_coverage
+    sequence: 3
+    status: completed
+    objective: Report whether every confirmed rule has implementation and test coverage.
+    allowed_paths:
+      - scripts/harness/
+      - scripts/harness/tests/
+      - .harness/tasks/offline-first-development-architecture-v1/
+      - docs/
+    acceptance_commands:
+      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+      - python -m scripts.harness coverage-analyze --report .harness/tasks/offline-first-development-architecture-v1/reports/rule-coverage.json
+      - python -m scripts.harness validate offline-first-development-architecture-v1
+    evidence:
+      - E-0007
+  - id: property_and_idempotency_tests
+    sequence: 4
+    status: completed
+    objective: Validate nulls, duplicates, reruns, exceptions, and boundary properties offline.
+    allowed_paths:
+      - validation/
+      - scripts/harness/
+      - scripts/harness/tests/
+      - .harness/tasks/offline-first-development-architecture-v1/
+      - docs/
+    acceptance_commands:
+      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+      - python -m scripts.harness property-validate --report .harness/tasks/offline-first-development-architecture-v1/reports/property-validation.json
+      - python -m scripts.harness offline-validate
+    evidence:
+      - E-0008
+  - id: kingbase_dialect_check
+    sequence: 5
+    status: completed
+    objective: Statically check Oracle and Kingbase syntax and semantic compatibility.
+    allowed_paths:
+      - scripts/harness/
+      - scripts/harness/tests/
+      - .harness/tasks/offline-first-development-architecture-v1/
+      - docs/
+    acceptance_commands:
+      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+      - python -m scripts.harness dialect-check --report .harness/tasks/offline-first-development-architecture-v1/reports/dialect-check.json
+      - python -m scripts.harness validate offline-first-development-architecture-v1
+    evidence:
+      - E-0009
+  - id: risk_based_gates
+    sequence: 6
+    status: completed
+    objective: Provide fast, standard, and strict validation profiles based on change risk.
+    allowed_paths:
+      - scripts/harness/
+      - scripts/harness/tests/
+      - .harness/
+      - docs/
+    acceptance_commands:
+      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+      - python -m scripts.harness risk-check fast --report .harness/tasks/offline-first-development-architecture-v1/reports/risk-fast.json
+      - python -m scripts.harness risk-check standard --report .harness/tasks/offline-first-development-architecture-v1/reports/risk-standard.json
+      - python -m scripts.harness risk-check strict --report .harness/tasks/offline-first-development-architecture-v1/reports/risk-strict.json
+      - python -m scripts.harness validate offline-first-development-architecture-v1
+    evidence:
+      - E-0010
+  - id: report_and_ci_integration
+    sequence: 7
+    status: completed
+    objective: Integrate offline reports with CI, pre-push, and Harness state checks.
+    allowed_paths:
+      - .github/workflows/
+      - hooks/
+      - scripts/harness/
+      - scripts/harness/tests/
+      - .harness/
+      - docs/
+    acceptance_commands:
+      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+      - python -m scripts.harness risk-check standard
+      - python -m scripts.harness validate offline-first-development-architecture-v1
+    evidence:
+      - E-0011
+  - id: documentation_and_migration
+    sequence: 8
+    status: completed
+    objective: Simplify project guidance and migrate old workflow entry points incrementally.
+    allowed_paths:
+      - docs/
+      - scripts/harness/
+      - scripts/harness/tests/
+      - .harness/
+    acceptance_commands:
+      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+      - python -m scripts.harness validate offline-first-development-architecture-v1
+      - python -m scripts.harness risk-check standard
+    evidence:
+      - E-0012

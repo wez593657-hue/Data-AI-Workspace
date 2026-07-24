@@ -1,0 +1,59 @@
+schema_version: '0.1'
+task_id: offline-first-development-architecture-v1
+purpose: 构建无数据库依赖、需求规则可追溯、离线可验证的 CRM 持续开发架构
+workflow_profile: harness
+state: USER_APPROVED
+branch: master
+created_at: '2026-07-23T15:41:40+00:00'
+updated_at: '2026-07-23T16:47:09+00:00'
+evidence_ids:
+- E-0001
+- E-0002
+- E-0003
+- E-0004
+- E-0005
+- E-0006
+- E-0007
+- E-0008
+- E-0009
+- E-0010
+- E-0011
+- E-0012
+- E-0013
+- E-0014
+- E-0015
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-23T15:41:40+00:00'
+- from: CREATED
+  to: WORKSPACE_CHECKED
+  reason: 已核对 master 分支、单任务目录、现有离线验证资产和任务范围
+  at: '2026-07-23T15:49:17+00:00'
+- from: WORKSPACE_CHECKED
+  to: IMPLEMENTATION_READY
+  reason: 已登记单任务持续阶段模型、变更白名单和后续阶段验收命令
+  at: '2026-07-23T15:49:20+00:00'
+- from: IMPLEMENTATION_READY
+  to: QUICK_VALIDATION_PASSED
+  reason: Harness 单元测试、离线规则案例和 Python 编译快速校验通过
+  at: '2026-07-23T15:49:24+00:00'
+- from: QUICK_VALIDATION_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: 第 1 阶段离线验证报告和配置校验通过；数据库执行能力按当前约束保持未验证
+  at: '2026-07-23T15:49:28+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: BLOCKED
+  reason: 影响分析发现离线规则 R-001 与当前真实目标模型无法建立字段级对应关系
+  at: '2026-07-23T15:57:43+00:00'
+- from: BLOCKED
+  to: FULL_VALIDATION_PASSED
+  reason: 恢复条件已验证
+  at: '2026-07-23T16:02:04+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户明确授权提交并推送本次任务变更
+  at: '2026-07-23T16:47:09+00:00'
+state_seal: 9d0efdbd3b036757db5ba9027fb4539a581d08f2e997ca9b247b34ff744d90ac

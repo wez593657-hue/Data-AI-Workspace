@@ -26,7 +26,26 @@ def read_push_updates():
     return updates
 
 
+def run_standard_risk_gate():
+    stdout, stderr, rc = run_command(
+        [sys.executable, '-m', 'scripts.harness', 'risk-check', 'standard']
+    )
+    if rc != 0:
+        safe_print('   Harness standard risk gate failed')
+        if stdout:
+            safe_print(stdout[-2000:])
+        if stderr:
+            safe_print(stderr[-2000:])
+        return False
+    safe_print('   Harness standard risk gate passed')
+    return True
+
+
 def main():
+    safe_print("\n0. Running standard risk gate...")
+    if not run_standard_risk_gate():
+        sys.exit(1)
+
     safe_print("=" * 50)
     safe_print("  Git Pre-Push Hook - 推送前检查")
     safe_print("=" * 50)

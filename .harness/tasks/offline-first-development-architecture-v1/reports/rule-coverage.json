@@ -1,0 +1,35 @@
+{
+  "schema_version": "0.1",
+  "result": "passed",
+  "catalog": "validation/rules/deadline_reminder.yaml",
+  "impact_report": ".harness/tasks/offline-first-development-architecture-v1/reports/impact-analysis.json",
+  "rule_count": 1,
+  "covered_rule_count": 1,
+  "coverage_percent": 100.0,
+  "findings": [
+    {
+      "rule_id": "R-001",
+      "scope": "offline_only",
+      "reference": "validation.reference.deadline_reminder:evaluate",
+      "reference_available": true,
+      "case_count": 4,
+      "required_case_tags": [
+        "boundary",
+        "empty",
+        "negative",
+        "normal"
+      ],
+      "covered_case_tags": [
+        "boundary",
+        "empty",
+        "negative",
+        "normal"
+      ],
+      "missing_case_tags": [],
+      "cases_complete": true,
+      "production_required": false,
+      "production_covered": true,
+      "passed": true
+    }
+  ]
+}

@@ -89,6 +89,9 @@ workflows:
       next: COMMIT_ALLOWED
       required_evidence: [commit_authorization]
     COMMIT_ALLOWED:
+      next: PUSH_ALLOWED
+      required_evidence: [push_authorization]
+    PUSH_ALLOWED:
       next: COMPLETED
       required_evidence: [completion_record]
   requirement_development:

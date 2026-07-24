@@ -1,0 +1,23 @@
+{"created_at": "2026-07-23T15:41:40+00:00", "event": "task_created", "task_id": "offline-first-development-architecture-v1"}
+{"created_at": "2026-07-23T15:48:56+00:00", "event": "evidence_recorded", "evidence_id": "E-0001"}
+{"created_at": "2026-07-23T15:48:58+00:00", "event": "evidence_recorded", "evidence_id": "E-0002"}
+{"created_at": "2026-07-23T15:49:01+00:00", "event": "evidence_recorded", "evidence_id": "E-0003"}
+{"created_at": "2026-07-23T15:49:05+00:00", "event": "evidence_recorded", "evidence_id": "E-0004"}
+{"created_at": "2026-07-23T15:49:17+00:00", "event": "state_transition", "from": "CREATED", "to": "WORKSPACE_CHECKED"}
+{"created_at": "2026-07-23T15:49:20+00:00", "event": "state_transition", "from": "WORKSPACE_CHECKED", "to": "IMPLEMENTATION_READY"}
+{"created_at": "2026-07-23T15:49:24+00:00", "event": "state_transition", "from": "IMPLEMENTATION_READY", "to": "QUICK_VALIDATION_PASSED"}
+{"created_at": "2026-07-23T15:49:28+00:00", "event": "state_transition", "from": "QUICK_VALIDATION_PASSED", "to": "FULL_VALIDATION_PASSED"}
+{"created_at": "2026-07-23T15:57:41+00:00", "event": "evidence_recorded", "evidence_id": "E-0005"}
+{"category": "unresolved_business_mapping", "created_at": "2026-07-23T15:57:43+00:00", "event": "task_blocked", "from": "FULL_VALIDATION_PASSED"}
+{"created_at": "2026-07-23T16:02:04+00:00", "event": "task_resumed", "to": "FULL_VALIDATION_PASSED"}
+{"created_at": "2026-07-23T16:02:16+00:00", "event": "evidence_recorded", "evidence_id": "E-0006"}
+{"created_at": "2026-07-23T16:05:32+00:00", "event": "evidence_recorded", "evidence_id": "E-0007"}
+{"created_at": "2026-07-23T16:11:47+00:00", "event": "evidence_recorded", "evidence_id": "E-0008"}
+{"created_at": "2026-07-23T16:15:07+00:00", "event": "evidence_recorded", "evidence_id": "E-0009"}
+{"created_at": "2026-07-23T16:30:45+00:00", "event": "evidence_recorded", "evidence_id": "E-0010"}
+{"created_at": "2026-07-23T16:35:54+00:00", "event": "evidence_recorded", "evidence_id": "E-0011"}
+{"created_at": "2026-07-23T16:39:10+00:00", "event": "evidence_recorded", "evidence_id": "E-0012"}
+{"created_at": "2026-07-23T16:46:32+00:00", "event": "evidence_recorded", "evidence_id": "E-0013"}
+{"created_at": "2026-07-23T16:46:36+00:00", "event": "evidence_recorded", "evidence_id": "E-0014"}
+{"created_at": "2026-07-23T16:47:04+00:00", "event": "evidence_recorded", "evidence_id": "E-0015"}
+{"created_at": "2026-07-23T16:47:09+00:00", "event": "state_transition", "from": "FULL_VALIDATION_PASSED", "to": "USER_APPROVED"}

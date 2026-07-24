@@ -1,0 +1,34 @@
+schema_version: '0.1'
+task_id: offline-first-development-architecture-v1
+user_confirmation: confirmed
+objective: Maintain one continuous task for offline-first, traceable, and database-independent CRM development.
+current_phase: offline_rule_validation
+allowed_changes:
+  - path: validation/
+    purpose: Offline rules, fixtures, expected outputs, reference implementations, and reports.
+  - path: scripts/harness/
+    purpose: Harness implementation, phase gates, validators, and focused tests.
+  - path: docs/offline-validation.md
+    purpose: Documentation for the offline validation loop.
+  - path: docs/
+    purpose: Phase-specific architecture and migration documentation.
+  - path: .harness/tasks/offline-first-development-architecture-v1/
+    purpose: Single-task phase definitions, evidence, reports, and events.
+  - path: .harness/policies/
+    purpose: Shared Harness policies required by this continuous task.
+  - path: hooks/
+    purpose: Pre-push and local Harness integration when authorized by a later phase.
+  - path: .github/workflows/
+    purpose: CI integration when authorized by the CI phase.
+read_only_inputs:
+  - requirements/
+  - data_assets/
+forbidden_changes:
+  - secrets/
+  - .env
+phase_rules:
+  - Each phase must declare its allowed paths and acceptance commands in phases.yaml.
+  - A phase is completed only after its acceptance commands pass and evidence is recorded.
+  - The next phase is not started until the user confirms continuation.
+  - Business rules without a traceable source remain unresolved and cannot be implemented by guesswork.
+  - Database execution, explain plans, and production performance remain unverified while the database is unavailable.

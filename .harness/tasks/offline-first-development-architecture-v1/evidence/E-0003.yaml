@@ -1,0 +1,9 @@
+evidence_id: E-0003
+task_id: offline-first-development-architecture-v1
+phase: OFFLINE_RULE_VALIDATION
+kind: offline_validation
+purpose: quick_validation
+result: passed
+details: 49 个 Harness 单元测试通过；离线规则验证 4/4 案例通过；Python 编译通过；YAML 解析通过
+repository_revision: bdd5c66753bb676c078677c4753260d7cb3cf487
+created_at: '2026-07-23T15:49:01+00:00'

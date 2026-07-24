@@ -1,0 +1,41 @@
+schema_version: "0.1"
+rules:
+  - rule_id: R-001
+    source:
+      document: requirements/到期承接规则记忆卡片.md
+      section: synthetic-offline-example
+    inputs:
+      - name: due_date
+        source: validation/fixtures/deadline_reminder.json
+        status: offline_only
+      - name: current_date
+        source: validation/fixtures/deadline_reminder.json
+        status: offline_only
+      - name: handle_status
+        source: validation/fixtures/deadline_reminder.json
+        status: offline_only
+    outputs:
+      - name: remind_flag
+        target: validation/expected/deadline_reminder.json
+        status: offline_only
+      - name: overdue_days
+        target: validation/expected/deadline_reminder.json
+        status: offline_only
+    artifacts:
+      - kind: rule_catalog
+        path: validation/rules/deadline_reminder.yaml
+      - kind: fixture
+        path: validation/fixtures/deadline_reminder.json
+      - kind: expected
+        path: validation/expected/deadline_reminder.json
+      - kind: reference
+        path: validation/reference/deadline_reminder.py
+      - kind: test
+        path: scripts/harness/tests/test_offline_validation.py
+    database_impact:
+      status: offline_only
+      target_table: ADS_CUST_DEADLINE_RMND_DTL
+      target_fields:
+        - REMIND_FLAG
+        - OVERDUE_DAYS
+      reason: This rule is retained only as an offline validation example and is excluded from production impact analysis.

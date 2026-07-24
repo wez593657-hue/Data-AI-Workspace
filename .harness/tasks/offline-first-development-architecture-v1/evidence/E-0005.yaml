@@ -1,0 +1,20 @@
+evidence_id: E-0005
+task_id: offline-first-development-architecture-v1
+phase: IMPACT_ANALYSIS
+kind: review
+purpose: impact_analysis
+result: blocked
+details: 影响分析发现 R-001 为离线合成示例，REMIND_FLAG、OVERDUE_DAYS 不存在于当前 ADS_CUST_DEADLINE_RMND_DTL
+  DDL；禁止推断真实映射
+repository_revision: bdd5c66753bb676c078677c4753260d7cb3cf487
+created_at: '2026-07-23T15:57:41+00:00'
+review_type: impact_analysis
+return_to: IMPACT_ANALYSIS
+checked_files:
+- validation/impact/deadline_reminder.yaml
+- .harness/tasks/offline-first-development-architecture-v1/reports/impact-analysis.json
+rules_checked:
+- 规则来源必须可追溯
+- 规则输入输出必须能关联到实际资产
+issues:
+- 目标字段与现有 DDL 不一致

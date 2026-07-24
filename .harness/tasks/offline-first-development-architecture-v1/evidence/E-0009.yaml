@@ -1,0 +1,9 @@
+evidence_id: E-0009
+task_id: offline-first-development-architecture-v1
+phase: KINGBASE_DIALECT_CHECK
+kind: validation_report
+purpose: dialect_check
+result: passed
+details: 声明的 DDL 与存储过程静态方言检查通过；2 个输入文件，0 个缺失文件，0 个禁用语法
+repository_revision: bdd5c66753bb676c078677c4753260d7cb3cf487
+created_at: '2026-07-23T16:15:06+00:00'

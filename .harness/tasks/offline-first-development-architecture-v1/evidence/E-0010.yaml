@@ -1,0 +1,9 @@
+evidence_id: E-0010
+task_id: offline-first-development-architecture-v1
+phase: RISK_BASED_GATES
+kind: validation_report
+purpose: risk_gate
+result: passed
+details: fast/standard/strict 三档门禁全部通过；分别执行 3/6/8 项检查，严格档包含 Harness、工作区和跨层一致性校验
+repository_revision: bdd5c66753bb676c078677c4753260d7cb3cf487
+created_at: '2026-07-23T16:30:45+00:00'

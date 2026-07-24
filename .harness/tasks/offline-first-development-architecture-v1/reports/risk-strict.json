@@ -1,0 +1,57 @@
+{
+  "schema_version": "0.1",
+  "result": "passed",
+  "profile": "strict",
+  "command_count": 8,
+  "completed_count": 8,
+  "checks": [
+    {
+      "command": "python -m unittest discover -s scripts/harness/tests -p 'test_*.py'",
+      "passed": true,
+      "returncode": 0,
+      "output": "...............................................................\n----------------------------------------------------------------------\nRan 63 tests in 1.264s\n\nOK\n"
+    },
+    {
+      "command": "python -m scripts.harness offline-validate",
+      "passed": true,
+      "returncode": 0,
+      "output": "{\n  \"schema_version\": \"0.1\",\n  \"result\": \"passed\",\n  \"catalog\": \"validation\\\\rules\\\\deadline_reminder.yaml\",\n  \"rule_count\": 1,\n  \"tested_rule_count\": 1,\n  \"case_count\": 4,\n  \"passed_case_count\": 4,\n  \"failed_cases\": [],\n  \"missing_rules\": [],\n  \"missing_case_tags\": {},\n  \"cases\": [\n    {\n      \"case_id\": \"TC-001\",\n      \"rule_id\": \"R-001\",\n      \"tags\": [\n        \"normal\"\n      ],\n      \"passed\": true,\n      \"actual\": {\n        \"remind_flag\": \"1\",\n        \"overdue_days\": 1\n      },\n      \"expected\": {\n        \"remind_flag\": \"1\",\n        \"overdue_days\": 1\n      }\n    },\n    {\n      \"case_id\": \"TC-002\",\n      \"rule_id\": \"R-001\",\n      \"tags\": [\n        \"boundary\"\n      ],\n      \"passed\": true,\n      \"actual\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      },\n      \"expected\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      }\n    },\n    {\n      \"case_id\": \"TC-003\",\n      \"rule_id\": \"R-001\",\n      \"tags\": [\n        \"negative\"\n      ],\n      \"passed\": true,\n      \"actual\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      },\n      \"expected\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      }\n    },\n    {\n      \"case_id\": \"TC-004\",\n      \"rule_id\": \"R-001\",\n      \"tags\": [\n        \"empty\"\n      ],\n      \"passed\": true,\n      \"actual\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      },\n      \"expected\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      }\n    }\n  ]\n}\n"
+    },
+    {
+      "command": "python -m scripts.harness property-validate",
+      "passed": true,
+      "returncode": 0,
+      "output": "{\n  \"schema_version\": \"0.1\",\n  \"result\": \"passed\",\n  \"catalog\": \"validation/rules/deadline_reminder.yaml\",\n  \"rule_count\": 1,\n  \"passed_rule_count\": 1,\n  \"properties\": [\n    {\n      \"rule_id\": \"R-001\",\n      \"case_count\": 4,\n      \"repeat_failures\": [],\n      \"null_safe\": true,\n      \"invalid_input_exception\": \"ValueError\",\n      \"exception_stable\": true,\n      \"passed\": true\n    }\n  ]\n}\n"
+    },
+    {
+      "command": "python -m scripts.harness coverage-analyze",
+      "passed": true,
+      "returncode": 0,
+      "output": "{\n  \"schema_version\": \"0.1\",\n  \"result\": \"passed\",\n  \"catalog\": \"validation/rules/deadline_reminder.yaml\",\n  \"impact_report\": \".harness/tasks/offline-first-development-architecture-v1/reports/impact-analysis.json\",\n  \"rule_count\": 1,\n  \"covered_rule_count\": 1,\n  \"coverage_percent\": 100.0,\n  \"findings\": [\n    {\n      \"rule_id\": \"R-001\",\n      \"scope\": \"offline_only\",\n      \"reference\": \"validation.reference.deadline_reminder:evaluate\",\n      \"reference_available\": true,\n      \"case_count\": 4,\n      \"required_case_tags\": [\n        \"boundary\",\n        \"empty\",\n        \"negative\",\n        \"normal\"\n      ],\n      \"covered_case_tags\": [\n        \"boundary\",\n        \"empty\",\n        \"negative\",\n        \"normal\"\n      ],\n      \"missing_case_tags\": [],\n      \"cases_complete\": true,\n      \"production_required\": false,\n      \"production_covered\": true,\n      \"passed\": true\n    }\n  ]\n}\n"
+    },
+    {
+      "command": "python -m scripts.harness dialect-check",
+      "passed": true,
+      "returncode": 0,
+      "output": "{\n  \"schema_version\": \"0.1\",\n  \"result\": \"passed\",\n  \"manifest\": \".harness/tasks/offline-first-development-architecture-v1/dialect_manifest.yaml\",\n  \"input_count\": 2,\n  \"missing_inputs\": [],\n  \"violation_count\": 0,\n  \"violations\": []\n}\n"
+    },
+    {
+      "command": "python -m scripts.harness validate offline-first-development-architecture-v1",
+      "passed": true,
+      "returncode": 0,
+      "output": "g_task_id_is_rejected) ... ok\\ntest_multiple_commits_must_share_task_id (test_publish_guard.PublishGuardTests.test_multiple_commits_must_share_task_id) ... ok\\ntest_publish_rejects_out_of_scope_file (test_publish_guard.PublishGuardTests.test_publish_rejects_out_of_scope_file) ... ok\\ntest_publish_requires_push_allowed (test_publish_guard.PublishGuardTests.test_publish_requires_push_allowed) ... ok\\ntest_fast_profile_passes (test_risk_gate.RiskGateTests.test_fast_profile_passes) ... ok\\ntest_unknown_profile_is_rejected (test_risk_gate.RiskGateTests.test_unknown_profile_is_rejected) ... ok\\ntest_seal_is_stable_for_same_state (test_state_integrity.StateIntegrityTests.test_seal_is_stable_for_same_state) ... ok\\ntest_unsealed_legacy_task_is_not_migratable (test_state_integrity.StateIntegrityTests.test_unsealed_legacy_task_is_not_migratable) ... ok\\ntest_explicit_task_id_is_required (test_task_resolver.TaskResolverTests.test_explicit_task_id_is_required) ... ok\\ntest_ambiguous_command_blocks_routing (test_workflow_router.WorkflowRouterTests.test_ambiguous_command_blocks_routing) ... ok\\ntest_combined_command_requires_follow_up_schema_task (test_workflow_router.WorkflowRouterTests.test_combined_command_requires_follow_up_schema_task) ... ok\\ntest_read_only_command_does_not_select_write_profile (test_workflow_router.WorkflowRouterTests.test_read_only_command_does_not_select_write_profile) ... ok\\ntest_requirement_command_routes_to_requirement_profile (test_workflow_router.WorkflowRouterTests.test_requirement_command_routes_to_requirement_profile) ... ok\\ntest_schema_command_routes_to_schema_profile (test_workflow_router.WorkflowRouterTests.test_schema_command_routes_to_schema_profile) ... ok\\n\\n----------------------------------------------------------------------\\nRan 63 tests in 1.040s\\n\\nOK\\n\"\n    },\n    {\n      \"name\": \"config_parse\",\n      \"passed\": true,\n      \"details\": []\n    },\n    {\n      \"name\": \"whitespace\",\n      \"passed\": true,\n      \"details\": []\n    }\n  ]\n}\n"
+    },
+    {
+      "command": "python scripts/workspace_validation.py quick",
+      "passed": true,
+      "returncode": 0,
+      "output": "================================================================================\n工作区快速校验\n================================================================================\n\n============================================================\n1. 文档变更审核\n============================================================\n✓ 无文档变更，跳过审核\n\n\n✓ 文档变更审核通过\n\n============================================================\n3. SQL语法检查\n============================================================\n  ✓ SQL语法检查通过\n\n============================================================\n4. JSON格式检查\n============================================================\n  ✓ JSON格式检查通过\n\n============================================================\n5. YAML格式检查\n============================================================\n  ✓ YAML格式检查通过\n\n================================================================================\n校验结果汇总\n================================================================================\n  文档变更审核: ✓ 通过\n  SQL语法检查: ✓ 通过\n  JSON格式检查: ✓ 通过\n  YAML格式检查: ✓ 通过\n\n================================================================================\n✓ 所有校验通过\n"
+    },
+    {
+      "command": "python scripts/validate_cross_layer_consistency.py",
+      "passed": true,
+      "returncode": 0,
+      "output": "o: DDL与数据字典字段一致\n  ✓ [dwd] dwd_cust_indv_kyc: DDL与数据字典字段一致\n  ✓ [dwd] dwd_cust_man: DDL与数据字典字段一致\n  ✓ [dwd] dwd_cust_sign_ctrakt: DDL与数据字典字段一致\n  ✓ [dwd] dwd_prdkt_info: DDL与数据字典字段一致\n  ✓ [dwd] dwd_sys_org: DDL与数据字典字段一致\n  ✓ [dwd] dwd_tmp_jigou_base: DDL与数据字典字段一致\n  ✓ [dwd] dwd_tmp_jigou_code: DDL与数据字典字段一致\n  ✓ [dwd] dwd_tmp_jigou_path: DDL与数据字典字段一致\n  ✓ [dwd] dwd_tx_aset: DDL与数据字典字段一致\n  ✓ [dws] dws_cust_asse_liab: DDL与数据字典字段一致\n  ✓ [dws] dws_cust_asse_liab_cumu: DDL与数据字典字段一致\n  ✓ [dws] dws_cust_asse_liab_cumu_his: DDL与数据字典字段一致\n  ✓ [dws] dws_cust_capital_rmnd: DDL与数据字典字段一致\n  ✓ [dws] dws_cust_care_rmnd: DDL与数据字典字段一致\n  ✓ [dws] dws_cust_deadline_rmnd: DDL与数据字典字段一致\n  ✓ [dws] dws_cust_indiv_referral: DDL与数据字典字段一致\n  ✓ [dws] dws_cust_lvl_info: DDL与数据字典字段一致\n  ✓ [dws] dws_cust_referral_rmnd: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_deadline_rmnd_dtl: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_deadline_rmnd_statis: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_indv_poten: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_lost_dtl: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_lost_statis: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_new_cust_dtl: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_new_cust_statis: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_others_rmnd: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_potn_upgrade_cust_dtl: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_potn_upgrade_statis: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_prdkt_rcmd: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_sleep_wake_dtl: DDL与数据字典字段一致\n  ✓ [ads] ads_cust_sleep_wake_statis: DDL与数据字典字段一致\n  ✓ [ads] ads_mkt_act_tsk_mon: DDL与数据字典字段一致\n  ✓ [ads] ads_mkt_act_tsk_mon_zb: DDL与数据字典字段一致\n  ✓ [ads] ads_mkt_rec_info: DDL与数据字典字段一致\n  ✓ [ads] ads_mkt_task_indx_sub_cmplt: DDL与数据字典字段一致\n  ✓ [ads] ads_mkt_tsk_info: DDL与数据字典字段一致\n  ✓ [ads] ads_report_0001: DDL与数据字典字段一致\n  ✓ [ads] ads_stat_indx_data: DDL与数据字典字段一致\n\n=== ODS DDL 与数据字典一致性校验 ===\n  ✓ ODS DDL与数据字典字段一致性校验完成\n\n=== 数据字典 vs Mapping 一致性校验 ===\n  ✓ 数据字典与Mapping字段一致\n\n=== 表命名规范校验 ===\n  ✓ 表命名规范校验完成\n\n=== TMP_ 表审核清单校验 ===\n  ✓ TMP_ 审核清单校验完成\n\n================================================================================\n\n✓ 所有校验通过\n"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+evidence_id: E-0001
+task_id: offline-first-development-architecture-v1
+phase: OFFLINE_RULE_VALIDATION
+kind: validation_report
+purpose: workspace_status
+result: passed
+details: master 分支、单任务目录和离线验证资产已核对；本阶段不连接数据库
+repository_revision: bdd5c66753bb676c078677c4753260d7cb3cf487
+created_at: '2026-07-23T15:48:56+00:00'

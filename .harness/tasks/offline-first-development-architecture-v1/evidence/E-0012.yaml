@@ -1,0 +1,9 @@
+evidence_id: E-0012
+task_id: offline-first-development-architecture-v1
+phase: DOCUMENTATION_AND_MIGRATION
+kind: validation_report
+purpose: documentation_migration
+result: passed
+details: 离线优先开发指南已完成；单任务阶段入口、三档门禁、数据库不可用边界和旧流程迁移规则已明确；63 项测试、strict 门禁和工作区/跨层校验通过
+repository_revision: bdd5c66753bb676c078677c4753260d7cb3cf487
+created_at: '2026-07-23T16:39:10+00:00'

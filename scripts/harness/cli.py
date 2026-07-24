@@ -9,6 +9,12 @@ from datetime import datetime, timezone
 
 from .gate_checker import GateError, check_gate, check_schema_consistency_gate
 from .logic_gate import run_logic_gate
+from .offline_validation import OfflineValidationError, validate_offline
+from .impact_analysis import ImpactAnalysisError, analyze_impact
+from .coverage_analysis import CoverageAnalysisError, analyze_coverage
+from .property_validation import PropertyValidationError, validate_properties
+from .dialect_check import DialectCheckError, check_dialect
+from .risk_gate import RiskGateError, run_risk_gate
 from .asset_sync import sync_dictionary_types
 from .memory_card_guard import MemoryCardError, verify_memory_card
 from .mapping_excel_sync import sync_mapping_markdown
@@ -88,6 +94,32 @@ def parser() -> argparse.ArgumentParser:
     validate = subparsers.add_parser("validate", help="执行 Harness 任务范围完整校验")
     validate.add_argument("task_id")
 
+    offline = subparsers.add_parser("offline-validate", help="执行无数据库离线规则验证")
+    offline.add_argument("--catalog", default="")
+    offline.add_argument("--report", default="")
+
+    impact = subparsers.add_parser("impact-analyze", help="执行规则影响分析")
+    impact.add_argument("--manifest", default="")
+    impact.add_argument("--report", default="")
+
+    coverage = subparsers.add_parser("coverage-analyze", help="执行规则覆盖率分析")
+    coverage.add_argument("--catalog", default="")
+    coverage.add_argument("--impact-report", default="")
+    coverage.add_argument("--report", default="")
+
+    properties = subparsers.add_parser("property-validate", help="执行规则属性和幂等性验证")
+    properties.add_argument("--catalog", default="")
+    properties.add_argument("--report", default="")
+
+    dialect = subparsers.add_parser("dialect-check", help="执行 Kingbase/Oracle 方言静态检查")
+    dialect.add_argument("--manifest", default="")
+    dialect.add_argument("--report", default="")
+
+    risk = subparsers.add_parser("risk-check", help="执行风险分级门禁")
+    risk.add_argument("profile", choices=["fast", "standard", "strict"])
+    risk.add_argument("--config", default="")
+    risk.add_argument("--report", default="")
+
     requirement = subparsers.add_parser("parse-requirement", help="解析需求版本和业务规则")
     requirement.add_argument("path")
 
@@ -158,6 +190,10 @@ def parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     args = parser().parse_args(argv)
     try:
         root = repo_root()
@@ -177,6 +213,77 @@ def main(argv: list[str] | None = None) -> int:
             result = check_gate(root, args.task_id, args.target)
         elif args.command == "validate":
             result = validate_task(root, args.task_id)
+        elif args.command == "offline-validate":
+            catalog = root / args.catalog if args.catalog else None
+            result = validate_offline(root, catalog)
+            if args.report:
+                report_path = root / args.report
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+                report_path.write_text(
+                    json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+        elif args.command == "impact-analyze":
+            manifest = root / args.manifest if args.manifest else None
+            result = analyze_impact(root, manifest)
+            if args.report:
+                report_path = root / args.report
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+                report_path.write_text(
+                    json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+            if result.get("result") != "passed":
+                raise ImpactAnalysisError(json.dumps(result, ensure_ascii=False))
+        elif args.command == "coverage-analyze":
+            catalog = root / args.catalog if args.catalog else None
+            impact = root / args.impact_report if args.impact_report else None
+            result = analyze_coverage(root, catalog, impact)
+            if args.report:
+                report_path = root / args.report
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+                report_path.write_text(
+                    json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+            if result.get("result") != "passed":
+                raise CoverageAnalysisError(json.dumps(result, ensure_ascii=False))
+        elif args.command == "property-validate":
+            catalog = root / args.catalog if args.catalog else None
+            result = validate_properties(root, catalog)
+            if args.report:
+                report_path = root / args.report
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+                report_path.write_text(
+                    json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+            if result.get("result") != "passed":
+                raise PropertyValidationError(json.dumps(result, ensure_ascii=False))
+        elif args.command == "dialect-check":
+            manifest = root / args.manifest if args.manifest else None
+            result = check_dialect(root, manifest)
+            if args.report:
+                report_path = root / args.report
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+                report_path.write_text(
+                    json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+            if result.get("result") != "passed":
+                raise DialectCheckError(json.dumps(result, ensure_ascii=False))
+        elif args.command == "risk-check":
+            config = root / args.config if args.config else None
+            result = run_risk_gate(root, args.profile, config)
+            if args.report:
+                report_path = root / args.report
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+                report_path.write_text(
+                    json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+            if result.get("result") != "passed":
+                raise RiskGateError(json.dumps(result, ensure_ascii=False))
         elif args.command == "parse-requirement":
             result = parse_requirement(root / args.path)
         elif args.command == "check-memory-card":
@@ -271,6 +378,12 @@ def main(argv: list[str] | None = None) -> int:
         TaskError,
         GateError,
         ValidationError,
+        OfflineValidationError,
+        ImpactAnalysisError,
+        CoverageAnalysisError,
+        PropertyValidationError,
+        DialectCheckError,
+        RiskGateError,
         ChangeGuardError,
         RequirementError,
         MemoryCardError,

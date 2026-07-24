@@ -1,0 +1,45 @@
+{
+  "schema_version": "0.1",
+  "result": "passed",
+  "profile": "standard",
+  "command_count": 6,
+  "completed_count": 6,
+  "checks": [
+    {
+      "command": "python -m unittest discover -s scripts/harness/tests -p 'test_*.py'",
+      "passed": true,
+      "returncode": 0,
+      "output": "............................................................\n----------------------------------------------------------------------\nRan 60 tests in 0.961s\n\nOK\n"
+    },
+    {
+      "command": "python -m scripts.harness offline-validate",
+      "passed": true,
+      "returncode": 0,
+      "output": "{\n  \"schema_version\": \"0.1\",\n  \"result\": \"passed\",\n  \"catalog\": \"validation\\\\rules\\\\deadline_reminder.yaml\",\n  \"rule_count\": 1,\n  \"tested_rule_count\": 1,\n  \"case_count\": 4,\n  \"passed_case_count\": 4,\n  \"failed_cases\": [],\n  \"missing_rules\": [],\n  \"missing_case_tags\": {},\n  \"cases\": [\n    {\n      \"case_id\": \"TC-001\",\n      \"rule_id\": \"R-001\",\n      \"tags\": [\n        \"normal\"\n      ],\n      \"passed\": true,\n      \"actual\": {\n        \"remind_flag\": \"1\",\n        \"overdue_days\": 1\n      },\n      \"expected\": {\n        \"remind_flag\": \"1\",\n        \"overdue_days\": 1\n      }\n    },\n    {\n      \"case_id\": \"TC-002\",\n      \"rule_id\": \"R-001\",\n      \"tags\": [\n        \"boundary\"\n      ],\n      \"passed\": true,\n      \"actual\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      },\n      \"expected\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      }\n    },\n    {\n      \"case_id\": \"TC-003\",\n      \"rule_id\": \"R-001\",\n      \"tags\": [\n        \"negative\"\n      ],\n      \"passed\": true,\n      \"actual\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      },\n      \"expected\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      }\n    },\n    {\n      \"case_id\": \"TC-004\",\n      \"rule_id\": \"R-001\",\n      \"tags\": [\n        \"empty\"\n      ],\n      \"passed\": true,\n      \"actual\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      },\n      \"expected\": {\n        \"remind_flag\": \"0\",\n        \"overdue_days\": 0\n      }\n    }\n  ]\n}\n"
+    },
+    {
+      "command": "python -m scripts.harness property-validate",
+      "passed": true,
+      "returncode": 0,
+      "output": "{\n  \"schema_version\": \"0.1\",\n  \"result\": \"passed\",\n  \"catalog\": \"validation/rules/deadline_reminder.yaml\",\n  \"rule_count\": 1,\n  \"passed_rule_count\": 1,\n  \"properties\": [\n    {\n      \"rule_id\": \"R-001\",\n      \"case_count\": 4,\n      \"repeat_failures\": [],\n      \"null_safe\": true,\n      \"invalid_input_exception\": \"ValueError\",\n      \"exception_stable\": true,\n      \"passed\": true\n    }\n  ]\n}\n"
+    },
+    {
+      "command": "python -m scripts.harness coverage-analyze",
+      "passed": true,
+      "returncode": 0,
+      "output": "{\n  \"schema_version\": \"0.1\",\n  \"result\": \"passed\",\n  \"catalog\": \"validation/rules/deadline_reminder.yaml\",\n  \"impact_report\": \".harness/tasks/offline-first-development-architecture-v1/reports/impact-analysis.json\",\n  \"rule_count\": 1,\n  \"covered_rule_count\": 1,\n  \"coverage_percent\": 100.0,\n  \"findings\": [\n    {\n      \"rule_id\": \"R-001\",\n      \"scope\": \"offline_only\",\n      \"reference\": \"validation.reference.deadline_reminder:evaluate\",\n      \"reference_available\": true,\n      \"case_count\": 4,\n      \"required_case_tags\": [\n        \"boundary\",\n        \"empty\",\n        \"negative\",\n        \"normal\"\n      ],\n      \"covered_case_tags\": [\n        \"boundary\",\n        \"empty\",\n        \"negative\",\n        \"normal\"\n      ],\n      \"missing_case_tags\": [],\n      \"cases_complete\": true,\n      \"production_required\": false,\n      \"production_covered\": true,\n      \"passed\": true\n    }\n  ]\n}\n"
+    },
+    {
+      "command": "python -m scripts.harness dialect-check",
+      "passed": true,
+      "returncode": 0,
+      "output": "{\n  \"schema_version\": \"0.1\",\n  \"result\": \"passed\",\n  \"manifest\": \".harness/tasks/offline-first-development-architecture-v1/dialect_manifest.yaml\",\n  \"input_count\": 2,\n  \"missing_inputs\": [],\n  \"violation_count\": 0,\n  \"violations\": []\n}\n"
+    },
+    {
+      "command": "python scripts/workspace_validation.py quick",
+      "passed": true,
+      "returncode": 0,
+      "output": "================================================================================\n工作区快速校验\n================================================================================\n\n============================================================\n1. 文档变更审核\n============================================================\n✓ 无文档变更，跳过审核\n\n\n✓ 文档变更审核通过\n\n============================================================\n3. SQL语法检查\n============================================================\n  ✓ SQL语法检查通过\n\n============================================================\n4. JSON格式检查\n============================================================\n  ✓ JSON格式检查通过\n\n============================================================\n5. YAML格式检查\n============================================================\n  ✓ YAML格式检查通过\n\n================================================================================\n校验结果汇总\n================================================================================\n  文档变更审核: ✓ 通过\n  SQL语法检查: ✓ 通过\n  JSON格式检查: ✓ 通过\n  YAML格式检查: ✓ 通过\n\n================================================================================\n✓ 所有校验通过\n"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "schema_version": "0.1",
+  "result": "passed",
+  "manifest": "validation/impact/deadline_reminder.yaml",
+  "rule_count": 1,
+  "impact_count": 1,
+  "missing_artifacts": [],
+  "unresolved": [],
+  "findings": [
+    {
+      "rule_id": "R-001",
+      "source": {
+        "document": "requirements/到期承接规则记忆卡片.md",
+        "section": "synthetic-offline-example"
+      },
+      "inputs": [
+        {
+          "name": "due_date",
+          "source": "validation/fixtures/deadline_reminder.json",
+          "status": "offline_only"
+        },
+        {
+          "name": "current_date",
+          "source": "validation/fixtures/deadline_reminder.json",
+          "status": "offline_only"
+        },
+        {
+          "name": "handle_status",
+          "source": "validation/fixtures/deadline_reminder.json",
+          "status": "offline_only"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "remind_flag",
+          "target": "validation/expected/deadline_reminder.json",
+          "status": "offline_only"
+        },
+        {
+          "name": "overdue_days",
+          "target": "validation/expected/deadline_reminder.json",
+          "status": "offline_only"
+        }
+      ],
+      "artifacts": [
+        {
+          "kind": "rule_catalog",
+          "path": "validation/rules/deadline_reminder.yaml",
+          "exists": true
+        },
+        {
+          "kind": "fixture",
+          "path": "validation/fixtures/deadline_reminder.json",
+          "exists": true
+        },
+        {
+          "kind": "expected",
+          "path": "validation/expected/deadline_reminder.json",
+          "exists": true
+        },
+        {
+          "kind": "reference",
+          "path": "validation/reference/deadline_reminder.py",
+          "exists": true
+        },
+        {
+          "kind": "test",
+          "path": "scripts/harness/tests/test_offline_validation.py",
+          "exists": true
+        }
+      ],
+      "missing_artifacts": [],
+      "database_impact": {
+        "status": "offline_only",
+        "target_table": "ADS_CUST_DEADLINE_RMND_DTL",
+        "target_fields": [
+          "REMIND_FLAG",
+          "OVERDUE_DAYS"
+        ],
+        "reason": "This rule is retained only as an offline validation example and is excluded from production impact analysis."
+      },
+      "unresolved": []
+    }
+  ]
+}

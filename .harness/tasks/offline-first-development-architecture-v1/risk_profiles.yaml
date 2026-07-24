@@ -1,0 +1,29 @@
+schema_version: '0.1'
+task_id: offline-first-development-architecture-v1
+profiles:
+  fast:
+    purpose: Local feedback for ordinary rule changes.
+    commands:
+      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+      - python -m scripts.harness offline-validate
+      - python -m scripts.harness coverage-analyze
+  standard:
+    purpose: Default gate for implementation changes.
+    commands:
+      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+      - python -m scripts.harness offline-validate
+      - python -m scripts.harness property-validate
+      - python -m scripts.harness coverage-analyze
+      - python -m scripts.harness dialect-check
+      - python scripts/workspace_validation.py quick
+  strict:
+    purpose: Required gate before commit or publish.
+    commands:
+      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+      - python -m scripts.harness offline-validate
+      - python -m scripts.harness property-validate
+      - python -m scripts.harness coverage-analyze
+      - python -m scripts.harness dialect-check
+      - python -m scripts.harness validate offline-first-development-architecture-v1
+      - python scripts/workspace_validation.py quick
+      - python scripts/validate_cross_layer_consistency.py

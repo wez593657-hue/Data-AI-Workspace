@@ -1,0 +1,19 @@
+schema_version: "0.1"
+rules:
+  - rule_id: R-001
+    title: 到期客户提醒
+    status: confirmed
+    source:
+      document: requirements/到期承接规则记忆卡片.md
+      section: synthetic-offline-example
+    target:
+      table: ADS_CUST_DEADLINE_RMND_DTL
+      fields:
+        - REMIND_FLAG
+        - OVERDUE_DAYS
+    reference: validation.reference.deadline_reminder:evaluate
+    required_case_tags:
+      - normal
+      - boundary
+      - negative
+      - empty

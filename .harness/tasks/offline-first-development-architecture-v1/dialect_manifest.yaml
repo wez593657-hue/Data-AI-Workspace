@@ -1,0 +1,28 @@
+schema_version: '0.1'
+task_id: offline-first-development-architecture-v1
+profile: kingbase_oracle_compatible
+inputs:
+  - data_assets/ddl/ads/ads_cust_deadline_rmnd_dtl.sql
+  - data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_DTL.sql
+forbidden_patterns:
+  - name: select_star
+    pattern: '\bSELECT\s+\*'
+    reason: SELECT * makes field contracts unstable.
+  - name: mysql_backtick
+    pattern: '`[^`]+`'
+    reason: Backtick identifiers are not part of the Oracle-compatible contract.
+  - name: mysql_limit
+    pattern: '\bLIMIT\s+\d+'
+    reason: LIMIT syntax is not accepted by the Oracle-compatible target contract.
+  - name: mysql_ifnull
+    pattern: '\bIFNULL\s*\('
+    reason: Use the agreed Oracle-compatible null function instead.
+  - name: mysql_auto_increment
+    pattern: '\bAUTO_INCREMENT\b'
+    reason: AUTO_INCREMENT is not an Oracle-compatible table definition.
+  - name: mysql_engine
+    pattern: '\bENGINE\s*='
+    reason: MySQL storage-engine clauses are not portable.
+  - name: sql_server_top
+    pattern: '\bTOP\s+\d+'
+    reason: SQL Server TOP syntax is not portable.

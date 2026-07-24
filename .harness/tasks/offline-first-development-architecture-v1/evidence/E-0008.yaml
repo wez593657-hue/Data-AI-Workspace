@@ -1,0 +1,10 @@
+evidence_id: E-0008
+task_id: offline-first-development-architecture-v1
+phase: PROPERTY_AND_IDEMPOTENCY_TESTS
+kind: validation_report
+purpose: property_validation
+result: passed
+details: 属性验证通过；R-001 重复执行结果一致，空值输入安全，invalid-date 稳定抛出 ValueError，Fixture/Expected
+  基线仍通过
+repository_revision: bdd5c66753bb676c078677c4753260d7cb3cf487
+created_at: '2026-07-23T16:11:47+00:00'

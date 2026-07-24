@@ -1,0 +1,9 @@
+{
+  "schema_version": "0.1",
+  "cases": [
+    {"case_id": "TC-001", "output": {"remind_flag": "1", "overdue_days": 1}},
+    {"case_id": "TC-002", "output": {"remind_flag": "0", "overdue_days": 0}},
+    {"case_id": "TC-003", "output": {"remind_flag": "0", "overdue_days": 0}},
+    {"case_id": "TC-004", "output": {"remind_flag": "0", "overdue_days": 0}}
+  ]
+}

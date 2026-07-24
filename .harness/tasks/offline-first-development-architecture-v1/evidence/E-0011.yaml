@@ -1,0 +1,10 @@
+evidence_id: E-0011
+task_id: offline-first-development-architecture-v1
+phase: REPORT_AND_CI_INTEGRATION
+kind: validation_report
+purpose: ci_integration
+result: passed
+details: 新增 offline-harness GitHub Actions；pre-push 增加 standard 风险门禁；CI 配置检查通过，Harness
+  standard 6/6 命令通过，62 项测试通过
+repository_revision: bdd5c66753bb676c078677c4753260d7cb3cf487
+created_at: '2026-07-23T16:35:54+00:00'

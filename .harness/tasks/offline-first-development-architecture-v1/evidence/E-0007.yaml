@@ -1,0 +1,9 @@
+evidence_id: E-0007
+task_id: offline-first-development-architecture-v1
+phase: RULE_COVERAGE
+kind: validation_report
+purpose: rule_coverage
+result: passed
+details: 规则覆盖率报告 passed；1/1 规则覆盖，4 个案例覆盖 normal/boundary/negative/empty；R-001 scope=offline_only，未计入生产实现
+repository_revision: bdd5c66753bb676c078677c4753260d7cb3cf487
+created_at: '2026-07-23T16:05:32+00:00'

@@ -1,0 +1,9 @@
+{
+  "schema_version": "0.1",
+  "result": "passed",
+  "manifest": ".harness/tasks/offline-first-development-architecture-v1/dialect_manifest.yaml",
+  "input_count": 2,
+  "missing_inputs": [],
+  "violation_count": 0,
+  "violations": []
+}
