@@ -1,0 +1,9 @@
+evidence_id: E-0017
+task_id: offline-first-development-architecture-v1
+phase: COMMIT_ALLOWED
+kind: authorization
+purpose: commit_authorization
+result: passed
+details: 用户确认开始处理 P0，范围限定为 Harness 发布状态闭环、任务元数据和测试
+repository_revision: 4b5d39ad3858b5a1312b2b4ccefadf220ef846d2
+created_at: '2026-07-24T03:32:42+00:00'

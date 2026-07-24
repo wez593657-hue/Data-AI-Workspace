@@ -2,7 +2,6 @@ schema_version: '0.1'
 task_id: offline-first-development-architecture-v1
 user_confirmation: confirmed
 objective: Maintain one continuous task for offline-first, traceable, and database-independent CRM development.
-current_phase: offline_rule_validation
 allowed_changes:
   - path: validation/
     purpose: Offline rules, fixtures, expected outputs, reference implementations, and reports.

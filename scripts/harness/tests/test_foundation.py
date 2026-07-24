@@ -16,6 +16,7 @@ from scripts.harness.asset_sync import _display_type
 from scripts.harness.rule_coverage_checker import check_rule_coverage
 from scripts.harness.reverse_logic_checker import check_reverse_logic
 from scripts.harness.gate_checker import GateError, check_schema_consistency_gate
+from scripts.harness.gate_checker import _latest_gate_evidence
 from scripts.harness.task_manager import (
     TaskError,
     block_task,
@@ -53,6 +54,24 @@ class StateMachineTests(unittest.TestCase):
         )
         with self.assertRaises(StateTransitionError):
             validate_transition("WORKSPACE_CHECKED", "REQUIREMENT_PARSED", "harness")
+
+    def test_harness_policy_matches_publish_state_machine(self):
+        root = Path(__file__).resolve().parents[3]
+        policy = yaml.safe_load((root / ".harness/policies/phase_gates.yaml").read_text(encoding="utf-8"))
+        harness = policy["workflows"]["harness"]
+        self.assertEqual(harness["USER_APPROVED"]["next"], "COMMIT_ALLOWED")
+        self.assertEqual(harness["USER_APPROVED"]["required_evidence"], ["user_approval"])
+        self.assertEqual(harness["COMMIT_ALLOWED"]["next"], "PUSH_ALLOWED")
+        self.assertEqual(harness["COMMIT_ALLOWED"]["required_evidence"], ["commit_authorization"])
+        self.assertNotIn("RELEASE_APPROVED", harness)
+        self.assertNotIn("NEXT_PHASE_ALLOWED", harness)
+
+    def test_gate_uses_latest_evidence_for_required_purpose(self):
+        old = (Path("old.yaml"), {"purpose": "user_approval", "created_at": "2026-07-23T00:00:00+00:00"})
+        new = (Path("new.yaml"), {"purpose": "user_approval", "created_at": "2026-07-24T00:00:00+00:00"})
+        other = (Path("other.yaml"), {"purpose": "full_validation", "created_at": "2026-07-24T00:00:00+00:00"})
+        selected = _latest_gate_evidence([old, new, other], ["user_approval"])
+        self.assertEqual(selected, [new])
 
     def test_requirement_workflow_allows_material_review_loop_but_not_skips(self):
         self.assertEqual(

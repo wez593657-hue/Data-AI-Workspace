@@ -72,25 +72,11 @@ workflows:
       next: USER_APPROVED
       required_evidence: [user_approval]
     USER_APPROVED:
-      allowed_next: [NEXT_PHASE_ALLOWED, RELEASE_APPROVED]
-      required_evidence_by_target:
-        NEXT_PHASE_ALLOWED: [next_phase_authorization]
-        RELEASE_APPROVED: [release_approval]
-    NEXT_PHASE_ALLOWED:
-      next: IMPLEMENTATION_READY
-      required_evidence: [next_phase_scope]
-    IMPLEMENTATION_READY:
-      next: QUICK_VALIDATION_PASSED
-      required_evidence: [quick_validation]
-    QUICK_VALIDATION_PASSED:
-      next: FULL_VALIDATION_PASSED
-      required_evidence: [full_validation]
-    RELEASE_APPROVED:
       next: COMMIT_ALLOWED
-      required_evidence: [commit_authorization]
+      required_evidence: [user_approval]
     COMMIT_ALLOWED:
       next: PUSH_ALLOWED
-      required_evidence: [push_authorization]
+      required_evidence: [commit_authorization]
     PUSH_ALLOWED:
       next: COMPLETED
       required_evidence: [completion_record]

@@ -49,6 +49,25 @@ class PublishGuardTests(unittest.TestCase):
             with self.assertRaisesRegex(PublishGuardError, "PUSH_ALLOWED"):
                 validate_task_for_publish(root, "task-one", ["data_assets/table.sql"])
 
+    def test_publish_allows_push_allowed_in_scope_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            task_dir = root / ".harness" / "tasks" / "task-one"
+            task_dir.mkdir(parents=True)
+            (task_dir / "task.yaml").write_text(
+                "task_id: task-one\nstate: PUSH_ALLOWED\n", encoding="utf-8"
+            )
+            (task_dir / "change_manifest.yaml").write_text(
+                "user_confirmation: confirmed\n"
+                "allowed_changes:\n  - path: data_assets/\n"
+                "read_only_inputs:\n  - docs/source.md\n",
+                encoding="utf-8",
+            )
+            report = validate_task_for_publish(root, "task-one", ["data_assets/table.sql"])
+            self.assertEqual(report["result"], "passed")
+            self.assertEqual(report["task_id"], "task-one")
+            self.assertEqual(report["state"], "PUSH_ALLOWED")
+
     def test_publish_rejects_out_of_scope_file(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

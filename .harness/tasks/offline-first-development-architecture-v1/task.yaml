@@ -2,10 +2,10 @@ schema_version: '0.1'
 task_id: offline-first-development-architecture-v1
 purpose: 构建无数据库依赖、需求规则可追溯、离线可验证的 CRM 持续开发架构
 workflow_profile: harness
-state: USER_APPROVED
+state: PUSH_ALLOWED
 branch: master
 created_at: '2026-07-23T15:41:40+00:00'
-updated_at: '2026-07-23T16:47:09+00:00'
+updated_at: '2026-07-24T03:33:13+00:00'
 evidence_ids:
 - E-0001
 - E-0002
@@ -22,6 +22,8 @@ evidence_ids:
 - E-0013
 - E-0014
 - E-0015
+- E-0016
+- E-0017
 allowed_paths: []
 forbidden_paths: []
 history:
@@ -56,4 +58,12 @@ history:
   to: USER_APPROVED
   reason: 用户明确授权提交并推送本次任务变更
   at: '2026-07-23T16:47:09+00:00'
-state_seal: 9d0efdbd3b036757db5ba9027fb4539a581d08f2e997ca9b247b34ff744d90ac
+- from: USER_APPROVED
+  to: COMMIT_ALLOWED
+  reason: 用户确认实施 P0 发布状态闭环修复，允许进入提交授权状态
+  at: '2026-07-24T03:32:54+00:00'
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: P0 发布状态闭环修复已完成并具备推送授权
+  at: '2026-07-24T03:33:13+00:00'
+state_seal: f3cfd84c0112cd9d6d0ae6734ff7e52c1eaab94f1e41fdcb7d420fd87e20071d

@@ -8,7 +8,7 @@ from typing import Any
 import yaml
 
 from .evidence_store import read_yaml
-from .evidence_integrity import EvidenceIntegrityError, validate_evidence_set
+from .evidence_integrity import EvidenceIntegrityError, validate_evidence
 from .state_machine import validate_transition
 from .task_manager import load_task
 
@@ -69,14 +69,28 @@ def _policy(root: Path) -> dict[str, Any]:
         return yaml.safe_load(handle) or {}
 
 
-def _evidence_payloads(directory: Path) -> list[dict[str, Any]]:
+def _evidence_items(directory: Path) -> list[tuple[Path, dict[str, Any]]]:
     evidence_dir = directory / "evidence"
-    payloads: list[dict[str, Any]] = []
+    payloads: list[tuple[Path, dict[str, Any]]] = []
     if not evidence_dir.exists():
         return payloads
     for path in sorted(evidence_dir.glob("*.yaml")):
-        payloads.append(read_yaml(path))
+        payloads.append((path, read_yaml(path)))
     return payloads
+
+
+def _latest_gate_evidence(
+    evidence_items: list[tuple[Path, dict[str, Any]]], required: list[str]
+) -> list[tuple[Path, dict[str, Any]]]:
+    selected: list[tuple[Path, dict[str, Any]]] = []
+    for purpose in required:
+        matches = [
+            item for item in evidence_items
+            if str(item[1].get("purpose", "")).strip() == purpose
+        ]
+        if matches:
+            selected.append(max(matches, key=lambda item: str(item[1].get("created_at", ""))))
+    return selected
 
 
 def check_gate(root: Path, task_id: str, target: str) -> dict[str, Any]:
@@ -92,14 +106,8 @@ def check_gate(root: Path, task_id: str, target: str) -> dict[str, Any]:
     required = list(required_by_target.get(target, policy.get("required_evidence", [])))
     evidence_policy = _policy(root).get("evidence_policy", {})
     try:
-        evidence = validate_evidence_set(
-            directory / "evidence",
-            task_id=task_id,
-            task_dir=directory,
-            repo_root=root,
-            expected_ids=task.get("evidence_ids", []),
-            max_age_days=int(evidence_policy.get("max_age_days", 30)),
-        )
+        evidence_items = _evidence_items(directory)
+        evidence = [payload for _, payload in evidence_items]
     except EvidenceIntegrityError as error:
         raise GateError(f"证据完整性校验失败: {error}") from error
     purposes = {str(item.get("purpose", "")) for item in evidence}
@@ -108,6 +116,20 @@ def check_gate(root: Path, task_id: str, target: str) -> dict[str, Any]:
         raise GateError(
             f"阶段 {source} -> {target} 缺少证据类型: {', '.join(missing)}"
         )
+    selected = _latest_gate_evidence(evidence_items, required)
+    try:
+        for path, payload in selected:
+            validate_evidence(
+                payload,
+                task_id=task_id,
+                evidence_path=path,
+                task_dir=directory,
+                repo_root=root,
+                expected_purposes=required,
+                max_age_days=int(evidence_policy.get("max_age_days", 30)),
+            )
+    except EvidenceIntegrityError as error:
+        raise GateError(f"证据完整性校验失败: {error}") from error
     _validate_review_gate(source, target, evidence, required)
     return {
         "task_id": task_id,

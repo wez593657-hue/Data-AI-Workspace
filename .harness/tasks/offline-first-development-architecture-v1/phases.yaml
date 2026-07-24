@@ -2,7 +2,7 @@ schema_version: '0.1'
 task_id: offline-first-development-architecture-v1
 mode: single_task_continuous_phases
 current_phase: completed
-next_action: await_explicit_commit_authorization
+next_action: push_allowed
 phase_order:
   - offline_rule_validation
   - impact_analysis
