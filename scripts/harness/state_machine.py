@@ -40,6 +40,13 @@ HARNESS_STATES = (
     "COMPLETED",
 )
 
+PUBLISH_STATES = (
+    "RELEASE_APPROVED",
+    "COMMIT_ALLOWED",
+    "PUSH_ALLOWED",
+    "COMPLETED",
+)
+
 REQUIREMENT_DEVELOPMENT_STATES = (
     "CREATED",
     "REQUIREMENT_ANALYZED",
@@ -56,10 +63,7 @@ REQUIREMENT_DEVELOPMENT_STATES = (
     "TMP_TABLES_GENERATED",
     "FULL_VALIDATION_PASSED",
     "USER_APPROVED",
-    "RELEASE_APPROVED",
-    "COMMIT_ALLOWED",
-    "PUSH_ALLOWED",
-    "COMPLETED",
+    *PUBLISH_STATES,
 )
 
 SCHEMA_CHANGE_STATES = (
@@ -72,10 +76,7 @@ SCHEMA_CHANGE_STATES = (
     "ASSETS_REVIEW_PASSED",
     "FULL_VALIDATION_PASSED",
     "USER_APPROVED",
-    "RELEASE_APPROVED",
-    "COMMIT_ALLOWED",
-    "PUSH_ALLOWED",
-    "COMPLETED",
+    *PUBLISH_STATES,
 )
 
 WORKFLOW_STATES = {
@@ -99,7 +100,6 @@ _EXPLICIT_NEXT = {
 }
 
 BLOCKED = "BLOCKED"
-_NEXT = {state: STATES[index + 1] for index, state in enumerate(STATES[:-1])}
 class StateTransitionError(ValueError):
     """Raised when a task attempts an invalid state transition."""
 

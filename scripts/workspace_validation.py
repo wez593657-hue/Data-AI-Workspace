@@ -3,62 +3,38 @@
 
 import os
 import sys
-import subprocess
 
-from utils import fix_windows_encoding, safe_print, run_command, get_changed_files
+from utils import fix_windows_encoding, safe_print, run_command
+from validate_document_changes import validate_document_changes as run_document_validation
+from validate_cross_layer_consistency import (
+    validate_cross_layer_consistency as run_cross_layer_validation,
+)
 
 fix_windows_encoding()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SCRIPTS_DIR = os.path.join(BASE_DIR, 'scripts')
-
-def run_validation_script(script_name):
-    script_path = os.path.join(SCRIPTS_DIR, script_name)
-    if not os.path.exists(script_path):
-        return None, f"脚本不存在: {script_name}"
-    
-    result = subprocess.run(
-        [sys.executable, script_path],
-        capture_output=True,
-        cwd=BASE_DIR,
-        encoding='utf-8',
-        errors='replace'
-    )
-    return result.returncode, result.stdout + result.stderr
 
 def validate_document_changes():
     safe_print("\n" + "=" * 60)
     safe_print("1. 文档变更审核")
     safe_print("=" * 60)
-    
-    rc, output = run_validation_script('validate_document_changes.py')
-    
-    if output:
-        safe_print(output)
-    
-    if rc == 0:
+
+    if run_document_validation():
         safe_print("\n✓ 文档变更审核通过")
         return True
-    else:
-        safe_print("\n✗ 文档变更审核失败")
-        return False
+    safe_print("\n✗ 文档变更审核失败")
+    return False
 
 def validate_cross_layer_consistency():
     safe_print("\n" + "=" * 60)
     safe_print("2. 跨层一致性校验")
     safe_print("=" * 60)
-    
-    rc, output = run_validation_script('validate_cross_layer_consistency.py')
-    
-    if output:
-        safe_print(output)
-    
-    if rc == 0:
+
+    if run_cross_layer_validation():
         safe_print("\n✓ 跨层一致性校验通过")
         return True
-    else:
-        safe_print("\n✗ 跨层一致性校验失败")
-        return False
+    safe_print("\n✗ 跨层一致性校验失败")
+    return False
 
 def validate_syntax():
     safe_print("\n" + "=" * 60)

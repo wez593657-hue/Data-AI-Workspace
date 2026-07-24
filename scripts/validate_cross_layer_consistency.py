@@ -279,7 +279,11 @@ def validate_tmp_tables():
     
     safe_print("  ✓ TMP_ 审核清单校验完成")
 
-def main():
+def validate_cross_layer_consistency():
+    global errors, warnings
+    errors = []
+    warnings = []
+
     safe_print("=" * 80)
     safe_print("跨层一致性校验")
     safe_print("=" * 80)
@@ -304,11 +308,14 @@ def main():
     
     if not errors and not warnings:
         safe_print("\n✓ 所有校验通过")
-        sys.exit(0)
+        return True
     elif errors:
-        sys.exit(1)
+        return False
     else:
-        sys.exit(0)
+        return True
+
+def main():
+    sys.exit(0 if validate_cross_layer_consistency() else 1)
 
 if __name__ == '__main__':
     main()

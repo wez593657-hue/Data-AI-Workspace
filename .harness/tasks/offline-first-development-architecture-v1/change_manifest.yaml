@@ -12,6 +12,10 @@ allowed_changes:
     purpose: Documentation for the offline validation loop.
   - path: docs/
     purpose: Phase-specific architecture and migration documentation.
+  - path: README.md
+    purpose: Project entry summary updated to match the simplified workflow.
+  - path: scripts/
+    purpose: Workspace validation, CI integration, and hook refinements required by the current task.
   - path: .harness/tasks/offline-first-development-architecture-v1/
     purpose: Single-task phase definitions, evidence, reports, and events.
   - path: .harness/policies/

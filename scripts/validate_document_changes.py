@@ -130,7 +130,7 @@ def check_doc_consistency(filepath, added_sections, modified_sections, status):
         '08_Mapping.md': ['映射概览', '字段映射', '转换规则'],
         '09_CRM_Model.md': ['数据模型', '实体关系', '业务规则'],
         '10_Code_Review.md': ['审查标准', '审查流程', '审查清单'],
-        '11_Project_SOP.md': ['项目流程', '交付标准', '质量保障'],
+        '11_Project_SOP.md': ['项目主流程', '执行顺序', '约束'],
         '12_AI_Prompts.md': ['提示词规范', '角色定义', '输出格式'],
         '13_Governance_Framework.md': ['五层约束', '技术约束', '流程约束'],
         '14_Role_Separation.md': ['角色定义', '权限划分', '协作机制'],
@@ -173,9 +173,9 @@ def check_doc_consistency(filepath, added_sections, modified_sections, status):
                             '审查标准': ['标准', 'standard'],
                             '审查流程': ['流程', 'review'],
                             '审查清单': ['清单', 'checklist'],
-                            '项目流程': ['项目', 'project'],
-                            '交付标准': ['交付', 'deliver'],
-                            '质量保障': ['质量', 'quality'],
+                            '项目主流程': ['主流程', 'project'],
+                            '执行顺序': ['顺序', '流程', 'sequence'],
+                            '约束': ['约束', 'constraint'],
                             '提示词规范': ['提示词', 'prompt'],
                             '角色定义': ['角色', 'role'],
                             '输出格式': ['格式', 'format'],
@@ -230,9 +230,9 @@ def check_doc_consistency(filepath, added_sections, modified_sections, status):
                             '审查标准': ['标准', 'standard'],
                             '审查流程': ['流程', 'review'],
                             '审查清单': ['清单', 'checklist'],
-                            '项目流程': ['项目', 'project'],
-                            '交付标准': ['交付', 'deliver'],
-                            '质量保障': ['质量', 'quality'],
+                            '项目主流程': ['主流程', 'project'],
+                            '执行顺序': ['顺序', '流程', 'sequence'],
+                            '约束': ['约束', 'constraint'],
                             '提示词规范': ['提示词', 'prompt'],
                             '输出格式': ['格式', 'format'],
                             '权限划分': ['权限', 'permission'],
@@ -340,7 +340,7 @@ def generate_report(staged_files):
         print('\n'.join(report))
         return True
 
-def main():
+def validate_document_changes():
     staged_files = get_staged_files()
     
     doc_files = [f for f in staged_files if 
@@ -348,14 +348,12 @@ def main():
     
     if not doc_files:
         print("✓ 无文档变更，跳过审核")
-        sys.exit(0)
+        return True
     
-    result = generate_report(doc_files)
-    
-    if result:
-        sys.exit(0)
-    else:
-        sys.exit(1)
+    return generate_report(doc_files)
+
+def main():
+    sys.exit(0 if validate_document_changes() else 1)
 
 if __name__ == '__main__':
     main()

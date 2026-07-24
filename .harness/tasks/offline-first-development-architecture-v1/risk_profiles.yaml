@@ -1,29 +1,37 @@
 schema_version: '0.1'
 task_id: offline-first-development-architecture-v1
+shared_commands:
+  unit_tests: &unit_tests python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
+  offline_validate: &offline_validate python -m scripts.harness offline-validate
+  property_validate: &property_validate python -m scripts.harness property-validate
+  coverage_analyze: &coverage_analyze python -m scripts.harness coverage-analyze
+  dialect_check: &dialect_check python -m scripts.harness dialect-check
+  workspace_quick: &workspace_quick python scripts/workspace_validation.py quick
+  cross_layer: &cross_layer python scripts/validate_cross_layer_consistency.py
 profiles:
   fast:
     purpose: Local feedback for ordinary rule changes.
     commands:
-      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
-      - python -m scripts.harness offline-validate
-      - python -m scripts.harness coverage-analyze
+      - *unit_tests
+      - *offline_validate
+      - *coverage_analyze
   standard:
     purpose: Default gate for implementation changes.
     commands:
-      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
-      - python -m scripts.harness offline-validate
-      - python -m scripts.harness property-validate
-      - python -m scripts.harness coverage-analyze
-      - python -m scripts.harness dialect-check
-      - python scripts/workspace_validation.py quick
+      - *unit_tests
+      - *offline_validate
+      - *property_validate
+      - *coverage_analyze
+      - *dialect_check
+      - *workspace_quick
   strict:
     purpose: Required gate before commit or publish.
     commands:
-      - python -m unittest discover -s scripts/harness/tests -p 'test_*.py'
-      - python -m scripts.harness offline-validate
-      - python -m scripts.harness property-validate
-      - python -m scripts.harness coverage-analyze
-      - python -m scripts.harness dialect-check
+      - *unit_tests
+      - *offline_validate
+      - *property_validate
+      - *coverage_analyze
+      - *dialect_check
       - python -m scripts.harness validate offline-first-development-architecture-v1
-      - python scripts/workspace_validation.py quick
-      - python scripts/validate_cross_layer_consistency.py
+      - *workspace_quick
+      - *cross_layer

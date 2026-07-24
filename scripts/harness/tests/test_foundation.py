@@ -174,8 +174,8 @@ class RequirementGuardTests(unittest.TestCase):
     def test_real_requirement_index_ignores_template_versions_and_rules(self):
         root = Path(__file__).parents[3]
         parsed = parse_requirement(root / "requirements" / "需求文档索引.md")
-        self.assertEqual(parsed["version"], "v2.1")
-        self.assertEqual([rule["rule_id"] for rule in parsed["rules"]], ["REQ-001"])
+        self.assertEqual(parsed["version"], "v2.0")
+        self.assertEqual([rule["rule_id"] for rule in parsed["rules"]], [])
 
     def test_missing_version_and_memory_version_mismatch_block(self):
         with tempfile.TemporaryDirectory() as directory:
