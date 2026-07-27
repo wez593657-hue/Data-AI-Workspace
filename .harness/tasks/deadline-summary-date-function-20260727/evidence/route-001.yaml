@@ -1,0 +1,11 @@
+evidence_id: route-001
+task_id: deadline-summary-date-function-20260727
+phase: routing
+kind: analysis
+purpose: workflow_routing
+result: passed
+details: 'Router selected requirement_development for stored procedure modification.
+  User confirmed scope: date function codes 5-19, deadline summary date parameters,
+  and legal-bank customer grain.'
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T10:33:48+00:00'

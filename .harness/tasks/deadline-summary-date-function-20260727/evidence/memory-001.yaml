@@ -1,0 +1,10 @@
+evidence_id: memory-001
+task_id: deadline-summary-date-function-20260727
+phase: memory
+kind: analysis
+purpose: memory_card_update
+result: passed
+details: Updated deadline memory card to v2.5.0 with function codes 5-19, summary
+  procedure codes 10/12/14/19, and customer/legal-bank/organization distinct grain.
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T10:42:04+00:00'

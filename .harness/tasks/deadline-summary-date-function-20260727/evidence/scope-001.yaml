@@ -1,0 +1,11 @@
+evidence_id: scope-001
+task_id: deadline-summary-date-function-20260727
+phase: scope
+kind: analysis
+purpose: scope_confirmation
+result: passed
+details: 'User confirmed the implementation scope: complete function codes 5-19; replace
+  direct V_SYSDAT business-date derivation in the deadline summary procedure; count
+  customers by customer, legal bank, and organization; preserve target table structure.'
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T10:34:44+00:00'

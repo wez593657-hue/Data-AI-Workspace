@@ -1,0 +1,10 @@
+evidence_id: gap-001
+task_id: deadline-summary-date-function-20260727
+phase: field-gap
+kind: analysis
+purpose: field_gap_confirmation
+result: passed
+details: All requested outputs are implementable with existing fields. No supplementary
+  material is required; user confirmed the three-key counting and date-parameter scope.
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T10:38:20+00:00'

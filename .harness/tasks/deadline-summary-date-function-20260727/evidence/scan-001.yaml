@@ -1,0 +1,11 @@
+evidence_id: scan-001
+task_id: deadline-summary-date-function-20260727
+phase: scan
+kind: analysis
+purpose: project_scan
+result: passed
+details: Scanned the function script, deadline detail and summary procedures, requirement
+  memory card, global date rule, target DDL, data dictionary, and existing staged
+  governance changes.
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T10:35:56+00:00'

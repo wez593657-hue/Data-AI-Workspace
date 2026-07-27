@@ -1,0 +1,11 @@
+evidence_id: implementation-001
+task_id: deadline-summary-date-function-20260727
+phase: implementation
+kind: check
+purpose: procedure_implementation
+result: passed
+details: Updated summary procedure with named codes 2,3,4,10,12,14,19 and three-key
+  customer distinct expressions. Function script contains codes 1-19 with YYYYMMDD
+  returns.
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T10:42:48+00:00'

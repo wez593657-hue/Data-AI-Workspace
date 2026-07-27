@@ -1,0 +1,11 @@
+evidence_id: analysis-001
+task_id: deadline-summary-date-function-20260727
+phase: analysis
+kind: analysis
+purpose: requirement_analysis
+result: passed
+details: Compared the memory card, summary procedure, detail procedure, global date
+  rule, function script, target DDL, and data dictionary. Required changes are executable
+  without source-table or target-table schema changes.
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T10:35:23+00:00'

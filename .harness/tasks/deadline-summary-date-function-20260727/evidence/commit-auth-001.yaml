@@ -1,0 +1,9 @@
+evidence_id: commit-auth-001
+task_id: deadline-summary-date-function-20260727
+phase: commit
+kind: check
+purpose: commit_authorization
+result: passed
+details: User authorized the second local commit and a combined push of both commits.
+repository_revision: de545b0aba349e4ebd3fc7831f6b7ca3353f1051
+created_at: '2026-07-27T11:21:53+00:00'

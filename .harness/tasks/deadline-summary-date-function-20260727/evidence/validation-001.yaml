@@ -1,0 +1,10 @@
+evidence_id: validation-001
+task_id: deadline-summary-date-function-20260727
+phase: validation
+kind: check
+purpose: full_validation
+result: passed
+details: Harness full validation passed with 70 unit tests, Python compilation, configuration
+  parsing, date-rule validation of the summary procedure, and clean diff formatting.
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T10:56:16+00:00'

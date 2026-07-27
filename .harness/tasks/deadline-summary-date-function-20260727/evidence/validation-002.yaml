@@ -1,0 +1,11 @@
+evidence_id: validation-002
+task_id: deadline-summary-date-function-20260727
+phase: validation
+kind: check
+purpose: full_validation
+result: passed
+details: 'Revalidated after the preceding governance commit: 70 Harness unit tests,
+  Python compilation, configuration parsing, date-rule validation, and diff formatting
+  passed.'
+repository_revision: de545b0aba349e4ebd3fc7831f6b7ca3353f1051
+created_at: '2026-07-27T11:18:50+00:00'

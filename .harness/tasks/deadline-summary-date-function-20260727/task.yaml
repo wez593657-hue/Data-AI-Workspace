@@ -1,0 +1,98 @@
+schema_version: '0.1'
+task_id: deadline-summary-date-function-20260727
+purpose: Complete date function codes 5-19 and align deadline summary procedure date
+  and organization grain rules
+workflow_profile: requirement_development
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-07-27T10:31:37+00:00'
+updated_at: '2026-07-27T11:22:06+00:00'
+evidence_ids:
+- route-001
+- scope-001
+- analysis-001
+- scan-001
+- lineage-001
+- capability-001
+- gap-001
+- req-review-001
+- memory-001
+- implementation-001
+- procedure-review-001
+- tmp-001
+- validation-001
+- validation-002
+- approval-001
+- commit-auth-001
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-27T10:31:37+00:00'
+- from: CREATED
+  to: REQUIREMENT_ANALYZED
+  reason: Requirement change and routing basis recorded.
+  at: '2026-07-27T10:34:27+00:00'
+- from: REQUIREMENT_ANALYZED
+  to: SCOPE_CONFIRMED
+  reason: Requirement analysis and user-confirmed scope recorded.
+  at: '2026-07-27T10:35:39+00:00'
+- from: SCOPE_CONFIRMED
+  to: PROJECT_SCANNED
+  reason: Relevant project artifacts and active staged changes scanned.
+  at: '2026-07-27T10:36:15+00:00'
+- from: PROJECT_SCANNED
+  to: TABLE_LINEAGE_IDENTIFIED
+  reason: Target and source lineage with summary grain identified.
+  at: '2026-07-27T10:37:06+00:00'
+- from: TABLE_LINEAGE_IDENTIFIED
+  to: SOURCE_CAPABILITY_ANALYZED
+  reason: All required source fields exist at the required customer, legal-bank, organization
+    grain.
+  at: '2026-07-27T10:38:00+00:00'
+- from: SOURCE_CAPABILITY_ANALYZED
+  to: FIELD_GAP_CONFIRMED
+  reason: No source-field gaps; confirmed scope is implementable.
+  at: '2026-07-27T10:38:44+00:00'
+- from: FIELD_GAP_CONFIRMED
+  to: REQUIREMENT_REVIEW_PASSED
+  reason: Requirement feasibility review passed.
+  at: '2026-07-27T10:39:30+00:00'
+- from: REQUIREMENT_REVIEW_PASSED
+  to: MEMORY_CARD_UPDATED
+  reason: Versioned memory card updated after requirement review.
+  at: '2026-07-27T10:42:19+00:00'
+- from: MEMORY_CARD_UPDATED
+  to: PROCEDURE_IMPLEMENTED
+  reason: Summary procedure and date function implementation completed.
+  at: '2026-07-27T10:43:18+00:00'
+- from: PROCEDURE_IMPLEMENTED
+  to: PROCEDURE_REVIEW_PASSED
+  reason: Procedure, date-rule, three-key grain, and temporary-table review passed.
+  at: '2026-07-27T10:50:28+00:00'
+- from: PROCEDURE_REVIEW_PASSED
+  to: TMP_TABLES_GENERATED
+  reason: Existing temporary-table DDL verified as complete for the reviewed procedure.
+  at: '2026-07-27T10:51:25+00:00'
+- from: TMP_TABLES_GENERATED
+  to: FULL_VALIDATION_PASSED
+  reason: Full automated validation and procedure date-rule checks passed.
+  at: '2026-07-27T10:56:31+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: User authorized direct commit and combined push.
+  at: '2026-07-27T11:19:13+00:00'
+- from: USER_APPROVED
+  to: RELEASE_APPROVED
+  reason: User confirmed direct release after full validation.
+  at: '2026-07-27T11:20:29+00:00'
+- from: RELEASE_APPROVED
+  to: COMMIT_ALLOWED
+  reason: Release approval authorizes local commit.
+  at: '2026-07-27T11:21:11+00:00'
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: Commit authorization recorded; user authorized combined remote push.
+  at: '2026-07-27T11:22:06+00:00'
+state_seal: 47a36aa4349f7abda49889eba2c2da03b6f8355c8feadad269c3ac8909fadcea

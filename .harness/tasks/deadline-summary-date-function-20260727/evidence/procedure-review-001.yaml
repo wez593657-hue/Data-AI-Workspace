@@ -1,0 +1,22 @@
+evidence_id: procedure-review-001
+task_id: deadline-summary-date-function-20260727
+phase: procedure-review
+kind: review
+purpose: procedure_review
+result: passed
+details: 'Procedure review passed: no direct V_SYSDAT calendar derivation remains;
+  three-key count is applied consistently; existing temporary-table DDL covers both
+  temporary tables.'
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T10:49:35+00:00'
+review_type: procedure_template_and_requirement
+return_to: ''
+checked_files:
+- data_assets/function/sys_fun_deal_date.sql
+- data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_STATIS.sql
+- data_assets/ddl/tmp/tmp_pro_ads_cust_deadline_rmnd_statis.ddl
+rules_checked:
+- Codes 1-19 return YYYYMMDD and summary dates use named parameters 2,3,4,10,12,14,19.
+- Summary customer distinct key includes customer, legal bank, and organization.
+- Temporary table columns match procedure inserts.
+issues: []

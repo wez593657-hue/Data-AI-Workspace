@@ -1,0 +1,17 @@
+schema_version: '0.1'
+task_id: deadline-summary-date-function-20260727
+user_confirmation: confirmed
+objective: Complete date function codes 5-19 and align deadline summary procedure date and organization grain rules
+allowed_changes:
+  - path: data_assets/function/sys_fun_deal_date.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_STATIS.sql
+  - path: requirements/到期承接规则记忆卡片.md
+  - path: .harness/tasks/deadline-summary-date-function-20260727/
+read_only_inputs:
+  - path: governance/stored_procedure_date_parameter_rules.md
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_DTL.sql
+  - path: data_assets/ddl/ads/ads_cust_deadline_rmnd_statis.sql
+  - path: data_assets/data_dictionary/ads/ads_cust_deadline_rmnd_statis.md
+forbidden_changes:
+  - path: data_assets/ddl/
+  - path: data_assets/data_dictionary/
