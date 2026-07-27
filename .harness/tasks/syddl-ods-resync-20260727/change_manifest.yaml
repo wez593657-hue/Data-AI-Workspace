@@ -1,0 +1,10 @@
+schema_version: '0.1'
+task_id: syddl-ods-resync-20260727
+user_confirmation: confirmed
+objective: Synchronize ODS DDL files with complete definitions in SYDDL
+allowed_changes:
+  - path: data_assets/ddl/ods/
+  - path: .harness/tasks/syddl-ods-resync-20260727/
+read_only_inputs:
+  - path: data_assets/ddl/SYDDL.ddl.sql
+forbidden_changes: []

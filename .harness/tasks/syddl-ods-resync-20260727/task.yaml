@@ -1,0 +1,15 @@
+schema_version: '0.1'
+task_id: syddl-ods-resync-20260727
+purpose: Resynchronize ODS DDL files with the complete SYDDL definitions
+workflow_profile: data_warehouse
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-07-27T15:40:00+08:00'
+updated_at: '2026-07-27T15:40:00+08:00'
+allowed_paths: []
+forbidden_paths: []
+history:
+  - from: null
+    to: PUSH_ALLOWED
+    reason: User confirmed the resynchronization result and authorized commit and push.
+    at: '2026-07-27T15:40:00+08:00'
