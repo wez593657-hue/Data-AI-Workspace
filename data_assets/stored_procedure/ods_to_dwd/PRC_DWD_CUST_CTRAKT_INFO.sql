@@ -64,12 +64,16 @@ BEGIN
       END_DATE,
       OPRTR,
       OPRT_ORG,
-      PERSN_LEGAL_BK_CODE
+      PERSN_LEGAL_BK_CODE,
+      CYCL_TYP,
+      CMS_CUST_ID,
+      PRDKT_ID,
+      PRDKT_NAME
   )
   SELECT
       c.mfcustomerid       AS CUST_ID,             -- 客户编号；核心客户号
       bc.serialno          AS CTRAKT_ID,           -- 合同编号；合同流水号
-      NULL                 AS LOAN_ACCT,           -- 贷款账号；映射表未提供可确认来源
+      NVL(lendaccountno,payaccountno)     AS LOAN_ACCT,           -- 贷款账号；映射表未提供可确认来源
       bc.businesssum       AS CRDT_LMT,            -- 授信额度；备注：个人没有授信额度，是否取业务合同金额
       bc.balance           AS LOAN_BAL,            -- 贷款余额
       bc.vouchtype         AS GUARANT_MODE,        -- 担保方式
@@ -81,10 +85,20 @@ BEGIN
       bc.maturity          AS END_DATE,            -- 结束日期；映射字段 MaturityDate 在 new 5 中对应 maturity
       bc.manageuserid      AS OPRTR,               -- 经办人；主办客户经理
       bc.manageorgid       AS OPRT_ORG,            -- 经办机构；主办机构
-      NULL                 AS PERSN_LEGAL_BK_CODE  -- 法人行号；映射表未提供可确认来源
+      CASE WHEN bc.manageorgid LIKE '15%' THEN '1500'
+           WHEN bc.manageorgid LIKE '12%' THEN '1200'
+           WHEN bc.manageorgid LIKE '18%' THEN '1800'
+           ELSE '9999' end AS PERSN_LEGAL_BK_CODE,  -- 法人行号；映射表未提供可确认来源
+      CASE WHEN cycleflag='1' THEN '1'
+           ELSE '0' end AS CYCL_TYP,                -- 是否可循环
+      c.customerid         AS CMS_CUST_ID	,        -- 客户编号
+      bc.productid         AS PRDKT_ID,            -- 产品编号
+      bt.TYPENAME          AS PRDKT_NAME           -- 产品名称
     FROM CMS_CUSTOMER_INFO c                            -- 客户信息表
    INNER JOIN CMS_BUSINESS_CONTRACT bc                  -- 合同业务表
-      ON bc.customerid = c.customerid;
+      ON bc.customerid = c.customerid
+   LEFT JOIN BUSINESS_TYPE BT
+      ON bt.TYPENO = bc.productid;
 
   COMMIT;
 
