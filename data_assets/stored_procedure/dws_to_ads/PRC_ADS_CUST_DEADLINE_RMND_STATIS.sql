@@ -10,7 +10,7 @@ AS
   -- 来源表: ADS_CUST_DEADLINE_RMND_DTL, DWS_CUST_ASSE_LIAB, DWD_SYS_ORG
   -- 目标表: ADS_CUST_DEADLINE_RMND_STATIS
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.2.0
+  -- 需求版本: v2.3.0
   -- 关联需求: REQ-CUST-002
   -- 变更记录:
   --   v2.1.0: 1.理财转存款转化率和存款转理财转化率指标已实现
@@ -30,6 +30,9 @@ AS
   V_BGN_DATE DATE;
   V_END_DATE DATE;
   V_DURA_DATE INTEGER;
+  V_PREV_MONTH_END VARCHAR2(8);
+  V_PREV_QUARTER_END VARCHAR2(8);
+  V_PREV_YEAR_END VARCHAR2(8);
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -41,6 +44,10 @@ BEGIN
     RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
   END IF;
 
+  V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);
+  V_PREV_QUARTER_END := sys_fun_deal_date(V_SYSDAT, 3);
+  V_PREV_YEAR_END := sys_fun_deal_date(V_SYSDAT, 4);
+
   --***************************************
   -- 2.0 -- 第1段处理开始：清理当前快照和中间表
   --***************************************
@@ -51,9 +58,9 @@ BEGIN
    WHERE (STATIS_CYCLE = 'M' AND DATA_DATE = TO_CHAR(LAST_DAY(TO_DATE(V_SYSDAT, 'yyyymmdd')), 'yyyymmdd'))
       OR (STATIS_CYCLE = 'Q' AND DATA_DATE = TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q'), 3) - 1, 'yyyymmdd'))
       OR (STATIS_CYCLE = 'N' AND DATA_DATE = TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY'), 12) - 1, 'yyyymmdd'))
-      OR (STATIS_CYCLE = 'M' AND DATA_DATE = TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -1)), 'yyyymmdd'))
-      OR (STATIS_CYCLE = 'Q' AND DATA_DATE = TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q') - 1, 'yyyymmdd'))
-      OR (STATIS_CYCLE = 'N' AND DATA_DATE = TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY') - 1, 'yyyymmdd'));
+      OR (STATIS_CYCLE = 'M' AND DATA_DATE = V_PREV_MONTH_END)
+      OR (STATIS_CYCLE = 'Q' AND DATA_DATE = V_PREV_QUARTER_END)
+      OR (STATIS_CYCLE = 'N' AND DATA_DATE = V_PREV_YEAR_END);
   TRUNC_TMP('TMP_CDR_STAT_BASE');
   TRUNC_TMP('TMP_CDR_STAT_SRC');
   COMMIT;
@@ -95,17 +102,18 @@ BEGIN
          NVL(a.CURR_AUM_BAL, 0)
     FROM ADS_CUST_DEADLINE_RMND_DTL d
     LEFT JOIN (
-        SELECT x.CUST_ID, X.PERSN_LEGAL_BK_CODE,SUM(NVL(x.AUM_BAL, 0)) AS CURR_AUM_BAL
+        SELECT x.CUST_ID, x.PERSN_LEGAL_BK_CODE, x.ORG_ID, SUM(NVL(x.AUM_BAL, 0)) AS CURR_AUM_BAL
           FROM DWS_CUST_ASSE_LIAB x
          WHERE x.DATA_DATE = V_SYSDAT
            AND x.BAL_TYPE = '1'
-         GROUP BY x.CUST_ID, X.PERSN_LEGAL_BK_CODE
+         GROUP BY x.CUST_ID, x.PERSN_LEGAL_BK_CODE, x.ORG_ID
     ) a
       ON a.CUST_ID = d.CUST_ID
       AND A.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE
-   WHERE (d.STAT_PERD = 'M' AND d.DATA_DATE IN (TO_CHAR(LAST_DAY(TO_DATE(V_SYSDAT, 'yyyymmdd')), 'yyyymmdd'), TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -1)), 'yyyymmdd')))
-      OR (d.STAT_PERD = 'Q' AND d.DATA_DATE IN (TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q'), 3) - 1, 'yyyymmdd'), TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q') - 1, 'yyyymmdd')))
-      OR (d.STAT_PERD = 'N' AND d.DATA_DATE IN (TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY'), 12) - 1, 'yyyymmdd'), TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY') - 1, 'yyyymmdd')));
+      AND A.ORG_ID = D.ORG_ID
+   WHERE (d.STAT_PERD = 'M' AND d.DATA_DATE IN (TO_CHAR(LAST_DAY(TO_DATE(V_SYSDAT, 'yyyymmdd')), 'yyyymmdd'), V_PREV_MONTH_END))
+      OR (d.STAT_PERD = 'Q' AND d.DATA_DATE IN (TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q'), 3) - 1, 'yyyymmdd'), V_PREV_QUARTER_END))
+      OR (d.STAT_PERD = 'N' AND d.DATA_DATE IN (TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY'), 12) - 1, 'yyyymmdd'), V_PREV_YEAR_END));
   COMMIT;
 
   OUTCDE := 0;
@@ -212,9 +220,9 @@ BEGIN
           TO_CHAR(LAST_DAY(TO_DATE(V_SYSDAT, 'yyyymmdd')), 'yyyymmdd'),
           TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q'), 3) - 1, 'yyyymmdd'),
           TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY'), 12) - 1, 'yyyymmdd'),
-          TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -1)), 'yyyymmdd'),
-          TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q') - 1, 'yyyymmdd'),
-          TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY') - 1, 'yyyymmdd')
+          V_PREV_MONTH_END,
+          V_PREV_QUARTER_END,
+          V_PREV_YEAR_END
         )
      AND (
           t.DATA_DATE < TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY'), -36), 'yyyymmdd')

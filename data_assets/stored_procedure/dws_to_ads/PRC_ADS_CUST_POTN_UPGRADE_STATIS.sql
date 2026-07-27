@@ -10,6 +10,10 @@ AS
   -- 来源表: ADS_CUST_POTN_UPGRADE_CUST_DTL, DWS_CUST_ASSE_LIAB, DWD_SYS_ORG
   -- 目标表: ADS_CUST_POTN_UPGRADE_STATIS
   -- 适配数据库: Kingbase Oracle 兼容模式
+  -- 需求版本: v2.3.0
+  -- 变更记录:
+  --   v2.2.0 2026-07-27 计算单位调整为客户号+归属机构(ORG_ID)，关联DWS_CUST_ASSE_LIAB增加ORG_ID条件避免笛卡尔积
+  --   v2.3.0 2026-07-27 相对日期统一使用sys_fun_deal_date；本过程当前取当日数据，使用V_SYSDAT
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '潜力提升统计处理';
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_POTN_UPGRADE_STATIS';
@@ -120,6 +124,7 @@ BEGIN
       ON O.LEAF_ORG_ID = D.ORG_ID
     LEFT JOIN DWS_CUST_ASSE_LIAB M
       ON M.CUST_ID = D.CUST_ID
+     AND M.ORG_ID = D.ORG_ID
      AND M.DATA_DATE = V_SYSDAT
      AND M.BAL_TYPE = '2'
    WHERE D.DATA_DATE = V_SYSDAT
@@ -145,6 +150,7 @@ BEGIN
     FROM ADS_CUST_POTN_UPGRADE_CUST_DTL D
     LEFT JOIN DWS_CUST_ASSE_LIAB M
       ON M.CUST_ID = D.CUST_ID
+     AND M.ORG_ID = D.ORG_ID
      AND M.DATA_DATE = V_SYSDAT
      AND M.BAL_TYPE = '2'
    WHERE D.POST_ID IS NOT NULL

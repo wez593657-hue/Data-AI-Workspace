@@ -1,12 +1,14 @@
 /*
  * dws_cust_asse_liab
  * 中文名称: 客户资产负债表
- * 版本: v1.0
+ * 版本: v1.1
  * 创建时间: 2026-07-17
+ * 更新时间: 2026-07-27 v1.1 补充PERSN_LEGAL_BK_CODE字段(同客户多机构拆分)
  */
 
 CREATE TABLE IF NOT EXISTS dws_cust_asse_liab (
     DATA_DATE VARCHAR(8) NOT NULL,
+    PERSN_LEGAL_BK_CODE VARCHAR(4) NULL,
     CUST_ID VARCHAR(20) NULL,
     ORG_ID VARCHAR(7) NULL,
     ORG_ID_LOAN VARCHAR(6) NULL,
@@ -33,6 +35,7 @@ CREATE TABLE IF NOT EXISTS dws_cust_asse_liab (
 
 COMMENT ON TABLE dws_cust_asse_liab IS '客户资产负债表';
 COMMENT ON COLUMN dws_cust_asse_liab.DATA_DATE IS '数据日期';
+COMMENT ON COLUMN dws_cust_asse_liab.PERSN_LEGAL_BK_CODE IS '法人行号';
 COMMENT ON COLUMN dws_cust_asse_liab.CUST_ID IS '客户号';
 COMMENT ON COLUMN dws_cust_asse_liab.ORG_ID IS '归属机构';
 COMMENT ON COLUMN dws_cust_asse_liab.ORG_ID_LOAN IS '信贷归属机构';

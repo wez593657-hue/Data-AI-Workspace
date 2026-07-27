@@ -10,7 +10,7 @@ AS
   -- 来源表: DWD_CUST_INDV_INFO, DWS_CUST_LVL_INFO, DWS_CUST_ASSE_LIAB, DWD_CUST_INDV_KYC, ADS_MKT_REC_INFO
   -- 目标表: ADS_CUST_NEW_CUST_DTL
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.1.0
+  -- 需求版本: v2.2.0
   -- 关联需求: REQ-CUST-007
   -- 变更记录:
   --   v2.1.0: 1.新客定义改为使用DWD_CUST_INDV_INFO的OPEN_DATE字段
@@ -25,6 +25,10 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
+  V_DATA_DATE            VARCHAR2(8);
+  V_PREV_MONTH_END       VARCHAR2(8);
+  V_PREV_QUARTER_END     VARCHAR2(8);
+  V_PREV_YEAR_END        VARCHAR2(8);
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -41,6 +45,11 @@ BEGIN
     RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
   END IF;
 
+  V_DATA_DATE := V_SYSDAT;
+  V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);
+  V_PREV_QUARTER_END := sys_fun_deal_date(V_SYSDAT, 3);
+  V_PREV_YEAR_END := sys_fun_deal_date(V_SYSDAT, 4);
+
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
 
   ------------------------------------------------------------------
@@ -50,10 +59,10 @@ BEGIN
   V_BGN_DATE := SYSDATE;
 
   DELETE FROM ADS_CUST_NEW_CUST_DTL D
-   WHERE D.DATA_DATE = V_SYSDAT;
+   WHERE D.DATA_DATE = V_DATA_DATE;
 
   DELETE FROM ADS_CUST_NEW_CUST_DTL D
-   WHERE TO_DATE(D.DATA_DATE, 'YYYYMMDD') < ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'YYYY'), -36);
+   WHERE D.DATA_DATE < TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_DATA_DATE, 'YYYYMMDD'), 'YYYY'), -36), 'YYYYMMDD');
 
   TRUNC_TMP('TMP_ADS_NEW_CUST_BASE');
   COMMIT;
@@ -97,14 +106,14 @@ BEGIN
       POST_ID,
       ORG_ID
   )
-  SELECT c.PERSN_LEGAL_BK_CODE,
-         c.CUST_ID,
+  SELECT a.PERSN_LEGAL_BK_CODE,
+         a.CUST_ID,
          c.CUST_NAME,
          l.CUST_LVL,
          CASE
-        WHEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') < 30 THEN '1'
-        WHEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') < 100 THEN '2'
-        WHEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') <= 180 THEN '3'
+        WHEN TO_DATE(V_DATA_DATE, 'YYYYMMDD') - TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') < 30 THEN '1'
+        WHEN TO_DATE(V_DATA_DATE, 'YYYYMMDD') - TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') < 100 THEN '2'
+        WHEN TO_DATE(V_DATA_DATE, 'YYYYMMDD') - TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') <= 180 THEN '3'
       END,
          NVL(a.DEPO_CURNT_DEPO_BAL, 0),
          NVL(a.FIXD_DEPO_BAL, 0),
@@ -118,8 +127,8 @@ BEGIN
                 AND r.MKT_TYP IN ('1', '2', '3', '4')
                 AND r.MKT_TIME IS NOT NULL
                 AND TO_DATE(REPLACE(SUBSTR(r.MKT_TIME, 1, 10), '-', ''), 'YYYYMMDD')
-                    BETWEEN TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'MM')
-                        AND TO_DATE(V_SYSDAT, 'YYYYMMDD')
+                    BETWEEN TRUNC(TO_DATE(V_DATA_DATE, 'YYYYMMDD'), 'MM')
+                        AND TO_DATE(V_DATA_DATE, 'YYYYMMDD')
            ) THEN '1'
            ELSE '0'
          END,
@@ -150,19 +159,19 @@ BEGIN
            ELSE '0'
          END,
          c.HOST_CUST_MNGR_POST_ID,
-         c.ORG_LEAD
-    FROM DWD_CUST_INDV_INFO c
+         a.ORG_ID
+    FROM DWS_CUST_ASSE_LIAB a
+    JOIN DWD_CUST_INDV_INFO c
+      ON c.CUST_ID = a.CUST_ID
     LEFT JOIN DWS_CUST_LVL_INFO l
       ON l.CUST_ID = c.CUST_ID
-     AND l.DATA_DT = V_SYSDAT
-    LEFT JOIN DWS_CUST_ASSE_LIAB a
-      ON a.CUST_ID = c.CUST_ID
-     AND a.DATA_DATE = V_SYSDAT
-     AND a.BAL_TYPE = '1'
+     AND l.DATA_DT = V_DATA_DATE
     LEFT JOIN DWD_CUST_INDV_KYC k
       ON k.CUST_ID = c.CUST_ID
-   WHERE c.OPEN_DATE IS NOT NULL
-     AND TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') BETWEEN TO_DATE(V_SYSDAT, 'YYYYMMDD') - 180 AND TO_DATE(V_SYSDAT, 'YYYYMMDD');
+   WHERE a.DATA_DATE = V_DATA_DATE
+     AND a.BAL_TYPE = '1'
+     AND c.OPEN_DATE IS NOT NULL
+     AND TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD') BETWEEN TO_DATE(V_DATA_DATE, 'YYYYMMDD') - 180 AND TO_DATE(V_DATA_DATE, 'YYYYMMDD');
 
   COMMIT;
 
@@ -208,7 +217,7 @@ BEGIN
       STATIS_CYCLE
   )
   SELECT b.PERSN_LEGAL_BK_CODE,
-         V_SYSDAT,
+         V_DATA_DATE,
          b.CUST_ID,
          b.CUST_NAME,
          b.CUST_LVL,
@@ -268,8 +277,8 @@ BEGIN
                                   AND R.MKT_TYP IN ('1', '2', '3', '4')
                                   AND R.MKT_TIME IS NOT NULL
                                   AND TO_DATE(REPLACE(SUBSTR(R.MKT_TIME, 1, 10), '-', ''), 'YYYYMMDD')
-                                      BETWEEN TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'MM')
-                                          AND TO_DATE(V_SYSDAT, 'YYYYMMDD')
+                                      BETWEEN TRUNC(TO_DATE(V_DATA_DATE, 'YYYYMMDD'), 'MM')
+                                          AND TO_DATE(V_DATA_DATE, 'YYYYMMDD')
                              ) THEN '1'
                            ELSE '0'
                          END,
@@ -304,9 +313,9 @@ BEGIN
                           THEN '1'
                         ELSE '0'
                       END
-   WHERE (D.STATIS_CYCLE = 'M' AND D.DATA_DATE = TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'YYYYMMDD'), -1)), 'YYYYMMDD'))
-      OR (D.STATIS_CYCLE = 'Q' AND D.DATA_DATE = TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'Q') - 1, 'YYYYMMDD'))
-      OR (D.STATIS_CYCLE = 'N' AND D.DATA_DATE = TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'YYYY') - 1, 'YYYYMMDD'));
+   WHERE (D.STATIS_CYCLE = 'M' AND D.DATA_DATE = V_PREV_MONTH_END)
+      OR (D.STATIS_CYCLE = 'Q' AND D.DATA_DATE = V_PREV_QUARTER_END)
+      OR (D.STATIS_CYCLE = 'N' AND D.DATA_DATE = V_PREV_YEAR_END);
 
   COMMIT;
 

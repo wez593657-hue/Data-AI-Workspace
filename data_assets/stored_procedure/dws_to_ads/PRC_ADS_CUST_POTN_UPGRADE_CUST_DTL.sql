@@ -10,6 +10,11 @@ AS
   -- 来源表: DWS_CUST_ASSE_LIAB, DWD_CUST_INDV_INFO, DWS_CUST_LVL_INFO, ADS_MKT_REC_INFO
   -- 目标表: ADS_CUST_POTN_UPGRADE_CUST_DTL
   -- 适配数据库: Kingbase Oracle 兼容模式
+  -- 需求版本: v2.3.0
+  -- 变更记录:
+  --   v2.2.0 2026-07-27 计算单位调整为客户号+归属机构(ORG_ID)，关联DWS_CUST_ASSE_LIAB增加ORG_ID条件避免笛卡尔积
+  --               输出ORG_ID/PERSN_LEGAL_BK_CODE改取DWS_CUST_ASSE_LIAB(p)字段，正确反映同客户多机构拆分
+  --   v2.3.0 2026-07-27 相对日期统一使用sys_fun_deal_date：上日=1、上月末=2；后续日期按函数参数扩展
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '潜力提升客户明细处理';
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL';
@@ -93,7 +98,7 @@ BEGIN
       POST_ID,
       ORG_ID
   )
-  SELECT c.PERSN_LEGAL_BK_CODE,
+  SELECT p.PERSN_LEGAL_BK_CODE,
          c.CUST_ID,
          c.CUST_NAME,
          l.CUST_LVL,
@@ -123,7 +128,7 @@ BEGIN
            ELSE '0'
          END,
          c.HOST_CUST_MNGR_POST_ID,
-         c.ORG_LEAD
+         p.ORG_ID
     FROM DWS_CUST_ASSE_LIAB p
     JOIN DWD_CUST_INDV_INFO c
       ON c.CUST_ID = p.CUST_ID
@@ -132,17 +137,20 @@ BEGIN
      AND l.DATA_DT = V_SYSDAT
     LEFT JOIN DWS_CUST_ASSE_LIAB m
       ON m.CUST_ID = p.CUST_ID
+     AND m.ORG_ID = p.ORG_ID
      AND m.DATA_DATE = V_SYSDAT
      AND m.BAL_TYPE = '2'
     LEFT JOIN DWS_CUST_ASSE_LIAB b
       ON b.CUST_ID = p.CUST_ID
+     AND b.ORG_ID = p.ORG_ID
      AND b.DATA_DATE = V_SYSDAT
      AND b.BAL_TYPE = '1'
     LEFT JOIN DWS_CUST_ASSE_LIAB q
       ON q.CUST_ID = p.CUST_ID
-     AND q.DATA_DATE = TO_CHAR(TO_DATE(V_SYSDAT, 'YYYYMMDD') - 1, 'YYYYMMDD')
+     AND q.ORG_ID = p.ORG_ID
+     AND q.DATA_DATE = sys_fun_deal_date(V_SYSDAT, 1)
      AND q.BAL_TYPE = '1'
-   WHERE p.DATA_DATE = TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'YYYYMMDD'), -1)), 'YYYYMMDD')
+   WHERE p.DATA_DATE = sys_fun_deal_date(V_SYSDAT, 2)
      AND p.BAL_TYPE = '2'
      AND p.AUM_BAL >= 45000
      AND p.AUM_BAL < 3000000;

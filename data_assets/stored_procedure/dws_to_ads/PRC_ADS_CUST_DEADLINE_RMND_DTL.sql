@@ -15,7 +15,7 @@ AS
   -- author :
   -- date   : 2026-07-15
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.2.0
+  -- 需求版本: v2.3.0
   -- 关联需求: REQ-CUST-001, REQ-CUST-002
   -- 变更记录:
   --   v2.1.0: 1.资产承接率统计周期从14天改为30天
@@ -47,6 +47,9 @@ AS
   V_DURA_DATE            INTEGER;
   P_INTERVAL_START_DATE  VARCHAR(8);
   P_INTERVAL_END_DATE    VARCHAR(8);
+  V_PREV_MONTH_END       VARCHAR2(8);
+  V_PREV_QUARTER_END     VARCHAR2(8);
+  V_PREV_YEAR_END        VARCHAR2(8);
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -65,6 +68,9 @@ BEGIN
   V_SYSDAT2 := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'yyyy-mm-dd');
   P_INTERVAL_START_DATE := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd') - 30, 'yyyymmdd');
   P_INTERVAL_END_DATE   := V_SYSDAT;
+  V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);
+  V_PREV_QUARTER_END := sys_fun_deal_date(V_SYSDAT, 3);
+  V_PREV_YEAR_END := sys_fun_deal_date(V_SYSDAT, 4);
 
   --***************************************
   -- 2.0 -- 第1段处理开始：清理目标表和中间表
@@ -76,9 +82,9 @@ BEGIN
    WHERE (STAT_PERD = 'M' AND DATA_DATE = TO_CHAR(LAST_DAY(TO_DATE(V_SYSDAT, 'yyyymmdd')), 'yyyymmdd'))
       OR (STAT_PERD = 'Q' AND DATA_DATE = TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q'), 3) - 1, 'yyyymmdd'))
       OR (STAT_PERD = 'Y' AND DATA_DATE = TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY'), 12) - 1, 'yyyymmdd'))
-      OR (STAT_PERD = 'M' AND DATA_DATE = TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -1)), 'yyyymmdd'))
-      OR (STAT_PERD = 'Q' AND DATA_DATE = TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q') - 1, 'yyyymmdd'))
-      OR (STAT_PERD = 'Y' AND DATA_DATE = TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY') - 1, 'yyyymmdd'));
+      OR (STAT_PERD = 'M' AND DATA_DATE = V_PREV_MONTH_END)
+      OR (STAT_PERD = 'Q' AND DATA_DATE = V_PREV_QUARTER_END)
+      OR (STAT_PERD = 'Y' AND DATA_DATE = V_PREV_YEAR_END);
   TRUNC_TMP('TMP_CDR_DTL_PERIOD');
   TRUNC_TMP('TMP_CDR_DTL_MATURE_SRC');
   TRUNC_TMP('TMP_CDR_DTL_DUE_WIN');
@@ -136,17 +142,17 @@ BEGIN
   UNION ALL
   SELECT 'M' AS STAT_PERD,
          TRUNC(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -1), 'MM') AS BGN_DT,
-         LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -1)) AS END_DT
+         TO_DATE(V_PREV_MONTH_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
   SELECT 'Q' AS STAT_PERD,
          TRUNC(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -3), 'Q') AS BGN_DT,
-         TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q') - 1 AS END_DT
+         TO_DATE(V_PREV_QUARTER_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
   SELECT 'Y' AS STAT_PERD,
          TRUNC(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -12), 'YYYY') AS BGN_DT,
-         TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY') - 1 AS END_DT
+         TO_DATE(V_PREV_YEAR_END, 'yyyymmdd') AS END_DT
     FROM dual;
 
   COMMIT;

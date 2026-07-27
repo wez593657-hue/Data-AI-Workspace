@@ -10,7 +10,7 @@ AS
   -- 来源表: DWS_CUST_ASSE_LIAB, DWD_CUST_INDV_INFO, DWS_CUST_LVL_INFO, ADS_MKT_REC_INFO
   -- 目标表: ADS_CUST_LOST_DTL
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.1.0
+  -- 需求版本: v2.2.0
   -- 关联需求: REQ-CUST-001
   -- 变更记录:
   --   v2.1.0: 1.已挽回金融资产口径确认：T-1日金融资产余额达标的客户，从月初~T-1日金融资产新增总金额，单个客户的挽回金融资产为当前T-1日客户金融资产减去上月末时点的金融资产余额
@@ -25,6 +25,12 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
+  V_DATA_DATE            VARCHAR2(8);
+  V_PREV_DAY             VARCHAR2(8);
+  V_PREV_MONTH_END       VARCHAR2(8);
+  V_PREV_PREV_MONTH_END  VARCHAR2(8);
+  V_PREV_QUARTER_END     VARCHAR2(8);
+  V_PREV_YEAR_END        VARCHAR2(8);
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -41,6 +47,13 @@ BEGIN
     RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
   END IF;
 
+  V_DATA_DATE := V_SYSDAT;
+  V_PREV_DAY := sys_fun_deal_date(V_SYSDAT, 1);
+  V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);
+  V_PREV_QUARTER_END := sys_fun_deal_date(V_SYSDAT, 3);
+  V_PREV_YEAR_END := sys_fun_deal_date(V_SYSDAT, 4);
+  V_PREV_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 6);
+
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
 
   ------------------------------------------------------------------
@@ -50,10 +63,10 @@ BEGIN
   V_BGN_DATE := SYSDATE;
 
   DELETE FROM ADS_CUST_LOST_DTL D
-   WHERE D.DATA_DATE = V_SYSDAT;
+   WHERE D.DATA_DATE = V_DATA_DATE;
 
   DELETE FROM ADS_CUST_LOST_DTL D
-   WHERE TO_DATE(D.DATA_DATE, 'YYYYMMDD') < ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'YYYY'), -36);
+   WHERE D.DATA_DATE < TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_DATA_DATE, 'YYYYMMDD'), 'YYYY'), -36), 'YYYYMMDD');
 
   TRUNC_TMP('TMP_ADS_LOST_BASE');
   COMMIT;
@@ -99,7 +112,7 @@ BEGIN
       POST_ID,
       ORG_ID
   )
-  SELECT c.PERSN_LEGAL_BK_CODE,
+  SELECT COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE),
          c.CUST_ID,
          c.CUST_NAME,
          cur_l.CUST_LVL,
@@ -172,46 +185,54 @@ BEGIN
          NVL(q.AUM_BAL, 0),
          NVL(e.AUM_BAL, 0),
          c.HOST_CUST_MNGR_POST_ID,
-         c.ORG_LEAD
+         COALESCE(p.ORG_ID, pp.ORG_ID)
     FROM (
           SELECT a.CUST_ID,
+                 a.ORG_ID,
+                 a.PERSN_LEGAL_BK_CODE,
                  a.AUM_BAL,
                  l.CUST_LVL LVL
             FROM DWS_CUST_ASSE_LIAB a
             JOIN DWS_CUST_LVL_INFO l
               ON l.CUST_ID = a.CUST_ID
              AND l.DATA_DT = a.DATA_DATE
-           WHERE a.DATA_DATE = TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'YYYYMMDD'), -1)), 'YYYYMMDD')
+           WHERE a.DATA_DATE = V_PREV_MONTH_END
              AND a.BAL_TYPE = '2'
          ) p
     FULL JOIN (
           SELECT a.CUST_ID,
+                 a.ORG_ID,
+                 a.PERSN_LEGAL_BK_CODE,
                  a.AUM_BAL,
                  l.CUST_LVL LVL
             FROM DWS_CUST_ASSE_LIAB a
             JOIN DWS_CUST_LVL_INFO l
               ON l.CUST_ID = a.CUST_ID
              AND l.DATA_DT = a.DATA_DATE
-           WHERE a.DATA_DATE = TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'YYYYMMDD'), -2)), 'YYYYMMDD')
+           WHERE a.DATA_DATE = V_PREV_PREV_MONTH_END
              AND a.BAL_TYPE = '2'
          ) pp
       ON pp.CUST_ID = p.CUST_ID
+     AND pp.ORG_ID = p.ORG_ID
     JOIN DWD_CUST_INDV_INFO c
       ON c.CUST_ID = COALESCE(p.CUST_ID, pp.CUST_ID)
     LEFT JOIN DWS_CUST_LVL_INFO cur_l
       ON cur_l.CUST_ID = c.CUST_ID
-     AND cur_l.DATA_DT = V_SYSDAT
+     AND cur_l.DATA_DT = V_DATA_DATE
     LEFT JOIN DWS_CUST_ASSE_LIAB e
-      ON e.CUST_ID = c.CUST_ID
-     AND e.DATA_DATE = TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'YYYYMMDD'), -1)), 'YYYYMMDD')
+     ON e.CUST_ID = c.CUST_ID
+     AND e.ORG_ID = COALESCE(p.ORG_ID, pp.ORG_ID)
+     AND e.DATA_DATE = V_PREV_MONTH_END
      AND e.BAL_TYPE = '1'
     LEFT JOIN DWS_CUST_ASSE_LIAB q
-      ON q.CUST_ID = c.CUST_ID
-     AND q.DATA_DATE = TO_CHAR(TO_DATE(V_SYSDAT, 'YYYYMMDD') - 1, 'YYYYMMDD')
+     ON q.CUST_ID = c.CUST_ID
+     AND q.ORG_ID = COALESCE(p.ORG_ID, pp.ORG_ID)
+     AND q.DATA_DATE = V_PREV_DAY
      AND q.BAL_TYPE = '1'
     LEFT JOIN DWS_CUST_ASSE_LIAB b
-      ON b.CUST_ID = c.CUST_ID
-     AND b.DATA_DATE = V_SYSDAT
+     ON b.CUST_ID = c.CUST_ID
+     AND b.ORG_ID = COALESCE(p.ORG_ID, pp.ORG_ID)
+     AND b.DATA_DATE = V_DATA_DATE
      AND b.BAL_TYPE = '1';
 
   DELETE FROM TMP_ADS_LOST_BASE
@@ -262,7 +283,7 @@ BEGIN
       STATIS_CYCLE
   )
   SELECT x.PERSN_LEGAL_BK_CODE,
-         V_SYSDAT,
+         V_DATA_DATE,
          x.CUST_ID,
          x.CUST_NAME,
          x.CUST_LVL,
@@ -333,7 +354,8 @@ BEGIN
                                 SELECT 1
                                   FROM DWS_CUST_ASSE_LIAB A
                                  WHERE A.CUST_ID = D.CUST_ID
-                                   AND A.DATA_DATE = TO_CHAR(TO_DATE(V_SYSDAT, 'YYYYMMDD') - 1, 'YYYYMMDD')
+                                   AND A.ORG_ID = D.ORG_ID
+                                   AND A.DATA_DATE = V_PREV_DAY
                                    AND A.BAL_TYPE = '1'
                                    AND (
                                        (D.CUST_LVL IN ('04', '05', '06') AND NVL(A.AUM_BAL, 0) >= 50000)
@@ -345,9 +367,9 @@ BEGIN
                               ) THEN '1'
                             ELSE '0'
                           END
-   WHERE (D.STATIS_CYCLE = 'M' AND D.DATA_DATE = TO_CHAR(LAST_DAY(ADD_MONTHS(TO_DATE(V_SYSDAT, 'YYYYMMDD'), -1)), 'YYYYMMDD'))
-      OR (D.STATIS_CYCLE = 'Q' AND D.DATA_DATE = TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'Q') - 1, 'YYYYMMDD'))
-      OR (D.STATIS_CYCLE = 'N' AND D.DATA_DATE = TO_CHAR(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'YYYY') - 1, 'YYYYMMDD'));
+   WHERE (D.STATIS_CYCLE = 'M' AND D.DATA_DATE = V_PREV_MONTH_END)
+      OR (D.STATIS_CYCLE = 'Q' AND D.DATA_DATE = V_PREV_QUARTER_END)
+      OR (D.STATIS_CYCLE = 'N' AND D.DATA_DATE = V_PREV_YEAR_END);
 
   COMMIT;
 
