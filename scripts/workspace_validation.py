@@ -9,6 +9,9 @@ from validate_document_changes import validate_document_changes as run_document_
 from validate_cross_layer_consistency import (
     validate_cross_layer_consistency as run_cross_layer_validation,
 )
+from validate_procedure_date_parameters import (
+    validate_staged_procedure_date_parameters as run_date_parameter_validation,
+)
 
 fix_windows_encoding()
 
@@ -35,6 +38,12 @@ def validate_cross_layer_consistency():
         return True
     safe_print("\n✗ 跨层一致性校验失败")
     return False
+
+def validate_procedure_date_parameters():
+    safe_print("\n" + "=" * 60)
+    safe_print("2A. 存储过程日期参数规则校验")
+    safe_print("=" * 60)
+    return run_date_parameter_validation()
 
 def validate_syntax():
     safe_print("\n" + "=" * 60)
@@ -174,6 +183,7 @@ def run_full_validation():
     
     results.append(('文档变更审核', validate_document_changes()))
     results.append(('跨层一致性校验', validate_cross_layer_consistency()))
+    results.append(('存储过程日期参数规则校验', validate_procedure_date_parameters()))
     results.append(('SQL语法检查', validate_syntax()))
     results.append(('JSON格式检查', validate_json()))
     results.append(('YAML格式检查', validate_yaml()))
@@ -207,6 +217,7 @@ def run_quick_validation():
     results = []
     
     results.append(('文档变更审核', validate_document_changes()))
+    results.append(('存储过程日期参数规则校验', validate_procedure_date_parameters()))
     results.append(('SQL语法检查', validate_syntax()))
     results.append(('JSON格式检查', validate_json()))
     results.append(('YAML格式检查', validate_yaml()))

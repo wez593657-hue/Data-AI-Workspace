@@ -1,0 +1,51 @@
+schema_version: '0.1'
+task_id: date-parameter-governance-20260727
+purpose: Standardize future stored procedure date parameter development and review
+  rules
+workflow_profile: harness
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-07-27T09:14:49+00:00'
+updated_at: '2026-07-27T11:01:15+00:00'
+evidence_ids:
+- workspace-001
+- scope-001
+- validation-quick-001
+- validation-full-001
+- approval-001
+- commit-auth-001
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-27T09:14:49+00:00'
+- from: CREATED
+  to: WORKSPACE_CHECKED
+  reason: Workspace and master-only development constraints verified.
+  at: '2026-07-27T09:23:46+00:00'
+- from: WORKSPACE_CHECKED
+  to: IMPLEMENTATION_READY
+  reason: Confirmed governance implementation scope and change manifest.
+  at: '2026-07-27T09:24:54+00:00'
+- from: IMPLEMENTATION_READY
+  to: QUICK_VALIDATION_PASSED
+  reason: Unit, compile, static-rule, and compatibility checks passed.
+  at: '2026-07-27T09:26:26+00:00'
+- from: QUICK_VALIDATION_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: Full workspace, harness, compatibility, and skill validation passed.
+  at: '2026-07-27T09:29:30+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: User confirmed the governance task for commit and push.
+  at: '2026-07-27T11:00:25+00:00'
+- from: USER_APPROVED
+  to: COMMIT_ALLOWED
+  reason: User approval evidence satisfies the commit gate.
+  at: '2026-07-27T11:00:52+00:00'
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: Commit authorization recorded; push is authorized by user confirmation.
+  at: '2026-07-27T11:01:15+00:00'
+state_seal: 1f422db7bbb10a20abe6a0d1a3e51b95578733e6a0c1479fde9d4d7ae24520ac

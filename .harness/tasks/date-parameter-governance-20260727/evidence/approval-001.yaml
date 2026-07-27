@@ -1,0 +1,10 @@
+evidence_id: approval-001
+task_id: date-parameter-governance-20260727
+phase: approval
+kind: check
+purpose: user_approval
+result: passed
+details: User confirmed the completed global date-parameter governance rule, skill,
+  template, validator, and test changes for commit and push.
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T10:59:59+00:00'

@@ -27,6 +27,10 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
+  -- Date parameters: declare only the business dates required by this procedure.
+  -- Each parameter must retain its code and meaning; see governance/stored_procedure_date_parameter_rules.md.
+  -- V_PREV_DAY             VARCHAR(8) := sys_fun_deal_date(V_SYSDAT, 1);  -- 1: previous business day
+  -- V_PREV_MONTH_END       VARCHAR(8) := sys_fun_deal_date(V_SYSDAT, 2);  -- 2: previous month end
 BEGIN
   --***************************************
   --1.自定义参数区
@@ -39,6 +43,9 @@ BEGIN
 
   -- 解析日期以校验“格式正确但日期非法”的输入。
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
+
+  -- V_SYSDAT is valid only for input validation, logs, and source snapshot equality.
+  -- Derive business dates through the named parameters above. Target date output is YYYYMMDD.
 
   --***************************************
   -- 2. 目标表准备

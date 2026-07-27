@@ -1,0 +1,11 @@
+evidence_id: scope-001
+task_id: date-parameter-governance-20260727
+phase: implementation
+kind: analysis
+purpose: implementation_scope
+result: passed
+details: Scoped changes to one global rule, requirement-development skill and workflow
+  reference, Oracle procedure template, staged-procedure static validator, workspace
+  validation integration, and unit tests. Existing stored procedures remain unchanged.
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T09:24:45+00:00'

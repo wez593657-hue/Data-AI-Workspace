@@ -1,0 +1,10 @@
+evidence_id: workspace-001
+task_id: date-parameter-governance-20260727
+phase: workspace
+kind: check
+purpose: workspace_status
+result: passed
+details: Confirmed master branch, clean baseline before scoped governance edits, and
+  no branch or PR workflow.
+repository_revision: 1dba4354d47df1e64dba1ed3c68c9e1df2f30906
+created_at: '2026-07-27T09:23:28+00:00'

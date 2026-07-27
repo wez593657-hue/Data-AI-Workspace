@@ -25,6 +25,8 @@ Read `references/workflow.md` before starting. Create or load the matching Harne
 12. Generate temporary-table structures used by the procedure.
 13. Run full validation, obtain user approval, then enter commit and push authorization stages.
 
+For every new or modified stored procedure, read `../../governance/stored_procedure_date_parameter_rules.md` before stages 1, 10, and 11. Treat it as a mandatory implementation and review constraint.
+
 ## Evidence Requirements
 
 Record requirement analysis, scope confirmation, project scan, table lineage, source capability, field-gap confirmation, supplementary material, requirement review, memory-card update, procedure implementation, procedure review, temporary-table generation, full validation, user approval, commit authorization, and push authorization evidence using the configured purposes.
@@ -37,6 +39,8 @@ Review evidence must be structured and include `review_type`, `result`, `checked
 - Do not update memory cards until the requirement review passes.
 - Do not generate temporary-table DDL until procedure review passes.
 - Do not skip the supplementary-material loop or either review.
+- Use named `sys_fun_deal_date(V_SYSDAT, n)` parameters for every V_SYSDAT-relative business date; do not derive business date boundaries directly from `V_SYSDAT`.
+- Ensure target-table date output is `YYYYMMDD` and record every used date parameter in the requirement memory card and procedure-review evidence.
 - Do not modify files outside the confirmed change manifest.
 - Work on `master` only; do not create or switch Git branches.
 - Commit and push only after explicit user confirmation.

@@ -1,0 +1,17 @@
+schema_version: '0.1'
+task_id: date-parameter-governance-20260727
+user_confirmation: confirmed
+objective: Standardize future stored procedure date parameter development and review rules
+allowed_changes:
+  - path: governance/stored_procedure_date_parameter_rules.md
+  - path: skill/crm-requirement-development/
+  - path: templates/PRC_模板.sql
+  - path: scripts/validate_procedure_date_parameters.py
+  - path: scripts/workspace_validation.py
+  - path: scripts/harness/tests/test_procedure_date_parameters.py
+  - path: .harness/tasks/date-parameter-governance-20260727/
+read_only_inputs:
+  - path: requirements/到期承接规则记忆卡片.md
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_DTL.sql
+forbidden_changes:
+  - path: data_assets/stored_procedure/

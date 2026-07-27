@@ -24,4 +24,8 @@ CREATED
 
 `FIELD_GAP_CONFIRMED` may return to `MATERIALS_SUPPLEMENTED` when fields cannot be implemented. `MATERIALS_SUPPLEMENTED` must return to `SOURCE_CAPABILITY_ANALYZED`. `REQUIREMENT_REVIEW_PASSED` may return to `MATERIALS_SUPPLEMENTED`; `PROCEDURE_REVIEW_PASSED` may return to `PROCEDURE_IMPLEMENTED`.
 
+## Date-Parameter Gate
+
+For stored procedure work, read `governance/stored_procedure_date_parameter_rules.md` during requirement analysis, implementation, and procedure review. The memory card must list the date codes, parameter names, and business meanings actually used. Procedure-review evidence must confirm all V_SYSDAT-relative business dates use named `sys_fun_deal_date` parameters, direct V_SYSDAT calendar derivation is absent, and target date output is `YYYYMMDD`.
+
 The exact allowed transitions and evidence purposes are defined in `.harness/policies/phase_gates.yaml` and `scripts/harness/state_machine.py`.
