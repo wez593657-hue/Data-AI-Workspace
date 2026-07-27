@@ -15,6 +15,8 @@
 
 | 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 数据来源 | 负责人 | 更新时间 |
 |--------|--------------|----------|------|----------|--------|------|------|----------|----------|--------|----------|
+| persn_legal_bk_code | 【待确认】 | VARCHAR | 4 | NULL | - | - | - | 【待确认】 | crmdm.tmp_dws_cust_asse_liab_today_agg.persn_legal_bk_code | 【待确认】 | 2026-07-27 |
+| oprt_org | 【待确认】 | VARCHAR | 7 | NULL | - | - | - | 【待确认】 | crmdm.tmp_dws_cust_asse_liab_today_agg.oprt_org | 【待确认】 | 2026-07-27 |
 | data_date | 【待确认】 | VARCHAR | 8 | NULL | - | - | - | 【待确认】 | crmdm.tmp_dws_cust_asse_liab_today_agg.data_date | 【待确认】 | 2026-07-17 |
 | cust_id | 【待确认】 | VARCHAR | 20 | NULL | - | - | - | 【待确认】 | crmdm.tmp_dws_cust_asse_liab_today_agg.cust_id | 【待确认】 | 2026-07-17 |
 | acct_id | 【待确认】 | VARCHAR | 40 | NULL | - | - | - | 【待确认】 | crmdm.tmp_dws_cust_asse_liab_today_agg.acct_id | 【待确认】 | 2026-07-17 |

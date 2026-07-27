@@ -1,0 +1,15 @@
+schema_version: '0.1'
+task_id: syddl-ods-sync-20260727
+purpose: 按SYDDL同步ODS建表语句和数据字典
+workflow_profile: data_warehouse
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-07-27T14:30:00+08:00'
+updated_at: '2026-07-27T14:30:00+08:00'
+allowed_paths: []
+forbidden_paths: []
+history:
+  - from: null
+    to: PUSH_ALLOWED
+    reason: 用户确认DDL同步结果并授权提交推送
+    at: '2026-07-27T14:30:00+08:00'
