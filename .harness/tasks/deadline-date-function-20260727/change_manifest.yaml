@@ -1,0 +1,13 @@
+schema_version: '0.1'
+task_id: deadline-date-function-20260727
+user_confirmation: confirmed
+objective: Standardize deadline undertaking business dates through sys_fun_deal_date
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_DTL.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_CUST_CTRAKT_INFO.sql
+  - path: requirements/到期承接规则记忆卡片.md
+  - path: .harness/tasks/deadline-date-function-20260727/
+read_only_inputs:
+  - path: data_assets/ddl/ads/ads_cust_deadline_rmnd_dtl.sql
+  - path: data_assets/data_dictionary/ads/ads_cust_deadline_rmnd_dtl.md
+forbidden_changes: []

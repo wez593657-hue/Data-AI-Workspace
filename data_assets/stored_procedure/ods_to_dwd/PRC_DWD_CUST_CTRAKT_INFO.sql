@@ -98,7 +98,8 @@ BEGIN
    INNER JOIN CMS_BUSINESS_CONTRACT bc                  -- 合同业务表
       ON bc.customerid = c.customerid
    LEFT JOIN BUSINESS_TYPE BT
-      ON bt.TYPENO = bc.productid;
+      ON bt.TYPENO = bc.productid
+   WHERE c.mfcustomerid IS NOT NULL;
 
   COMMIT;
 

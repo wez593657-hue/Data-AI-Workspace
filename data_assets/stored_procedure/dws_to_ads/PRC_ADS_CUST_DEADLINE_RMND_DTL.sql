@@ -15,7 +15,7 @@ AS
   -- author :
   -- date   : 2026-07-15
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.3.0
+  -- 需求版本: v2.5.0
   -- 关联需求: REQ-CUST-001, REQ-CUST-002
   -- 变更记录:
   --   v2.1.0: 1.资产承接率统计周期从14天改为30天
@@ -28,6 +28,7 @@ AS
   --           2.客户号+归属机构(经办机构)/法人机构才能算作一个计算单位
   --           3.到期产品源、到期窗口、购买产品源、承接金额、AUM中间表均按客户+机构维度分组
   --           4.法人行号和归属机构从账户表获取(DWD_ACCT_DEPO.OPEN_ACCT_ORG, DWD_ACCT_FIN.OPRT_ORG)
+  --   v2.5.0: 所有基于跑批日的业务日期均使用 SYS_FUN_DEAL_DATE 具名参数；目标表日期统一输出 YYYYMMDD。
   ------------------------------------------------------------------
   ------------------------------------------------------------------
   --***************************************
@@ -35,7 +36,17 @@ AS
   --***************************************
   V_PRC_DESC             VARCHAR(100) := '到期承接明细表处理';
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_DEADLINE_RMND_DTL';
-  V_SYSDAT2              VARCHAR(10);
+  -- V_SYSDAT 为跑批日期：用于源表 DATA_DATE 快照等值关联，不表示需求语义中的上一日。
+  V_PREV_DAY             VARCHAR2(8);  -- 上一日：跑批日期的上一日，取 SYS_FUN_DEAL_DATE(V_SYSDAT, 1)。
+  V_CURR_MONTH_BEGIN     VARCHAR2(8);  -- 当月初：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 9)。
+  V_CURR_MONTH_END       VARCHAR2(8);  -- 当月末：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 10)。
+  V_CURR_QUARTER_BEGIN   VARCHAR2(8);  -- 当季初：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 11)。
+  V_CURR_QUARTER_END     VARCHAR2(8);  -- 当季末：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 12)。
+  V_CURR_YEAR_BEGIN      VARCHAR2(8);  -- 当年初：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 13)。
+  V_CURR_YEAR_END        VARCHAR2(8);  -- 当年末：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 14)。
+  V_PREV_MONTH_BEGIN     VARCHAR2(8);  -- 上月初：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 15)。
+  V_PREV_QUARTER_BEGIN   VARCHAR2(8);  -- 上季初：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 16)。
+  V_PREV_YEAR_BEGIN      VARCHAR2(8);  -- 上年初：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 17)。
   V_SQL                  VARCHAR(32767);
   V_LOG_MSG              VARCHAR(4000);
   V_START_DT             DATE;
@@ -45,11 +56,12 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
-  P_INTERVAL_START_DATE  VARCHAR(8);
-  P_INTERVAL_END_DATE    VARCHAR(8);
-  V_PREV_MONTH_END       VARCHAR2(8);
-  V_PREV_QUARTER_END     VARCHAR2(8);
-  V_PREV_YEAR_END        VARCHAR2(8);
+  P_INTERVAL_START_DATE  VARCHAR(8);   -- 30天承接窗口开始日：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 18)。
+  P_INTERVAL_END_DATE    VARCHAR(8);   -- 30天承接窗口结束日：上一日，即 V_PREV_DAY。
+  V_PREV_MONTH_END       VARCHAR2(8);  -- 上月末：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 2)。
+  V_PREV_QUARTER_END     VARCHAR2(8);  -- 上季末：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 3)。
+  V_PREV_YEAR_END        VARCHAR2(8);  -- 上年末：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 4)。
+  V_HISTORY_CUTOFF_DATE  VARCHAR2(8);  -- 三年历史清理边界：取 SYS_FUN_DEAL_DATE(V_SYSDAT, 19)。
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -65,12 +77,22 @@ BEGIN
   END IF;
 
   V_START_DT := SYSDATE;
-  V_SYSDAT2 := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'yyyy-mm-dd');
-  P_INTERVAL_START_DATE := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd') - 30, 'yyyymmdd');
-  P_INTERVAL_END_DATE   := V_SYSDAT;
+  V_PREV_DAY := sys_fun_deal_date(V_SYSDAT, 1);
+  V_CURR_MONTH_BEGIN := sys_fun_deal_date(V_SYSDAT, 9);
+  V_CURR_MONTH_END := sys_fun_deal_date(V_SYSDAT, 10);
+  V_CURR_QUARTER_BEGIN := sys_fun_deal_date(V_SYSDAT, 11);
+  V_CURR_QUARTER_END := sys_fun_deal_date(V_SYSDAT, 12);
+  V_CURR_YEAR_BEGIN := sys_fun_deal_date(V_SYSDAT, 13);
+  V_CURR_YEAR_END := sys_fun_deal_date(V_SYSDAT, 14);
+  V_PREV_MONTH_BEGIN := sys_fun_deal_date(V_SYSDAT, 15);
+  V_PREV_QUARTER_BEGIN := sys_fun_deal_date(V_SYSDAT, 16);
+  V_PREV_YEAR_BEGIN := sys_fun_deal_date(V_SYSDAT, 17);
+  P_INTERVAL_START_DATE := sys_fun_deal_date(V_SYSDAT, 18);
+  P_INTERVAL_END_DATE   := V_PREV_DAY;
   V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);
   V_PREV_QUARTER_END := sys_fun_deal_date(V_SYSDAT, 3);
   V_PREV_YEAR_END := sys_fun_deal_date(V_SYSDAT, 4);
+  V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);
 
   --***************************************
   -- 2.0 -- 第1段处理开始：清理目标表和中间表
@@ -79,9 +101,9 @@ BEGIN
   V_BGN_DATE := SYSDATE;
 
   DELETE FROM ADS_CUST_DEADLINE_RMND_DTL
-   WHERE (STAT_PERD = 'M' AND DATA_DATE = TO_CHAR(LAST_DAY(TO_DATE(V_SYSDAT, 'yyyymmdd')), 'yyyymmdd'))
-      OR (STAT_PERD = 'Q' AND DATA_DATE = TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q'), 3) - 1, 'yyyymmdd'))
-      OR (STAT_PERD = 'Y' AND DATA_DATE = TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY'), 12) - 1, 'yyyymmdd'))
+   WHERE (STAT_PERD = 'M' AND DATA_DATE = V_CURR_MONTH_END)
+      OR (STAT_PERD = 'Q' AND DATA_DATE = V_CURR_QUARTER_END)
+      OR (STAT_PERD = 'Y' AND DATA_DATE = V_CURR_YEAR_END)
       OR (STAT_PERD = 'M' AND DATA_DATE = V_PREV_MONTH_END)
       OR (STAT_PERD = 'Q' AND DATA_DATE = V_PREV_QUARTER_END)
       OR (STAT_PERD = 'Y' AND DATA_DATE = V_PREV_YEAR_END);
@@ -126,32 +148,32 @@ BEGIN
       END_DT     -- 统计周期结束日期
   )
   SELECT 'M' AS STAT_PERD,
-         TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'MM') AS BGN_DT,
-         LAST_DAY(TO_DATE(V_SYSDAT, 'yyyymmdd')) AS END_DT
+         TO_DATE(V_CURR_MONTH_BEGIN, 'yyyymmdd') AS BGN_DT,
+         TO_DATE(V_CURR_MONTH_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
   SELECT 'Q' AS STAT_PERD,
-         TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q') AS BGN_DT,
-         ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'Q'), 3) - 1 AS END_DT
+         TO_DATE(V_CURR_QUARTER_BEGIN, 'yyyymmdd') AS BGN_DT,
+         TO_DATE(V_CURR_QUARTER_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
   SELECT 'Y' AS STAT_PERD,
-         TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY') AS BGN_DT,
-         ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY'), 12) - 1 AS END_DT
+         TO_DATE(V_CURR_YEAR_BEGIN, 'yyyymmdd') AS BGN_DT,
+         TO_DATE(V_CURR_YEAR_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
   SELECT 'M' AS STAT_PERD,
-         TRUNC(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -1), 'MM') AS BGN_DT,
+         TO_DATE(V_PREV_MONTH_BEGIN, 'yyyymmdd') AS BGN_DT,
          TO_DATE(V_PREV_MONTH_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
   SELECT 'Q' AS STAT_PERD,
-         TRUNC(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -3), 'Q') AS BGN_DT,
+         TO_DATE(V_PREV_QUARTER_BEGIN, 'yyyymmdd') AS BGN_DT,
          TO_DATE(V_PREV_QUARTER_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
   SELECT 'Y' AS STAT_PERD,
-         TRUNC(ADD_MONTHS(TO_DATE(V_SYSDAT, 'yyyymmdd'), -12), 'YYYY') AS BGN_DT,
+         TO_DATE(V_PREV_YEAR_BEGIN, 'yyyymmdd') AS BGN_DT,
          TO_DATE(V_PREV_YEAR_END, 'yyyymmdd') AS END_DT
     FROM dual;
 
@@ -308,7 +330,7 @@ BEGIN
                  m.ORG_ID,
                  MIN(m.EXPR_DT) AS FIRST_EXPR_DT,
                  MAX(m.EXPR_DT) AS LAST_EXPR_DT,
-                 SUM(CASE WHEN m.EXPR_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
+                 SUM(CASE WHEN m.EXPR_DT <= TO_DATE(V_PREV_DAY, 'yyyymmdd')
                           THEN NVL(m.EXPR_AMT, 0) ELSE 0 END) AS EXPR_AMT,
                  SUM(NVL(m.EXPR_AMT, 0)) AS MATURE_TTL_AMT
             FROM TMP_CDR_DTL_MATURE_SRC m
@@ -666,7 +688,7 @@ BEGIN
                    FROM ADS_MKT_REC_INFO m                                    -- 营销记录表
                   WHERE m.CUST_ID = w.CUST_ID
                     AND m.MKT_TIME IS NOT NULL
-                    AND TO_DATE(REPLACE(SUBSTR(m.MKT_TIME, 1, 10), '-', ''), 'yyyymmdd') <= TO_DATE(V_SYSDAT, 'yyyymmdd')
+                    AND TO_DATE(REPLACE(SUBSTR(m.MKT_TIME, 1, 10), '-', ''), 'yyyymmdd') <= TO_DATE(V_PREV_DAY, 'yyyymmdd')
              )
            THEN '1' ELSE '0'
       END                                                                      AS CNTCT_STATE,                       -- 接触状态
@@ -702,7 +724,7 @@ BEGIN
   DELETE FROM ADS_CUST_DEADLINE_RMND_DTL d
    WHERE d.DATA_DATE <> V_SYSDAT
      AND (
-          TO_DATE(d.DATA_DATE, 'yyyymmdd') < ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'YYYY'), -36)
+          d.DATA_DATE < V_HISTORY_CUTOFF_DATE
           OR (d.STAT_PERD = 'M' AND d.DATA_DATE <> TO_CHAR(LAST_DAY(TO_DATE(d.DATA_DATE, 'yyyymmdd')), 'yyyymmdd'))
           OR (d.STAT_PERD = 'Q' AND d.DATA_DATE <> TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(d.DATA_DATE, 'yyyymmdd'), 'Q'), 3) - 1, 'yyyymmdd'))
           OR (d.STAT_PERD = 'N' AND d.DATA_DATE <> TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(d.DATA_DATE, 'yyyymmdd'), 'YYYY'), 12) - 1, 'yyyymmdd'))

@@ -1,0 +1,10 @@
+evidence_id: memory-001
+task_id: deadline-date-function-20260727
+phase: MEMORY_CARD_UPDATED
+kind: update
+purpose: memory_card_update
+result: passed
+details: Updated deadline undertaking memory card to v2.4.0 and recorded sys_fun_deal_date
+  parameter mapping 1-19.
+repository_revision: 5d6f6c49d0160a1f22fc742c80fe76ca7ba49d1a
+created_at: '2026-07-27T08:53:58+00:00'

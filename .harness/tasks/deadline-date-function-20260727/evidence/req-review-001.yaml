@@ -1,0 +1,18 @@
+evidence_id: req-review-001
+task_id: deadline-date-function-20260727
+phase: REQUIREMENT_REVIEW_PASSED
+kind: review
+purpose: requirement_review
+result: passed
+details: Reviewed confirmed function-code mapping 1-19, V_SYSDAT semantics, YYYYMMDD
+  target-date output, and source capability.
+repository_revision: 5d6f6c49d0160a1f22fc742c80fe76ca7ba49d1a
+created_at: '2026-07-27T08:53:57+00:00'
+review_type: requirement
+return_to: MATERIALS_SUPPLEMENTED
+checked_files:
+- requirements/到期承接规则记忆卡片.md
+rules_checked:
+- Every V_SYSDAT-relative business date must be a named sys_fun_deal_date parameter.
+- Target-table date output must be YYYYMMDD.
+issues: []

@@ -1,0 +1,10 @@
+evidence_id: source-001
+task_id: deadline-date-function-20260727
+phase: FIELD_GAP_CONFIRMED
+kind: analysis
+purpose: source_capability
+result: passed
+details: 'No source field gap: requirement changes only V_SYSDAT-relative date derivation
+  and target date serialization.'
+repository_revision: 5d6f6c49d0160a1f22fc742c80fe76ca7ba49d1a
+created_at: '2026-07-27T08:53:18+00:00'

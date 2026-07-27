@@ -1,0 +1,19 @@
+evidence_id: procedure-review-001
+task_id: deadline-date-function-20260727
+phase: PROCEDURE_REVIEW_PASSED
+kind: review
+purpose: procedure_review
+result: passed
+details: Reviewed named parameters, no direct V_SYSDAT business-date derivation, YYYYMMDD
+  target output, SQL syntax, and retained source date parsing exceptions.
+repository_revision: 5d6f6c49d0160a1f22fc742c80fe76ca7ba49d1a
+created_at: '2026-07-27T08:54:00+00:00'
+review_type: procedure
+return_to: PROCEDURE_IMPLEMENTED
+checked_files:
+- data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_DTL.sql
+rules_checked:
+- Business dates use sys_fun_deal_date parameters.
+- DATA_DATE and LAST_END_DATE output YYYYMMDD.
+- TO_DATE remains only for parameter conversion or source-field parsing.
+issues: []

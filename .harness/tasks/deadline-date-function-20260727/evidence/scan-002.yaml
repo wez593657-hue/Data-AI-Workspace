@@ -1,0 +1,9 @@
+evidence_id: scan-002
+task_id: deadline-date-function-20260727
+phase: TABLE_LINEAGE_IDENTIFIED
+kind: scan
+purpose: project_scan
+result: passed
+details: Scanned procedure, memory card, target ADS table, and temporary tables.
+repository_revision: 5d6f6c49d0160a1f22fc742c80fe76ca7ba49d1a
+created_at: '2026-07-27T08:53:16+00:00'
