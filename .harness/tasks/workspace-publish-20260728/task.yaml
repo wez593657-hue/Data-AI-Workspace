@@ -1,0 +1,52 @@
+schema_version: '0.1'
+task_id: workspace-publish-20260728
+purpose: 提交并推送当前工作区全部新增和修改文件
+workflow_profile: harness
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-07-28T06:09:54+00:00'
+updated_at: '2026-07-28T06:37:42+00:00'
+evidence_ids:
+- workspace-001
+- scope-001
+- quick-001
+- full-001
+- approval-001
+- commit-auth-001
+- push-auth-001
+- commit-auth-002
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-28T06:09:54+00:00'
+- from: CREATED
+  to: WORKSPACE_CHECKED
+  reason: 工作区状态、分支和完整变更范围已核对
+  at: '2026-07-28T06:18:08+00:00'
+- from: WORKSPACE_CHECKED
+  to: IMPLEMENTATION_READY
+  reason: 全部工作区改动已纳入发布范围
+  at: '2026-07-28T06:18:13+00:00'
+- from: IMPLEMENTATION_READY
+  to: QUICK_VALIDATION_PASSED
+  reason: 快速校验通过
+  at: '2026-07-28T06:20:42+00:00'
+- from: QUICK_VALIDATION_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: 全量校验和 73 项单测均通过
+  at: '2026-07-28T06:32:08+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 收到用户提交并推送授权
+  at: '2026-07-28T06:32:12+00:00'
+- from: USER_APPROVED
+  to: COMMIT_ALLOWED
+  reason: 提交授权证据和校验均已满足
+  at: '2026-07-28T06:32:17+00:00'
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: 最新提交授权证据与当前仓库版本一致，提交已满足推送条件
+  at: '2026-07-28T06:37:42+00:00'
+state_seal: f668e6b8110cc685ba956246aa61fbaf7efeb5df34796d9a3a1073bcf4ebebfd

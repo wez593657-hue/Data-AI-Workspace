@@ -7,7 +7,7 @@
 | 层级 | DWD - 明细数据层 |
 | 表名 | DWD_ACCT_INSUR |
 | 中文名称 | 保险账户信息 |
-| 更新时间 | 2026-07-17 |
+| 更新时间 | 2026-07-28 |
 
 ## 字段列表
 
@@ -26,6 +26,7 @@
 | MKT_ORG | 归属机构 | VARCHAR | 7 | - | - | - | - | - | - |
 | BGN_INSUR_DATE | 起保日期 | VARCHAR | 10 | - | - | - | - | - | - |
 | CANCL_INSUR_DATE | 退保日期 | VARCHAR | 10 | - | - | - | - | - | - |
+| PAY_UPTO_DATE | 缴费截止日期 | VARCHAR | 8 | - | - | - | - | - | - |
 | INSUR_PERIOD_TYP | 保险期间类型 | VARCHAR | 2 | - | - | - | - | - | - |
 | INSUR_PERIOD | 保险期间值 | VARCHAR | 6 | - | - | - | - | - | - |
 | PAY_PERIOD_TYP | 缴费期间类型 | VARCHAR | 2 | - | - | - | - | - | - |
@@ -33,7 +34,8 @@
 | PAY_PATRN | 缴费方式 | VARCHAR | 2 | - | - | - | - | - | - |
 | INSUR_AMT | 保费金额 | NUMBER | 20,2 | - | - | - | - | - | - |
 | POLICY_STATE | 保单状态 | VARCHAR | 10 | - | - | - | - | - | - |
+| TX_TYP | 交易类型 | VARCHAR | 1 | - | - | - | - | - | - |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 4 | - | - | - | - | - | - |
 
 ---
-*数据字典版本: v1.0 | 生成时间: 2026-07-17*
+*数据字典版本: v1.0 | 生成时间: 2026-07-28*

@@ -6443,12 +6443,12 @@ CREATE TABLE crmdm.dwd_acct_insur (
 	prdkt_cate_big varchar(64) NULL, -- 产品大类
 	insur_bid_form_no varchar(40) NULL, -- 投保单号
 	tx_date varchar(10) NULL, -- 交易日期
-	tx_org varchar(6) NULL, -- 交易机构
+	tx_org varchar(7) NULL, -- 交易机构
 	tx_chnl varchar(10) NULL, -- 交易渠道
-	mkt_org varchar(6) NULL, -- 归属机构
+	mkt_org varchar(7) NULL, -- 归属机构
 	bgn_insur_date varchar(10) NULL, -- 起保日期
 	cancl_insur_date varchar(10) NULL, -- 退保日期
-	pay_upto_date varchar(10) NULL, -- 缴费截止日期
+	pay_upto_date varchar(8) NULL, -- 缴费截止日期
 	insur_period_typ varchar(2) NULL, -- 保险期间类型
 	insur_period varchar(6) NULL, -- 保险期间值
 	pay_period_typ varchar(2) NULL, -- 缴费期间类型
@@ -6456,7 +6456,7 @@ CREATE TABLE crmdm.dwd_acct_insur (
 	pay_patrn varchar(2) NULL, -- 缴费方式
 	insur_amt numeric(20, 2) NULL, -- 保费金额
 	policy_state varchar(10) NULL, -- 保单状态
-	tx_typ varchar(6) NULL, -- 交易类型
+	tx_typ varchar(1) NULL, -- 交易类型
 	persn_legal_bk_code varchar(4) NULL -- 法人行号
 );
 COMMENT ON TABLE crmdm.dwd_acct_insur IS '保险账户信息';

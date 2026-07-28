@@ -1,0 +1,9 @@
+evidence_id: scope-001
+task_id: workspace-publish-20260728
+phase: IMPLEMENTATION_READY
+kind: scope
+purpose: implementation_scope
+result: passed
+details: 本次发布包含当前工作区全部新增和修改文件，范围由 change_manifest.yaml 明确列出。
+repository_revision: 7cf261944b9c9e5962ecebe3600d85fc403deeb4
+created_at: '2026-07-28T06:18:10+00:00'

@@ -1,0 +1,53 @@
+schema_version: '0.1'
+task_id: workspace-publish-20260728
+user_confirmation: confirmed
+objective: 提交并推送当前工作区全部新增和修改文件
+allowed_changes:
+  - path: .harness/policies/phase_gates.yaml
+  - path: .harness/policies/required_evidence.yaml
+  - path: .harness/tasks/potn-upgrade-rule-alignment-20260727/
+  - path: .harness/tasks/workspace-publish-20260728/
+  - path: data_assets/data_dictionary/dwd/dwd_acct_insur.md
+  - path: data_assets/ddl/SYDDL.ddl.sql
+  - path: data_assets/ddl/dwd/dwd_acct_insur.sql
+  - path: data_assets/mapping/ods_to_dwd/DWD明细层数据模型_CRM_ V1.0.xlsx
+  - path: data_assets/mapping/ods_to_dwd/ods到dwd映射.md
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_STATIS.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_ACCT_INSUR.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_CUST_CTRAKT_INFO.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_CUST_INDIV_RISK_INVST.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_SYS_ORG.sql
+  - path: requirements/潜力提升规则记忆卡片.md
+  - path: scripts/harness/gate_checker.py
+  - path: scripts/harness/tests/test_skill_execution_gate.py
+  - path: scripts/harness/tests/test_workflow_router.py
+  - path: scripts/harness/workflow_router.py
+  - path: skill/crm-schema-change/SKILL.md
+  - path: skill/crm-schema-change/references/workflow.md
+read_only_inputs:
+  - path: data_assets/function/sys_fun_deal_date.sql
+  - path: governance/stored_procedure_date_parameter_rules.md
+forbidden_changes: []
+read_order:
+  - path: AGENTS.md
+    purpose: project_rules
+    required: false
+  - path: requirements/潜力提升规则记忆卡片.md
+    purpose: memory_card
+    required: true
+  - path: data_assets/mapping/ods_to_dwd/DWD明细层数据模型_CRM_ V1.0.xlsx
+    purpose: ods_to_dwd_mapping
+    required: true
+  - path: data_assets/mapping/ods_to_dwd/ods到dwd映射.md
+    purpose: ods_to_dwd_mapping
+    required: true
+  - path: data_assets/data_dictionary/dwd/dwd_acct_insur.md
+    purpose: dwd_dictionary
+    required: true
+  - path: data_assets/ddl/dwd/dwd_acct_insur.sql
+    purpose: dwd_dictionary
+    required: true
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_ACCT_INSUR.sql
+    purpose: existing_implementation
+    required: true

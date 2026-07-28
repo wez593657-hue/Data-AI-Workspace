@@ -19,11 +19,20 @@ SCHEMA_TERMS = (
 )
 READ_ONLY_TERMS = ("分析", "扫描", "查看", "校验", "对比", "analyse", "analyze", "scan", "compare")
 WRITE_ACTION_TERMS = ("开发", "生成", "修改", "创建", "更新", "同步", "实现", "develop", "generate", "modify", "create", "update", "sync")
+PROCEDURE_ASSET_TERMS = ("存储过程", "procedure", "prc_")
 
 
 def _matches(command: str, terms: tuple[str, ...]) -> list[str]:
     normalized = command.casefold()
     return [term for term in terms if term.casefold() in normalized]
+
+
+def _schema_required_skills(command: str) -> list[str]:
+    """Return the concrete skills required by a schema synchronization task."""
+    skills = ["crm-schema-change", "kingbase-ddl-generator"]
+    if _matches(command, PROCEDURE_ASSET_TERMS):
+        skills.extend(["prc-sql", "validate-procedure-date-parameters"])
+    return skills
 
 
 def route_command(command: str) -> dict[str, Any]:
@@ -41,6 +50,7 @@ def route_command(command: str) -> dict[str, Any]:
             "reason": {"read_only": readonly_matches},
             "follow_up": None,
             "read_only": True,
+            "required_skills": [],
         }
     if requirement_matches and schema_matches:
         return {
@@ -49,6 +59,8 @@ def route_command(command: str) -> dict[str, Any]:
             "reason": {"requirement": requirement_matches, "schema": schema_matches},
             "follow_up": "schema_change",
             "read_only": False,
+            "required_skills": ["crm-requirement-development"],
+            "follow_up_skills": _schema_required_skills(text),
         }
     if requirement_matches:
         return {
@@ -57,6 +69,7 @@ def route_command(command: str) -> dict[str, Any]:
             "reason": {"requirement": requirement_matches},
             "follow_up": None,
             "read_only": False,
+            "required_skills": ["crm-requirement-development"],
         }
     if schema_matches:
         return {
@@ -65,6 +78,7 @@ def route_command(command: str) -> dict[str, Any]:
             "reason": {"schema": schema_matches},
             "follow_up": None,
             "read_only": False,
+            "required_skills": _schema_required_skills(text),
         }
     if readonly_matches:
         return {
@@ -73,5 +87,6 @@ def route_command(command: str) -> dict[str, Any]:
             "reason": {"read_only": readonly_matches},
             "follow_up": None,
             "read_only": True,
+            "required_skills": [],
         }
     raise WorkflowRoutingError("命令语义不足以确定需求开发、表结构变更或只读分析流程")

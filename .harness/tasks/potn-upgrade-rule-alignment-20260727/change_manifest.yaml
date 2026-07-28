@@ -1,0 +1,15 @@
+schema_version: '0.1'
+task_id: potn-upgrade-rule-alignment-20260727
+user_confirmation: confirmed
+objective: Align potential upgrade procedures with date parameters and legal-bank organization grain
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_STATIS.sql
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_potn_upgrade_dtl.ddl
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_potn_upgrade_statis.ddl
+  - path: requirements/潜力提升规则记忆卡片.md
+  - path: .harness/tasks/potn-upgrade-rule-alignment-20260727/
+read_only_inputs:
+  - path: governance/stored_procedure_date_parameter_rules.md
+  - path: data_assets/function/sys_fun_deal_date.sql
+forbidden_changes: []

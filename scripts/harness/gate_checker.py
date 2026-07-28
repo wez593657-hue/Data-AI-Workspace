@@ -46,6 +46,38 @@ def _validate_review_gate(
         raise GateError("审核证据必须包含 checked_files 和 rules_checked")
 
 
+def _validate_skill_execution_gate(
+    required: list[str], evidence: list[dict[str, Any]]
+) -> None:
+    """Ensure schema assets are produced through the declared skill chain."""
+    if "skill_execution" not in required:
+        return
+    records = [item for item in evidence if item.get("purpose") == "skill_execution"]
+    if not records:
+        raise GateError("资产修改前缺少 skill_execution 证据")
+    record = records[-1]
+    skills = {str(item).strip() for item in record.get("skills", []) if str(item).strip()}
+    outputs = [str(item).strip() for item in record.get("output_files", []) if str(item).strip()]
+    steps = {str(item).strip() for item in record.get("steps", []) if str(item).strip()}
+    if not record.get("input_workbook"):
+        raise GateError("skill_execution 证据缺少 input_workbook")
+    if not outputs:
+        raise GateError("skill_execution 证据缺少 output_files")
+    if "kingbase-ddl-generator" not in skills:
+        raise GateError("Excel驱动的DDL/数据字典变更必须使用 kingbase-ddl-generator")
+    if not {"excel_to_mapping", "excel_to_ddl", "excel_to_dictionary"}.issubset(steps):
+        raise GateError("skill_execution 证据缺少 Excel 到 Mapping、DDL、数据字典的完整步骤")
+    procedure_output = any(
+        "stored_procedure" in path or path.lower().endswith(".prc.sql")
+        for path in outputs
+    )
+    if procedure_output:
+        if "prc-sql" not in skills:
+            raise GateError("涉及存储过程输出时必须使用 prc-sql")
+        if "validate-procedure-date-parameters" not in skills:
+            raise GateError("涉及存储过程输出时必须执行日期参数校验")
+
+
 def check_schema_consistency_gate(root: Path, task_id: str) -> dict[str, Any]:
     """Accept only a current, complete and clean schema consistency report."""
     directory, _ = load_task(root, task_id)
@@ -117,6 +149,7 @@ def check_gate(root: Path, task_id: str, target: str) -> dict[str, Any]:
             f"阶段 {source} -> {target} 缺少证据类型: {', '.join(missing)}"
         )
     selected = _latest_gate_evidence(evidence_items, required)
+    _validate_skill_execution_gate(required, evidence)
     try:
         for path, payload in selected:
             validate_evidence(

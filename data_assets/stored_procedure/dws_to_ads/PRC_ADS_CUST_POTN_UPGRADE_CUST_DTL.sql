@@ -10,11 +10,12 @@ AS
   -- 来源表: DWS_CUST_ASSE_LIAB, DWD_CUST_INDV_INFO, DWS_CUST_LVL_INFO, ADS_MKT_REC_INFO
   -- 目标表: ADS_CUST_POTN_UPGRADE_CUST_DTL
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.3.0
+  -- 需求版本: v2.4.0
   -- 变更记录:
   --   v2.2.0 2026-07-27 计算单位调整为客户号+归属机构(ORG_ID)，关联DWS_CUST_ASSE_LIAB增加ORG_ID条件避免笛卡尔积
   --               输出ORG_ID/PERSN_LEGAL_BK_CODE改取DWS_CUST_ASSE_LIAB(p)字段，正确反映同客户多机构拆分
   --   v2.3.0 2026-07-27 相对日期统一使用sys_fun_deal_date：上日=1、上月末=2；后续日期按函数参数扩展
+  --   v2.4.0 2026-07-27 补充客户、归属机构、法人行三键关联及各业务处理段说明
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '潜力提升客户明细处理';
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL';
@@ -25,6 +26,10 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
+  V_PREV_DAY             VARCHAR2(8);
+  V_PREV_MONTH_END       VARCHAR2(8);
+  V_CURR_MONTH_BEGIN     VARCHAR2(8);
+  V_HISTORY_CUTOFF_DATE  VARCHAR2(8);
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -35,6 +40,7 @@ BEGIN
   ------------------------------------------------------------------
   -- 1. 参数检查
   ------------------------------------------------------------------
+  -- 1. 校验跑批日期并初始化本过程使用的相对业务日期参数。
   IF V_SYSDAT IS NULL
      OR NOT REGEXP_LIKE(V_SYSDAT, '^[0-9]{8}$')
   THEN
@@ -42,6 +48,10 @@ BEGIN
   END IF;
 
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
+  V_PREV_DAY := sys_fun_deal_date(V_SYSDAT, 1);
+  V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);
+  V_CURR_MONTH_BEGIN := sys_fun_deal_date(V_SYSDAT, 9);
+  V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);
 
   ------------------------------------------------------------------
   -- 2. TMP1：清理当前数据日明细和物理临时表
@@ -49,11 +59,12 @@ BEGIN
   V_NO_ID := 'TMP1';
   V_BGN_DATE := SYSDATE;
 
+  -- 2. 清理本跑批日已生成的明细和超过保留期限的历史数据，保证过程可重跑。
   DELETE FROM ADS_CUST_POTN_UPGRADE_CUST_DTL D
    WHERE D.DATA_DATE = V_SYSDAT;
 
   DELETE FROM ADS_CUST_POTN_UPGRADE_CUST_DTL D
-   WHERE D.DATA_DATE < TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'YYYY'), -36), 'YYYYMMDD');
+   WHERE D.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   TRUNC_TMP('TMP_ADS_POTN_BASE');
   COMMIT;
@@ -83,6 +94,7 @@ BEGIN
   V_NO_ID := 'TMP2';
   V_BGN_DATE := SYSDATE;
 
+  -- 3. 基于上月末月日均资产筛选临界客户，并按客户、法人行、归属机构关联资产和接触记录。
   INSERT INTO TMP_ADS_POTN_BASE (
       PERSN_LEGAL_BK_CODE,
       CUST_ID,
@@ -102,6 +114,7 @@ BEGIN
          c.CUST_ID,
          c.CUST_NAME,
          l.CUST_LVL,
+         -- 根据上月末月日均 AUM 确定客户所属的临界升级等级。
          CASE
            WHEN p.AUM_BAL >= 45000 AND p.AUM_BAL < 50000 THEN '03'
            WHEN p.AUM_BAL >= 270000 AND p.AUM_BAL < 300000 THEN '04'
@@ -114,6 +127,7 @@ BEGIN
          NVL(b.FIN_BAL, 0),
          NVL(m.AUM_BAL, 0),
          NVL(q.AUM_BAL, 0),
+         -- 判断当月初至跑批日是否存在有效营销接触记录。
          CASE
            WHEN EXISTS (
              SELECT 1
@@ -122,7 +136,7 @@ BEGIN
                 AND r.MKT_TYP IN ('1', '2', '3', '4')
                 AND r.MKT_TIME IS NOT NULL
                 AND TO_DATE(REPLACE(SUBSTR(r.MKT_TIME, 1, 10), '-', ''), 'YYYYMMDD')
-                    BETWEEN TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'MM')
+                    BETWEEN TO_DATE(V_CURR_MONTH_BEGIN, 'YYYYMMDD')
                         AND TO_DATE(V_SYSDAT, 'YYYYMMDD')
            ) THEN '1'
            ELSE '0'
@@ -136,21 +150,24 @@ BEGIN
       ON l.CUST_ID = p.CUST_ID
      AND l.DATA_DT = V_SYSDAT
     LEFT JOIN DWS_CUST_ASSE_LIAB m
-      ON m.CUST_ID = p.CUST_ID
+     ON m.CUST_ID = p.CUST_ID
      AND m.ORG_ID = p.ORG_ID
+     AND m.PERSN_LEGAL_BK_CODE = p.PERSN_LEGAL_BK_CODE
      AND m.DATA_DATE = V_SYSDAT
      AND m.BAL_TYPE = '2'
     LEFT JOIN DWS_CUST_ASSE_LIAB b
-      ON b.CUST_ID = p.CUST_ID
+     ON b.CUST_ID = p.CUST_ID
      AND b.ORG_ID = p.ORG_ID
+     AND b.PERSN_LEGAL_BK_CODE = p.PERSN_LEGAL_BK_CODE
      AND b.DATA_DATE = V_SYSDAT
      AND b.BAL_TYPE = '1'
     LEFT JOIN DWS_CUST_ASSE_LIAB q
-      ON q.CUST_ID = p.CUST_ID
+     ON q.CUST_ID = p.CUST_ID
      AND q.ORG_ID = p.ORG_ID
-     AND q.DATA_DATE = sys_fun_deal_date(V_SYSDAT, 1)
+     AND q.PERSN_LEGAL_BK_CODE = p.PERSN_LEGAL_BK_CODE
+     AND q.DATA_DATE = V_PREV_DAY
      AND q.BAL_TYPE = '1'
-   WHERE p.DATA_DATE = sys_fun_deal_date(V_SYSDAT, 2)
+   WHERE p.DATA_DATE = V_PREV_MONTH_END
      AND p.BAL_TYPE = '2'
      AND p.AUM_BAL >= 45000
      AND p.AUM_BAL < 3000000;
@@ -185,6 +202,7 @@ BEGIN
   V_NO_ID := '3';
   V_BGN_DATE := SYSDATE;
 
+  -- 4. 将基础客户扩展为月、季、年统计周期明细，并计算上日时点资产达标标识。
   INSERT INTO ADS_CUST_POTN_UPGRADE_CUST_DTL (
       PERSN_LEGAL_BK_CODE,
       DATA_DATE,
@@ -211,6 +229,7 @@ BEGIN
          x.FIXD_DEPO_BAL,
          x.FIN_AMT,
          x.CNTCT_STATE,
+         -- 按上日时点 AUM 与临界等级阈值判断客户是否已完成升级。
          CASE
            WHEN (x.LVL_CRIT = '03' AND x.PNT_AUM_BAL >= 50000)
              OR (x.LVL_CRIT = '04' AND x.PNT_AUM_BAL >= 300000)
@@ -254,6 +273,7 @@ BEGIN
   );
 
 EXCEPTION
+  -- 5. 发生异常时回滚本过程事务并记录失败日志。
   WHEN OTHERS THEN
     OUTCDE := -1;
     ROLLBACK;

@@ -1,0 +1,17 @@
+schema_version: '0.1'
+task_id: potn-upgrade-rule-alignment-20260727
+purpose: Align potential upgrade procedures with date parameters and legal-bank organization
+  grain
+workflow_profile: requirement_development
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-07-27T11:34:55+00:00'
+updated_at: '2026-07-27T11:34:55+00:00'
+evidence_ids: []
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-27T11:34:55+00:00'
+state_seal: b520f8fea1332929000ccf64c46db183a29482fae4fd48d0fc8756e4bb352c0e

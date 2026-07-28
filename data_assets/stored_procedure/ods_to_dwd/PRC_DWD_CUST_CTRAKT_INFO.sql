@@ -1,7 +1,6 @@
-CREATE OR REPLACE PROCEDURE PRC_DWD_CUST_CTRAKT_INFO(
-    V_SYSDAT IN VARCHAR,
-    OUTCDE   OUT INTEGER
-)
+-- DROP PROCEDURE crmdm.prc_dwd_cust_ctrakt_info(in varchar, out int4);
+
+CREATE OR REPLACE PROCEDURE crmdm.prc_dwd_cust_ctrakt_info(v_sysdat varchar, outcde OUT integer)
 AS
   ------------------------------------------------------------------
   -- 存储过程名称: 客户合同信息处理
@@ -37,9 +36,9 @@ BEGIN
   -- 2. 业务逻辑区
   --***************************************
   V_START_DT := SYSDATE;
-  V_SYSDAT2 := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'yyyy-mm-dd');
-  P_INTERVAL_START_DATE := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd') - 30, 'yyyymmdd');
-  P_INTERVAL_END_DATE   := V_SYSDAT;
+  V_SYSDAT2 := sys_fun_deal_date(V_SYSDAT, 1);  -- 参数1：上一日
+  P_INTERVAL_START_DATE := sys_fun_deal_date(V_SYSDAT, 18);  -- 参数18：30天承接窗口开始日
+  P_INTERVAL_END_DATE   := sys_fun_deal_date(V_SYSDAT, 1);  -- 参数1：上一日
 
   EXECUTE IMMEDIATE 'TRUNCATE TABLE DWD_CUST_CTRAKT_INFO';
 
@@ -73,33 +72,34 @@ BEGIN
   SELECT
       c.mfcustomerid       AS CUST_ID,             -- 客户编号；核心客户号
       bc.serialno          AS CTRAKT_ID,           -- 合同编号；合同流水号
-      NVL(lendaccountno,payaccountno)     AS LOAN_ACCT,           -- 贷款账号；映射表未提供可确认来源
-      bc.businesssum       AS CRDT_LMT,            -- 授信额度；备注：个人没有授信额度，是否取业务合同金额
+      NVL(lendaccountno,payaccountno)     AS LOAN_ACCT, -- 贷款账号；映射表未提供可确认来源
+      bc.businesssum       AS CRDT_LMT,            -- 授信额度；备注：个人没有授信额度,是否取业务合同金额
       bc.balance           AS LOAN_BAL,            -- 贷款余额
-      bc.vouchtype         AS GUARANT_MODE,        -- 担保方式
-      bc.classifyresult    AS CATE_5LVL,           -- 五级分类；分类结果
-      bc.businesscurrency  AS CCY_CD,              -- 币种
-      bc.businessrate      AS RATE_INTRI,          -- 利率；new 5 中 BUSINESS_CONTRACT 已有 businessrate，未额外关联 ACCT_RATE_SEGMENT
+      bc.vouchtype         AS GUARANT_MODE,        -- 担保方式  未转换，已记录问题清单
+      bc.classifyresult    AS CATE_5LVL,           -- 五级分类；分类结果  有空值
+      case when bc.businesscurrency = '01' then '156'
+           ELSE NULL end   AS CCY_CD,              -- 币种
+      bc.businessrate      AS RATE_INTRI,          -- 利率；new 5 中 BUSINESS_CONTRACT 已有 businessrate,未额外关联 ACCT_RATE_SEGMENT
       bc.businesssum       AS CONTR_AMT,           -- 合同金额
       bc.putoutdate        AS BGN_DATE,            -- 发放日期；new 5 字段为 putoutdate
       bc.maturity          AS END_DATE,            -- 结束日期；映射字段 MaturityDate 在 new 5 中对应 maturity
       bc.manageuserid      AS OPRTR,               -- 经办人；主办客户经理
       bc.manageorgid       AS OPRT_ORG,            -- 经办机构；主办机构
       CASE WHEN bc.manageorgid LIKE '15%' THEN '1500'
-           WHEN bc.manageorgid LIKE '12%' THEN '1200'
-           WHEN bc.manageorgid LIKE '18%' THEN '1800'
-           ELSE '9999' end AS PERSN_LEGAL_BK_CODE,  -- 法人行号；映射表未提供可确认来源
-      CASE WHEN cycleflag='1' THEN '1'
-           ELSE '0' end AS CYCL_TYP,                -- 是否可循环
-      c.customerid         AS CMS_CUST_ID	,        -- 客户编号
+	   WHEN bc.manageorgid LIKE '12%' THEN '1200'
+	   WHEN bc.manageorgid LIKE '18%' THEN '1800'
+	   ELSE '9999' end                 AS PERSN_LEGAL_BK_CODE,  -- 法人行号；映射表未提供可确认来源
+      CASE WHEN cycleflag='1'THEN '1'
+	   else '0' end    AS CYCL_TYP,            -- 是否可循环
+      c.customerid         AS CMS_CUST_ID,         -- 客户编号
       bc.productid         AS PRDKT_ID,            -- 产品编号
       bt.TYPENAME          AS PRDKT_NAME           -- 产品名称
     FROM CMS_CUSTOMER_INFO c                            -- 客户信息表
    INNER JOIN CMS_BUSINESS_CONTRACT bc                  -- 合同业务表
       ON bc.customerid = c.customerid
-   LEFT JOIN BUSINESS_TYPE BT
+   LEFT JOIN CMS_BUSINESS_TYPE BT
       ON bt.TYPENO = bc.productid
-   WHERE c.mfcustomerid IS NOT NULL;
+  where c.mfcustomerid is not NULL;
 
   COMMIT;
 
@@ -123,7 +123,7 @@ BEGIN
   );
 
   --***************************************
-  -- 3. 异常处理区（捕获错误码并记录详细日志）
+  -- 3. 异常处理区(捕获错误码并记录详细日志)
   --***************************************
 EXCEPTION
   WHEN OTHERS THEN
@@ -151,5 +151,6 @@ EXCEPTION
     );
 
     RAISE;
-END;
-/
+END
+
+;

@@ -15,10 +15,15 @@ Read `references/workflow.md` before starting. Create or load the matching Harne
 2. Scan related MD, DD, and data-dictionary files and record their versions/hashes.
 3. Produce a file, table, and field-level change-scope list.
 4. Stop and obtain user confirmation for the scope.
-5. Modify only the confirmed MD, DD, and data-dictionary targets.
-6. Run the schema consistency review against the Excel.
-7. If review fails, return to scope identification and do not continue.
-8. Run full validation, obtain user approval, then enter commit and push authorization stages.
+5. Before modifying assets, execute and record the required specialized skills:
+   - `kingbase-ddl-generator`: generate DDL and data-dictionary fields from the confirmed Excel rows.
+   - `scripts/harness/mapping_excel_sync.py`: generate Mapping Markdown from the same workbook.
+   - `prc-sql`: refresh a stored procedure when the scope includes a procedure output.
+   - `validate-procedure-date-parameters`: validate `sys_fun_deal_date(V_SYSDAT, n)` usage when a procedure is changed.
+6. Modify only the confirmed MD, DD, data-dictionary, and procedure targets.
+7. Run the schema consistency review against the Excel.
+8. If review fails, return to scope identification and do not continue.
+9. Run full validation, obtain user approval, then enter commit and push authorization stages.
 
 ## Evidence Requirements
 
@@ -26,11 +31,15 @@ Record Mapping Excel analysis, related-file scan, change scope, scope confirmati
 
 Schema review evidence must be structured and include `review_type=schema_consistency`, `result`, `checked_files`, `rules_checked`, `issues`, and `return_to`. Failed reviews require `return_to=CHANGE_SCOPE_IDENTIFIED`.
 
+Before `USER_SCOPE_CONFIRMED -> ASSETS_UPDATED`, record `purpose=skill_execution` with `input_workbook`, `skills`, `steps`, and `output_files`. The steps must include `excel_to_mapping`, `excel_to_ddl`, and `excel_to_dictionary`. If a procedure is included, `skills` must also include `prc-sql` and `validate-procedure-date-parameters`.
+
 ## Hard Constraints
 
 - Do not modify assets before user scope confirmation.
 - Do not modify files outside the confirmed change manifest.
 - Do not rewrite unrelated tables or columns from the Excel.
 - Do not guess missing fields, types, comments, or mappings.
+- Do not manually patch Excel-derived DDL or data dictionaries as a substitute for `kingbase-ddl-generator`.
+- Do not manually patch a procedure as a substitute for `prc-sql` when the task includes procedure output.
 - Work on `master` only; do not create or switch Git branches.
 - Commit and push only after explicit user confirmation.

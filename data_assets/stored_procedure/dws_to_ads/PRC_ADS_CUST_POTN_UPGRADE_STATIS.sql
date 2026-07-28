@@ -10,10 +10,11 @@ AS
   -- 来源表: ADS_CUST_POTN_UPGRADE_CUST_DTL, DWS_CUST_ASSE_LIAB, DWD_SYS_ORG
   -- 目标表: ADS_CUST_POTN_UPGRADE_STATIS
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.3.0
+  -- 需求版本: v2.4.0
   -- 变更记录:
   --   v2.2.0 2026-07-27 计算单位调整为客户号+归属机构(ORG_ID)，关联DWS_CUST_ASSE_LIAB增加ORG_ID条件避免笛卡尔积
   --   v2.3.0 2026-07-27 相对日期统一使用sys_fun_deal_date；本过程当前取当日数据，使用V_SYSDAT
+  --   v2.4.0 2026-07-27 补充客户、归属机构、法人行三键关联及各业务处理段说明
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '潜力提升统计处理';
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_POTN_UPGRADE_STATIS';
@@ -24,6 +25,7 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
+  V_HISTORY_CUTOFF_DATE  VARCHAR2(8);
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -34,6 +36,7 @@ BEGIN
   ------------------------------------------------------------------
   -- 1. 参数检查
   ------------------------------------------------------------------
+  -- 1. 校验跑批日期并初始化三年历史清理边界。
   IF V_SYSDAT IS NULL
      OR NOT REGEXP_LIKE(V_SYSDAT, '^[0-9]{8}$')
   THEN
@@ -41,6 +44,7 @@ BEGIN
   END IF;
 
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
+  V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);
 
   ------------------------------------------------------------------
   -- 2. TMP1：清理当前数据日统计结果、三年前历史数据和物理临时表
@@ -48,11 +52,12 @@ BEGIN
   V_NO_ID := 'TMP1';
   V_BGN_DATE := SYSDATE;
 
+  -- 2. 清理本跑批日统计结果和超过三年保留期限的历史数据，保证过程可重跑。
   DELETE FROM ADS_CUST_POTN_UPGRADE_STATIS T
    WHERE T.DATA_DATE = V_SYSDAT;
 
   DELETE FROM ADS_CUST_POTN_UPGRADE_STATIS T
-   WHERE T.DATA_DATE < TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'YYYY'), -36), 'YYYYMMDD');
+   WHERE T.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   TRUNC_TMP('TMP_ADS_POTN_STAT_SRC');
   COMMIT;
@@ -82,6 +87,7 @@ BEGIN
   V_NO_ID := 'TMP2';
   V_BGN_DATE := SYSDATE;
 
+  -- 3. 将明细按机构层级和客户经理展开为统计对象，并关联当前月日均资产计算达标状态。
   INSERT INTO TMP_ADS_POTN_STAT_SRC (
       PERSN_LEGAL_BK_CODE,
       DATA_DATE,
@@ -92,11 +98,13 @@ BEGIN
       PNT_QUAL_STATE,
       CNTCT_STATE
   )
+  -- 机构分支：将客户所属叶子机构向上展开至各级祖先机构，形成机构统计口径。
   SELECT D.PERSN_LEGAL_BK_CODE,
          D.DATA_DATE,
          D.STATIS_CYCLE,
          O.ANCESTOR_ORG_ID,
          D.LVL_CRIT,
+         -- 按跑批日月日均 AUM 判断当前月日均资产是否达到临界等级阈值。
          CASE
            WHEN (D.LVL_CRIT = '03' AND NVL(M.AUM_BAL, 0) >= 50000)
              OR (D.LVL_CRIT = '04' AND NVL(M.AUM_BAL, 0) >= 300000)
@@ -123,19 +131,22 @@ BEGIN
     ) O
       ON O.LEAF_ORG_ID = D.ORG_ID
     LEFT JOIN DWS_CUST_ASSE_LIAB M
-      ON M.CUST_ID = D.CUST_ID
+     ON M.CUST_ID = D.CUST_ID
      AND M.ORG_ID = D.ORG_ID
+     AND M.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE
      AND M.DATA_DATE = V_SYSDAT
      AND M.BAL_TYPE = '2'
    WHERE D.DATA_DATE = V_SYSDAT
 
   UNION ALL
 
+  -- 客户经理分支：按明细中的管户客户经理岗位形成个人统计口径。
   SELECT D.PERSN_LEGAL_BK_CODE,
          D.DATA_DATE,
          D.STATIS_CYCLE,
          D.POST_ID,
          D.LVL_CRIT,
+         -- 按跑批日月日均 AUM 判断当前月日均资产是否达到临界等级阈值。
          CASE
            WHEN (D.LVL_CRIT = '03' AND NVL(M.AUM_BAL, 0) >= 50000)
              OR (D.LVL_CRIT = '04' AND NVL(M.AUM_BAL, 0) >= 300000)
@@ -149,8 +160,9 @@ BEGIN
          D.CNTCT_STATE
     FROM ADS_CUST_POTN_UPGRADE_CUST_DTL D
     LEFT JOIN DWS_CUST_ASSE_LIAB M
-      ON M.CUST_ID = D.CUST_ID
+     ON M.CUST_ID = D.CUST_ID
      AND M.ORG_ID = D.ORG_ID
+     AND M.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE
      AND M.DATA_DATE = V_SYSDAT
      AND M.BAL_TYPE = '2'
    WHERE D.POST_ID IS NOT NULL
@@ -183,6 +195,7 @@ BEGIN
   V_NO_ID := '3';
   V_BGN_DATE := SYSDATE;
 
+  -- 4. 按统计对象、法人行、统计周期和临界等级汇总客户数、达标人数、接触人数及比例。
   INSERT INTO ADS_CUST_POTN_UPGRADE_STATIS (
       PERSN_LEGAL_BK_CODE,
       DATA_DATE,
@@ -202,6 +215,7 @@ BEGIN
          S.STATIS_OBJ,
          S.STATIS_CYCLE,
          S.LVL_CRIT,
+         -- 每条已展开的明细记录均为一个统计单位，不按客户号或机构号再次去重。
          COUNT(*),
          SUM(CASE WHEN S.MTH_AVG_QUAL_STATE = '1' THEN 1 ELSE 0 END),
          CASE WHEN COUNT(*) = 0 THEN 0 ELSE ROUND(SUM(CASE WHEN S.MTH_AVG_QUAL_STATE = '1' THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) END,
@@ -238,6 +252,7 @@ BEGIN
   );
 
 EXCEPTION
+  -- 5. 发生异常时回滚本过程事务并记录失败日志。
   WHEN OTHERS THEN
     OUTCDE := -1;
     ROLLBACK;

@@ -37,9 +37,9 @@ BEGIN
   -- 2. 业务逻辑区
   --***************************************
   V_START_DT := SYSDATE;
-  V_SYSDAT2 := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'yyyy-mm-dd');
-  P_INTERVAL_START_DATE := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd') - 30, 'yyyymmdd');
-  P_INTERVAL_END_DATE   := V_SYSDAT;
+  V_SYSDAT2 := sys_fun_deal_date(V_SYSDAT, 1);  -- 参数1：上一日
+  P_INTERVAL_START_DATE := sys_fun_deal_date(V_SYSDAT, 18);  -- 参数18：30天承接窗口开始日
+  P_INTERVAL_END_DATE   := sys_fun_deal_date(V_SYSDAT, 1);  -- 参数1：上一日
 
   --***************************************
   -- 2.1 临时表1：基础数据
@@ -95,7 +95,7 @@ BEGIN
     LEFT JOIN cbs_kbrp_jggxii g          -- 机构关系表
       ON c.FARENDMA = g.FARENDMA
      AND c.JIGOUHAO = g.JIGOUHAO
-     AND G.;
+     AND G.YEWUGXZL = 'BAOBSJ';
 
   -- 记录第1段结束时间和耗时
   OUTCDE      := 0;
@@ -411,8 +411,8 @@ BEGIN
       c.ORG_ID, -- 机构编号
       c.SUP_ORG_ID, -- 上级机构编号
       p.ORG_PATH, -- 机构路径
-      c.ORG_NAME, -- 机构名称
-      s.ORG_NAME, -- 上级机构名称
+      REPLACE(c.ORG_NAME,'乐山市商业银行','') AS ORG_NAME, -- 机构名称
+      REPLACE(s.ORG_NAME,'乐山市商业银行','') AS SUP_ORG_NAME, -- 上级机构名称
       c.DIRECT_UNDER_ORG, -- 直属机构
       c.ORG_TYP, -- 机构类型
       p.ORG_HARCY, -- 机构层级
@@ -422,10 +422,10 @@ BEGIN
       c.CREATR, -- 创建人
       c.CREAT_TIME, -- 创建时间
       c.CREAT_ORG, -- 创建机构
-            CASE WHEN ORG_PATH LIKE '/150000%' THEN '1500' 
-      	   WHEN ORG_PATH LIKE '/120000%' THEN '1200'
-      	   WHEN ORG_PATH LIKE '/180000%' THEN '1800'
-      	   ELSE '9999' END PERSN_LEGAL_BK_CODE, -- 法人行号
+      CASE WHEN ORG_PATH LIKE '/150000%' THEN '1500'
+	   WHEN ORG_PATH LIKE '/120000%' THEN '1200'
+	   WHEN ORG_PATH LIKE '/180000%' THEN '1800'
+	   ELSE '9999' END PERSN_LEGAL_BK_CODE, -- 法人行号
       c.HR_MS_ORG_ID, -- 人力资源系统机构号
       c.ORG_LGTUD, -- 机构经度
       c.ORG_LATTUD, -- 机构纬度

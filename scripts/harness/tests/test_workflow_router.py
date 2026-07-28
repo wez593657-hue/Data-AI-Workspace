@@ -14,6 +14,25 @@ class WorkflowRouterTests(unittest.TestCase):
         result = route_command("根据 Mapping Excel 变更同步 MD、DD 和数据字典")
         self.assertEqual(result["profile"], "schema_change")
         self.assertEqual(result["skill"], "crm-schema-change")
+        self.assertEqual(
+            result["required_skills"],
+            ["crm-schema-change", "kingbase-ddl-generator"],
+        )
+
+    def test_schema_procedure_command_requires_procedure_skill_chain(self):
+        result = route_command(
+            "根据 Mapping Excel 同步 DDL、数据字典并刷新 PRC_DWD_ACCT_INSUR"
+        )
+        self.assertEqual(result["profile"], "schema_change")
+        self.assertEqual(
+            result["required_skills"],
+            [
+                "crm-schema-change",
+                "kingbase-ddl-generator",
+                "prc-sql",
+                "validate-procedure-date-parameters",
+            ],
+        )
 
     def test_combined_command_requires_follow_up_schema_task(self):
         result = route_command("先按业务需求开发，再同步 Mapping Excel 表结构")

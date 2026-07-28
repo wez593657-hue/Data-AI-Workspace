@@ -1,0 +1,9 @@
+evidence_id: approval-001
+task_id: workspace-publish-20260728
+phase: USER_APPROVED
+kind: confirmation
+purpose: user_approval
+result: passed
+details: 用户已明确要求将工作区所有新增和修改文件提交并推送。
+repository_revision: 7cf261944b9c9e5962ecebe3600d85fc403deeb4
+created_at: '2026-07-28T06:32:10+00:00'

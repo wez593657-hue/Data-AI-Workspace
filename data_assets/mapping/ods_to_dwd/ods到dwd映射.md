@@ -3,7 +3,7 @@
 ## 映射来源
 
 - Excel：`data_assets/mapping/ods_to_dwd/DWD明细层数据模型_CRM_ V1.0.xlsx`
-- Excel SHA-256：`3161081c682fd1f222df781053ca8798dcd1355cf62356f6db7975f3b137a412`
+- Excel SHA-256：`0bb9a6405975249f0a7569ecc90bae9f4e1b927a14b076ea32cbf08c2edb4f06`
 
 ## 映射概览
 
@@ -11,10 +11,10 @@
 |--------|-------:|
 | DWD_ACCT_DEPO | 22 |
 | DWD_ACCT_FIN | 19 |
-| DWD_ACCT_INSUR | 21 |
-| DWD_ACCT_LOAN | 19 |
+| DWD_ACCT_INSUR | 23 |
+| DWD_ACCT_LOAN | 23 |
 | DWD_CRM_SYS_XTHLCS | 5 |
-| DWD_CUST_CTRAKT_INFO | 15 |
+| DWD_CUST_CTRAKT_INFO | 19 |
 | DWD_CUST_DORMANT_ACCOUT | 3 |
 | DWD_CUST_INDIV_CRDT | 9 |
 | DWD_CUST_INDIV_RISK_INVST | 8 |
@@ -149,6 +149,10 @@
 | REPAY_TYP | 还款方式 | VARCHAR2(4) | ACCT_RPT_SEGMENT | TermID |  |
 | REPAY_ACCT_NO | 还款账号 | VARCHAR2(30) | ACCT_BUSINESS_ACCOUNT | AccountNo |  |
 | CATE_5LVL | 五级分类 | VARCHAR2(2) | ACCT_LOAN | ClassifyResult |  |
+| CTRAKT_ID | 合同编号 | VARCHAR2(100) |  |  |  |
+| CMS_CUST_ID | 信贷客户编号 | VARCHAR2(50) |  |  |  |
+| OVER_DAYS | 逾期天数 | VARCHAR2(10) |  |  |  |
+| GUARANT_MODE | 担保方式 | VARCHAR2(4) |  |  |  |
 
 ### DWD_PRDKT_INFO
 
@@ -208,6 +212,7 @@
 | MKT_ORG | 归属机构 | VARCHAR2(7) | YBT_POLICY_BASE_INFO | c.THROW_COM |  |
 | BGN_INSUR_DATE | 起保日期 | VARCHAR2(10) | YBT_POLICY_BASE_INFO | c.VALI_DATE |  |
 | CANCL_INSUR_DATE | 退保日期 | VARCHAR2(10) |  |  |  |
+| PAY_UPTO_DATE | 缴费截止日期 | VARCHAR2(8) |  |  |  |
 | INSUR_PERIOD_TYP | 保险期间类型 | VARCHAR2(2) | YBT_POLICY_INSURANCE_INFO | d.PAY_PER_UNIT |  |
 | INSUR_PERIOD | 保险期间值 | VARCHAR2(6) | YBT_POLICY_INSURANCE_INFO | d.PAY_PER_NUM |  |
 | PAY_PERIOD_TYP | 缴费期间类型 | VARCHAR2(2) | YBT_POLICY_INSURANCE_INFO | d.VALID_PER_UNIT |  |
@@ -215,7 +220,8 @@
 | PAY_PATRN | 缴费方式 | VARCHAR2(2) | YBT_POLICY_INSURANCE_INFO | d.PAY_TYPE |  |
 | INSUR_AMT | 保费金额 | NUMBER(20,2) | YBT_POLICY_FEE_LIST | a.ORD_AMT |  |
 | POLICY_STATE | 保单状态 | VARCHAR2(10) | YBT_POLICY_BASE_INFO | c.CONT_STATUS |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | YBT_POLICY_FEE_LIST | a.TRAN_TYPE |  |
+| TX_TYP | 交易类型 | VARCHAR2(1) | YBT_POLICY_FEE_LIST | a.TRAN_TYPE |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  |  |
 
 ### DWD_CUST_SIGN_CTRAKT
 
@@ -242,7 +248,7 @@
 | CRDT_TTL_LMT | 授信额度 | NUMBER(18,4) | BUSINESS_CONTRACT | BusienssSum |  |
 | BGN_DATE | 开始日期 | VARCHAR2(10) | BUSINESS_CONTRACT | PutoutDate |  |
 | EXPR_DATE | 到期日期 | VARCHAR2(10) | BUSINESS_CONTRACT | MaturityDate |  |
-| CRDT_STATUS | 授信状态 | VARCHAR2(20) |  |  |  |
+| CRDT_STATUS | 授信状态 | VARCHAR2(20) | BUSINESS_CONTRACT | status |  |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(7) |  |  |  |
 
 ### DWD_CUST_CTRAKT_INFO
@@ -259,11 +265,15 @@
 | CCY_CD | 币种 | VARCHAR2(10) | BUSINESS_CONTRACT | BusinessCurrency |  |
 | RATE_INTRI | 利率 | NUMBER(18,4) | ACCT_RATE_SEGMENT | BusinessRate |  |
 | CONTR_AMT | 合同金额 | NUMBER(18,4) | BUSINESS_CONTRACT | BusienssSum |  |
-| BGN_DATE | 发放日期 | VARCHAR2(10) | BUSINESS_CONTRACT | PutoutDate |  |
+| BGN_DATE | 开始日期 | VARCHAR2(10) | BUSINESS_CONTRACT | PutoutDate |  |
 | END_DATE | 结束日期 | VARCHAR2(10) | BUSINESS_CONTRACT | MaturityDate |  |
 | OPRTR | 经办人 | VARCHAR2(30) | BUSINESS_CONTRACT | ManageUserID |  |
 | OPRT_ORG | 经办机构 | VARCHAR2(7) | BUSINESS_CONTRACT | ManageOrgID |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(7) |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(7) | BUSINESS_CONTRACT |  |  |
+| CYCL_TYP | 是否可循环 | VARCHAR2(1) | BUSINESS_CONTRACT | case when cycleflag='1'then '1' else '0' end |  |
+| CMS_CUST_ID | 客户编号 | VARCHAR2(40) | BUSINESS_CONTRACT | customerid |  |
+| PRDKT_ID | 产品编号 | VARCHAR2(40) | BUSINESS_CONTRACT | productid |  |
+| PRDKT_NAME | 产品名称 | VARCHAR2(100) | BUSINESS_TYPE | TYPENAME |  |
 
 ### DWD_CUST_INDIV_RISK_INVST
 

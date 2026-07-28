@@ -1,0 +1,9 @@
+evidence_id: workspace-001
+task_id: workspace-publish-20260728
+phase: WORKSPACE_CHECKED
+kind: inspection
+purpose: workspace_status
+result: passed
+details: 已核对 master 分支、工作区全部新增和修改文件及远端 origin/master；变更范围已登记到 change_manifest.yaml。
+repository_revision: 7cf261944b9c9e5962ecebe3600d85fc403deeb4
+created_at: '2026-07-28T06:18:06+00:00'

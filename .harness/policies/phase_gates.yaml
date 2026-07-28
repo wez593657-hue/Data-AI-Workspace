@@ -153,7 +153,7 @@ workflows:
       required_evidence: [change_scope]
     USER_SCOPE_CONFIRMED:
       next: ASSETS_UPDATED
-      required_evidence: [scope_confirmation]
+      required_evidence: [scope_confirmation, skill_execution]
     ASSETS_UPDATED:
       next: ASSETS_REVIEW_PASSED
       required_evidence: [asset_update]
