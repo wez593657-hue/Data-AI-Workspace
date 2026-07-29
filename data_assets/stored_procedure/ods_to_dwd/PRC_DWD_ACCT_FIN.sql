@@ -1,11 +1,10 @@
-CREATE OR REPLACE PROCEDURE PRC_DWD_ACCT_FIN(
-    V_SYSDAT IN VARCHAR,
-    OUTCDE   OUT INTEGER
-)
-AS
+-- DROP PROCEDURE crmdm.prc_dwd_acct_fin(in varchar, out int4);
+
+CREATE OR REPLACE PROCEDURE crmdm.prc_dwd_acct_fin(v_sysdat varchar, outcde OUT integer)
+AS 
   ------------------------------------------------------------------
   -- 报表名称: 理财账户
-  -- 报表编号: PRC_DWD_ACCT_FIN
+  -- 报表编号: prc_dwd_acct_fin
   -- 处理周期: 日
   -- 过程描述: 理财账户生成逻辑
   -- 来源表:
@@ -14,11 +13,13 @@ AS
   --   2.2: FMS_T1_CUST_INFO, FMS_T1_CUST_FNC_ACCT, FMS_T5_CUST_VOL,
   --        FMS_T5_PROD_INFO, FMS_T5_PROD_NAV, FMS_T5_PROD_PERIOD
   -- 目标表: DWD_ACCT_FIN
-  -- date   : 2026-07-10
+  -- 需求版本: v1.0.1
+  -- 变更记录:
+  --   v1.0.0 2026-07-10 初始版本
+  --   v1.0.1 2026-07-28 删除未使用变量、补版本号
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '理财账户处理';
   V_PRC_NAME             VARCHAR(32)  := 'PRC_DWD_ACCT_FIN';
-  V_SYSDAT2              VARCHAR(10);
   V_SQL                  VARCHAR(4000);
   V_LOG_MSG              VARCHAR(4000);
   V_START_DT             DATE;
@@ -28,16 +29,11 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
-  P_INTERVAL_START_DATE  VARCHAR(8);
-  P_INTERVAL_END_DATE    VARCHAR(8);
 BEGIN
   --***************************************
   -- 2. 业务逻辑区
   --***************************************
   V_START_DT := SYSDATE;
-  V_SYSDAT2 := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'yyyy-mm-dd');
-  P_INTERVAL_START_DATE := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd') - 30, 'yyyymmdd');
-  P_INTERVAL_END_DATE   := V_SYSDAT;
 
   --***************************************
   -- 2.1 代销理财账户落库
@@ -74,7 +70,7 @@ BEGIN
       fa.CARD_NO                             AS CARD_NO,              -- 卡折号
       pi.REGIST_CODE                         AS PRDKT_ID,             -- 理财产品编号
       pi.PROD_NAME                           AS PRDKT_NAME,           -- 理财产品名称
-      case when pi.PROD_TYPE in ('2','3') 
+      CASE WHEN pi.PROD_TYPE in ('2','3') 
            then '1' else '2' end             AS PRDKT_CATE_BIG,       -- 理财产品大类 1代销-开放 2代销-封闭  3自营-开放 4自营-封闭
       pi.ESTABLISH_DATE                      AS ESTAB_DATE,           -- 理财产品成立日
       NVL(pn.NAV, 0) * NVL(cv.TOTAL_VOL, 0)  AS FIN_AMT,              -- 理财余额=净值*份额
@@ -82,9 +78,12 @@ BEGIN
       fa.ACCT_STATUS                         AS ACCT_STATE,           -- 理财账户状态
       pi.VALUE_DATE                          AS INTRI_BGN_DATE,       -- 起息日期
       pi.WINDING_DATE                        AS EXPR_DATE,            -- 到期日期
-      pi.TANO                                AS OPRT_ORG,             -- 理财归属机构
+      ctl.TRANS_ORGNO                        AS OPRT_ORG,             -- 理财归属机构
       fa.ISS_BANK_CODE                       AS CHNL_NO,              -- 办理渠道
-      NULL                                   AS PERSN_LEGAL_BK_CODE,  -- 法人行号
+      CASE WHEN ctl.TRANS_ORGNO LIKE '15%' THEN '1500' 
+      	   WHEN ctl.TRANS_ORGNO LIKE '12%' THEN '1200'
+      	   WHEN ctl.TRANS_ORGNO LIKE '18%' THEN '1800'
+      	   ELSE '9999' end                    AS PERSN_LEGAL_BK_CODE,  -- 法人行号
       pi.TANO                                AS ISSU_ORG,             -- 发行机构
       fa.CRT_DATE                            AS ISSU_DATE,            -- 办理日期
       pi.PROD_RISK_LEVEL                     AS RISK_LVL              -- 风险等级
@@ -94,11 +93,17 @@ BEGIN
      AND fa.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
     INNER JOIN FMS_T1_CUST_INFO ci                                   -- 客户信息表
       ON ci.CUST_NO = fa.CUST_NO
+    left join (select distinct fnc_trans_acct_no,CUST_NO,TRANS_ORGNO 
+    from FMS_td_cust_trans_req_log 
+    where TRANS_STATUS in ('1','3')                                  --申请成功 确认成功
+    and busi_code in ('020','022'))  ctl                                --认购 申购
+    on ctl.CUST_NO = cv.CUST_NO
+    AND ctl.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
     INNER JOIN FMS_TD_PROD_INFO pi                                   -- 理财产品信息表
       ON cv.TANO                   = pi.TANO
      AND cv.PROD_CODE              = pi.PROD_CODE
      AND NVL(cv.SHARE_CLASS, '~')  = NVL(pi.SHARE_CLASS, '~')
-    INNER JOIN (
+    LEFT JOIN (
         SELECT
             x.TANO,
             x.PROD_CODE,
@@ -116,7 +121,8 @@ BEGIN
      AND cv.PROD_CODE              = pn.PROD_CODE
      AND NVL(cv.SHARE_CLASS, '~')  = NVL(pn.SHARE_CLASS, '~')
      AND pn.RN = 1
-   WHERE NVL(cv.TOTAL_VOL, 0) <> 0;
+   WHERE NVL(cv.TOTAL_VOL, 0) <> 0
+  AND SUBSTR(ci.HOST_CUST_NO,1,1) = '1';
   COMMIT;
 
   OUTCDE      := 0;
@@ -172,7 +178,7 @@ BEGIN
       fa.CARD_NO                             AS CARD_NO,              -- 卡折号
       pi.REGIST_CODE                         AS PRDKT_ID,             -- 理财产品编号
       pi.PROD_NAME                           AS PRDKT_NAME,           -- 理财产品名称
-      case when pi.PERIOD_TYPE = '0' 
+      CASE when pi.PERIOD_TYPE = '0' 
            then '3' else '4' end             AS PRDKT_CATE_BIG,       -- 理财产品大类 1代销-开放 2代销-封闭  3自营-开放 4自营-封闭
       pp.ESTABLISH_DATE                      AS ESTAB_DATE,           -- 理财产品成立日
       NVL(pn.NAV, 0) * NVL(cv.TOTAL_VOL, 0)  AS FIN_AMT,              -- 理财余额=净值*份额
@@ -180,9 +186,12 @@ BEGIN
       fa.ACCT_STATUS                         AS ACCT_STATE,           -- 理财账户状态
       pp.VALUE_DATE                          AS INTRI_BGN_DATE,       -- 起息日期
       pp.WINDING_DATE                        AS EXPR_DATE,            -- 到期日期
-      fa.SUB_BRANCH_CODE                     AS OPRT_ORG,             -- 理财归属机构
+      ci.SUB_BRANCH_CODE                     AS OPRT_ORG,             -- 理财归属机构
       fa.TRADINGMETHOD                       AS CHNL_NO,              -- 办理渠道
-      NULL                                   AS PERSN_LEGAL_BK_CODE,  -- 法人行号
+      CASE WHEN ctl.SUB_BRANCH_CODE LIKE '15%' THEN '1500' 
+      	   WHEN ctl.SUB_BRANCH_CODE LIKE '12%' THEN '1200'
+      	   WHEN ctl.SUB_BRANCH_CODE LIKE '18%' THEN '1800'
+      	   ELSE '9999' end                   AS PERSN_LEGAL_BK_CODE,  -- 法人行号
       pi.ORGNO                               AS ISSU_ORG,             -- 发行机构
       fa.CRT_DATE                            AS ISSU_DATE,            -- 办理日期
       pi.PROD_RISK_LEVEL                     AS RISK_LVL              -- 风险等级
@@ -190,6 +199,12 @@ BEGIN
     INNER JOIN FMS_T1_CUST_FNC_ACCT fa                               -- 客户理财交易账号表
       ON fa.CUST_NO           = cv.CUST_NO
      AND fa.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
+    left join (select distinct fnc_trans_acct_no,CUST_NO,sub_branch_code 
+    from FMS_t5_cust_trans_log 
+    where TRANS_STATUS in ('1','3')                                  --申请成功 确认成功
+    and busi_code in ('120','122'))  ctl                                --认购 申购
+    on ctl.CUST_NO = cv.CUST_NO
+    AND ctl.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
     INNER JOIN FMS_T1_CUST_INFO ci                                   -- 客户信息表
       ON ci.CUST_NO = fa.CUST_NO
     INNER JOIN (
@@ -237,7 +252,8 @@ BEGIN
     ) pn
       ON pi.PROD_CODE = pn.PROD_CODE
      AND pn.RN = 1
-   WHERE NVL(cv.TOTAL_VOL, 0) <> 0;
+   WHERE NVL(cv.TOTAL_VOL, 0) <> 0
+  AND SUBSTR(ci.HOST_CUST_NO,1,1) = '1';
   COMMIT;
 
   OUTCDE      := 0;
@@ -283,5 +299,9 @@ EXCEPTION
         V_LOG_BUTTON
     );
     RAISE;
-END;
-/
+END
+
+
+
+
+;

@@ -10,11 +10,13 @@ AS
   -- 来源表: ADS_CUST_POTN_UPGRADE_CUST_DTL, DWS_CUST_ASSE_LIAB, DWD_SYS_ORG
   -- 目标表: ADS_CUST_POTN_UPGRADE_STATIS
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.4.0
+  -- 需求版本: v3.0.0
   -- 变更记录:
-  --   v2.2.0 2026-07-27 计算单位调整为客户号+归属机构(ORG_ID)，关联DWS_CUST_ASSE_LIAB增加ORG_ID条件避免笛卡尔积
-  --   v2.3.0 2026-07-27 相对日期统一使用sys_fun_deal_date；本过程当前取当日数据，使用V_SYSDAT
-  --   v2.4.0 2026-07-27 补充客户、归属机构、法人行三键关联及各业务处理段说明
+  --   v2.2.0 2026-07-27 计算单位调整为客户号+归属机构(ORG_ID)
+  --   v2.3.0 2026-07-27 相对日期统一使用sys_fun_deal_date
+  --   v2.4.0 2026-07-27 补充三键关联及各业务处理段说明
+  --   v2.4.1 2026-07-28 DWS_CUST_ASSE_LIAB关联移除ORG_ID条件
+  --   v3.0.0 2026-07-28 同步DTL：月/季/年切片接触状态按不同时间窗口独立计算
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '潜力提升统计处理';
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_POTN_UPGRADE_STATIS';
@@ -132,7 +134,6 @@ BEGIN
       ON O.LEAF_ORG_ID = D.ORG_ID
     LEFT JOIN DWS_CUST_ASSE_LIAB M
      ON M.CUST_ID = D.CUST_ID
-     AND M.ORG_ID = D.ORG_ID
      AND M.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE
      AND M.DATA_DATE = V_SYSDAT
      AND M.BAL_TYPE = '2'
@@ -140,13 +141,12 @@ BEGIN
 
   UNION ALL
 
-  -- 客户经理分支：按明细中的管户客户经理岗位形成个人统计口径。
+  -- 客户经理分支
   SELECT D.PERSN_LEGAL_BK_CODE,
          D.DATA_DATE,
          D.STATIS_CYCLE,
          D.POST_ID,
          D.LVL_CRIT,
-         -- 按跑批日月日均 AUM 判断当前月日均资产是否达到临界等级阈值。
          CASE
            WHEN (D.LVL_CRIT = '03' AND NVL(M.AUM_BAL, 0) >= 50000)
              OR (D.LVL_CRIT = '04' AND NVL(M.AUM_BAL, 0) >= 300000)
@@ -161,7 +161,6 @@ BEGIN
     FROM ADS_CUST_POTN_UPGRADE_CUST_DTL D
     LEFT JOIN DWS_CUST_ASSE_LIAB M
      ON M.CUST_ID = D.CUST_ID
-     AND M.ORG_ID = D.ORG_ID
      AND M.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE
      AND M.DATA_DATE = V_SYSDAT
      AND M.BAL_TYPE = '2'

@@ -10,11 +10,13 @@ AS
   -- 来源表: DWS_CUST_ASSE_LIAB, DWD_CUST_INDV_INFO, DWS_CUST_LVL_INFO, ADS_MKT_REC_INFO
   -- 目标表: ADS_CUST_LOST_DTL
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.2.0
+  -- 需求版本: v2.3.0
   -- 关联需求: REQ-CUST-001
   -- 变更记录:
   --   v2.1.0: 1.已挽回金融资产口径确认：T-1日金融资产余额达标的客户，从月初~T-1日金融资产新增总金额，单个客户的挽回金融资产为当前T-1日客户金融资产减去上月末时点的金融资产余额
   --           2.明细表新增RESCUED_FINA_ASSET字段，存储单个客户的挽回金融资产金额
+  --   v2.3.0 2026-07-28 月/季/年切片接触状态按不同时间窗口独立计算；FULL JOIN补PERSN_LEGAL_BK_CODE；
+  --           关联表统一补充PERSN_LEGAL_BK_CODE关联条件；年码值N→Y
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '客户流失清单处理';
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_LOST_DTL';
@@ -31,6 +33,9 @@ AS
   V_PREV_PREV_MONTH_END  VARCHAR2(8);
   V_PREV_QUARTER_END     VARCHAR2(8);
   V_PREV_YEAR_END        VARCHAR2(8);
+  V_CURR_MONTH_BEGIN_DT  DATE;
+  V_CURR_QUARTER_BEGIN_DT DATE;
+  V_CURR_YEAR_BEGIN_DT   DATE;
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -55,6 +60,9 @@ BEGIN
   V_PREV_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 6);
 
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
+  V_CURR_MONTH_BEGIN_DT := TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'MM');
+  V_CURR_QUARTER_BEGIN_DT := TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'Q');
+  V_CURR_YEAR_BEGIN_DT := TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'Y');
 
   ------------------------------------------------------------------
   -- 2. TMP1：清理当前数据日明细和物理临时表
@@ -105,7 +113,9 @@ BEGIN
       DEPO_CURNT_DEPO_BAL,
       FIXD_DEPO_BAL,
       FIN_AMT,
-      CNTCT_STATE,
+      CNTCT_STATE_M,
+      CNTCT_STATE_Q,
+      CNTCT_STATE_Y,
       RESCUE_STATE,
       CUR_AUM_BAL,
       LAST_MONTH_END_AUM_BAL,
@@ -166,8 +176,33 @@ BEGIN
                 AND r.MKT_TYP IN ('1', '2', '3', '4')
                 AND r.MKT_TIME IS NOT NULL
                 AND TO_DATE(REPLACE(SUBSTR(r.MKT_TIME, 1, 10), '-', ''), 'YYYYMMDD')
-                    BETWEEN TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'MM')
-                        AND TO_DATE(V_SYSDAT, 'YYYYMMDD')
+                    BETWEEN V_CURR_MONTH_BEGIN_DT AND V_END_DATE
+           ) THEN '1'
+           ELSE '0'
+         END,
+         -- 季接触：当季初至跑批日存在有效营销接触记录。
+         CASE
+           WHEN EXISTS (
+             SELECT 1
+               FROM ADS_MKT_REC_INFO r
+              WHERE r.CUST_ID = c.CUST_ID
+                AND r.MKT_TYP IN ('1', '2', '3', '4')
+                AND r.MKT_TIME IS NOT NULL
+                AND TO_DATE(REPLACE(SUBSTR(r.MKT_TIME, 1, 10), '-', ''), 'YYYYMMDD')
+                    BETWEEN V_CURR_QUARTER_BEGIN_DT AND V_END_DATE
+           ) THEN '1'
+           ELSE '0'
+         END,
+         -- 年接触：当年初至跑批日存在有效营销接触记录。
+         CASE
+           WHEN EXISTS (
+             SELECT 1
+               FROM ADS_MKT_REC_INFO r
+              WHERE r.CUST_ID = c.CUST_ID
+                AND r.MKT_TYP IN ('1', '2', '3', '4')
+                AND r.MKT_TIME IS NOT NULL
+                AND TO_DATE(REPLACE(SUBSTR(r.MKT_TIME, 1, 10), '-', ''), 'YYYYMMDD')
+                    BETWEEN V_CURR_YEAR_BEGIN_DT AND V_END_DATE
            ) THEN '1'
            ELSE '0'
          END,
@@ -195,6 +230,7 @@ BEGIN
             FROM DWS_CUST_ASSE_LIAB a
             JOIN DWS_CUST_LVL_INFO l
               ON l.CUST_ID = a.CUST_ID
+             AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
              AND l.DATA_DT = a.DATA_DATE
            WHERE a.DATA_DATE = V_PREV_MONTH_END
              AND a.BAL_TYPE = '2'
@@ -208,29 +244,36 @@ BEGIN
             FROM DWS_CUST_ASSE_LIAB a
             JOIN DWS_CUST_LVL_INFO l
               ON l.CUST_ID = a.CUST_ID
+             AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
              AND l.DATA_DT = a.DATA_DATE
            WHERE a.DATA_DATE = V_PREV_PREV_MONTH_END
              AND a.BAL_TYPE = '2'
          ) pp
       ON pp.CUST_ID = p.CUST_ID
      AND pp.ORG_ID = p.ORG_ID
+     AND pp.PERSN_LEGAL_BK_CODE = p.PERSN_LEGAL_BK_CODE
     JOIN DWD_CUST_INDV_INFO c
       ON c.CUST_ID = COALESCE(p.CUST_ID, pp.CUST_ID)
+     AND c.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
     LEFT JOIN DWS_CUST_LVL_INFO cur_l
       ON cur_l.CUST_ID = c.CUST_ID
+     AND cur_l.PERSN_LEGAL_BK_CODE = c.PERSN_LEGAL_BK_CODE
      AND cur_l.DATA_DT = V_DATA_DATE
     LEFT JOIN DWS_CUST_ASSE_LIAB e
      ON e.CUST_ID = c.CUST_ID
+     AND e.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
      AND e.ORG_ID = COALESCE(p.ORG_ID, pp.ORG_ID)
      AND e.DATA_DATE = V_PREV_MONTH_END
      AND e.BAL_TYPE = '1'
     LEFT JOIN DWS_CUST_ASSE_LIAB q
      ON q.CUST_ID = c.CUST_ID
+     AND q.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
      AND q.ORG_ID = COALESCE(p.ORG_ID, pp.ORG_ID)
      AND q.DATA_DATE = V_PREV_DAY
      AND q.BAL_TYPE = '1'
     LEFT JOIN DWS_CUST_ASSE_LIAB b
      ON b.CUST_ID = c.CUST_ID
+     AND b.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
      AND b.ORG_ID = COALESCE(p.ORG_ID, pp.ORG_ID)
      AND b.DATA_DATE = V_DATA_DATE
      AND b.BAL_TYPE = '1';
@@ -265,6 +308,7 @@ BEGIN
   V_NO_ID := '3';
   V_BGN_DATE := SYSDATE;
 
+  -- 4.1 月统计周期：接触窗口为当月初至跑批日。
   INSERT INTO ADS_CUST_LOST_DTL (
       PERSN_LEGAL_BK_CODE,
       DATA_DATE,
@@ -291,20 +335,83 @@ BEGIN
          x.DEPO_CURNT_DEPO_BAL,
          x.FIXD_DEPO_BAL,
          x.FIN_AMT,
-         x.CNTCT_STATE,
+         x.CNTCT_STATE_M,
          x.RESCUE_STATE,
          CASE WHEN x.RESCUE_STATE = '1' THEN GREATEST(NVL(x.CUR_AUM_BAL, 0) - NVL(x.LAST_MONTH_END_AUM_BAL, 0), 0) ELSE 0 END,
          x.POST_ID,
          x.ORG_ID,
-         c.STATIS_CYCLE
-    FROM TMP_ADS_LOST_BASE x
-   CROSS JOIN (
-         SELECT 'M' AS STATIS_CYCLE FROM DUAL
-         UNION ALL
-         SELECT 'Q' AS STATIS_CYCLE FROM DUAL
-         UNION ALL
-         SELECT 'N' AS STATIS_CYCLE FROM DUAL
-   ) c;
+         'M'
+    FROM TMP_ADS_LOST_BASE x;
+
+  -- 4.2 季统计周期：接触窗口为当季初至跑批日。
+  INSERT INTO ADS_CUST_LOST_DTL (
+      PERSN_LEGAL_BK_CODE,
+      DATA_DATE,
+      CUST_ID,
+      CUST_NAME,
+      CUST_LVL,
+      LVL_CHURN,
+      DEPO_CURNT_DEPO_BAL,
+      FIXD_DEPO_BAL,
+      FIN_AMT,
+      CNTCT_STATE,
+      RESCUE_STATE,
+      RESCUED_FINA_ASSET,
+      POST_ID,
+      ORG_ID,
+      STATIS_CYCLE
+  )
+  SELECT x.PERSN_LEGAL_BK_CODE,
+         V_DATA_DATE,
+         x.CUST_ID,
+         x.CUST_NAME,
+         x.CUST_LVL,
+         x.LVL_CHURN,
+         x.DEPO_CURNT_DEPO_BAL,
+         x.FIXD_DEPO_BAL,
+         x.FIN_AMT,
+         x.CNTCT_STATE_Q,
+         x.RESCUE_STATE,
+         CASE WHEN x.RESCUE_STATE = '1' THEN GREATEST(NVL(x.CUR_AUM_BAL, 0) - NVL(x.LAST_MONTH_END_AUM_BAL, 0), 0) ELSE 0 END,
+         x.POST_ID,
+         x.ORG_ID,
+         'Q'
+    FROM TMP_ADS_LOST_BASE x;
+
+  -- 4.3 年统计周期：接触窗口为当年初至跑批日。
+  INSERT INTO ADS_CUST_LOST_DTL (
+      PERSN_LEGAL_BK_CODE,
+      DATA_DATE,
+      CUST_ID,
+      CUST_NAME,
+      CUST_LVL,
+      LVL_CHURN,
+      DEPO_CURNT_DEPO_BAL,
+      FIXD_DEPO_BAL,
+      FIN_AMT,
+      CNTCT_STATE,
+      RESCUE_STATE,
+      RESCUED_FINA_ASSET,
+      POST_ID,
+      ORG_ID,
+      STATIS_CYCLE
+  )
+  SELECT x.PERSN_LEGAL_BK_CODE,
+         V_DATA_DATE,
+         x.CUST_ID,
+         x.CUST_NAME,
+         x.CUST_LVL,
+         x.LVL_CHURN,
+         x.DEPO_CURNT_DEPO_BAL,
+         x.FIXD_DEPO_BAL,
+         x.FIN_AMT,
+         x.CNTCT_STATE_Y,
+         x.RESCUE_STATE,
+         CASE WHEN x.RESCUE_STATE = '1' THEN GREATEST(NVL(x.CUR_AUM_BAL, 0) - NVL(x.LAST_MONTH_END_AUM_BAL, 0), 0) ELSE 0 END,
+         x.POST_ID,
+         x.ORG_ID,
+         'Y'
+    FROM TMP_ADS_LOST_BASE x;
 
   COMMIT;
 
@@ -369,7 +476,7 @@ BEGIN
                           END
    WHERE (D.STATIS_CYCLE = 'M' AND D.DATA_DATE = V_PREV_MONTH_END)
       OR (D.STATIS_CYCLE = 'Q' AND D.DATA_DATE = V_PREV_QUARTER_END)
-      OR (D.STATIS_CYCLE = 'N' AND D.DATA_DATE = V_PREV_YEAR_END);
+      OR (D.STATIS_CYCLE = 'Y' AND D.DATA_DATE = V_PREV_YEAR_END);
 
   COMMIT;
 

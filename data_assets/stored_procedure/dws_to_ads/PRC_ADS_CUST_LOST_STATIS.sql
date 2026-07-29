@@ -10,11 +10,12 @@ AS
   -- 来源表: ADS_CUST_LOST_DTL, DWS_CUST_ASSE_LIAB, DWD_SYS_ORG
   -- 目标表: ADS_CUST_LOST_STATIS
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.2.0
+  -- 需求版本: v2.3.0
   -- 关联需求: REQ-CUST-001
   -- 变更记录:
   --   v2.1.0: 1.已挽回金融资产口径确认：T-1日金融资产余额达标的客户，从月初~T-1日金融资产新增总金额，单个客户的挽回金融资产为当前T-1日客户金融资产减去上月末时点的金融资产余额
   --           2.统计表使用明细表RESCUED_FINA_ASSET字段汇总已挽回金融资产，不再重复计算
+  --   v2.3.0 2026-07-28 年码值N→Y统一；配合DTL月/季/年切片接触状态按不同时间窗口独立计算
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '客户挽回统计处理';
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_LOST_STATIS';
@@ -61,7 +62,7 @@ BEGIN
    WHERE T.DATA_DATE = V_DATA_DATE
       OR (T.STATIS_CYCLE = 'M' AND T.DATA_DATE = V_PREV_MONTH_END)
       OR (T.STATIS_CYCLE = 'Q' AND T.DATA_DATE = V_PREV_QUARTER_END)
-      OR (T.STATIS_CYCLE = 'N' AND T.DATA_DATE = V_PREV_YEAR_END);
+      OR (T.STATIS_CYCLE = 'Y' AND T.DATA_DATE = V_PREV_YEAR_END);
 
   DELETE FROM ADS_CUST_LOST_STATIS T
    WHERE TO_DATE(T.DATA_DATE, 'YYYYMMDD') < ADD_MONTHS(TRUNC(TO_DATE(V_SYSDAT, 'YYYYMMDD'), 'YYYY'), -36);
@@ -129,7 +130,7 @@ BEGIN
    WHERE D.DATA_DATE = V_DATA_DATE
       OR (D.STATIS_CYCLE = 'M' AND D.DATA_DATE = V_PREV_MONTH_END)
       OR (D.STATIS_CYCLE = 'Q' AND D.DATA_DATE = V_PREV_QUARTER_END)
-      OR (D.STATIS_CYCLE = 'N' AND D.DATA_DATE = V_PREV_YEAR_END)
+      OR (D.STATIS_CYCLE = 'Y' AND D.DATA_DATE = V_PREV_YEAR_END)
 
   UNION ALL
 
@@ -146,7 +147,7 @@ BEGIN
      AND (D.DATA_DATE = V_DATA_DATE
         OR (D.STATIS_CYCLE = 'M' AND D.DATA_DATE = V_PREV_MONTH_END)
         OR (D.STATIS_CYCLE = 'Q' AND D.DATA_DATE = V_PREV_QUARTER_END)
-        OR (D.STATIS_CYCLE = 'N' AND D.DATA_DATE = V_PREV_YEAR_END));
+        OR (D.STATIS_CYCLE = 'Y' AND D.DATA_DATE = V_PREV_YEAR_END));
 
   COMMIT;
 

@@ -10,8 +10,10 @@ AS
   -- 来源表：YBT_POLICY_FEE_LIST(保单交易明细表)、IBP_IB_LIST_PLAT(交易流水表)、YBT_POLICY_BASE_INFO(保单信息表)、
              --YBT_POLICY_INSURANCE_INFO(保单承保险种信息表)、YBT_PRODUCT_INFO(保险产品信息表)、DWD_CUST_INDV_INFO(客户基本信息)
   -- 目标表：DWD_ACCT_INSUR(保险账户信息)
-  -- author :
-  -- date   ： 2026-06-30
+  -- 需求版本: v1.0.0
+  -- 变更记录:
+  --   v1.0.0 2026-06-30 初始版本
+  --   v1.0.1 2026-07-28 字段映射修正(TX_TYP取TRAN_TYPE)、删除未使用变量、INSERT列顺序与DDL对齐
   -- 适配数据库：人大金仓 Oracle 兼容模式
   ------------------------------------------------------------------
   --***************************************
@@ -19,7 +21,6 @@ AS
   --***************************************
   V_PRC_DESC             VARCHAR(100) := '保险账户处理';
   V_PRC_NAME             VARCHAR(32)  := 'PRC_DWD_ACCT_INSUR';
-  V_SYSDAT2              VARCHAR(10);
   V_SQL                  VARCHAR(4000);
   V_LOG_MSG              VARCHAR(4000);
   V_START_DT             DATE;
@@ -29,35 +30,30 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
-  P_INTERVAL_START_DATE   VARCHAR(8);
-  P_INTERVAL_END_DATE     VARCHAR(8);
 begin
   --***************************************
   -- 2. 业务逻辑区
   --***************************************
   V_START_DT := SYSDATE;
-  V_SYSDAT2 := sys_fun_deal_date(V_SYSDAT, 1);
-  P_INTERVAL_START_DATE := sys_fun_deal_date(V_SYSDAT, 18);
-  P_INTERVAL_END_DATE   := sys_fun_deal_date(V_SYSDAT, 1);
   EXECUTE IMMEDIATE 'TRUNCATE TABLE DWD_ACCT_INSUR';
 
   V_NO_ID := '1';
   V_BGN_DATE := SYSDATE;
   INSERT INTO DWD_ACCT_INSUR (
       CUST_ID, CUST_TYP, ACCT_ID, PRDKT_ID, PRDKT_NAME, PRDKT_CATE_BIG, INSUR_BID_FORM_NO, TX_DATE, TX_ORG, TX_CHNL, MKT_ORG, BGN_INSUR_DATE, 
-      CANCL_INSUR_DATE, PAY_UPTO_DATE, PAY_PERIOD_TYP, PAY_PERIOD, INSUR_PERIOD_TYP, INSUR_PERIOD, PAY_PATRN, INSUR_AMT, POLICY_STATE, TX_TYP, PERSN_LEGAL_BK_CODE)
+      CANCL_INSUR_DATE, PAY_UPTO_DATE, INSUR_PERIOD_TYP, INSUR_PERIOD, PAY_PERIOD_TYP, PAY_PERIOD, PAY_PATRN, INSUR_AMT, POLICY_STATE, TX_TYP, PERSN_LEGAL_BK_CODE)
   SELECT
     b.user_id           AS CUST_ID,            -- 核心客户号
-    NULL               AS CUST_TYP,           -- 客户类型，Excel 未提供来源字段
+    '1'                 AS CUST_TYP,           -- 客户类型，Excel 未提供来源字段
     c.ACC_NO            AS ACCT_ID,            -- 保险关联账号
     e.PRODUCT_ID        AS PRDKT_ID,           -- 保险产品编号
     e.PRODUCT_NAME      AS PRDKT_NAME,         -- 保险产品名称
     e.PRODUCT_BIG_TYPE  AS PRDKT_CATE_BIG,     -- 保险产品大类
     c.CONT_NO           AS INSUR_BID_FORM_NO,  -- 投保单号
     c.ACCEPT_DATE       AS TX_DATE,            -- 交易日期
-    c.THROW_COM         AS TX_ORG,             -- 交易机构
+    SUBSTR(c.THROW_COM,1,6)         AS TX_ORG,             -- 交易机构
     c.CONT_SOURCE       AS TX_CHNL,            -- 交易渠道
-    c.THROW_COM         AS MKT_ORG,            -- 归属机构
+    SUBSTR(c.THROW_COM,1,6)         AS MKT_ORG,            -- 归属机构
     TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYY-MM-DD'), 'YYYY-MM-DD') AS BGN_INSUR_DATE, -- 保险起保日期,统一返回 VARCHAR2(10)
     CASE
           WHEN d.VALID_PER_UNIT = '-1' THEN '9999-12-31'
@@ -85,16 +81,19 @@ begin
           THEN TO_CHAR(ADD_MONTHS(TO_DATE('19' || SUBSTR(f.CERT_ID, 7, 6), 'YYYYMMDD'), 12 * d.PAY_PER_NUM), 'YYYYMMDD')
           WHEN d.PAY_PER_UNIT = '-1' THEN NULL
           ELSE NULL
-     END AS PAY_UPTO_DATE, -- 缴费截止日期，Excel 定义为 VARCHAR2(8)，统一返回 YYYYMMDD
-    d.PAY_PER_UNIT      AS PAY_PERIOD_TYP,     -- 缴费期间类型
-    d.PAY_PER_NUM       AS PAY_PERIOD,         -- 缴费期间值 
+     END AS PAY_UPTO_DATE,  -- 缴费截止日期，Excel 定义为 VARCHAR2(8)，统一返回 YYYYMMDD
     d.VALID_PER_UNIT    AS INSUR_PERIOD_TYP,   -- 保险期间类型
     d.VALID_PER_NUM     AS INSUR_PERIOD,       -- 保险期间值 
+    d.PAY_PER_UNIT      AS PAY_PERIOD_TYP,     -- 缴费期间类型
+    d.PAY_PER_NUM       AS PAY_PERIOD,         -- 缴费期间值 
     d.PAY_TYPE          AS PAY_PATRN,          -- 保险缴费方式
     a.ORD_AMT           AS INSUR_AMT,          -- 保险保费金额
     c.CONT_STATUS       AS POLICY_STATE,       -- 保险单状态
-    NULL                AS TX_TYP,             -- 交易类型，Excel 未提供来源字段
-    a.TRAN_TYPE         AS PERSN_LEGAL_BK_CODE -- 法人行号，按 Excel 映射
+    a.TRAN_TYPE         AS TX_TYP,             -- 交易类型
+    CASE WHEN SUBSTR(c.THROW_COM,1,6) LIKE '15%' THEN '1500'
+	   WHEN SUBSTR(c.THROW_COM,1,6) LIKE '12%' THEN '1200'
+	   WHEN SUBSTR(c.THROW_COM,1,6) LIKE '18%' THEN '1800'
+	   ELSE '9999' END    AS PERSN_LEGAL_BK_CODE -- 法人行号，来源字段待确认
   FROM YBT_YBT_POLICY_FEE_LIST a                -- 保单交易明细表
   INNER JOIN IBP_IB_LIST_PLAT b                 -- 交易流水表
     ON a.ord_pay_serial = b.plat_serial
@@ -107,7 +106,7 @@ begin
     ON c.product_id = e.product_id
   LEFT JOIN DWD_CUST_INDV_INFO f                -- 客户基本信息,用于按证件号码推算出生日期
     ON b.user_id = f.cust_id
-  ;
+  WHERE b.user_id LIKE '1%';
   COMMIT;
   OUTCDE := 0;
   V_END_DATE := SYSDATE;

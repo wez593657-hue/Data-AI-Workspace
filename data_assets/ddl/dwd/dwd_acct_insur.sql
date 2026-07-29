@@ -1,34 +1,37 @@
 /*
  * DWD_ACCT_INSUR
  * 中文名称: 保险账户信息
- * 版本: v1.0
+ * 版本: v1.0.1
  * 创建时间: 2026-07-28
+ * 变更记录:
+ *   v1.0.0 2026-06-30 初始版本
+ *   v1.0.1 2026-07-28 补行内注释、与SP INSERT列顺序对齐
  */
 
 CREATE TABLE IF NOT EXISTS DWD_ACCT_INSUR (
-    CUST_ID VARCHAR(20) NOT NULL,
-    CUST_TYP VARCHAR(4) NULL,
-    ACCT_ID VARCHAR(40) NULL,
-    PRDKT_ID VARCHAR(40) NULL,
-    PRDKT_NAME VARCHAR(100) NULL,
-    PRDKT_CATE_BIG VARCHAR(64) NULL,
-    INSUR_BID_FORM_NO VARCHAR(40) NULL,
-    TX_DATE VARCHAR(10) NULL,
-    TX_ORG VARCHAR(7) NULL,
-    TX_CHNL VARCHAR(10) NULL,
-    MKT_ORG VARCHAR(7) NULL,
-    BGN_INSUR_DATE VARCHAR(10) NULL,
-    CANCL_INSUR_DATE VARCHAR(10) NULL,
-    PAY_UPTO_DATE VARCHAR(8) NULL,
-    INSUR_PERIOD_TYP VARCHAR(2) NULL,
-    INSUR_PERIOD VARCHAR(6) NULL,
-    PAY_PERIOD_TYP VARCHAR(2) NULL,
-    PAY_PERIOD VARCHAR(6) NULL,
-    PAY_PATRN VARCHAR(2) NULL,
-    INSUR_AMT NUMBER(20,2) NULL,
-    POLICY_STATE VARCHAR(10) NULL,
-    TX_TYP VARCHAR(1) NULL,
-    PERSN_LEGAL_BK_CODE VARCHAR(4) NULL
+    CUST_ID              VARCHAR(20)    NOT NULL,  -- 客户编号
+    CUST_TYP             VARCHAR(4)     NULL,      -- 客户类型
+    ACCT_ID              VARCHAR(40)    NULL,      -- 账户
+    PRDKT_ID             VARCHAR(40)    NULL,      -- 产品ID
+    PRDKT_NAME           VARCHAR(100)   NULL,      -- 产品名称
+    PRDKT_CATE_BIG       VARCHAR(64)    NULL,      -- 产品大类
+    INSUR_BID_FORM_NO    VARCHAR(40)    NULL,      -- 投保单号
+    TX_DATE              VARCHAR(10)    NULL,      -- 交易日期
+    TX_ORG               VARCHAR(7)     NULL,      -- 交易机构
+    TX_CHNL              VARCHAR(10)    NULL,      -- 交易渠道
+    MKT_ORG              VARCHAR(7)     NULL,      -- 归属机构
+    BGN_INSUR_DATE       VARCHAR(10)    NULL,      -- 起保日期
+    CANCL_INSUR_DATE     VARCHAR(10)    NULL,      -- 退保日期
+    PAY_UPTO_DATE        VARCHAR(8)     NULL,      -- 缴费截止日期
+    INSUR_PERIOD_TYP     VARCHAR(2)     NULL,      -- 保险期间类型
+    INSUR_PERIOD         VARCHAR(6)     NULL,      -- 保险期间值
+    PAY_PERIOD_TYP       VARCHAR(2)     NULL,      -- 缴费期间类型
+    PAY_PERIOD           VARCHAR(6)     NULL,      -- 缴费期间值
+    PAY_PATRN            VARCHAR(2)     NULL,      -- 缴费方式
+    INSUR_AMT            NUMBER(20,2)   NULL,      -- 保费金额
+    POLICY_STATE         VARCHAR(10)    NULL,      -- 保单状态
+    TX_TYP               VARCHAR(1)     NULL,      -- 交易类型
+    PERSN_LEGAL_BK_CODE  VARCHAR(4)     NULL       -- 法人行号
 );
 
 COMMENT ON TABLE DWD_ACCT_INSUR IS '保险账户信息';
