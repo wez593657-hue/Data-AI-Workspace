@@ -6,12 +6,13 @@ AS
   ------------------------------------------------------------------
   -- 存储过程：对私客户标签表
   -- 处理周期: 日
-  -- 过程描述: 生成对私客户的12个标签字段，v1.3.0实现10个字段，2个待补充
-  -- 来源表: DWD_CUST_INDV_INFO, DWD_TX_ASET, crmdm.mbk_cust_log_fee, crmdm.mbk_cust_info
+  -- 过程描述: 生成对私客户的12个标签字段
+  -- 来源表: DWD_CUST_INDV_INFO, DWD_TX_ASET, crmdm.mbk_cust_log_fee, crmdm.mbk_cust_info, crmdm.uepp_pay_order_info
   -- 目标表: ADS_CRM_R_CUST_LABLE
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v1.3.0
+  -- 需求版本: v1.3.1
   -- 变更记录:
+  --   v1.3.1 2026-07-29 补充材料开发：BILL_RSV_MKNT_CNT_MTH_LAST+AMT_MTH_LAST(收单商户上月交易)，源表uepp_pay_order_info
   --   v1.3.0 2026-07-29 架构重构：拆分6个独立临时表，每段独立INSERT，最终多表LEFT JOIN汇聚到目标表
   --   v1.2.1 2026-07-29 双键关联：所有源表关联统一使用CUST_ID+PERSN_LEGAL_BK_CODE作为计算单位
   --   v1.2.0 2026-07-29 补充材料开发：YR_CAMPUS_PAY_CNT(校园缴费)+MTH_UTIL_PAY_*(水电气缴费)，源表mbk_cust_log_fee
@@ -31,6 +32,8 @@ AS
   V_SIX_MONTH_AGO        VARCHAR2(8);      -- code=21 6月前
   V_CURR_YEAR_BEGIN      VARCHAR2(8);      -- code=13 本年1月1日
   V_CURR_MONTH_BEGIN     VARCHAR2(8);      -- code=9  本月1日
+  V_PREV_MONTH_BEGIN     VARCHAR2(8);      -- code=15 上月1日
+  V_PREV_MONTH_END       VARCHAR2(8);      -- code=2  上月末
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -51,6 +54,8 @@ BEGIN
   V_SIX_MONTH_AGO        := sys_fun_deal_date(V_SYSDAT, 21);  -- 21:6月前
   V_CURR_YEAR_BEGIN      := sys_fun_deal_date(V_SYSDAT, 13);  -- 13:本年1月1日
   V_CURR_MONTH_BEGIN     := sys_fun_deal_date(V_SYSDAT, 9);   -- 9:本月1日
+  V_PREV_MONTH_BEGIN     := sys_fun_deal_date(V_SYSDAT, 15);  -- 15:上月1日
+  V_PREV_MONTH_END       := sys_fun_deal_date(V_SYSDAT, 2);   -- 2:上月末
 
   ------------------------------------------------------------------
   -- 2. TMP1：清理目标表和所有临时表（全量快照模式）
@@ -65,12 +70,13 @@ BEGIN
   TRUNC_TMP('TMP_ADS_CRM_CUST_LABLE_04');
   TRUNC_TMP('TMP_ADS_CRM_CUST_LABLE_05');
   TRUNC_TMP('TMP_ADS_CRM_CUST_LABLE_06');
+  TRUNC_TMP('TMP_ADS_CRM_CUST_LABLE_07');
   COMMIT;
 
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP1 完成：清理目标表和6个临时表';
+  V_LOG_MSG := 'TMP1 完成：清理目标表和7个临时表';
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(
@@ -154,7 +160,7 @@ BEGIN
     ) m
    GROUP BY CUST_ID, PERSN_LEGAL_BK_CODE;
 
-  -- 3.5 当年校园缴费笔数（tran_type='1', tran_status='1'）
+  -- 3.5 当年校园缴费笔数（tran_type='1', tran_status='1',cust_status = '1'）
   INSERT INTO TMP_ADS_CRM_CUST_LABLE_05 (
       PERSN_LEGAL_BK_CODE,
       CUST_ID,
@@ -168,10 +174,11 @@ BEGIN
       ON i.cust_no = f.cust_no
    WHERE f.tran_type   = '1'
      AND f.tran_status = '1'
+     AND I.cust_status = '1'
      AND f.tran_date  >= V_CURR_YEAR_BEGIN
    GROUP BY i.cust_core_no, i.incorp_no;
 
-  -- 3.6 当月水电气缴费交易金额+笔数（tran_type='0', tran_status='1'）
+  -- 3.6 当月水电气缴费交易金额+笔数（tran_type='0', tran_status='1',cust_status = '1'）
   INSERT INTO TMP_ADS_CRM_CUST_LABLE_06 (
       PERSN_LEGAL_BK_CODE,
       CUST_ID,
@@ -187,15 +194,41 @@ BEGIN
       ON i.cust_no = f.cust_no
    WHERE f.tran_type   = '0'
      AND f.tran_status = '1'
+     AND I.cust_status = '1'
      AND f.tran_date  >= V_CURR_MONTH_BEGIN
    GROUP BY i.cust_core_no, i.incorp_no;
+
+  -- 3.7 收单商户上月交易（uepp_pay_order_info: status='02'，pay_time在上月范围内）
+  -- isscode映射法人行号：前2位=12/15/18 → isscode||'00'，其余 → '9999'
+  INSERT INTO TMP_ADS_CRM_CUST_LABLE_07 (
+      PERSN_LEGAL_BK_CODE,
+      CUST_ID,
+      BILL_RSV_MKNT_CNT_MTH_LAST,
+      BILL_RSV_MKNT_AMT_MTH_LAST
+  )
+  SELECT CASE WHEN SUBSTR(isscode, 1, 2) IN ('12', '15', '18')
+              THEN isscode || '00'
+              ELSE '9999'
+         END          AS PERSN_LEGAL_BK_CODE,
+         consumer_id  AS CUST_ID,
+         COUNT(*)     AS MKT_CNT,
+         SUM(order_amt) AS MKT_AMT
+    FROM crmdm.uepp_pay_order_info
+   WHERE status   = '02'                            -- 交易成功
+     AND SUBSTR(pay_time, 1, 8) >= V_PREV_MONTH_BEGIN
+     AND SUBSTR(pay_time, 1, 8) <= V_PREV_MONTH_END
+   GROUP BY CASE WHEN SUBSTR(isscode, 1, 2) IN ('12', '15', '18')
+                 THEN isscode || '00'
+                 ELSE '9999'
+            END,
+            consumer_id;
 
   COMMIT;
 
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP2 完成：6个临时表独立写入';
+  V_LOG_MSG := 'TMP2 完成：7个临时表独立写入';
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(
@@ -206,7 +239,7 @@ BEGIN
 
   ------------------------------------------------------------------
   -- 4. 目标表写入：多表LEFT JOIN汇聚
-  --    12个字段中10个已实现，2个待补充（收单商户）
+  --    12个字段全部实现
   ------------------------------------------------------------------
   V_NO_ID := '3';
   V_BGN_DATE := SYSDATE;
@@ -232,9 +265,8 @@ BEGIN
          NVL(c.NEAR_MTH_THIRD_PAY_OUT_CNT, 0),
          NVL(c.NEAR_MTH_THIRD_PAY_OUT_AMT, 0),
          NVL(d.IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME, 'N'),
-         -- 以下2个字段待补充材料后开发（收单商户）
-         NULL,
-         NULL,
+         NVL(g.BILL_RSV_MKNT_CNT_MTH_LAST, 0),
+         NVL(g.BILL_RSV_MKNT_AMT_MTH_LAST, 0),
          NVL(e.YR_CAMPUS_PAY_CNT, 0),
          NVL(f.MTH_UTIL_PAY_TRAN_AMT, 0),
          NVL(f.MTH_UTIL_PAY_TRAN_CNT, 0)
@@ -253,7 +285,10 @@ BEGIN
           AND e.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
     LEFT JOIN TMP_ADS_CRM_CUST_LABLE_06 f
            ON f.CUST_ID            = a.CUST_ID
-          AND f.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE;
+          AND f.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
+    LEFT JOIN TMP_ADS_CRM_CUST_LABLE_07 g
+           ON g.CUST_ID            = a.CUST_ID
+          AND g.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE;
 
   COMMIT;
 

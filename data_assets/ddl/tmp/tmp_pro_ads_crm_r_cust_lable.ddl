@@ -1,7 +1,7 @@
 -- ============================================================
 -- 对私客户标签表存储过程临时表建表语句
 -- 存储过程名称: PRC_ADS_CRM_R_CUST_LABLE
--- 需求版本: v1.3.0
+-- 需求版本: v1.3.1
 -- 设计：各段独立建临时表，最终多表汇聚到目标表
 -- ============================================================
 
@@ -47,4 +47,12 @@ CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_06 (
     CUST_ID                           VARCHAR2(20),       -- 核心客户号
     MTH_UTIL_PAY_TRAN_AMT             NUMBER(20,2),       -- 当月水电气缴费交易金额
     MTH_UTIL_PAY_TRAN_CNT             NUMBER(8)           -- 当月水电气缴费交易笔数
+);
+
+-- 07: 收单商户上月交易
+CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_07 (
+    PERSN_LEGAL_BK_CODE               VARCHAR2(4),        -- 法人行号
+    CUST_ID                           VARCHAR2(20),       -- 核心客户号
+    BILL_RSV_MKNT_CNT_MTH_LAST        NUMBER(8),          -- 收单商户上月交易笔数
+    BILL_RSV_MKNT_AMT_MTH_LAST        NUMBER(20,2)        -- 收单商户上月交易金额
 );
