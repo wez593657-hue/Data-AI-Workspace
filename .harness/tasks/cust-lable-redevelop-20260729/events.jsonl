@@ -28,3 +28,7 @@
 {"created_at": "2026-07-29T05:10:06+00:00", "event": "evidence_recorded", "evidence_id": "approval-001"}
 {"created_at": "2026-07-29T05:10:06+00:00", "event": "state_transition", "from": "FULL_VALIDATION_PASSED", "to": "USER_APPROVED"}
 {"created_at": "2026-07-29T07:05:33+00:00", "event": "evidence_recorded", "evidence_id": "supp-001"}
+{"created_at": "2026-07-29T09:53:39+00:00", "event": "evidence_recorded", "evidence_id": "supp-002"}
+{"created_at": "2026-07-29T09:53:55+00:00", "event": "evidence_recorded", "evidence_id": "review-qa-v131"}
+{"created_at": "2026-07-29T09:54:04+00:00", "event": "evidence_recorded", "evidence_id": "review-qb-v131"}
+{"created_at": "2026-07-29T09:54:12+00:00", "event": "evidence_recorded", "evidence_id": "review-qc-v131"}

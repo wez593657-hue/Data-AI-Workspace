@@ -1,0 +1,16 @@
+evidence_id: review-qb-v131
+task_id: cust-lable-redevelop-20260729
+phase: review
+kind: review
+purpose: qb_consistency_check
+result: passed
+details: QB一致性检查v1.3.1:4/4通过。SP/DDL/记忆卡片版本均为v1.3.1，INSERT列顺序与目标表DDL一致，TMP_07四字段全引用无孤儿，uepp_pay_order_info
+  DDL存在
+repository_revision: 20a9c99f6c81d0064ace3e97c37e9a63c3d070c4
+created_at: '2026-07-29T09:54:04+00:00'
+review_type: ''
+return_to: ''
+checked_files:
+- data_assets/stored_procedure/dws_to_ads/PRC_ADS_CRM_R_CUST_LABLE.sql
+rules_checked: []
+issues: []

@@ -1,0 +1,15 @@
+evidence_id: review-qa-v131
+task_id: cust-lable-redevelop-20260729
+phase: review
+kind: review
+purpose: qa_static_check
+result: passed
+details: QA静态检查v1.3.1:13/13通过。新增代码段3.7+步骤4LEFT JOIN TMP_07，无SELECT*无未标注NULL，日期参数全经由sys_fun_deal_date(code=15/2)，版本v1.3.1一致
+repository_revision: 20a9c99f6c81d0064ace3e97c37e9a63c3d070c4
+created_at: '2026-07-29T09:53:55+00:00'
+review_type: ''
+return_to: ''
+checked_files:
+- data_assets/stored_procedure/dws_to_ads/PRC_ADS_CRM_R_CUST_LABLE.sql
+rules_checked: []
+issues: []

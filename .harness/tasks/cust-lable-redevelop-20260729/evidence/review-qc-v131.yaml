@@ -1,0 +1,16 @@
+evidence_id: review-qc-v131
+task_id: cust-lable-redevelop-20260729
+phase: review
+kind: review
+purpose: qc_business_review
+result: passed
+details: QC业务审查v1.3.1:6/6通过。收单金额SUM(order_amt)+status=02、笔数COUNT(*)+status=02、consumer_id直接映射CUST_ID、isscode前2位12/15/18→加00其余→9999、pay_time
+  SUBSTR(1,8)转YYYYMMDD与日期参数比较、日期参数code=15/2语义正确
+repository_revision: 20a9c99f6c81d0064ace3e97c37e9a63c3d070c4
+created_at: '2026-07-29T09:54:12+00:00'
+review_type: ''
+return_to: ''
+checked_files:
+- data_assets/stored_procedure/dws_to_ads/PRC_ADS_CRM_R_CUST_LABLE.sql
+rules_checked: []
+issues: []
