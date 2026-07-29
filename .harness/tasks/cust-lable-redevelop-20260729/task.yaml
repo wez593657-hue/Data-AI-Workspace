@@ -5,7 +5,7 @@ workflow_profile: requirement_development
 state: USER_APPROVED
 branch: master
 created_at: '2026-07-29T05:07:14+00:00'
-updated_at: '2026-07-29T05:10:06+00:00'
+updated_at: '2026-07-29T07:05:33+00:00'
 evidence_ids:
 - analysis-001
 - route-001
@@ -22,6 +22,7 @@ evidence_ids:
 - tmp-001
 - full-val-001
 - approval-001
+- supp-001
 allowed_paths: []
 forbidden_paths: []
 history:
