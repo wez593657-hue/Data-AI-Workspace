@@ -1,34 +1,25 @@
-# ADS数据字典 - ADS_CUST_NEW_CUST_DTL
+# 新客经营明细
 
-## 表信息
-
-| 属性 | 值 |
-| --- | --- |
-| 层级 | ADS - 应用数据层 |
-| 表名 | ADS_CUST_NEW_CUST_DTL |
-| 中文名称 | 新客经营明细 |
-| 来源模型 | ADS应用层数据模型_CRM_ V1.0.xlsx / 新客经营明细 |
-| 更新时间 | 2026-07-20 |
+**表名**: `ADS_CUST_NEW_CUST_DTL`  
+**中文名**: 新客经营明细  
+**来源**: Mapping Excel (ADS应用层数据模型)  
+**更新时间**: 2026-07-29  
 
 ## 字段列表
 
-| 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 4 | 【待确认】 | - | - | - | - | 法人行号 |
-| DATA_DATE | 数据日期 | VARCHAR | 8 | 【待确认】 | - | - | - | - | 数据日期 |
-| CUST_ID | 客户编号 | VARCHAR | 20 | 【待确认】 | - | - | - | - | 客户编号 |
-| CUST_NAME | 客户名称 | VARCHAR | 100 | 【待确认】 | - | - | - | - | 客户名称 |
-| CUST_LVL | 客户等级 | VARCHAR | 2 | 【待确认】 | - | - | - | - | 客户等级 |
-| NEW_CUST_CYCLE | 新客周期 | VARCHAR | 1 | 【待确认】 | - | - | - | - | 新客周期 |
-| DEPO_CURNT_DEPO_BAL | 活期余额 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 活期余额 |
-| FIXD_DEPO_BAL | 定期余额 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 定期余额 |
-| FIN_AMT | 理财余额 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 理财余额 |
-| CNTCT_STATE | 接触状态 | VARCHAR | 1 | 【待确认】 | - | - | - | - | 接触状态 |
-| KYC_STATE | KYC状态 | VARCHAR | 1 | 【待确认】 | - | - | - | - | KYC状态 |
-| POST_ID | 管户经理 | VARCHAR | 20 | 【待确认】 | - | - | - | - | 管户经理 |
-| ORG_ID | 归属机构 | VARCHAR | 7 | 【待确认】 | - | - | - | - | 归属机构 |
-| STATIS_CYCLE | 统计周期(月/季/年) | VARCHAR | 2 | 【待确认】 | - | - | - | - | 统计周期(月/季/年) |
-
----
-
-*数据字典版本: v1.0 | 生成时间: 2026-07-20*
+| 字段名 | 数据类型 | 中文名 | 备注 |
+|---|---|---|---|
+| PERSN_LEGAL_BK_CODE | VARCHAR2(4) | 法人行号 | |
+| DATA_DATE | VARCHAR2(8) | 数据日期 | |
+| CUST_ID | VARCHAR2(20) | 客户编号 | |
+| CUST_NAME | VARCHAR2(100) | 客户名称 | |
+| CUST_LVL | VARCHAR2(2) | 客户等级 | |
+| NEW_CUST_CYCLE | VARCHAR2(1) | 新客周期 | |
+| DEPO_CURNT_DEPO_BAL | NUMBER(20,2) | 活期余额 | |
+| FIXD_DEPO_BAL | NUMBER(20,2) | 定期余额 | |
+| FIN_AMT | NUMBER(20,2) | 理财余额 | |
+| CNTCT_STATE | VARCHAR2(1) | 接触状态 | |
+| KYC_STATE | VARCHAR2(1) | KYC状态 | |
+| POST_ID | VARCHAR2(20) | 管户经理 | |
+| ORG_ID | VARCHAR2(7) | 归属机构 | |
+| STATIS_CYCLE | VARCHAR2(2) | 统计周期(月/季/年) | |

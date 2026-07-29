@@ -1,0 +1,20 @@
+evidence_id: E-0006
+task_id: ads-excel-to-ddl-md-20260728
+phase: USER_SCOPE_CONFIRMED
+kind: skill_execution
+purpose: skill_execution
+result: passed
+input_workbook: data_assets/mapping/dws_to_ads/ADS应用层数据模型_CRM_ V1.0.xlsx
+skills:
+  - kingbase-ddl-generator
+  - mapping_excel_sync
+steps:
+  - excel_to_mapping
+  - excel_to_ddl
+  - excel_to_dictionary
+output_files:
+  - data_assets/ddl/ads/
+  - data_assets/data_dictionary/ads/
+details: 从ADS应用层数据模型Excel全量生成20张表DDL和MD数据字典文件
+repository_revision: 9bfb54024de0376f3d32e2f9d87c049c17ec898c
+created_at: '2026-07-29T02:17:05+00:00'

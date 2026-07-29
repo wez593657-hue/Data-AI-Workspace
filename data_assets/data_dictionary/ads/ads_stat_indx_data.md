@@ -1,33 +1,24 @@
-# ADS数据字典 - ADS_STAT_INDX_DATA
+# 指标数据统计
 
-## 表信息
-
-| 属性 | 值 |
-| --- | --- |
-| 层级 | ADS - 应用数据层 |
-| 表名 | ADS_STAT_INDX_DATA |
-| 中文名称 | 指标数据统计 |
-| 来源模型 | ADS应用层数据模型_CRM_ V1.0.xlsx / 指标数据统计 |
-| 更新时间 | 2026-07-20 |
+**表名**: `ADS_STAT_INDX_DATA`  
+**中文名**: 指标数据统计  
+**来源**: Mapping Excel (ADS应用层数据模型)  
+**更新时间**: 2026-07-29  
 
 ## 字段列表
 
-| 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| INDX_CODE | 指标编码 | VARCHAR | 100 | 【待确认】 | - | - | - | - | 指标编码 |
-| DATA_BLNG | 数据归属 | VARCHAR | 100 | 【待确认】 | - | - | - | - | 数据归属 |
-| STATIS_DIM | 统计维度 | VARCHAR | 100 | 【待确认】 | - | - | - | - | 统计维度 |
-| STATIS_CALIB | 统计口径 | VARCHAR | 100 | 【待确认】 | - | - | - | - | 统计口径 |
-| CURNT_VAL | 本期值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 本期值 |
-| TERM_LAST_VAL | 上期值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 上期值 |
-| MTH_END_VAL | 月末值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 月末值 |
-| YR_BGN_VAL | 年初值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 年初值 |
-| MTH_LAST_END_AVG_DAY_VAL | 上月末日均值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 上月末日均值 |
-| YR_LAST_END_AVG_DAY_VAL | 上年末日均值 | NUMBER | 20,2 | 【待确认】 | - | - | - | - | 上年末日均值 |
-| DATA_DATE | 数据日期 | VARCHAR | 10 | 【待确认】 | - | - | - | - | 数据日期 |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 30 | 【待确认】 | - | - | - | - | 法人行号 |
-| ID | [NULL] | VARCHAR | 10 | 【待确认】 | - | - | - | - | [NULL] |
-
----
-
-*数据字典版本: v1.0 | 生成时间: 2026-07-20*
+| 字段名 | 数据类型 | 中文名 | 备注 |
+|---|---|---|---|
+| INDX_CODE | VARCHAR2(100) | 指标编码 | |
+| DATA_BLNG | VARCHAR2(100) | 数据归属 | |
+| STATIS_DIM | VARCHAR2(100) | 统计维度 | |
+| STATIS_CALIB | VARCHAR2(100) | 统计口径 | |
+| CURNT_VAL | NUMBER(20,2) | 本期值 | |
+| TERM_LAST_VAL | NUMBER(20,2) | 上期值 | |
+| MTH_END_VAL | NUMBER(20,2) | 月末值 | |
+| YR_BGN_VAL | NUMBER(20,2) | 年初值 | |
+| MTH_LAST_END_AVG_DAY_VAL | NUMBER(20,2) | 上月末日均值 | |
+| YR_LAST_END_AVG_DAY_VAL | NUMBER(20,2) | 上年末日均值 | |
+| DATA_DATE | VARCHAR2(10) | 数据日期 | |
+| PERSN_LEGAL_BK_CODE | VARCHAR2(30) | 法人行号 | |
+| ID | VARCHAR2(10) | [NULL] | |

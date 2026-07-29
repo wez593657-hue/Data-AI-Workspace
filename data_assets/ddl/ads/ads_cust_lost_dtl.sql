@@ -1,28 +1,26 @@
 /*
  * ADS_CUST_LOST_DTL
  * 中文名称: 客户流失清单
- * 版本: v2.3.0
- * 创建时间: 2026-07-20
- * 变更记录:
- *   v2.3.0 2026-07-28 新增RESCUED_FINA_ASSET字段；月/季/年切片接触状态按不同时间窗口独立计算
+ * 版本: v1.0.0
+ * 创建时间: 2026-07-29
+ * 来源: Mapping Excel (ADS应用层数据模型)
  */
 
 CREATE TABLE IF NOT EXISTS ADS_CUST_LOST_DTL (
-    PERSN_LEGAL_BK_CODE VARCHAR(4),     -- 法人行号
-    DATA_DATE           VARCHAR(8),     -- 数据日期
-    CUST_ID             VARCHAR(20),    -- 客户编号
-    CUST_NAME           VARCHAR(100),   -- 客户名称
-    CUST_LVL            VARCHAR(2),     -- 客户等级
-    LVL_CHURN           VARCHAR(2),     -- 流失等级
-    DEPO_CURNT_DEPO_BAL NUMBER(20,2),   -- 活期余额
-    FIXD_DEPO_BAL       NUMBER(20,2),  -- 定期余额
-    FIN_AMT             NUMBER(20,2),  -- 理财余额
-    CNTCT_STATE         VARCHAR(1),     -- 接触状态
-    RESCUE_STATE        VARCHAR(1),     -- 挽回状态
-    RESCUED_FINA_ASSET  NUMBER(20,2),  -- 已挽回金融资产
-    POST_ID             VARCHAR(20),    -- 管户经理
-    ORG_ID              VARCHAR(7),     -- 归属机构
-    STATIS_CYCLE        VARCHAR(2)      -- 统计周期：M-月,Q-季,Y-年
+    PERSN_LEGAL_BK_CODE  VARCHAR2(4)  , -- 法人行号
+    DATA_DATE            VARCHAR2(8)  , -- 数据日期
+    CUST_ID              VARCHAR2(20) , -- 客户编号
+    CUST_NAME            VARCHAR2(100), -- 客户名称
+    CUST_LVL             VARCHAR2(2)  , -- 客户等级
+    LVL_CHURN            VARCHAR2(2)  , -- 流失等级
+    DEPO_CURNT_DEPO_BAL  NUMBER(20,2) , -- 活期余额
+    FIXD_DEPO_BAL        NUMBER(20,2) , -- 定期余额
+    FIN_AMT              NUMBER(20,2) , -- 理财余额
+    CNTCT_STATE          VARCHAR2(1)  , -- 接触状态
+    RESCUE_STATE         VARCHAR2(1)  , -- 挽回状态
+    POST_ID              VARCHAR2(20) , -- 管户经理
+    ORG_ID               VARCHAR2(7)  , -- 归属机构
+    STATIS_CYCLE         VARCHAR2(2)    -- 统计周期(月/季/年)
 );
 
 COMMENT ON TABLE ADS_CUST_LOST_DTL IS '客户流失清单';
@@ -37,7 +35,6 @@ COMMENT ON COLUMN ADS_CUST_LOST_DTL.FIXD_DEPO_BAL IS '定期余额';
 COMMENT ON COLUMN ADS_CUST_LOST_DTL.FIN_AMT IS '理财余额';
 COMMENT ON COLUMN ADS_CUST_LOST_DTL.CNTCT_STATE IS '接触状态';
 COMMENT ON COLUMN ADS_CUST_LOST_DTL.RESCUE_STATE IS '挽回状态';
-COMMENT ON COLUMN ADS_CUST_LOST_DTL.RESCUED_FINA_ASSET IS '已挽回金融资产';
 COMMENT ON COLUMN ADS_CUST_LOST_DTL.POST_ID IS '管户经理';
 COMMENT ON COLUMN ADS_CUST_LOST_DTL.ORG_ID IS '归属机构';
-COMMENT ON COLUMN ADS_CUST_LOST_DTL.STATIS_CYCLE IS '统计周期：M-月,Q-季,Y-年';
+COMMENT ON COLUMN ADS_CUST_LOST_DTL.STATIS_CYCLE IS '统计周期(月/季/年)';

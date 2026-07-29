@@ -1,38 +1,38 @@
 /*
  * ADS_MKT_REC_INFO
  * 中文名称: 营销记录表
- * 版本: v1.0
- * 创建时间: 2026-07-20
+ * 版本: v1.0.0
+ * 创建时间: 2026-07-29
+ * 来源: Mapping Excel (ADS应用层数据模型)
  */
 
 CREATE TABLE IF NOT EXISTS ADS_MKT_REC_INFO (
-    MKT_REC_SEQ_ID VARCHAR(40),
-    REL_ID VARCHAR(40),
-    MKT_TYP VARCHAR(6),
-    REL_TYP VARCHAR(6),
-    CUST_ID VARCHAR(20),
-    CUST_NAME VARCHAR(100),
-    MKT_SITE VARCHAR(200),
-    MKT_TIME VARCHAR(20),
-    MKT_PERSN VARCHAR(30),
-    MKT_PERSN_NAME VARCHAR(64),
-    MKT_ORG VARCHAR(7),
-    MKT_DURA VARCHAR(20),
-    MKT_DTL_SITU VARCHAR(400),
-    MKT_APDIX_ID VARCHAR(40),
-    TEMP_ID VARCHAR(40),
-    TEMP_NAME VARCHAR(100),
-    MSG_SHORT_SEQ_ID VARCHAR(40),
-    PERSN_LEGAL_BK_CODE VARCHAR(30),
-    CORDNAT_VISITOR VARCHAR(100),
-    CORDNAT_VISITOR_NAME VARCHAR(200),
-    LGTUD VARCHAR(40),
-    LATTUD VARCHAR(40),
-    TEL_NO VARCHAR(40),
-    CHNL_NO VARCHAR(6),
-    RMARK VARCHAR(400),
-    NO_BAT VARCHAR(40),
-    MSG_SHORT_INF VARCHAR(500)
+    MKT_REC_SEQ_ID        VARCHAR2, -- 营销记录流水号
+    REL_ID                VARCHAR2, -- 关联ID(商机ID、客户群ID/营销活动ID)
+    MKT_TYP               VARCHAR2, -- 营销类型(1面访/2电话/3短信/4企微)
+    REL_TYP               VARCHAR2, -- 关联类型(客户群/商机/营销活动)
+    CUST_ID               VARCHAR2, -- 客户ID
+    CUST_NAME             VARCHAR2, -- 客户名称
+    MKT_SITE              VARCHAR2, -- 营销地点
+    MKT_TIME              VARCHAR2, -- 营销时间
+    MKT_PERSN             VARCHAR2, -- 营销人ID
+    MKT_PERSN_NAME        VARCHAR2, -- 营销人名称
+    MKT_ORG               VARCHAR2, -- 营销机构
+    MKT_DURA              VARCHAR2, -- 营销时长
+    MKT_DTL_SITU          VARCHAR2, -- 营销详细情况
+    MKT_APDIX_ID          VARCHAR2, -- 营销附件ID(录音/图片)
+    TEMP_ID               VARCHAR2, -- 模板ID
+    TEMP_NAME             VARCHAR2, -- 模板名称
+    MSG_SHORT_SEQ_ID      VARCHAR2, -- 短信流水号
+    PERSN_LEGAL_BK_CODE   VARCHAR2, -- 法人行号
+    CORDNAT_VISITOR       VARCHAR2, -- 协同拜访人
+    CORDNAT_VISITOR_NAME  VARCHAR2, -- 协同拜访人名称
+    LGTUD                 VARCHAR2, -- 经度
+    LATTUD                VARCHAR2, -- 纬度
+    TEL_NO                VARCHAR2, -- 联系电话
+    CHNL_NO               VARCHAR2, -- 渠道编号
+    NO_BAT                VARCHAR2, -- 批次号
+    MSG_SHORT_INF         VARCHAR2  -- 短信内容
 );
 
 COMMENT ON TABLE ADS_MKT_REC_INFO IS '营销记录表';
@@ -60,6 +60,5 @@ COMMENT ON COLUMN ADS_MKT_REC_INFO.LGTUD IS '经度';
 COMMENT ON COLUMN ADS_MKT_REC_INFO.LATTUD IS '纬度';
 COMMENT ON COLUMN ADS_MKT_REC_INFO.TEL_NO IS '联系电话';
 COMMENT ON COLUMN ADS_MKT_REC_INFO.CHNL_NO IS '渠道编号';
-COMMENT ON COLUMN ADS_MKT_REC_INFO.RMARK IS '备注';
 COMMENT ON COLUMN ADS_MKT_REC_INFO.NO_BAT IS '批次号';
 COMMENT ON COLUMN ADS_MKT_REC_INFO.MSG_SHORT_INF IS '短信内容';

@@ -1,0 +1,36 @@
+schema_version: '0.1'
+task_id: ads-excel-to-ddl-md-20260728
+user_confirmation: confirmed
+objective: 同步ADS应用层数据模型Excel变更至DDL和MD数据字典文件。Excel为最高优先级规范源。
+allowed_changes:
+  # 14张表：Excel字段多于DDL，需补充
+  - path: data_assets/ddl/ads/ads_cust_new_cust_dtl.sql
+  - path: data_assets/ddl/ads/ads_cust_new_cust_statis.sql
+  - path: data_assets/ddl/ads/ads_cust_sleep_wake_dtl.sql
+  - path: data_assets/ddl/ads/ads_cust_sleep_wake_statis.sql
+  - path: data_assets/ddl/ads/ads_report_0001.sql
+  - path: data_assets/ddl/ads/ads_stat_indx_data.sql
+  - path: data_assets/ddl/ads/ads_mkt_tsk_info.sql
+  - path: data_assets/ddl/ads/ads_mkt_act_tsk_mon.sql
+  - path: data_assets/ddl/ads/ads_mkt_act_tsk_mon_zb.sql
+  - path: data_assets/ddl/ads/ads_mkt_rec_info.sql
+  - path: data_assets/ddl/ads/ads_mkt_task_indx_sub_cmplt.sql
+  - path: data_assets/ddl/ads/ads_cust_indv_poten.sql
+  - path: data_assets/ddl/ads/ads_cust_others_rmnd.sql
+  - path: data_assets/ddl/ads/ads_cust_prdkt_rcmd.sql
+  # 2张表：删除DDL多余字段
+  - path: data_assets/ddl/ads/ads_cust_deadline_rmnd_statis.sql
+  - path: data_assets/ddl/ads/ads_cust_lost_dtl.sql
+  # 16张表对应的MD数据字典同步
+  - path: data_assets/data_dictionary/ads/
+  # 类型格式统一：VARCHAR→VARCHAR2, NUMBER→NUMBER(precision)
+  - path: data_assets/ddl/ads/ads_mkt_task_indx_sub_cmplt.sql
+  - path: data_assets/ddl/ads/ads_stat_indx_data.sql
+  - path: data_assets/ddl/ads/ads_mkt_tsk_info.sql
+  - path: data_assets/ddl/ads/ads_mkt_rec_info.sql
+  - path: data_assets/ddl/ads/ads_cust_indv_poten.sql
+  - path: data_assets/ddl/ads/ads_cust_others_rmnd.sql
+  - path: data_assets/ddl/ads/ads_cust_prdkt_rcmd.sql
+read_only_inputs:
+  - path: data_assets/mapping/dws_to_ads/ADS应用层数据模型_CRM_ V1.0.xlsx
+forbidden_changes: []

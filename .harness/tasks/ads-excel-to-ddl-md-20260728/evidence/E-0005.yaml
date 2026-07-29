@@ -1,0 +1,9 @@
+evidence_id: E-0005
+task_id: ads-excel-to-ddl-md-20260728
+phase: CHANGE_SCOPE_IDENTIFIED
+kind: scope_confirmation
+purpose: scope_confirmation
+result: passed
+details: 用户确认变更范围:14张表补充字段+类型修正,2张表删除多余字段(选项B),Excel为最高优先级规范源
+repository_revision: 9bfb54024de0376f3d32e2f9d87c049c17ec898c
+created_at: '2026-07-29T02:12:47+00:00'

@@ -1,0 +1,9 @@
+evidence_id: E-0007
+task_id: ads-excel-to-ddl-md-20260728
+phase: USER_SCOPE_CONFIRMED
+kind: asset_update
+purpose: asset_update
+result: passed
+details: 20张表DDL+MD全量更新完成。14张表补充Excel字段，2张表删除多余字段(FIX_DEPO_*已从deadline_rmnd_statis删除，RESCUED_FINA_ASSET已从lost_dtl删除)，类型格式统一为VARCHAR2/NUMBER(precision)
+repository_revision: 9bfb54024de0376f3d32e2f9d87c049c17ec898c
+created_at: '2026-07-29T02:17:49+00:00'

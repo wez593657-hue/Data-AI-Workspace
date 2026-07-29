@@ -41,5 +41,7 @@ Before `USER_SCOPE_CONFIRMED -> ASSETS_UPDATED`, record `purpose=skill_execution
 - Do not guess missing fields, types, comments, or mappings.
 - Do not manually patch Excel-derived DDL or data dictionaries as a substitute for `kingbase-ddl-generator`.
 - Do not manually patch a procedure as a substitute for `prc-sql` when the task includes procedure output.
+- Mapping Excel is the highest-priority canonical source for table structure. When DDL, MD, or data dictionary conflicts with Excel, Excel always wins and DDL/MD must be updated to match.
+- Do not add, remove, or rename fields in any target table DDL without explicit user confirmation. Even when Excel is the canonical source, field additions/deletions/renames that would modify the target table schema must be listed in the change scope and confirmed by the user before execution.
 - Work on `master` only; do not create or switch Git branches.
 - Commit and push only after explicit user confirmation.

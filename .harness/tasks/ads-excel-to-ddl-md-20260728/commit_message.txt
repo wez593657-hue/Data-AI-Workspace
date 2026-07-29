@@ -1,0 +1,8 @@
+sync: 同步ADS应用层数据模型Excel至DDL和MD数据字典
+
+Task: ads-excel-to-ddl-md-20260728
+- 20张ADS表DDL+MD全量同步Excel（最高优先级规范源）
+- 2张表删除多余字段(FIX_DEPO_*从deadline_rmnd_statis、RESCUED_FINA_ASSET从lost_dtl)
+- 14张表补充Excel有DDL无的字段
+- 类型格式统一为VARCHAR2/NUMBER(precision)
+- Skill强约束: Excel优先级规则记录、目标表字段变更需用户确认

@@ -1,0 +1,19 @@
+evidence_id: E-0008
+task_id: ads-excel-to-ddl-md-20260728
+phase: ASSETS_UPDATED
+kind: review
+purpose: schema_consistency_review
+result: passed
+review_type: schema_consistency
+checked_files:
+  - data_assets/ddl/ads/
+  - data_assets/data_dictionary/ads/
+rules_checked:
+  - DDL与MD字段名一致性
+  - DDL与MD字段类型一致性
+  - DDL与MD字段数量一致性
+issues: []
+return_to: null
+details: 20张ADS表DDL与MD同源Excel生成，字段完全一致。
+repository_revision: 9bfb54024de0376f3d32e2f9d87c049c17ec898c
+created_at: '2026-07-29T02:19:07+00:00'

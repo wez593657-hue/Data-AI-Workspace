@@ -1,22 +1,21 @@
 /*
  * ADS_CUST_PRDKT_RCMD
  * 中文名称: 到期承接推荐产品
- * 版本: v1.0
- * 创建时间: 2026-07-20
+ * 版本: v1.0.0
+ * 创建时间: 2026-07-29
+ * 来源: Mapping Excel (ADS应用层数据模型)
  */
 
 CREATE TABLE IF NOT EXISTS ADS_CUST_PRDKT_RCMD (
-    DATA_DATE VARCHAR(8),
-    CUST_ID VARCHAR(20),
-    PRDKT_ID VARCHAR(30),
-    PRDKT_NAME VARCHAR(100),
-    MATCH_DEG_PRDKT NUMBER(18,
-    2),
-    PRDKT_TYP VARCHAR(6),
-    RATE_INTRI NUMBER(18,
-    2),
-    RISK_LVL VARCHAR(10),
-    MKT_SCRIPT VARCHAR(1000)
+    DATA_DATE        VARCHAR2, -- 数据日期
+    CUST_ID          VARCHAR2, -- 客户编号
+    PRDKT_ID         VARCHAR2, -- 产品编号
+    PRDKT_NAME       VARCHAR2, -- 产品名称
+    MATCH_DEG_PRDKT  NUMBER  , -- 产品匹配度
+    PRDKT_TYP        VARCHAR2, -- 产品类型
+    RATE_INTRI       NUMBER  , -- 利率或预期收益率
+    RISK_LVL         VARCHAR2, -- 风险等级
+    MKT_SCRIPT       VARCHAR2  -- 营销话术
 );
 
 COMMENT ON TABLE ADS_CUST_PRDKT_RCMD IS '到期承接推荐产品';

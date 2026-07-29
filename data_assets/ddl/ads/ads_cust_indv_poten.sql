@@ -1,43 +1,41 @@
 /*
  * ADS_CUST_INDV_POTEN
  * 中文名称: 零售潜在客户信息
- * 版本: v1.0
- * 创建时间: 2026-07-20
+ * 版本: v1.0.0
+ * 创建时间: 2026-07-29
+ * 来源: Mapping Excel (ADS应用层数据模型)
  */
 
 CREATE TABLE IF NOT EXISTS ADS_CUST_INDV_POTEN (
-    POTEN_CUST_ID VARCHAR(40),
-    POTEN_CUST_NAME VARCHAR(100),
-    POTEN_TYP VARCHAR(6),
-    POTEN_CUST_TYP VARCHAR(6),
-    GENDER VARCHAR(6),
-    CERT_TYP VARCHAR(6),
-    CERT_ID VARCHAR(32),
-    TEL_NO VARCHAR(32),
-    INTENT_DSC VARCHAR(400),
-    DTL_ADDRS VARCHAR(400),
-    CREATR VARCHAR(20),
-    CREAT_TIME VARCHAR(20),
-    POTEN_CUST_STATE VARCHAR(6),
-    LPR_ID VARCHAR(4),
-    SRC_TYP VARCHAR(6),
-    MKT_PERSN VARCHAR(20),
-    ALLO_DATE VARCHAR(8),
-    MKT_ORG VARCHAR(7),
-    SERV_ENTER VARCHAR(200),
-    POST VARCHAR(6),
-    MTH_INCOM NUMBER(20,
-    2),
-    YR_INCOM NUMBER(20,
-    2),
-    RMARK VARCHAR(400),
-    INF_KLKT_DATE VARCHAR(10),
-    UNIT_ADDRS VARCHAR(200),
-    INTN_PRDKT VARCHAR(60),
-    NO_BAT VARCHAR(40),
-    CUST_ID VARCHAR(21),
-    POT_CNVRT_PRDKT VARCHAR(60),
-    POT_CNVRT_ORG VARCHAR(6)
+    POTEN_CUST_ID     VARCHAR2(40) , -- 潜在客户号(自增键)
+    POTEN_CUST_NAME   VARCHAR2(100), -- 潜在客户名称
+    POTEN_TYP         VARCHAR2(6)  , -- 潜客类型
+    POTEN_CUST_TYP    VARCHAR2(6)  , -- 潜在客户类型
+    GENDER            VARCHAR2(6)  , -- 性别
+    CERT_TYP          VARCHAR2(6)  , -- 证件类型
+    CERT_ID           VARCHAR2(32) , -- 证件号码
+    TEL_NO            VARCHAR2(32) , -- 联系电话
+    INTENT_DSC        VARCHAR2(400), -- 备注说明
+    DTL_ADDRS         VARCHAR2(400), -- 居住地址
+    CREATR            VARCHAR2(20) , -- 创建人
+    CREAT_TIME        VARCHAR2(20) , -- 创建时间
+    POTEN_CUST_STATE  VARCHAR2(6)  , -- 潜在客户状态
+    LPR_ID            VARCHAR2(4)  , -- 法人行号
+    SRC_TYP           VARCHAR2(6)  , -- 来源类型
+    MKT_PERSN         VARCHAR2(20) , -- 客户经理
+    ALLO_DATE         VARCHAR2(8)  , -- 分配日期(创建时和创建日期一致)
+    MKT_ORG           VARCHAR2(7)  , -- 归属机构
+    SERV_ENTER        VARCHAR2(200), -- 工作单位
+    POST              VARCHAR2(6)  , -- 职位
+    MTH_INCOM         NUMBER(20,2) , -- 月收入
+    YR_INCOM          NUMBER(20,2) , -- 年收入
+    INF_KLKT_DATE     VARCHAR2(10) , -- 潜客转化日期
+    UNIT_ADDRS        VARCHAR2(200), -- 工作单位地址
+    INTN_PRDKT        VARCHAR2(60) , -- 意向产品
+    NO_BAT            VARCHAR2(40) , -- 批次号
+    CUST_ID           VARCHAR2(21) , -- 转化后核心客户号
+    POT_CNVRT_PRDKT   VARCHAR2(60) , -- 潜客转化产品
+    POT_CNVRT_ORG     VARCHAR2(6)    -- 潜客转化机构
 );
 
 COMMENT ON TABLE ADS_CUST_INDV_POTEN IS '零售潜在客户信息';
@@ -63,7 +61,6 @@ COMMENT ON COLUMN ADS_CUST_INDV_POTEN.SERV_ENTER IS '工作单位';
 COMMENT ON COLUMN ADS_CUST_INDV_POTEN.POST IS '职位';
 COMMENT ON COLUMN ADS_CUST_INDV_POTEN.MTH_INCOM IS '月收入';
 COMMENT ON COLUMN ADS_CUST_INDV_POTEN.YR_INCOM IS '年收入';
-COMMENT ON COLUMN ADS_CUST_INDV_POTEN.RMARK IS '备注';
 COMMENT ON COLUMN ADS_CUST_INDV_POTEN.INF_KLKT_DATE IS '潜客转化日期';
 COMMENT ON COLUMN ADS_CUST_INDV_POTEN.UNIT_ADDRS IS '工作单位地址';
 COMMENT ON COLUMN ADS_CUST_INDV_POTEN.INTN_PRDKT IS '意向产品';

@@ -1,0 +1,10 @@
+evidence_id: E-0003
+task_id: ads-excel-to-ddl-md-20260728
+phase: MAPPING_EXCEL_ANALYZED
+kind: related_files_scan
+purpose: related_files_scan
+result: passed
+details: 已扫描16张ADS表的DDL文件和对应MD文件。14张表Excel字段多于DDL，2张表DDL有多余字段需删除。类型格式差异涉及7张表(VARCHAR→VARCHAR2,
+  NUMBER→NUMBER(precision))。
+repository_revision: 9bfb54024de0376f3d32e2f9d87c049c17ec898c
+created_at: '2026-07-29T02:12:10+00:00'

@@ -1,0 +1,9 @@
+evidence_id: E-0001
+task_id: ads-excel-to-ddl-md-20260728
+phase: CREATED
+kind: workflow_routing
+purpose: workflow_routing
+result: passed
+details: '路由结果: profile=schema_change, skill=crm-schema-change, 匹配词=Mapping Excel变更/同步DDL/MD/数据字典对齐'
+repository_revision: 9bfb54024de0376f3d32e2f9d87c049c17ec898c
+created_at: '2026-07-29T01:52:30+00:00'

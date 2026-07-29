@@ -1,36 +1,26 @@
-# ADS数据字典 - ADS_MKT_TSK_INFO
+# 营销任务表
 
-## 表信息
-
-| 属性 | 值 |
-| --- | --- |
-| 层级 | ADS - 应用数据层 |
-| 表名 | ADS_MKT_TSK_INFO |
-| 中文名称 | 营销任务表 |
-| 来源模型 | ADS应用层数据模型_CRM_ V1.0.xlsx / 营销任务表 |
-| 更新时间 | 2026-07-20 |
+**表名**: `ADS_MKT_TSK_INFO`  
+**中文名**: 营销任务表  
+**来源**: Mapping Excel (ADS应用层数据模型)  
+**更新时间**: 2026-07-29  
 
 ## 字段列表
 
-| 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| MKT_TSK_ID | 营销任务编号 | VARCHAR | 40 | 【待确认】 | - | - | - | - | 营销任务编号 |
-| MKT_ACT_ID | 活动编号 | VARCHAR | 40 | 【待确认】 | - | - | - | - | 活动编号 |
-| CUST_ID | 客户编号 | VARCHAR | 21 | 【待确认】 | - | - | - | - | 客户编号 |
-| CUST_NAME | 客户名称 | VARCHAR | 200 | 【待确认】 | - | - | - | - | 客户名称 |
-| COVER_FLG | 是否接触 | VARCHAR | 1 | 【待确认】 | - | - | - | - | 是否接触 |
-| CONVRS_FLG | 是否成功 | VARCHAR | 1 | 【待确认】 | - | - | - | - | 是否成功 |
-| MKT_PERSN | 营销人 | VARCHAR | 30 | 【待确认】 | - | - | - | - | 营销人 |
-| MKT_PERSN_ORG | 营销人机构 | VARCHAR | 7 | 【待确认】 | - | - | - | - | 营销人机构 |
-| CREATR | 创建人 | VARCHAR | 64 | 【待确认】 | - | - | - | - | 创建人 |
-| CREAT_TIME | 创建时间 | VARCHAR | 20 | 【待确认】 | - | - | - | - | 创建时间 |
-| CREAT_ORG | 创建机构 | VARCHAR | 7 | 【待确认】 | - | - | - | - | 创建机构 |
-| BASE_VAL | 基数 | NUMBER | 18,4 | 【待确认】 | - | - | - | - | 基数 |
-| CURNT_VAL | 当前值 | NUMBER | 18,4 | 【待确认】 | - | - | - | - | 当前值 |
-| DATA_DATE | 数据日期 | VARCHAR | 30 | 【待确认】 | - | - | - | - | 数据日期 |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 30 | 【待确认】 | - | - | - | - | 法人行号 |
-| ACT_DSC | 备注 | VARCHAR | 2000 | 【待确认】 | - | - | - | - | 备注 |
-
----
-
-*数据字典版本: v1.0 | 生成时间: 2026-07-20*
+| 字段名 | 数据类型 | 中文名 | 备注 |
+|---|---|---|---|
+| MKT_TSK_ID | VARCHAR2(40) | 营销任务编号 | |
+| MKT_ACT_ID | VARCHAR2(40) | 活动编号 | |
+| CUST_ID | VARCHAR2(21) | 客户编号 | |
+| CUST_NAME | VARCHAR2(200) | 客户名称 | |
+| COVER_FLG | VARCHAR2(1) | 是否接触 | |
+| CONVRS_FLG | VARCHAR2(1) | 是否成功 | |
+| MKT_PERSN | VARCHAR2(30) | 营销人 | |
+| MKT_PERSN_ORG | VARCHAR2(7) | 营销人机构 | |
+| CREATR | VARCHAR2(64) | 创建人 | |
+| CREAT_TIME | VARCHAR2(20) | 创建时间 | |
+| CREAT_ORG | VARCHAR2(7) | 创建机构 | |
+| BASE_VAL | NUMBER(18,4) | 基数 | |
+| CURNT_VAL | NUMBER(18,4) | 当前值 | |
+| DATA_DATE | VARCHAR2(30) | 数据日期 | |
+| PERSN_LEGAL_BK_CODE | VARCHAR2(30) | 法人行号 | |

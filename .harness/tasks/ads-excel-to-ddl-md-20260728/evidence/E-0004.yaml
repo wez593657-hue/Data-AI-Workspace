@@ -1,0 +1,9 @@
+evidence_id: E-0004
+task_id: ads-excel-to-ddl-md-20260728
+phase: RELATED_FILES_SCANNED
+kind: change_scope
+purpose: change_scope
+result: passed
+details: 变更范围:14张表DDL补充字段+类型修正,2张表删除多余字段。ads_cust_deadline_rmnd_statis删除FIX_DEPO_EXPR_AMT/FIX_DEPO_TTL_EXPR_AMT/FIX_DEPO_UNDTAKE_RATE,ads_cust_lost_dtl删除RESCUED_FINA_ASSET。Excel为最高优先级规范源。
+repository_revision: 9bfb54024de0376f3d32e2f9d87c049c17ec898c
+created_at: '2026-07-29T02:12:25+00:00'

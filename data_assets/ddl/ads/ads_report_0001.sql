@@ -1,44 +1,32 @@
 /*
  * ADS_REPORT_0001
  * 中文名称: 机构客户层级资产月报表
- * 版本: v1.0
- * 创建时间: 2026-07-20
+ * 版本: v1.0.0
+ * 创建时间: 2026-07-29
+ * 来源: Mapping Excel (ADS应用层数据模型)
  */
 
 CREATE TABLE IF NOT EXISTS ADS_REPORT_0001 (
-    DATA_DATE VARCHAR(8),
-    BLNG_BRCH VARCHAR(7),
-    BLNG_BRCH_SUB VARCHAR(7),
-    BLNG_BRCH_NET VARCHAR(7),
-    ORG_PATH VARCHAR(20),
-    CUST_LVL VARCHAR(2),
-    CUST_CNT NUMBER(8),
-    AUM_BAL NUMBER(20,
-    2),
-    AUM_MTH_AVG NUMBER(20,
-    2),
-    COMN_FIXD_BAL NUMBER(20,
-    2),
-    LEHUI_BAL NUMBER(20,
-    2),
-    LARGEDP_BAL NUMBER(20,
-    2),
-    FIXD_SUM NUMBER(20,
-    2),
-    DEPO_CURNT_DEPO_BAL NUMBER(20,
-    2),
-    DEPO_SUM NUMBER(20,
-    2),
-    BIZ_SELF_FIN_BAL NUMBER(20,
-    2),
-    PROXY_SELL_FIN_BAL NUMBER(20,
-    2),
-    FIN_BAL_SUM NUMBER(20,
-    2),
-    INSUR_BAL NUMBER(20,
-    2),
-    LOAN_BAL NUMBER(20,
-    2)
+    DATA_DATE            VARCHAR2(8) , -- 数据日期
+    BLNG_BRCH            VARCHAR2(7) , -- 所属分行
+    BLNG_BRCH_SUB        VARCHAR2(7) , -- 所属支行
+    BLNG_BRCH_NET        VARCHAR2(7) , -- 所属网点
+    ORG_PATH             VARCHAR2(20), -- 机构路径
+    CUST_LVL             VARCHAR2(2) , -- 客户等级
+    CUST_CNT             NUMBER(8)   , -- 客户数
+    AUM_BAL              NUMBER(20,2), -- AUM余额
+    AUM_MTH_AVG          NUMBER(20,2), -- AUM月日均
+    COMN_FIXD_BAL        NUMBER(20,2), -- 普通定期余额
+    LEHUI_BAL            NUMBER(20,2), -- 乐惠存余额
+    LARGEDP_BAL          NUMBER(20,2), -- 大额存单余额
+    FIXD_SUM             NUMBER(20,2), -- 定期合计
+    DEPO_CURNT_DEPO_BAL  NUMBER(20,2), -- 活期余额
+    DEPO_SUM             NUMBER(20,2), -- 存款合计
+    BIZ_SELF_FIN_BAL     NUMBER(20,2), -- 自营理财余额
+    PROXY_SELL_FIN_BAL   NUMBER(20,2), -- 代销理财余额
+    FIN_BAL_SUM          NUMBER(20,2), -- 理财余额合计
+    INSUR_BAL            NUMBER(20,2), -- 保险余额
+    LOAN_BAL             NUMBER(20,2)  -- 贷款余额
 );
 
 COMMENT ON TABLE ADS_REPORT_0001 IS '机构客户层级资产月报表';

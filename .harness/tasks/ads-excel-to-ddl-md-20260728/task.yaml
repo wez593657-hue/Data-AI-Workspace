@@ -1,0 +1,67 @@
+schema_version: '0.1'
+task_id: ads-excel-to-ddl-md-20260728
+purpose: 同步ADS应用层数据模型Excel变更至DDL和MD数据字典文件
+workflow_profile: schema_change
+state: COMMIT_ALLOWED
+branch: master
+created_at: '2026-07-29T01:51:59+00:00'
+updated_at: '2026-07-29T02:41:57+00:00'
+evidence_ids:
+- E-0001
+- E-0002
+- E-0003
+- E-0004
+- E-0005
+- E-0006
+- E-0007
+- E-0008
+- E-0009
+- E-0010
+- E-0011
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-29T01:51:59+00:00'
+- from: CREATED
+  to: MAPPING_EXCEL_ANALYZED
+  reason: Excel分析完成，change_manifest已创建
+  at: '2026-07-29T02:12:02+00:00'
+- from: MAPPING_EXCEL_ANALYZED
+  to: RELATED_FILES_SCANNED
+  reason: 关联DDL和MD文件扫描完成
+  at: '2026-07-29T02:12:16+00:00'
+- from: RELATED_FILES_SCANNED
+  to: CHANGE_SCOPE_IDENTIFIED
+  reason: 变更范围已确定:14张表补充字段,2张表删除多余字段
+  at: '2026-07-29T02:12:31+00:00'
+- from: CHANGE_SCOPE_IDENTIFIED
+  to: USER_SCOPE_CONFIRMED
+  reason: 用户已确认变更范围
+  at: '2026-07-29T02:13:06+00:00'
+- from: USER_SCOPE_CONFIRMED
+  to: ASSETS_UPDATED
+  reason: 资产更新完成:20表DDL+MD全量同步Excel，mapping MD同步
+  at: '2026-07-29T02:18:24+00:00'
+- from: ASSETS_UPDATED
+  to: ASSETS_REVIEW_PASSED
+  reason: Schema一致性审查通过:DDL与MD同源Excel生成,字段完全一致
+  at: '2026-07-29T02:19:33+00:00'
+- from: ASSETS_REVIEW_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: 全量验证通过:73项测试全部OK
+  at: '2026-07-29T02:20:11+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户审批通过
+  at: '2026-07-29T02:41:33+00:00'
+- from: USER_APPROVED
+  to: RELEASE_APPROVED
+  reason: 进入发布审批
+  at: '2026-07-29T02:41:56+00:00'
+- from: RELEASE_APPROVED
+  to: COMMIT_ALLOWED
+  reason: 提交授权
+  at: '2026-07-29T02:41:57+00:00'
+state_seal: d5e6f98f2e5051423d7fa3eff995145a3aba828b74ed55f5eede714d0dbfe2e4

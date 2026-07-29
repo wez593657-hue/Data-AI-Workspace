@@ -1,37 +1,28 @@
-# ADS数据字典 - ADS_MKT_TASK_INDX_SUB_CMPLT
+# 指标任务完成情况
 
-## 表信息
-
-| 属性 | 值 |
-| --- | --- |
-| 层级 | ADS - 应用数据层 |
-| 表名 | ADS_MKT_TASK_INDX_SUB_CMPLT |
-| 中文名称 | 指标任务完成情况 |
-| 来源模型 | ADS应用层数据模型_CRM_ V1.0.xlsx / 指标任务完成情况 |
-| 更新时间 | 2026-07-20 |
+**表名**: `ADS_MKT_TASK_INDX_SUB_CMPLT`  
+**中文名**: 指标任务完成情况  
+**来源**: Mapping Excel (ADS应用层数据模型)  
+**更新时间**: 2026-07-29  
 
 ## 字段列表
 
-| 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| TSK_INDX_ID | 指标任务映射编号 | VARCHAR | 40 | 【待确认】 | - | - | - | - | 指标任务映射编号 |
-| TSK_ID | 任务编号 | VARCHAR | 40 | 【待确认】 | - | - | - | - | 任务编号 |
-| MAIN_TSK_ID | 主任务编号 | VARCHAR | 40 | 【待确认】 | - | - | - | - | 主任务编号 |
-| INDX_ID | 指标ID | VARCHAR | 40 | 【待确认】 | - | - | - | - | 指标ID |
-| TSK_NEXT_SEND_TYP | 任务下发类型(0总行下发,1分行/区行下发,2支行下发) | VARCHAR | 6 | 【待确认】 | - | - | - | - | 任务下发类型(0总行下发,1分行/区行下发,2支行下发) |
-| RSV_OBJ | 接收对象0机构1客户经理 | VARCHAR | 6 | 【待确认】 | - | - | - | - | 接收对象0机构1客户经理 |
-| RSV_OBJ_ID | 接收对象ID | VARCHAR | 30 | 【待确认】 | - | - | - | - | 接收对象ID |
-| TSK_BGN_DATE | 任务开始时间 | VARCHAR | 10 | 【待确认】 | - | - | - | - | 任务开始时间 |
-| TSK_END_DATE | 任务结束时间 | VARCHAR | 10 | 【待确认】 | - | - | - | - | 任务结束时间 |
-| INDX_UNIT | 指标单位(万元/个数/百分比) | VARCHAR | 20 | 【待确认】 | - | - | - | - | 指标单位(万元/个数/百分比) |
-| INDX_VAL | 指标额 | NUMBER | 18,4 | 【待确认】 | - | - | - | - | 指标额 |
-| INDX_VAL_ADD | 指标加码 | NUMBER | 18,4 | 【待确认】 | - | - | - | - | 指标加码 |
-| ACUM_CMPLT_INDX | 累计完成指标 | NUMBER | 18,4 | 【待确认】 | - | - | - | - | 累计完成指标 |
-| DAY_CURNT_CMPLT_INDX | 当天完成指标 | NUMBER | 18,4 | 【待确认】 | - | - | - | - | 当天完成指标 |
-| BASE_VAL | 基准值 | NUMBER | 18,4 | 【待确认】 | - | - | - | - | 基准值 |
-| CURNT_VAL | 当前值 | NUMBER | 18,4 | 【待确认】 | - | - | - | - | 当前值 |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR | 30 | 【待确认】 | - | - | - | - | 法人行号 |
-
----
-
-*数据字典版本: v1.0 | 生成时间: 2026-07-20*
+| 字段名 | 数据类型 | 中文名 | 备注 |
+|---|---|---|---|
+| TSK_INDX_ID | VARCHAR2(40) | 指标任务映射编号 | |
+| TSK_ID | VARCHAR2(40) | 任务编号 | |
+| MAIN_TSK_ID | VARCHAR2(40) | 主任务编号 | |
+| INDX_ID | VARCHAR2(40) | 指标ID | |
+| TSK_NEXT_SEND_TYP | VARCHAR2(6) | 任务下发类型(0总行下发,1分行/区行下发,2支行下发) | |
+| RSV_OBJ | VARCHAR2(6) | 接收对象0机构1客户经理 | |
+| RSV_OBJ_ID | VARCHAR2(30) | 接收对象ID | |
+| TSK_BGN_DATE | VARCHAR2(10) | 任务开始时间 | |
+| TSK_END_DATE | VARCHAR2(10) | 任务结束时间 | |
+| INDX_UNIT | VARCHAR2(20) | 指标单位(万元/个数/百分比) | |
+| INDX_VAL | NUMBER(18,4) | 指标额 | |
+| INDX_VAL_ADD | NUMBER(18,4) | 指标加码 | |
+| ACUM_CMPLT_INDX | NUMBER(18,4) | 累计完成指标 | |
+| DAY_CURNT_CMPLT_INDX | NUMBER(18,4) | 当天完成指标 | |
+| BASE_VAL | NUMBER(18,4) | 基准值 | |
+| CURNT_VAL | NUMBER(18,4) | 当前值 | |
+| PERSN_LEGAL_BK_CODE | VARCHAR2(30) | 法人行号 | |

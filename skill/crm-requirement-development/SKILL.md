@@ -41,6 +41,8 @@ Review evidence must be structured and include `review_type`, `result`, `checked
 - Do not skip the supplementary-material loop or either review.
 - Use named `sys_fun_deal_date(V_SYSDAT, n)` parameters for every V_SYSDAT-relative business date; do not derive business date boundaries directly from `V_SYSDAT`.
 - Ensure target-table date output is `YYYYMMDD` and record every used date parameter in the requirement memory card and procedure-review evidence.
+- Mapping Excel is the highest-priority canonical source for table structure. When developing stored procedures, target table schemas must conform to the Excel definition. If a procedure requires a new output field, the Excel must be updated first and confirmed by the user.
+- Do not add, remove, or rename fields in any target table DDL without explicit user confirmation. New fields proposed during procedure development must be listed in the requirement analysis and confirmed by the user before DDL modification.
 - Do not modify files outside the confirmed change manifest.
 - Work on `master` only; do not create or switch Git branches.
 - Commit and push only after explicit user confirmation.
