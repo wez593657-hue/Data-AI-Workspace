@@ -61,7 +61,8 @@ BEGIN
       PERSN_LEGAL_BK_CODE,
       ISSU_ORG,
       ISSU_DATE,
-      RISK_LVL
+      RISK_LVL,
+      CFM_AMT
   )
   SELECT
       ci.HOST_CUST_NO                        AS CUST_ID,              -- 核心客户号
@@ -86,17 +87,19 @@ BEGIN
       	   ELSE '9999' end                    AS PERSN_LEGAL_BK_CODE,  -- 法人行号
       pi.TANO                                AS ISSU_ORG,             -- 发行机构
       fa.CRT_DATE                            AS ISSU_DATE,            -- 办理日期
-      pi.PROD_RISK_LEVEL                     AS RISK_LVL              -- 风险等级
+      pi.PROD_RISK_LEVEL                     AS RISK_LVL,             -- 风险等级
+      ctl.cfm_amt                            AS cfm_amt              -- 交易确认金额
     FROM FMS_TD_CUST_VOL cv                                          -- 理财客户份额表
     INNER JOIN FMS_T1_CUST_FNC_ACCT fa                               -- 客户理财交易账号表
       ON fa.CUST_NO           = cv.CUST_NO
      AND fa.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
     INNER JOIN FMS_T1_CUST_INFO ci                                   -- 客户信息表
       ON ci.CUST_NO = fa.CUST_NO
-    left join (select distinct fnc_trans_acct_no,CUST_NO,TRANS_ORGNO 
+    left join (select fnc_trans_acct_no,CUST_NO,TRANS_ORGNO,sum(cfm_amt) cfm_amt
     from FMS_td_cust_trans_req_log 
     where TRANS_STATUS in ('1','3')                                  --申请成功 确认成功
-    and busi_code in ('020','022'))  ctl                                --认购 申购
+    and busi_code in ('020','022')
+    group by fnc_trans_acct_no,CUST_NO,TRANS_ORGNO)  ctl                                --认购 申购
     on ctl.CUST_NO = cv.CUST_NO
     AND ctl.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
     INNER JOIN FMS_TD_PROD_INFO pi                                   -- 理财产品信息表
@@ -169,7 +172,8 @@ BEGIN
       PERSN_LEGAL_BK_CODE,
       ISSU_ORG,
       ISSU_DATE,
-      RISK_LVL
+      RISK_LVL,
+      CFM_AMT
   )
   SELECT
       ci.HOST_CUST_NO                        AS CUST_ID,              -- 核心客户号
@@ -194,15 +198,17 @@ BEGIN
       	   ELSE '9999' end                   AS PERSN_LEGAL_BK_CODE,  -- 法人行号
       pi.ORGNO                               AS ISSU_ORG,             -- 发行机构
       fa.CRT_DATE                            AS ISSU_DATE,            -- 办理日期
-      pi.PROD_RISK_LEVEL                     AS RISK_LVL              -- 风险等级
+      pi.PROD_RISK_LEVEL                     AS RISK_LVL,             -- 风险等级
+      ctl.ACK_AMT                            AS CFM_AMT              -- 交易确认金额
     FROM FMS_T5_CUST_VOL cv                                          -- 客户份额汇总表
     INNER JOIN FMS_T1_CUST_FNC_ACCT fa                               -- 客户理财交易账号表
       ON fa.CUST_NO           = cv.CUST_NO
      AND fa.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
-    left join (select distinct fnc_trans_acct_no,CUST_NO,sub_branch_code 
+    left join (select fnc_trans_acct_no,CUST_NO,sub_branch_code,SUM(ack_amt) ack_amt
     from FMS_t5_cust_trans_log 
     where TRANS_STATUS in ('1','3')                                  --申请成功 确认成功
-    and busi_code in ('120','122'))  ctl                                --认购 申购
+    and busi_code in ('120','122')
+    GROUP BY fnc_trans_acct_no,CUST_NO,sub_branch_code)  ctl                                --认购 申购
     on ctl.CUST_NO = cv.CUST_NO
     AND ctl.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
     INNER JOIN FMS_T1_CUST_INFO ci                                   -- 客户信息表
