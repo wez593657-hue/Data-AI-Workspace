@@ -1,0 +1,9 @@
+evidence_id: tmp-001
+task_id: cust-lable-redevelop-20260729
+phase: implementation
+kind: implementation
+purpose: temporary_table_generation
+result: passed
+details: 临时表DDL已同步：移除CUST_NAME孤儿字段，剩余7个字段均被SP实际使用
+repository_revision: a6b9b4261a105dc0d17cb2bc974cb69b5316512e
+created_at: '2026-07-29T05:09:54+00:00'

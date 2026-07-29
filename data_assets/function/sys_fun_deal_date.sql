@@ -49,6 +49,10 @@ BEGIN
             V_RETUR_DATE := to_char(V_DATE - interval '30' day, 'YYYYMMDD'); -- 30天承接窗口开始日
         WHEN 19 THEN
             V_RETUR_DATE := to_char(add_months(V_DATE, -36), 'YYYYMMDD'); -- 三年历史清理边界
+        WHEN 20 THEN
+            V_RETUR_DATE := to_char(add_months(V_DATE, -1), 'YYYYMMDD'); -- 1月前
+        WHEN 21 THEN
+            V_RETUR_DATE := to_char(add_months(V_DATE, -6), 'YYYYMMDD'); -- 6月前
 
         ELSE
             V_RETUR_DATE := NULL;

@@ -1,0 +1,9 @@
+evidence_id: scan-001
+task_id: cust-lable-redevelop-20260729
+phase: scanning
+kind: scan
+purpose: project_scan
+result: passed
+details: 项目扫描：读取SP v1.0.0/DDL v1.0.0/临时表DDL/记忆卡片/日期规则/模板/质检文档，识别4个代码合规问题
+repository_revision: a6b9b4261a105dc0d17cb2bc974cb69b5316512e
+created_at: '2026-07-29T05:08:44+00:00'

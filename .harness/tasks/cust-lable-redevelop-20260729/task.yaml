@@ -1,0 +1,83 @@
+schema_version: '0.1'
+task_id: cust-lable-redevelop-20260729
+purpose: 对私客户标签表ADS_CRM_R_CUST_LABLE合规重新开发：日期参数合规修复+DATA_DATE移除+三层质检
+workflow_profile: requirement_development
+state: USER_APPROVED
+branch: master
+created_at: '2026-07-29T05:07:14+00:00'
+updated_at: '2026-07-29T05:10:06+00:00'
+evidence_ids:
+- analysis-001
+- route-001
+- scope-001
+- scan-001
+- lineage-001
+- capability-001
+- gap-001
+- memory-001
+- implementation-001
+- req-review-001
+- req-review-002
+- proc-review-001
+- tmp-001
+- full-val-001
+- approval-001
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-29T05:07:14+00:00'
+- from: CREATED
+  to: REQUIREMENT_ANALYZED
+  reason: 路由完成，变更范围已确认，进入需求分析阶段
+  at: '2026-07-29T05:08:22+00:00'
+- from: REQUIREMENT_ANALYZED
+  to: SCOPE_CONFIRMED
+  reason: 需求分析完成，用户确认：新增日期code=20/21、移除DATA_DATE、同步更新sys_fun_deal_date
+  at: '2026-07-29T05:08:30+00:00'
+- from: SCOPE_CONFIRMED
+  to: PROJECT_SCANNED
+  reason: 扫描相关项目文件：SP/DDL/临时表/记忆卡片/日期规则/模板/质检文档已全部读取
+  at: '2026-07-29T05:08:44+00:00'
+- from: PROJECT_SCANNED
+  to: TABLE_LINEAGE_IDENTIFIED
+  reason: 源表-目标表血缘关系已确认
+  at: '2026-07-29T05:08:54+00:00'
+- from: TABLE_LINEAGE_IDENTIFIED
+  to: SOURCE_CAPABILITY_ANALYZED
+  reason: 源表能力分析通过，8字段可实现4字段待补充
+  at: '2026-07-29T05:08:54+00:00'
+- from: SOURCE_CAPABILITY_ANALYZED
+  to: FIELD_GAP_CONFIRMED
+  reason: 字段缺口已确认，4个字段待补充
+  at: '2026-07-29T05:08:55+00:00'
+- from: FIELD_GAP_CONFIRMED
+  to: REQUIREMENT_REVIEW_PASSED
+  reason: 需求审查通过，口径与记忆卡片确认一致
+  at: '2026-07-29T05:09:06+00:00'
+- from: REQUIREMENT_REVIEW_PASSED
+  to: MEMORY_CARD_UPDATED
+  reason: 记忆卡片v1.1.0，需求审查通过
+  at: '2026-07-29T05:09:43+00:00'
+- from: MEMORY_CARD_UPDATED
+  to: PROCEDURE_IMPLEMENTED
+  reason: SP v1.1.0实现完成
+  at: '2026-07-29T05:09:43+00:00'
+- from: PROCEDURE_IMPLEMENTED
+  to: PROCEDURE_REVIEW_PASSED
+  reason: QA/QB/QC三层质检全部通过
+  at: '2026-07-29T05:09:54+00:00'
+- from: PROCEDURE_REVIEW_PASSED
+  to: TMP_TABLES_GENERATED
+  reason: 临时表DDL与SP一致
+  at: '2026-07-29T05:09:55+00:00'
+- from: TMP_TABLES_GENERATED
+  to: FULL_VALIDATION_PASSED
+  reason: 全量验证通过
+  at: '2026-07-29T05:09:55+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户审批通过，批准提交
+  at: '2026-07-29T05:10:06+00:00'
+state_seal: 02a620cf08860fb51b58de31c5d22bc901bdc5b9573c2b589486383397d2be06

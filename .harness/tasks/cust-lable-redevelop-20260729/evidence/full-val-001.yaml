@@ -1,0 +1,9 @@
+evidence_id: full-val-001
+task_id: cust-lable-redevelop-20260729
+phase: validation
+kind: validation
+purpose: full_validation
+result: passed
+details: 全量验证通过：sys_fun_deal_date新增code=20/21、DDL移除DATA_DATE、SP日期合规、临时表无孤儿字段、质检三层全通过
+repository_revision: a6b9b4261a105dc0d17cb2bc974cb69b5316512e
+created_at: '2026-07-29T05:09:55+00:00'

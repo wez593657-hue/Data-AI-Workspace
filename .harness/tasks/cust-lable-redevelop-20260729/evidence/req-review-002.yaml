@@ -1,0 +1,19 @@
+evidence_id: req-review-002
+task_id: cust-lable-redevelop-20260729
+phase: review
+kind: review
+purpose: requirement_review
+result: passed
+details: 需求审查通过：8个Y字段口径与记忆卡片一致，3个TODO标记清晰，变更范围7个文件
+repository_revision: a6b9b4261a105dc0d17cb2bc974cb69b5316512e
+created_at: '2026-07-29T05:09:43+00:00'
+review_type: requirement
+return_to: ''
+checked_files:
+- requirements/对私客户标签表规则记忆卡片.md
+- data_assets/stored_procedure/dws_to_ads/PRC_ADS_CRM_R_CUST_LABLE.sql
+- governance/stored_procedure_date_parameter_rules.md
+rules_checked:
+- 字段口径一致性
+- 变更范围可控
+issues: []

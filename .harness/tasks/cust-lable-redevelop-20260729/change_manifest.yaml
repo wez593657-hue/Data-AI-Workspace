@@ -1,0 +1,18 @@
+schema_version: '0.1'
+task_id: cust-lable-redevelop-20260729
+user_confirmation: confirmed
+objective: 对私客户标签表ADS_CRM_R_CUST_LABLE合规重新开发：日期参数修复+DATA_DATE移除+三层质检+孤儿字段清理
+allowed_changes:
+  - path: data_assets/function/sys_fun_deal_date.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CRM_R_CUST_LABLE.sql
+  - path: data_assets/ddl/ads/ads_crm_r_cust_lable.sql
+  - path: data_assets/ddl/tmp/tmp_pro_ads_crm_r_cust_lable.ddl
+  - path: requirements/对私客户标签表规则记忆卡片.md
+  - path: governance/stored_procedure_date_parameter_rules.md
+  - path: .harness/tasks/cust-lable-redevelop-20260729/
+read_only_inputs:
+  - path: templates/procedure_template.sql
+  - path: docs/quality_rules.md
+  - path: docs/project_goals.md
+forbidden_changes:
+  - path: data_assets/data_dictionary/

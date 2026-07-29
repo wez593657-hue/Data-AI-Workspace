@@ -1,0 +1,9 @@
+evidence_id: capability-001
+task_id: cust-lable-redevelop-20260729
+phase: analysis
+kind: analysis
+purpose: source_capability
+result: passed
+details: 8个Y字段可从DWD_CUST_INDV_INFO和DWD_TX_ASET获取，4个待补充字段已标记NULL输出
+repository_revision: a6b9b4261a105dc0d17cb2bc974cb69b5316512e
+created_at: '2026-07-29T05:08:54+00:00'

@@ -1,0 +1,9 @@
+evidence_id: route-001
+task_id: cust-lable-redevelop-20260729
+phase: routing
+kind: route
+purpose: workflow_routing
+result: passed
+details: 路由至requirement_development工作流：用户要求重新走对私客户标签表ADS_CRM_R_CUST_LABLE开发流程，涉及存储过程开发+DDL修改
+repository_revision: a6b9b4261a105dc0d17cb2bc974cb69b5316512e
+created_at: '2026-07-29T05:07:59+00:00'
