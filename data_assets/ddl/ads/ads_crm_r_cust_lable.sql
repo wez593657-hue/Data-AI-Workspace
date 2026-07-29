@@ -1,168 +1,166 @@
 /*
  * ADS_CRM_R_CUST_LABLE
  * 中文名称: 对私客户标签表
- * 版本: v1.1.0
+ * 版本: v1.0
  * 创建时间: 2026-07-29
- * 变更: v1.1.0 移除DATA_DATE字段（用户确认），全量快照模式
- * 来源: Mapping Excel (ADS应用层数据模型)
  */
 
 CREATE TABLE IF NOT EXISTS ADS_CRM_R_CUST_LABLE (
-    PERSN_LEGAL_BK_CODE                    VARCHAR2, -- 法人行号
-    CUST_ID                                VARCHAR2, -- 核心客户号
-    CUST_NAME                              VARCHAR2, -- 客户名称
-    CERT_TYP                               VARCHAR2, -- 证件类型
-    CERT_ID                                VARCHAR2, -- 证件号码
-    GEND                                   VARCHAR2, -- 性别
-    AGE                                    NUMBER  , -- 年龄
-    NATION                                 VARCHAR2, -- 民族
-    MARI_SITU                              VARCHAR2, -- 婚姻状况
-    PHONE_NO                               VARCHAR2, -- 手机号码
-    MAX_DEG_EDU                            VARCHAR2, -- 最高学历
-    OCCU_CLS                               VARCHAR2, -- 职业分类
-    HOST_CUST_MNGR_POST_ID                 VARCHAR2, -- 主办客户经理职位编号
-    HOST_CUST_MNGR_NAME                    VARCHAR2, -- 主办客户经理名称
-    HOST_CUST_MNGR_EMP_ID                  VARCHAR2, -- 主办客户经理工号
-    ORG_LEAD                               VARCHAR2, -- 主办机构(归属机构)
-    ORG_LEAD_PATH                          VARCHAR2, -- 主办机构路径
-    COSPSR_CUST_MNGR_POST_ID               VARCHAR2, -- 信贷客户经理职位编号
-    COSPSR_CUST_MNGR_NAME                  VARCHAR2, -- 信贷客户经理名称
-    COSPSR_CUST_MNGR_EMP_ID                VARCHAR2, -- 信贷客户经理工号
-    COSPSR_ORG                             VARCHAR2, -- 信贷机构
-    COSPSR_ORG_PATH                        VARCHAR2, -- 信贷机构路径
-    IS_NOT_INDIV_BIZ_ACCT                  VARCHAR2, -- 是否一码付商户
-    IS_NOT_MINOR_ENTER_MAIN                VARCHAR2, -- 是否小微企业主
-    NEAR_YR_HF_AVG_MTH_INCOM               NUMBER  , -- 近半年月均收入
-    INDIV_ESTIM_YR_INCOM                   NUMBER  , -- 个人年收入
-    FUND_ACUM_DEPO_NUM_BASE                NUMBER  , -- 公积金缴存基数
-    SOCIAL_WELF_PAY_NUM_BASE               NUMBER  , -- 社保缴存基数
-    IS_NOT_PURE_NEW_CUST                   VARCHAR2, -- 纯新户开户标志
-    IS_NOT_BK_SELF_EMP                     VARCHAR2, -- 是否本行员工
-    IS_NOT_SLEEP_ACCT                      VARCHAR2, -- 是否睡眠户
-    CUST_HRAKY                             VARCHAR2, -- 客户层级
-    CUST_LVL                               VARCHAR2, -- 客户等级
-    LIFE_CYC                               VARCHAR2, -- 生命周期
-    AUM                                    NUMBER  , -- AUM余额
-    AUM_MTH_AVG                            NUMBER  , -- AUM月日均
-    AUM_QRT_AVG                            NUMBER  , -- AUM季日均
-    AUM_YR_AVG                             NUMBER  , -- AUM年日均
-    IS_NOT_DEPO                            CHAR    , -- 是否持有存款产品
-    DEPO_BAL                               NUMBER  , -- 存款余额
-    DEPO_MTH_AVG                           NUMBER  , -- 存款月日均
-    DEPO_QRT_AVG                           NUMBER  , -- 存款季日均
-    DEPO_YR_AVG                            NUMBER  , -- 存款年日均
-    DEPO_CURNT_DEPO_BAL                    NUMBER  , -- 活期存款余额
-    DEPO_CURNT_DEPO_BAL_MTH_CURNT_AVG_DAY  NUMBER  , -- 活期存款日均余额
-    IS_NOT_HIST_FIXD_DEPO_FLAG             VARCHAR2, -- 是否历史持有定期存款产品
-    IS_NOT_FIXD_DEPO                       VARCHAR2, -- 是否持有定期存款产品
-    FIX_DEPO_BAL                           NUMBER  , -- 定期存款余额
-    FIX_DEPO_MTH_AVG                       NUMBER  , -- 定期存款月日均
-    FIX_DEPO_QRT_AVG                       NUMBER  , -- 定期存款季日均
-    FIX_DEPO_YR_AVG                        NUMBER  , -- 定期存款年日均
-    IS_NOT_HIST_LUMPSUM_FIXD_FLAG          VARCHAR2, -- 是否历史持有整存整取定期存款
-    IS_NOT_LUMPSUM_FIXD                    VARCHAR2, -- 是否持有整存整取定期存款
-    LUMPSUM_FIXD_DEPO_BAL                  NUMBER  , -- 整存整取定期存款余额
-    IS_NOT_HIST_LEHUI_FLAG                 VARCHAR2, -- 是否历史持有乐惠存产品
-    IS_NOT_LEHUI                           VARCHAR2, -- 是否持有乐惠存产品
-    LEHUI_BAL                              NUMBER  , -- 乐惠存产品余额
-    LEHUI_MTH_AVG_DAY                      NUMBER  , -- 乐惠存产品月日均余额
-    RCNT_FIXD_DEPO_MATURE_DAYS             NUMBER  , -- 最近一笔定期存款到期天数
-    RCNT_FIXD_DEPO_MATURE_AMT              NUMBER  , -- 最近一笔定期存款到期金额
-    IS_NOT_HIST_LARGEDP_FLAG               VARCHAR2, -- 是否历史持有大额存单
-    IS_NOT_LARGEDP                         VARCHAR2, -- 是否持有大额存单
-    LARGEDP_BAL                            NUMBER  , -- 大额存单余额
-    LARGEDP_MTH_AVG_DAY                    NUMBER  , -- 大额存单月日均余额
-    IS_NOT_FIN_CTRAKT                      VARCHAR2, -- 是否理财签约
-    IS_NOT_HIST_FIN_FLAG                   VARCHAR2, -- 是否历史持有理财产品
-    IS_NOT_FIN                             VARCHAR2, -- 是否持有理财产品
-    RCNT_FIN_MATURE_DAYS                   NUMBER  , -- 最近一笔理财到期天数
-    RCNT_FIN_MATURE_AMT                    NUMBER  , -- 最近一笔理财到期金额
-    FIN_AMT                                NUMBER  , -- 理财余额
-    FIN_MTH_AVG                            NUMBER  , -- 理财月日均
-    FIN_QRT_AVG                            NUMBER  , -- 理财季日均
-    FIN_YR_AVG                             NUMBER  , -- 理财年日均
-    IS_NOT_HIST_OPEN_FIN_FLAG              VARCHAR2, -- 是否历史持有开放式理财产品
-    IS_NOT_OPEN_FIN                        VARCHAR2, -- 是否持有开放式理财产品
-    OPEN_FIN_BAL                           NUMBER  , -- 开放式理财产品余额
-    OPEN_FIN_MTH_AVG_DAY                   NUMBER  , -- 开放式理财产品月日均余额
-    IS_NOT_HIST_CLOSE_FIN_FLAG             VARCHAR2, -- 是否历史持有封闭式理财产品
-    IS_NOT_CLOSE_FIN                       VARCHAR2, -- 是否持有封闭式理财产品
-    CLOSE_FIN_BAL                          NUMBER  , -- 封闭式理财产品余额
-    CLOSE_FIN_MTH_AVG_DAY                  NUMBER  , -- 封闭式理财产品月日均余额
-    IS_NOT_HIST_AGT_FIN_FLAG               VARCHAR2, -- 是否历史持有代销理财产品
-    IS_NOT_AGT_FIN                         VARCHAR2, -- 是否持有代销理财产品
-    AGT_FIN_BAL                            NUMBER  , -- 代销理财产品余额
-    AGT_FIN_MTH_AVG_DAY                    NUMBER  , -- 代销理财产品月日均余额
-    IS_NOT_LOAN_CUST                       VARCHAR2, -- 是否贷款客户
-    IS_NOT_HIST_LOAN_FLAG                  VARCHAR2, -- 是否历史贷款客户
-    LOAN_BAL                               NUMBER  , -- 贷款余额
-    IS_NOT_PAYROL_BK                       VARCHAR2, -- 是否代发户
-    IS_NOT_SALRY_PAYROL_BK                 VARCHAR2, -- 是否代发工资客户
-    BK_SALRY_AMT_MTH_LAST                  NUMBER  , -- 上月代发工资金额
-    RCNT_TIME_ONE_PAYROL_BK_SALRY_DATE     DATE    , -- 最近一次代发工资日期
-    PAYROL_BK_SALRY_AMT                    NUMBER  , -- 最近一次代发工资金额
-    PAYROL_SALRY_TTL                       NUMBER  , -- 代发工资累计金额
-    CONTI_PAYROL_BK_MTHS                   NUMBER  , -- 连续稳定代发工资月数
-    DCARD_TYPE                             VARCHAR2, -- 借记卡类型
-    IS_NOT_BK_SELF_SSCARD                  CHAR    , -- 是否我行社保卡
-    IS_NOT_BK_SELF_CGZJ                    CHAR    , -- 是否我行川工之家客户
-    CGZJ_ACCT_WELF_BAL                     NUMBER  , -- 川工之家账户福利资金余额
-    IS_NOT_SELF_REG_MBANK                  CHAR    , -- 是否自助注册手机银行
-    IS_NOT_KTER_CTRAKT_MBANK               CHAR    , -- 是否柜面签约手机银行
-    NEAR_MTH_TX_CNT                        NUMBER  , -- 近1月累计交易笔数
-    NEAR_MTH_TX_AMT                        NUMBER  , -- 近1月累计交易金额
-    NEAR_MTH_MBANK_TX_CNT                  NUMBER  , -- 近1月手机银行累计交易笔数
-    NEAR_MTH_MBANK_TX_AMT                  NUMBER  , -- 近1月手机银行累计交易金额
-    NEAR_MTH_MBANK_TX_AMT_BK_OUTER         NUMBER  , -- 近1月手机银行行外入账金额
-    IS_NOT_SFZF                            CHAR    , -- 是否签约三方支付
-    NEAR_MTH_THIRD_PAY_OUT_CNT             NUMBER  , -- 近1月第三方支付累计转出笔数
-    NEAR_MTH_THIRD_PAY_OUT_AMT             NUMBER  , -- 近1月第三方支付累计转出金额
-    IS_NOT_BILL_RSV_MINOR_MKNT             CHAR    , -- 是否收单商户小微商户
-    IS_NOT_BILL_RSV_INDIV_MKNT             CHAR    , -- 是否收单商户个体商户
-    BILL_RSV_MKNT_CNT_MTH_LAST             NUMBER  , -- 收单商户上月交易笔数
-    BILL_RSV_MKNT_AMT_MTH_LAST             NUMBER  , -- 收单商户上月交易金额
-    IS_NOT_BILL_RSV_VAL_MKNT               CHAR    , -- 是否收单价值商户
-    IS_NOT_BK_SELF_FUND_PASS_BY_ACCT       CHAR    , -- 是否我行资金过路户
-    IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME   CHAR    , -- 是否向他行同名户规律转出
-    MBANK_CONTI_LOGIN_DAYS                 NUMBER  , -- 连续登录手机银行天数
-    IS_NOT_BK_PHONE_ACTV_CUST              CHAR    , -- 是否手机银行活跃客户
-    IS_NOT_BK_SELF_LOAN_DUE_OVER_CUST      CHAR    , -- 行内贷款是否逾期
-    NEAR_24MTH_OVERDUE_FLAG                CHAR    , -- 行内近24月内是否存在贷款逾期
-    CRDT_DUE_OVER_CNT                      NUMBER  , -- 征信逾期次数
-    EXIST_BADLOAN_REC                      CHAR    , -- 征信是否存在不良贷款记录
-    IS_NOT_INSUR                           CHAR    , -- 是否持有保险产品
-    INSUR_FRST_PREM_AMT                    NUMBER  , -- 保险产品首期保费
-    INSUR_BAL                              NUMBER  , -- 保险余额
-    INSUR_MTH_AVG                          NUMBER  , -- 保险月日均
-    INSUR_QRT_AVG                          NUMBER  , -- 保险季日均
-    INSUR_YR_AVG                           NUMBER  , -- 保险年日均
-    NEAR_3_MTH_MIN_BENEFIT_LVL             VARCHAR2, -- 近三个月最低权益等级
-    NEAR_6_MTH_MIN_BENEFIT_LVL             VARCHAR2, -- 近六个月最低权益等级
-    NEAR_9_MTH_MIN_BENEFIT_LVL             VARCHAR2, -- 近九个月最低权益等级
-    NEAR_12_MTH_MIN_BENEFIT_LVL            VARCHAR2, -- 近十二个月最低权益等级
-    IS_NOT_YR_FRST_LVL_UPG_CUST            CHAR    , -- 是否当年首次等级升级客户
-    FRST_UPG_CUST_UPG_LVL                  VARCHAR2, -- 首次升级客户升级等级
-    IS_NOT_YR_LVL_DWN_CUST                 CHAR    , -- 是否当年等级降级客户
-    DWN_CUST_LVL_BF_AF                     VARCHAR2, -- 降级客户降级前后等级
-    IS_NOT_HIGH_WORTH_CRIT_CUST            CHAR    , -- 是否为高净值临界客户
-    IS_NOT_MBANK_BIND_CARD                 CHAR    , -- 是否登录手机银行并完成绑卡客户
-    REG_LOGIN_BK_PHONE_CUST_DAYS           NUMBER  , -- 注册并登录手机银行客户的天数
-    MTH_LOGIN_MBANK_CNT                    NUMBER  , -- 当月登录手机银行次数
-    IS_NOT_3RD_PAY_BIND_CARD_DONE          CHAR    , -- 是否完成三方支付绑卡
-    YR_CAMPUS_PAY_CNT                      NUMBER  , -- 当年校园缴费笔数
-    YR_HOT_ACTV_CNT                        NUMBER  , -- 当年参与热门活动次数
-    MTH_UTIL_PAY_TRAN_AMT                  NUMBER  , -- 当月完成水电气缴费交易金额
-    MTH_UTIL_PAY_TRAN_CNT                  NUMBER  , -- 当月完成水电气缴费交易笔数
-    TRAN_CHAN_PREF                         VARCHAR2, -- 交易渠道偏好
-    IS_NOT_WECHAT_TRAN_MTH_ACTIVE          CHAR    , -- 是否为微信绑卡交易月活跃客户
-    PRDKT_PREF                             VARCHAR2, -- 储蓄产品偏好
-    VERIFIED_BADGE                         VARCHAR2, -- 企微客户认证标志
-    DEPO_TERM_PREF                         VARCHAR2, -- 储蓄产品期限偏好
-    IS_NOT_WB_LOAN                         VARCHAR2, -- 是否微粒贷客户
-    IS_NOT_MT_LOAN                         VARCHAR2, -- 是否美团贷款客户
-    ORG_PATH                               VARCHAR2, -- 机构路径
-    CONTR_AMT                              NUMBER  , -- 总合同额度
-    DCARD_LVL                              VARCHAR2  -- 借记卡等级
+    PERSN_LEGAL_BK_CODE VARCHAR(4),
+    CUST_ID VARCHAR(20),
+    CUST_NAME VARCHAR(100),
+    CERT_TYP VARCHAR(6),
+    CERT_ID VARCHAR(40),
+    GEND VARCHAR(2),
+    AGE NUMBER(5),
+    NATION VARCHAR(30),
+    MARI_SITU VARCHAR(2),
+    PHONE_NO VARCHAR(30),
+    MAX_DEG_EDU VARCHAR(30),
+    OCCU_CLS VARCHAR(6),
+    HOST_CUST_MNGR_POST_ID VARCHAR(20),
+    HOST_CUST_MNGR_NAME VARCHAR(100),
+    HOST_CUST_MNGR_EMP_ID VARCHAR(6),
+    ORG_LEAD VARCHAR(6),
+    ORG_LEAD_PATH VARCHAR(30),
+    COSPSR_CUST_MNGR_POST_ID VARCHAR(20),
+    COSPSR_CUST_MNGR_NAME VARCHAR(100),
+    COSPSR_CUST_MNGR_EMP_ID VARCHAR(6),
+    COSPSR_ORG VARCHAR(100),
+    COSPSR_ORG_PATH VARCHAR(300),
+    IS_NOT_INDIV_BIZ_ACCT VARCHAR(1),
+    IS_NOT_MINOR_ENTER_MAIN VARCHAR(1),
+    NEAR_YR_HF_AVG_MTH_INCOM NUMBER(20),
+    INDIV_ESTIM_YR_INCOM NUMBER(20),
+    FUND_ACUM_DEPO_NUM_BASE NUMBER(20),
+    SOCIAL_WELF_PAY_NUM_BASE NUMBER(20),
+    IS_NOT_PURE_NEW_CUST VARCHAR(1),
+    IS_NOT_BK_SELF_EMP VARCHAR(1),
+    IS_NOT_SLEEP_ACCT VARCHAR(1),
+    CUST_HRAKY VARCHAR(2),
+    CUST_LVL VARCHAR(2),
+    LIFE_CYC VARCHAR(2),
+    AUM NUMBER(20),
+    AUM_MTH_AVG NUMBER(20),
+    AUM_QRT_AVG NUMBER(20),
+    AUM_YR_AVG NUMBER(20),
+    IS_NOT_DEPO CHAR(1),
+    DEPO_BAL NUMBER(20),
+    DEPO_MTH_AVG NUMBER(20),
+    DEPO_QRT_AVG NUMBER(20),
+    DEPO_YR_AVG NUMBER(20),
+    DEPO_CURNT_DEPO_BAL NUMBER(20),
+    DEPO_CURNT_DEPO_BAL_MTH_CURNT_AVG_DAY NUMBER(20),
+    IS_NOT_HIST_FIXD_DEPO_FLAG VARCHAR(1),
+    IS_NOT_FIXD_DEPO VARCHAR(1),
+    FIX_DEPO_BAL NUMBER(20),
+    FIX_DEPO_MTH_AVG NUMBER(20),
+    FIX_DEPO_QRT_AVG NUMBER(20),
+    FIX_DEPO_YR_AVG NUMBER(20),
+    IS_NOT_HIST_LUMPSUM_FIXD_FLAG VARCHAR(1),
+    IS_NOT_LUMPSUM_FIXD VARCHAR(1),
+    LUMPSUM_FIXD_DEPO_BAL NUMBER(20),
+    IS_NOT_HIST_LEHUI_FLAG VARCHAR(1),
+    IS_NOT_LEHUI VARCHAR(1),
+    LEHUI_BAL NUMBER(20),
+    LEHUI_MTH_AVG_DAY NUMBER(20),
+    RCNT_FIXD_DEPO_MATURE_DAYS NUMBER(4),
+    RCNT_FIXD_DEPO_MATURE_AMT NUMBER(20),
+    IS_NOT_HIST_LARGEDP_FLAG VARCHAR(1),
+    IS_NOT_LARGEDP VARCHAR(1),
+    LARGEDP_BAL NUMBER(20),
+    LARGEDP_MTH_AVG_DAY NUMBER(20),
+    IS_NOT_FIN_CTRAKT VARCHAR(1),
+    IS_NOT_HIST_FIN_FLAG VARCHAR(1),
+    IS_NOT_FIN VARCHAR(1),
+    RCNT_FIN_MATURE_DAYS NUMBER(4),
+    RCNT_FIN_MATURE_AMT NUMBER(20),
+    FIN_AMT NUMBER(20),
+    FIN_MTH_AVG NUMBER(20),
+    FIN_QRT_AVG NUMBER(20),
+    FIN_YR_AVG NUMBER(20),
+    IS_NOT_HIST_OPEN_FIN_FLAG VARCHAR(1),
+    IS_NOT_OPEN_FIN VARCHAR(1),
+    OPEN_FIN_BAL NUMBER(20),
+    OPEN_FIN_MTH_AVG_DAY NUMBER(20),
+    IS_NOT_HIST_CLOSE_FIN_FLAG VARCHAR(1),
+    IS_NOT_CLOSE_FIN VARCHAR(1),
+    CLOSE_FIN_BAL NUMBER(20),
+    CLOSE_FIN_MTH_AVG_DAY NUMBER(20),
+    IS_NOT_HIST_AGT_FIN_FLAG VARCHAR(1),
+    IS_NOT_AGT_FIN VARCHAR(1),
+    AGT_FIN_BAL NUMBER(20),
+    AGT_FIN_MTH_AVG_DAY NUMBER(20),
+    IS_NOT_LOAN_CUST VARCHAR(1),
+    IS_NOT_HIST_LOAN_FLAG VARCHAR(1),
+    LOAN_BAL NUMBER(20),
+    IS_NOT_PAYROL_BK VARCHAR(1),
+    IS_NOT_SALRY_PAYROL_BK VARCHAR(1),
+    BK_SALRY_AMT_MTH_LAST NUMBER(20),
+    RCNT_TIME_ONE_PAYROL_BK_SALRY_DATE DATE,
+    PAYROL_BK_SALRY_AMT NUMBER(20),
+    PAYROL_SALRY_TTL NUMBER(20),
+    CONTI_PAYROL_BK_MTHS NUMBER(4),
+    DCARD_TYPE VARCHAR(4),
+    IS_NOT_BK_SELF_SSCARD CHAR(1),
+    IS_NOT_BK_SELF_CGZJ CHAR(1),
+    CGZJ_ACCT_WELF_BAL NUMBER(20),
+    IS_NOT_SELF_REG_MBANK CHAR(1),
+    IS_NOT_KTER_CTRAKT_MBANK CHAR(1),
+    NEAR_MTH_TX_CNT NUMBER(10),
+    NEAR_MTH_TX_AMT NUMBER(20),
+    NEAR_MTH_MBANK_TX_CNT NUMBER(10),
+    NEAR_MTH_MBANK_TX_AMT NUMBER(20),
+    NEAR_MTH_MBANK_TX_AMT_BK_OUTER NUMBER(20),
+    IS_NOT_SFZF CHAR(1),
+    NEAR_MTH_THIRD_PAY_OUT_CNT NUMBER(10),
+    NEAR_MTH_THIRD_PAY_OUT_AMT NUMBER(20),
+    IS_NOT_BILL_RSV_MINOR_MKNT CHAR(1),
+    IS_NOT_BILL_RSV_INDIV_MKNT CHAR(1),
+    BILL_RSV_MKNT_CNT_MTH_LAST NUMBER(10),
+    BILL_RSV_MKNT_AMT_MTH_LAST NUMBER(20),
+    IS_NOT_BILL_RSV_VAL_MKNT CHAR(1),
+    IS_NOT_BK_SELF_FUND_PASS_BY_ACCT CHAR(1),
+    IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME CHAR(1),
+    MBANK_CONTI_LOGIN_DAYS NUMBER(10),
+    IS_NOT_BK_PHONE_ACTV_CUST CHAR(1),
+    IS_NOT_BK_SELF_LOAN_DUE_OVER_CUST CHAR(1),
+    NEAR_24MTH_OVERDUE_FLAG CHAR(1),
+    CRDT_DUE_OVER_CNT NUMBER(10),
+    EXIST_BADLOAN_REC CHAR(1),
+    IS_NOT_INSUR CHAR(1),
+    INSUR_FRST_PREM_AMT NUMBER(20),
+    INSUR_BAL NUMBER(20),
+    INSUR_MTH_AVG NUMBER(20),
+    INSUR_QRT_AVG NUMBER(20),
+    INSUR_YR_AVG NUMBER(20),
+    NEAR_3_MTH_MIN_BENEFIT_LVL VARCHAR(2),
+    NEAR_6_MTH_MIN_BENEFIT_LVL VARCHAR(2),
+    NEAR_9_MTH_MIN_BENEFIT_LVL VARCHAR(2),
+    NEAR_12_MTH_MIN_BENEFIT_LVL VARCHAR(2),
+    IS_NOT_YR_FRST_LVL_UPG_CUST CHAR(1),
+    FRST_UPG_CUST_UPG_LVL VARCHAR(2),
+    IS_NOT_YR_LVL_DWN_CUST CHAR(1),
+    DWN_CUST_LVL_BF_AF VARCHAR(5),
+    IS_NOT_HIGH_WORTH_CRIT_CUST CHAR(1),
+    IS_NOT_MBANK_BIND_CARD CHAR(1),
+    REG_LOGIN_BK_PHONE_CUST_DAYS NUMBER(10),
+    MTH_LOGIN_MBANK_CNT NUMBER(10),
+    IS_NOT_3RD_PAY_BIND_CARD_DONE CHAR(1),
+    YR_CAMPUS_PAY_CNT NUMBER(10),
+    YR_HOT_ACTV_CNT NUMBER(10),
+    MTH_UTIL_PAY_TRAN_AMT NUMBER(20),
+    MTH_UTIL_PAY_TRAN_CNT NUMBER(10),
+    TRAN_CHAN_PREF VARCHAR(2),
+    IS_NOT_WECHAT_TRAN_MTH_ACTIVE CHAR(1),
+    PRDKT_PREF VARCHAR(20),
+    VERIFIED_BADGE VARCHAR(1),
+    DEPO_TERM_PREF VARCHAR(20),
+    IS_NOT_WB_LOAN VARCHAR(1),
+    IS_NOT_MT_LOAN VARCHAR(1),
+    ORG_PATH VARCHAR(100),
+    CONTR_AMT NUMBER(20),
+    DCARD_LVL VARCHAR(4)
 );
 
 COMMENT ON TABLE ADS_CRM_R_CUST_LABLE IS '对私客户标签表';
@@ -321,4 +319,3 @@ COMMENT ON COLUMN ADS_CRM_R_CUST_LABLE.IS_NOT_MT_LOAN IS '是否美团贷款客�
 COMMENT ON COLUMN ADS_CRM_R_CUST_LABLE.ORG_PATH IS '机构路径';
 COMMENT ON COLUMN ADS_CRM_R_CUST_LABLE.CONTR_AMT IS '总合同额度';
 COMMENT ON COLUMN ADS_CRM_R_CUST_LABLE.DCARD_LVL IS '借记卡等级';
-

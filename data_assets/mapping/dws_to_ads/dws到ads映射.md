@@ -3,12 +3,13 @@
 ## 映射来源
 
 - Excel：`data_assets/mapping/dws_to_ads/ADS应用层数据模型_CRM_ V1.0.xlsx`
-- Excel SHA-256：`d757dfb4462f26c413547c62d51720e81fbc47eb85e1cd258546281487faeab7`
+- Excel SHA-256：`d61dd97c3a408c1cf53f92373bed113ca19c732f5a5d211f4a90659c5132d08f`
 
 ## 映射概览
 
 | 目标表 | 字段数 |
 |--------|-------:|
+| ADS_CRM_R_CUST_LABLE | 155 |
 | ADS_CUST_DEADLINE_RMND_DTL | 25 |
 | ADS_CUST_DEADLINE_RMND_STATIS | 15 |
 | ADS_CUST_INDV_POTEN | 30 |
@@ -181,53 +182,53 @@
 
 ### ADS_CUST_DEADLINE_RMND_DTL
 
-| 目标字段 | 目标字段中文名 | 目标字段类型 | 源系统表名 | 源表别名 | 源系统字段英文名 | 源系统字段中文名 | 映射规则 |
-|----------|----------------|--------------|------------|----------|------------------|------------------|----------|
-| PERSN_LEGAL_BK_CODE | 法人行号 |  | DWD_CUST_INDV_INFO | ci | PERSN_LEGAL_BK_CODE | 法人行号 | 直接取客户基本信息法人行号 |
-| DATA_DATE | 数据日期 |  | TMP_CDR_DTL_DUE_WIN | w | END_DT | 统计周期结束日期 | 按 M/Q/N 周期生成，格式化为 yyyymmdd |
-| CUST_ID | 客户编号 |  | TMP_CDR_DTL_DUE_WIN | w | CUST_ID | 客户编号 | 直接取到期窗口客户编号 |
-| CUST_NAME | 客户名称 |  | TMP_CDR_DTL_CUST_BASE | cb | CUST_NAME | 客户名称 | 直接取客户基础中间表 |
-| CUST_LVL | 客户等级 |  | TMP_CDR_DTL_CUST_BASE | cb | CUST_LVL | 客户等级 | 由 DWD_CUST_INDV_INFO.CUST_HRAKY 映射为 CUST_LVL 后取值 |
-| DEPO_CURNT_DEPO_BAL | 活期余额 |  | TMP_CDR_DTL_CUST_BASE | cb | DEPO_CURNT_DEPO_BAL | 活期余额 | 直接取客户余额中间表 |
-| FIXD_DEPO_BAL | 定期余额 |  | TMP_CDR_DTL_CUST_BASE | cb | FIXD_DEPO_BAL | 定期余额 | 直接取客户余额中间表 |
-| FIN_AMT | 理财余额 |  | TMP_CDR_DTL_CUST_BASE | cb | FIN_AMT | 理财余额 | 直接取客户余额中间表 |
-| STAT_PERD | 统计周期 |  | TMP_CDR_DTL_DUE_WIN | w | STAT_PERD | 统计周期 | 直接取到期窗口统计周期 |
-| STATIS_TYP | 承接类型1-存款2-理财 |  | TMP_CDR_DTL_DUE_WIN | w | STATIS_TYP | 承接类型 | 1 存款、2 理财、0 汇总 |
-| EXPR_AMT | 到期金额 |  | TMP_CDR_DTL_DUE_WIN | w | EXPR_AMT | 已到期金额 | 直接取窗口已到期金额 |
-| MATURE_TTL_AMT | 到期总金额 |  | TMP_CDR_DTL_DUE_WIN | w | MATURE_TTL_AMT | 到期总金额 | 直接取窗口到期总金额 |
-| TAKE_RATE | 承接率 |  | TMP_CDR_DTL_TAKE_AMT | t | TAKE_AMT_30D | 30天承接金额 | ROUND(NVL(t.TAKE_AMT_30D,0)/w.EXPR_AMT*100,2)，EXPR_AMT=0 时为 0 |
-| FIX_DEPO_MATURE_AMT | 定期存款到期金额 |  | TMP_CDR_DTL_DUE_WIN | w | EXPR_AMT | 到期金额 | STATIS_TYP=1 时取 EXPR_AMT，否则为 0 |
-| FIX_DEPO_MATURE_TTL_AMT | 定期存款到期总金额 |  | TMP_CDR_DTL_DUE_WIN | w | MATURE_TTL_AMT | 到期总金额 | STATIS_TYP=1 时取 MATURE_TTL_AMT，否则为 0 |
-| FIX_DEPO_TAKE_RATE | 定期存款承接率 |  | TMP_CDR_DTL_TAKE_AMT | t | BUY_DEPO_AMT_30D | 30天购买定期存款金额 | STATIS_TYP=1 时按 BUY_DEPO_AMT_30D/EXPR_AMT 计算 |
-| CNTCT_STATE | 接触状态 |  | ADS_MKT_REC_INFO | m | CUST_ID,MKT_TIME | 客户营销记录 | 存在 MKT_TIME 且不晚于跑批日则为 1，否则为 0 |
-| UNDTAKE_STATE | 承接状态 |  | TMP_CDR_DTL_TAKE_AMT | t | TAKE_AMT_30D | 30天承接金额 | TAKE_AMT_30D/EXPR_AMT >= 0.8 则为 1，否则为 0 |
-| FIXED_FIN_MATURE_TRAN_INSUR_AMT | 定期理财到期转保险金额 |  | TMP_CDR_DTL_TAKE_AMT | t | BUY_INSUR_AMT_30D | 30天购买保险金额 | 仅作为保险转化金额；保险不计入 TAKE_AMT_30D |
-| FIN_MATURE_TRAN_FIXED_AMT | 理财到期转定期金额 |  | TMP_CDR_DTL_TAKE_AMT | x | BUY_DEPO_AMT_30D | 30天购买定期存款金额 | 客户维度汇总 x.STATIS_TYP=2 的 BUY_DEPO_AMT_30D |
-| FIXED_MATURE_TRAN_FIN_AMT | 定期到期转理财金额 |  | TMP_CDR_DTL_TAKE_AMT | x | BUY_FIN_AMT_30D | 30天购买理财金额 | 客户维度汇总 x.STATIS_TYP=1 的 BUY_FIN_AMT_30D |
-| FRST_MATURE_PK_BF_DAY_AUM_BAL | 本期第一笔到期产品前一日AUM余额 |  | TMP_CDR_DTL_AUM_BAL | ap | AUM_BAL | 到期前一日AUM余额 | 取 AUM_TYP=PREV 的 AUM_BAL |
-| LAST_END_DATE | 本期最后一笔到期产品日期 |  | TMP_CDR_DTL_DUE_WIN | w | LAST_EXPR_DT | 最后一笔到期日期 | 格式化为 yyyymmdd |
-| POST_ID | 管户经理 |  | TMP_CDR_DTL_CUST_BASE | cb | POST_ID | 管户经理职位编号 | 直接取客户基础中间表 |
-| ORG_ID | 归属机构 |  | TMP_CDR_DTL_CUST_BASE | cb | ORG_ID | 归属机构 | 直接取客户基础中间表 |
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | DWD_CUST_INDV_INFO | PERSN_LEGAL_BK_CODE | 直接取客户基本信息法人行号 |
+| DATA_DATE | 数据日期 | VARCHAR2(8) | TMP_CDR_DTL_DUE_WIN | END_DT | 按 M/Q/N 周期生成，格式化为 yyyymmdd |
+| CUST_ID | 客户编号 | VARCHAR2(20) | TMP_CDR_DTL_DUE_WIN | CUST_ID | 直接取到期窗口客户编号 |
+| CUST_NAME | 客户名称 | VARCHAR2(100) | TMP_CDR_DTL_CUST_BASE | CUST_NAME | 直接取客户基础中间表 |
+| CUST_LVL | 客户等级 | VARCHAR2(2) | TMP_CDR_DTL_CUST_BASE | CUST_LVL | 由 DWD_CUST_INDV_INFO.CUST_HRAKY 映射为 CUST_LVL 后取值 |
+| DEPO_CURNT_DEPO_BAL | 活期余额 | NUMBER(20,2) | TMP_CDR_DTL_CUST_BASE | DEPO_CURNT_DEPO_BAL | 直接取客户余额中间表 |
+| FIXD_DEPO_BAL | 定期余额 | NUMBER(20,2) | TMP_CDR_DTL_CUST_BASE | FIXD_DEPO_BAL | 直接取客户余额中间表 |
+| FIN_AMT | 理财余额 | NUMBER(20,2) | TMP_CDR_DTL_CUST_BASE | FIN_AMT | 直接取客户余额中间表 |
+| STAT_PERD | 统计周期 | VARCHAR2(2) | TMP_CDR_DTL_DUE_WIN | STAT_PERD | 直接取到期窗口统计周期 |
+| STATIS_TYP | 承接类型1-存款2-理财 | VARCHAR2(2) | TMP_CDR_DTL_DUE_WIN | STATIS_TYP | 1 存款、2 理财、0 汇总 |
+| EXPR_AMT | 到期金额 | NUMBER(20,2) | TMP_CDR_DTL_DUE_WIN | EXPR_AMT | 直接取窗口已到期金额 |
+| MATURE_TTL_AMT | 到期总金额 | NUMBER(20,2) | TMP_CDR_DTL_DUE_WIN | MATURE_TTL_AMT | 直接取窗口到期总金额 |
+| TAKE_RATE | 承接率 | NUMBER(10,2) | TMP_CDR_DTL_TAKE_AMT | TAKE_AMT_30D | ROUND(NVL(t.TAKE_AMT_30D,0)/w.EXPR_AMT*100,2)，EXPR_AMT=0 时为 0 |
+| FIX_DEPO_MATURE_AMT | 定期存款到期金额 | NUMBER(20,2) | TMP_CDR_DTL_DUE_WIN | EXPR_AMT | STATIS_TYP=1 时取 EXPR_AMT，否则为 0 |
+| FIX_DEPO_MATURE_TTL_AMT | 定期存款到期总金额 | NUMBER(20,2) | TMP_CDR_DTL_DUE_WIN | MATURE_TTL_AMT | STATIS_TYP=1 时取 MATURE_TTL_AMT，否则为 0 |
+| FIX_DEPO_TAKE_RATE | 定期存款承接率 | NUMBER(10,2) | TMP_CDR_DTL_TAKE_AMT | BUY_DEPO_AMT_30D | STATIS_TYP=1 时按 BUY_DEPO_AMT_30D/EXPR_AMT 计算 |
+| CNTCT_STATE | 接触状态 | VARCHAR2(1) | ADS_MKT_REC_INFO | CUST_ID,MKT_TIME | 存在 MKT_TIME 且不晚于跑批日则为 1，否则为 0 |
+| UNDTAKE_STATE | 承接状态 | VARCHAR2(1) | TMP_CDR_DTL_TAKE_AMT | TAKE_AMT_30D | TAKE_AMT_30D/EXPR_AMT >= 0.8 则为 1，否则为 0 |
+| FIXED_FIN_MATURE_TRAN_INSUR_AMT | 定期理财到期转保险金额 | NUMBER(20,2) | TMP_CDR_DTL_TAKE_AMT | BUY_INSUR_AMT_30D | 仅作为保险转化金额；保险不计入 TAKE_AMT_30D |
+| FIN_MATURE_TRAN_FIXED_AMT | 理财到期转定期金额 | NUMBER(20,2) | TMP_CDR_DTL_TAKE_AMT | BUY_DEPO_AMT_30D | 客户维度汇总 x.STATIS_TYP=2 的 BUY_DEPO_AMT_30D |
+| FIXED_MATURE_TRAN_FIN_AMT | 定期到期转理财金额 | NUMBER(20,2) | TMP_CDR_DTL_TAKE_AMT | BUY_FIN_AMT_30D | 客户维度汇总 x.STATIS_TYP=1 的 BUY_FIN_AMT_30D |
+| FRST_MATURE_PK_BF_DAY_AUM_BAL | 本期第一笔到期产品前一日AUM余额 | NUMBER(20,2) | TMP_CDR_DTL_AUM_BAL | AUM_BAL | 取 AUM_TYP=PREV 的 AUM_BAL |
+| LAST_END_DATE | 本期最后一笔到期产品日期 | VARCHAR2(8) | TMP_CDR_DTL_DUE_WIN | LAST_EXPR_DT | 格式化为 yyyymmdd |
+| POST_ID | 管户经理 | VARCHAR2(20) | TMP_CDR_DTL_CUST_BASE | POST_ID | 直接取客户基础中间表 |
+| ORG_ID | 归属机构 | VARCHAR2(7) | TMP_CDR_DTL_CUST_BASE | ORG_ID | 直接取客户基础中间表 |
 
 ### ADS_CUST_DEADLINE_RMND_STATIS
 
-| 目标字段 | 目标字段中文名 | 目标字段类型 | 源系统表名 | 源表别名 | 源系统字段英文名 | 源系统字段中文名 | 映射规则 |
-|----------|----------------|--------------|------------|----------|------------------|------------------|----------|
-| PERSN_LEGAL_BK_CODE | 法人行号 |  | TMP_CDR_STAT_SRC | s | PERSN_LEGAL_BK_CODE | 法人行号 | 直接取统计来源中间表 |
-| DATA_DATE | 数据日期 |  | TMP_CDR_STAT_SRC | s | DATA_DATE | 数据日期 | 直接取统计来源中间表 |
-| STATIS_OBJ | 统计对象 |  | TMP_CDR_STAT_SRC | s | STATIS_OBJ | 统计对象 | 机构维度取机构层级展开结果，客户经理维度取 POST_ID |
-| STATIS_CYCLE | 统计周期 |  | TMP_CDR_STAT_SRC | s | STAT_PERD | 统计周期 | 由明细统计周期映射为统计周期 |
-| STATIS_TYP | 承接类型1-存款2-理财 |  | TMP_CDR_STAT_SRC | s | STATIS_TYP | 承接类型 | 直接取统计来源中间表 |
-| EXPR_CUST_CNT | 已到期客户数 |  | TMP_CDR_STAT_SRC | s | EXPR_AMT,CUST_ID | 已到期金额、客户编号 | COUNT(DISTINCT CUST_ID) WHERE EXPR_AMT>0 |
-| TTL_EXPR_CUST_CNT | 总到期客户数 |  | TMP_CDR_STAT_SRC | s | MATURE_TTL_AMT,CUST_ID | 到期总金额、客户编号 | COUNT(DISTINCT CUST_ID) WHERE MATURE_TTL_AMT>0 |
-| EXPR_AMT | 已到期金额 |  | TMP_CDR_STAT_SRC | s | EXPR_AMT | 已到期金额 | SUM(EXPR_AMT) |
-| TTL_EXPR_AMT | 总到期金额 |  | TMP_CDR_STAT_SRC | s | MATURE_TTL_AMT | 到期总金额 | SUM(MATURE_TTL_AMT) |
-| CUST_UNDTAKE_RATE | 客户承接率 |  | TMP_CDR_STAT_SRC | s | CUST_TAKE_FLG,CUST_ID,EXPR_AMT | 客户承接标志、客户编号、已到期金额 | 承接客户数/已到期客户数*100 |
-| ASSET_KEEP_RATE | 资产留存率 |  | TMP_CDR_STAT_SRC | s | CURR_AUM_BAL,FRST_MATURE_PK_BF_DAY_AUM_BAL | 当前AUM、到期前一日AUM | SUM(CURR_AUM_BAL)/SUM(FRST_MATURE_PK_BF_DAY_AUM_BAL)*100 |
-| ASSET_UNDTAKE_RATE | 资产承接率 |  | TMP_CDR_STAT_SRC | s | EXPR_AMT,TAKE_RATE_30D | 已到期金额、30天承接率 | SUM(EXPR_AMT*TAKE_RATE_30D/100)/SUM(EXPR_AMT)*100 |
-| DEPO_TO_FIN_CONVRS_RATE | 存款转理财转化率 |  | TMP_CDR_STAT_SRC | s | FIXED_MATURE_TRAN_FIN_AMT,EXPR_AMT | 定期到期转理财金额、到期金额 | SUM(FIXED_MATURE_TRAN_FIN_AMT)/SUM(EXPR_AMT)*100 |
-| INSUR_CONVRS_RATE | 保险转化率 |  | TMP_CDR_STAT_SRC | s | FIXED_FIN_MATURE_TRAN_INSUR_AMT,EXPR_AMT | 理财到期转保险金额、到期金额 | SUM(FIXED_FIN_MATURE_TRAN_INSUR_AMT)/SUM(EXPR_AMT)*100 |
-| FIN_TO_DEPO_CONVRS_RATE | 理财转存款转化率 |  | TMP_CDR_STAT_SRC | s | FIN_MATURE_TRAN_FIXED_AMT,EXPR_AMT | 理财到期转定期金额、到期金额 | SUM(FIN_MATURE_TRAN_FIXED_AMT)/SUM(EXPR_AMT)*100 |
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | TMP_CDR_STAT_SRC | PERSN_LEGAL_BK_CODE | 直接取统计来源中间表 |
+| DATA_DATE | 数据日期 | VARCHAR2(8) | TMP_CDR_STAT_SRC | DATA_DATE | 直接取统计来源中间表 |
+| STATIS_OBJ | 统计对象 | VARCHAR2(20) | TMP_CDR_STAT_SRC | STATIS_OBJ | 机构维度取机构层级展开结果，客户经理维度取 POST_ID |
+| STATIS_CYCLE | 统计周期 | VARCHAR2(2) | TMP_CDR_STAT_SRC | STAT_PERD | 由明细统计周期映射为统计周期 |
+| STATIS_TYP | 承接类型0-全部 1-定期存款 2-理财 | VARCHAR2(2) | TMP_CDR_STAT_SRC | STATIS_TYP | 直接取统计来源中间表 |
+| EXPR_CUST_CNT | 已到期客户数 | NUMBER(8) | TMP_CDR_STAT_SRC | EXPR_AMT,CUST_ID | COUNT(DISTINCT CUST_ID) WHERE EXPR_AMT>0 |
+| TTL_EXPR_CUST_CNT | 总到期客户数 | NUMBER(8) | TMP_CDR_STAT_SRC | MATURE_TTL_AMT,CUST_ID | COUNT(DISTINCT CUST_ID) WHERE MATURE_TTL_AMT>0 |
+| EXPR_AMT | 已到期金额 | NUMBER(20,2) | TMP_CDR_STAT_SRC | EXPR_AMT | SUM(EXPR_AMT) |
+| TTL_EXPR_AMT | 总到期金额 | NUMBER(20,2) | TMP_CDR_STAT_SRC | MATURE_TTL_AMT | SUM(MATURE_TTL_AMT) |
+| CUST_UNDTAKE_RATE | 客户承接率 | NUMBER(20,2) | TMP_CDR_STAT_SRC | CUST_TAKE_FLG,CUST_ID,EXPR_AMT | 承接客户数/已到期客户数*100 |
+| ASSET_KEEP_RATE | 资产留存率 | NUMBER(20,2) | TMP_CDR_STAT_SRC | CURR_AUM_BAL,FRST_MATURE_PK_BF_DAY_AUM_BAL | SUM(CURR_AUM_BAL)/SUM(FRST_MATURE_PK_BF_DAY_AUM_BAL)*100 |
+| ASSET_UNDTAKE_RATE | 资产承接率 | NUMBER(20,2) | TMP_CDR_STAT_SRC | EXPR_AMT,TAKE_RATE_30D | SUM(EXPR_AMT*TAKE_RATE_30D/100)/SUM(EXPR_AMT)*100 |
+| DEPO_TO_FIN_CONVRS_RATE | 存款转理财转化率 | NUMBER(20,2) | TMP_CDR_STAT_SRC | FIXED_MATURE_TRAN_FIN_AMT,EXPR_AMT | SUM(FIXED_MATURE_TRAN_FIN_AMT)/SUM(EXPR_AMT)*100 |
+| INSUR_CONVRS_RATE | 保险转化率 | NUMBER(20,2) | TMP_CDR_STAT_SRC | FIXED_FIN_MATURE_TRAN_INSUR_AMT,EXPR_AMT | SUM(FIXED_FIN_MATURE_TRAN_INSUR_AMT)/SUM(EXPR_AMT)*100 |
+| FIN_TO_DEPO_CONVRS_RATE | 理财转存款转化率 | NUMBER(20,2) | TMP_CDR_STAT_SRC | FIN_MATURE_TRAN_FIXED_AMT,EXPR_AMT | SUM(FIN_MATURE_TRAN_FIXED_AMT)/SUM(EXPR_AMT)*100 |
 
 ### ADS_CUST_LOST_DTL
 
@@ -438,6 +439,166 @@
 | HDLE_TIME | 处理时间 | VARCHAR2 |  |  |  |
 | DEL_FLG | 删除标志 | VARCHAR2 |  |  |  |
 | HDLE_DSC | 处理说明 | VARCHAR2 |  |  |  |
+
+### ADS_CRM_R_CUST_LABLE
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+| CUST_ID | 核心客户号 | VARCHAR2 |  |  |  |
+| CUST_NAME | 客户名称 | VARCHAR2 |  |  |  |
+| CERT_TYP | 证件类型 | VARCHAR2 |  |  |  |
+| CERT_ID | 证件号码 | VARCHAR2 |  |  |  |
+| GEND | 性别 | VARCHAR2 |  |  |  |
+| AGE | 年龄 | NUMBER |  |  |  |
+| NATION | 民族 | VARCHAR2 |  |  |  |
+| MARI_SITU | 婚姻状况 | VARCHAR2 |  |  |  |
+| PHONE_NO | 手机号码 | VARCHAR2 |  |  |  |
+| MAX_DEG_EDU | 最高学历 | VARCHAR2 |  |  |  |
+| OCCU_CLS | 职业分类 | VARCHAR2 |  |  |  |
+| HOST_CUST_MNGR_POST_ID | 主办客户经理职位编号 | VARCHAR2 |  |  |  |
+| HOST_CUST_MNGR_NAME | 主办客户经理名称 | VARCHAR2 |  |  |  |
+| HOST_CUST_MNGR_EMP_ID | 主办客户经理工号 | VARCHAR2 |  |  |  |
+| ORG_LEAD | 主办机构(归属机构) | VARCHAR2 |  |  |  |
+| ORG_LEAD_PATH | 主办机构路径 | VARCHAR2 |  |  |  |
+| COSPSR_CUST_MNGR_POST_ID | 信贷客户经理职位编号 | VARCHAR2 |  |  |  |
+| COSPSR_CUST_MNGR_NAME | 信贷客户经理名称 | VARCHAR2 |  |  |  |
+| COSPSR_CUST_MNGR_EMP_ID | 信贷客户经理工号 | VARCHAR2 |  |  |  |
+| COSPSR_ORG | 信贷机构 | VARCHAR2 |  |  |  |
+| COSPSR_ORG_PATH | 信贷机构路径 | VARCHAR2 |  |  |  |
+| IS_NOT_INDIV_BIZ_ACCT | 是否一码付商户 | VARCHAR2 |  |  |  |
+| IS_NOT_MINOR_ENTER_MAIN | 是否小微企业主 | VARCHAR2 |  |  |  |
+| NEAR_YR_HF_AVG_MTH_INCOM | 近半年月均收入 | NUMBER |  |  |  |
+| INDIV_ESTIM_YR_INCOM | 个人年收入 | NUMBER |  |  |  |
+| FUND_ACUM_DEPO_NUM_BASE | 公积金缴存基数 | NUMBER |  |  |  |
+| SOCIAL_WELF_PAY_NUM_BASE | 社保缴存基数 | NUMBER |  |  |  |
+| IS_NOT_PURE_NEW_CUST | 纯新户开户标志 | VARCHAR2 |  |  |  |
+| IS_NOT_BK_SELF_EMP | 是否本行员工 | VARCHAR2 |  |  |  |
+| IS_NOT_SLEEP_ACCT | 是否睡眠户 | VARCHAR2 |  |  |  |
+| CUST_HRAKY | 客户层级 | VARCHAR2 |  |  |  |
+| CUST_LVL | 客户等级 | VARCHAR2 |  |  |  |
+| LIFE_CYC | 生命周期 | VARCHAR2 |  |  |  |
+| AUM | AUM余额 | NUMBER |  |  |  |
+| AUM_MTH_AVG | AUM月日均 | NUMBER |  |  |  |
+| AUM_QRT_AVG | AUM季日均 | NUMBER |  |  |  |
+| AUM_YR_AVG | AUM年日均 | NUMBER |  |  |  |
+| IS_NOT_DEPO | 是否持有存款产品 | CHAR |  |  |  |
+| DEPO_BAL | 存款余额 | NUMBER |  |  |  |
+| DEPO_MTH_AVG | 存款月日均 | NUMBER |  |  |  |
+| DEPO_QRT_AVG | 存款季日均 | NUMBER |  |  |  |
+| DEPO_YR_AVG | 存款年日均 | NUMBER |  |  |  |
+| DEPO_CURNT_DEPO_BAL | 活期存款余额 | NUMBER |  |  |  |
+| DEPO_CURNT_DEPO_BAL_MTH_CURNT_AVG_DAY | 活期存款日均余额 | NUMBER |  |  |  |
+| IS_NOT_HIST_FIXD_DEPO_FLAG | 是否历史持有定期存款产品 | VARCHAR2 |  |  |  |
+| IS_NOT_FIXD_DEPO | 是否持有定期存款产品 | VARCHAR2 |  |  |  |
+| FIX_DEPO_BAL | 定期存款余额 | NUMBER |  |  |  |
+| FIX_DEPO_MTH_AVG | 定期存款月日均 | NUMBER |  |  |  |
+| FIX_DEPO_QRT_AVG | 定期存款季日均 | NUMBER |  |  |  |
+| FIX_DEPO_YR_AVG | 定期存款年日均 | NUMBER |  |  |  |
+| IS_NOT_HIST_LUMPSUM_FIXD_FLAG | 是否历史持有整存整取定期存款 | VARCHAR2 |  |  |  |
+| IS_NOT_LUMPSUM_FIXD | 是否持有整存整取定期存款 | VARCHAR2 |  |  |  |
+| LUMPSUM_FIXD_DEPO_BAL | 整存整取定期存款余额 | NUMBER |  |  |  |
+| IS_NOT_HIST_LEHUI_FLAG | 是否历史持有乐惠存产品 | VARCHAR2 |  |  |  |
+| IS_NOT_LEHUI | 是否持有乐惠存产品 | VARCHAR2 |  |  |  |
+| LEHUI_BAL | 乐惠存产品余额 | NUMBER |  |  |  |
+| LEHUI_MTH_AVG_DAY | 乐惠存产品月日均余额 | NUMBER |  |  |  |
+| RCNT_FIXD_DEPO_MATURE_DAYS | 最近一笔定期存款到期天数 | NUMBER |  |  |  |
+| RCNT_FIXD_DEPO_MATURE_AMT | 最近一笔定期存款到期金额 | NUMBER |  |  |  |
+| IS_NOT_HIST_LARGEDP_FLAG | 是否历史持有大额存单 | VARCHAR2 |  |  |  |
+| IS_NOT_LARGEDP | 是否持有大额存单 | VARCHAR2 |  |  |  |
+| LARGEDP_BAL | 大额存单余额 | NUMBER |  |  |  |
+| LARGEDP_MTH_AVG_DAY | 大额存单月日均余额 | NUMBER |  |  |  |
+| IS_NOT_FIN_CTRAKT | 是否理财签约 | VARCHAR2 |  |  |  |
+| IS_NOT_HIST_FIN_FLAG | 是否历史持有理财产品 | VARCHAR2 |  |  |  |
+| IS_NOT_FIN | 是否持有理财产品 | VARCHAR2 |  |  |  |
+| RCNT_FIN_MATURE_DAYS | 最近一笔理财到期天数 | NUMBER |  |  |  |
+| RCNT_FIN_MATURE_AMT | 最近一笔理财到期金额 | NUMBER |  |  |  |
+| FIN_AMT | 理财余额 | NUMBER |  |  |  |
+| FIN_MTH_AVG | 理财月日均 | NUMBER |  |  |  |
+| FIN_QRT_AVG | 理财季日均 | NUMBER |  |  |  |
+| FIN_YR_AVG | 理财年日均 | NUMBER |  |  |  |
+| IS_NOT_HIST_OPEN_FIN_FLAG | 是否历史持有开放式理财产品 | VARCHAR2 |  |  |  |
+| IS_NOT_OPEN_FIN | 是否持有开放式理财产品 | VARCHAR2 |  |  |  |
+| OPEN_FIN_BAL | 开放式理财产品余额 | NUMBER |  |  |  |
+| OPEN_FIN_MTH_AVG_DAY | 开放式理财产品月日均余额 | NUMBER |  |  |  |
+| IS_NOT_HIST_CLOSE_FIN_FLAG | 是否历史持有封闭式理财产品 | VARCHAR2 |  |  |  |
+| IS_NOT_CLOSE_FIN | 是否持有封闭式理财产品 | VARCHAR2 |  |  |  |
+| CLOSE_FIN_BAL | 封闭式理财产品余额 | NUMBER |  |  |  |
+| CLOSE_FIN_MTH_AVG_DAY | 封闭式理财产品月日均余额 | NUMBER |  |  |  |
+| IS_NOT_HIST_AGT_FIN_FLAG | 是否历史持有代销理财产品 | VARCHAR2 |  |  |  |
+| IS_NOT_AGT_FIN | 是否持有代销理财产品 | VARCHAR2 |  |  |  |
+| AGT_FIN_BAL | 代销理财产品余额 | NUMBER |  |  |  |
+| AGT_FIN_MTH_AVG_DAY | 代销理财产品月日均余额 | NUMBER |  |  |  |
+| IS_NOT_LOAN_CUST | 是否贷款客户 | VARCHAR2 |  |  |  |
+| IS_NOT_HIST_LOAN_FLAG | 是否历史贷款客户 | VARCHAR2 |  |  |  |
+| LOAN_BAL | 贷款余额 | NUMBER |  |  |  |
+| IS_NOT_PAYROL_BK | 是否代发户 | VARCHAR2 |  |  |  |
+| IS_NOT_SALRY_PAYROL_BK | 是否代发工资客户 | VARCHAR2 |  |  |  |
+| BK_SALRY_AMT_MTH_LAST | 上月代发工资金额 | NUMBER |  |  |  |
+| RCNT_TIME_ONE_PAYROL_BK_SALRY_DATE | 最近一次代发工资日期 | DATE |  |  |  |
+| PAYROL_BK_SALRY_AMT | 最近一次代发工资金额 | NUMBER |  |  |  |
+| PAYROL_SALRY_TTL | 代发工资累计金额 | NUMBER |  |  |  |
+| CONTI_PAYROL_BK_MTHS | 连续稳定代发工资月数 | NUMBER |  |  |  |
+| DCARD_TYPE | 借记卡类型 | VARCHAR2 |  |  |  |
+| IS_NOT_BK_SELF_SSCARD | 是否我行社保卡 | CHAR |  |  |  |
+| IS_NOT_BK_SELF_CGZJ | 是否我行川工之家客户 | CHAR |  |  |  |
+| CGZJ_ACCT_WELF_BAL | 川工之家账户福利资金余额 | NUMBER |  |  |  |
+| IS_NOT_SELF_REG_MBANK | 是否自助注册手机银行 | CHAR |  |  |  |
+| IS_NOT_KTER_CTRAKT_MBANK | 是否柜面签约手机银行 | CHAR |  |  |  |
+| NEAR_MTH_TX_CNT | 近1月累计交易笔数 | NUMBER |  |  |  |
+| NEAR_MTH_TX_AMT | 近1月累计交易金额 | NUMBER |  |  |  |
+| NEAR_MTH_MBANK_TX_CNT | 近1月手机银行累计交易笔数 | NUMBER |  |  |  |
+| NEAR_MTH_MBANK_TX_AMT | 近1月手机银行累计交易金额 | NUMBER |  |  |  |
+| NEAR_MTH_MBANK_TX_AMT_BK_OUTER | 近1月手机银行行外入账金额 | NUMBER |  |  |  |
+| IS_NOT_SFZF | 是否签约三方支付 | CHAR |  |  |  |
+| NEAR_MTH_THIRD_PAY_OUT_CNT | 近1月第三方支付累计转出笔数 | NUMBER |  |  |  |
+| NEAR_MTH_THIRD_PAY_OUT_AMT | 近1月第三方支付累计转出金额 | NUMBER |  |  |  |
+| IS_NOT_BILL_RSV_MINOR_MKNT | 是否收单商户小微商户 | CHAR |  |  |  |
+| IS_NOT_BILL_RSV_INDIV_MKNT | 是否收单商户个体商户 | CHAR |  |  |  |
+| BILL_RSV_MKNT_CNT_MTH_LAST | 收单商户上月交易笔数 | NUMBER |  |  |  |
+| BILL_RSV_MKNT_AMT_MTH_LAST | 收单商户上月交易金额 | NUMBER |  |  |  |
+| IS_NOT_BILL_RSV_VAL_MKNT | 是否收单价值商户 | CHAR |  |  |  |
+| IS_NOT_BK_SELF_FUND_PASS_BY_ACCT | 是否我行资金过路户 | CHAR |  |  |  |
+| IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME | 是否向他行同名户规律转出 | CHAR |  |  |  |
+| MBANK_CONTI_LOGIN_DAYS | 连续登录手机银行天数 | NUMBER |  |  |  |
+| IS_NOT_BK_PHONE_ACTV_CUST | 是否手机银行活跃客户 | CHAR |  |  |  |
+| IS_NOT_BK_SELF_LOAN_DUE_OVER_CUST | 行内贷款是否逾期 | CHAR |  |  |  |
+| NEAR_24MTH_OVERDUE_FLAG | 行内近24月内是否存在贷款逾期 | CHAR |  |  |  |
+| CRDT_DUE_OVER_CNT | 征信逾期次数 | NUMBER |  |  |  |
+| EXIST_BADLOAN_REC | 征信是否存在不良贷款记录 | CHAR |  |  |  |
+| IS_NOT_INSUR | 是否持有保险产品 | CHAR |  |  |  |
+| INSUR_FRST_PREM_AMT | 保险产品首期保费 | NUMBER |  |  |  |
+| INSUR_BAL | 保险余额 | NUMBER |  |  |  |
+| INSUR_MTH_AVG | 保险月日均 | NUMBER |  |  |  |
+| INSUR_QRT_AVG | 保险季日均 | NUMBER |  |  |  |
+| INSUR_YR_AVG | 保险年日均 | NUMBER |  |  |  |
+| NEAR_3_MTH_MIN_BENEFIT_LVL | 近三个月最低权益等级 | VARCHAR2 |  |  |  |
+| NEAR_6_MTH_MIN_BENEFIT_LVL | 近六个月最低权益等级 | VARCHAR2 |  |  |  |
+| NEAR_9_MTH_MIN_BENEFIT_LVL | 近九个月最低权益等级 | VARCHAR2 |  |  |  |
+| NEAR_12_MTH_MIN_BENEFIT_LVL | 近十二个月最低权益等级 | VARCHAR2 |  |  |  |
+| IS_NOT_YR_FRST_LVL_UPG_CUST | 是否当年首次等级升级客户 | CHAR |  |  |  |
+| FRST_UPG_CUST_UPG_LVL | 首次升级客户升级等级 | VARCHAR2 |  |  |  |
+| IS_NOT_YR_LVL_DWN_CUST | 是否当年等级降级客户 | CHAR |  |  |  |
+| DWN_CUST_LVL_BF_AF | 降级客户降级前后等级 | VARCHAR2 |  |  |  |
+| IS_NOT_HIGH_WORTH_CRIT_CUST | 是否为高净值临界客户 | CHAR |  |  |  |
+| IS_NOT_MBANK_BIND_CARD | 是否登录手机银行并完成绑卡客户 | CHAR |  |  |  |
+| REG_LOGIN_BK_PHONE_CUST_DAYS | 注册并登录手机银行客户的天数 | NUMBER |  |  |  |
+| MTH_LOGIN_MBANK_CNT | 当月登录手机银行次数 | NUMBER |  |  |  |
+| IS_NOT_3RD_PAY_BIND_CARD_DONE | 是否完成三方支付绑卡 | CHAR |  |  |  |
+| YR_CAMPUS_PAY_CNT | 当年校园缴费笔数 | NUMBER |  |  |  |
+| YR_HOT_ACTV_CNT | 当年参与热门活动次数 | NUMBER |  |  |  |
+| MTH_UTIL_PAY_TRAN_AMT | 当月完成水电气缴费交易金额 | NUMBER |  |  |  |
+| MTH_UTIL_PAY_TRAN_CNT | 当月完成水电气缴费交易笔数 | NUMBER |  |  |  |
+| TRAN_CHAN_PREF | 交易渠道偏好 | VARCHAR2 |  |  |  |
+| IS_NOT_WECHAT_TRAN_MTH_ACTIVE | 是否为微信绑卡交易月活跃客户 | CHAR |  |  |  |
+| PRDKT_PREF | 储蓄产品偏好 | VARCHAR2 |  |  |  |
+| VERIFIED_BADGE | 企微客户认证标志 | VARCHAR2 |  |  |  |
+| DEPO_TERM_PREF | 储蓄产品期限偏好 | VARCHAR2 |  |  |  |
+| IS_NOT_WB_LOAN | 是否微粒贷客户 | VARCHAR2 |  |  |  |
+| IS_NOT_MT_LOAN | 是否美团贷款客户 | VARCHAR2 |  |  |  |
+| ORG_PATH | 机构路径 | VARCHAR2 |  |  |  |
+| CONTR_AMT | 总合同额度 | NUMBER |  |  |  |
+| DCARD_LVL | 借记卡等级 | VARCHAR2 |  |  |  |
 
 ---
 

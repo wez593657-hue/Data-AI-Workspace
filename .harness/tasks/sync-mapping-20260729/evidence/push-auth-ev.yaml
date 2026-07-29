@@ -1,0 +1,9 @@
+evidence_id: push-auth-ev
+task_id: sync-mapping-20260729
+phase: PUSH_ALLOWED
+kind: push_authorization
+purpose: push_authorization
+result: passed
+details: 推送授权通过
+repository_revision: 16eae00c77333bbbeb8d3c3044a24de168fac8c3
+created_at: '2026-07-29T14:33:54+00:00'

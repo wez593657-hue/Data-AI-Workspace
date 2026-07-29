@@ -1,0 +1,9 @@
+evidence_id: asset-update-ev
+task_id: mapping-excel-sync-20260729
+phase: ASSETS_UPDATED
+kind: asset_update
+purpose: 通过generate_ads_assets.py从ADS Excel生成21张表的DDL和数据字典
+result: passed
+details: ''
+repository_revision: ad88a947414a74a664db42850a656dab2355d2cd
+created_at: '2026-07-29T14:08:59+00:00'

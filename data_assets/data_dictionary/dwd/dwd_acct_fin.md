@@ -41,9 +41,7 @@
 | PRDKT_CATE_BIG | 产品大类 | VARCHAR | 64 | - | - | - | - | - | - |
 | ESTAB_DATE | 成立日期 | VARCHAR | 10 | - | - | - | - | - | - |
 | FIN_AMT | 理财余额 | NUMBER | 20,2 | - | - | - | - | - | - |
-| FIN_MTH_AVG | 理财月日均 | NUMBER | 20,2 | - | - | - | - | - | - |
-| FIN_QRT_AVG | 理财季日均 | NUMBER | 20,2 | - | - | - | - | - | - |
-| FIN_YR_AVG | 理财年日均 | NUMBER | 20,2 | - | - | - | - | - | - |
+
 | RATE_INTRI | 收益率 | NUMBER | 20,2 | - | - | - | - | - | - |
 | ACCT_STATE | 状态 | VARCHAR | 10 | - | - | - | - | - | - |
 | INTRI_BGN_DATE | 起息日期 | VARCHAR | 10 | - | - | - | - | - | - |

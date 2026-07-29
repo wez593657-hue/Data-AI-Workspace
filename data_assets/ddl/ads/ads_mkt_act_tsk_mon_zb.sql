@@ -1,19 +1,18 @@
 /*
  * ADS_MKT_ACT_TSK_MON_ZB
  * 中文名称: 营销活动任务监控附表
- * 版本: v1.0.0
+ * 版本: v1.0
  * 创建时间: 2026-07-29
- * 来源: Mapping Excel (ADS应用层数据模型)
  */
 
 CREATE TABLE IF NOT EXISTS ADS_MKT_ACT_TSK_MON_ZB (
-    DATA_DATE    VARCHAR2(8) , -- 数据日期
-    STAT_OBJ     VARCHAR2(2) , -- 统计对象
-    MKT_ACT_ID   VARCHAR2(40), -- 营销活动编号
-    BASE_VAL     NUMBER(20,2), -- 基准值
-    CURNT_VAL    NUMBER(20,2), -- 当前值
-    INCR         NUMBER(20,2), -- 增量
-    GROWTH_RATE  NUMBER(10,2)  -- 增长率
+    DATA_DATE VARCHAR(8),
+    STAT_OBJ VARCHAR(2),
+    MKT_ACT_ID VARCHAR(40),
+    BASE_VAL NUMBER(20,2),
+    CURNT_VAL NUMBER(20,2),
+    INCR NUMBER(20,2),
+    GROWTH_RATE NUMBER(10,2)
 );
 
 COMMENT ON TABLE ADS_MKT_ACT_TSK_MON_ZB IS '营销活动任务监控附表';

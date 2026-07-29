@@ -1,0 +1,9 @@
+evidence_id: related-files-scan-ev
+task_id: sync-mapping-20260729
+phase: RELATED_FILES_SCANNED
+kind: related_files_scan
+purpose: related_files_scan
+result: passed
+details: 3层Mapping MD + 3层DDL + 3层数据字典
+repository_revision: ad88a947414a74a664db42850a656dab2355d2cd
+created_at: '2026-07-29T14:24:43+00:00'

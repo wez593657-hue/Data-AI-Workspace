@@ -1,0 +1,9 @@
+evidence_id: change-scope-ev
+task_id: mapping-excel-sync-20260729
+phase: CHANGE_SCOPE_IDENTIFIED
+kind: change_scope
+purpose: change_scope
+result: passed
+details: 变更范围：ods_to_dwd(Excel→MD+DDL+数据字典), dwd_to_dws(Excel→MD+DDL+数据字典), dws_to_ads(Excel→MD+DDL+数据字典)
+repository_revision: ad88a947414a74a664db42850a656dab2355d2cd
+created_at: '2026-07-29T13:58:46+00:00'

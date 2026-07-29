@@ -1,0 +1,23 @@
+evidence_id: skill-execution-ev
+task_id: sync-mapping-20260729
+phase: USER_SCOPE_CONFIRMED
+kind: skill_execution
+purpose: skill_execution
+result: passed
+details: Mapping MD同步 + ADS DDL/数据字典生成
+repository_revision: 16eae00c77333bbbeb8d3c3044a24de168fac8c3
+created_at: '2026-07-29T14:25:04+00:00'
+input_workbook: data_assets\mapping\dws_to_ads\ADS应用层数据模型_CRM_ V1.0.xlsx
+skills:
+- kingbase-ddl-generator
+- excel-to-md-sync
+steps:
+- excel_to_mapping
+- excel_to_ddl
+- excel_to_dictionary
+output_files:
+- data_assets/mapping/ods_to_dwd/ods到dwd映射.md
+- data_assets/mapping/dwd_to_dws/dwd到dws映射.md
+- data_assets/mapping/dws_to_ads/dws到ads映射.md
+- data_assets/ddl/ads/
+- data_assets/data_dictionary/ads/

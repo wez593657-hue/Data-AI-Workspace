@@ -1,26 +1,25 @@
 /*
  * ADS_CUST_POTN_UPGRADE_CUST_DTL
  * 中文名称: 潜力提升客户明细列表
- * 版本: v1.0.0
+ * 版本: v1.0
  * 创建时间: 2026-07-29
- * 来源: Mapping Excel (ADS应用层数据模型)
  */
 
 CREATE TABLE IF NOT EXISTS ADS_CUST_POTN_UPGRADE_CUST_DTL (
-    PERSN_LEGAL_BK_CODE  VARCHAR2(4)  , -- 法人行号
-    DATA_DATE            VARCHAR2(8)  , -- 数据日期
-    CUST_ID              VARCHAR2(20) , -- 客户编号
-    CUST_NAME            VARCHAR2(100), -- 客户名称
-    CUST_LVL             VARCHAR2(2)  , -- 客户等级
-    LVL_CRIT             VARCHAR2(2)  , -- 临界等级
-    DEPO_CURNT_DEPO_BAL  NUMBER(20,2) , -- 活期余额
-    FIXD_DEPO_BAL        NUMBER(20,2) , -- 定期余额
-    FIN_AMT              NUMBER(20,2) , -- 理财余额
-    CNTCT_STATE          VARCHAR2(1)  , -- 接触状态
-    QUAL_STATE           VARCHAR2(1)  , -- 达标状态
-    POST_ID              VARCHAR2(20) , -- 管户经理
-    ORG_ID               VARCHAR2(7)  , -- 归属机构
-    STATIS_CYCLE         VARCHAR2(2)    -- 统计周期(月/季/年)
+    PERSN_LEGAL_BK_CODE VARCHAR(4),
+    DATA_DATE VARCHAR(8),
+    CUST_ID VARCHAR(20),
+    CUST_NAME VARCHAR(100),
+    CUST_LVL VARCHAR(2),
+    LVL_CRIT VARCHAR(2),
+    DEPO_CURNT_DEPO_BAL NUMBER(20,2),
+    FIXD_DEPO_BAL NUMBER(20,2),
+    FIN_AMT NUMBER(20,2),
+    CNTCT_STATE VARCHAR(1),
+    QUAL_STATE VARCHAR(1),
+    POST_ID VARCHAR(20),
+    ORG_ID VARCHAR(7),
+    STATIS_CYCLE VARCHAR(2)
 );
 
 COMMENT ON TABLE ADS_CUST_POTN_UPGRADE_CUST_DTL IS '潜力提升客户明细列表';

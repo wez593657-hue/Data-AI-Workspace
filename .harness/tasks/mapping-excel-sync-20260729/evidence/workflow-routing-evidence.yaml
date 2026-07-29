@@ -1,0 +1,9 @@
+evidence_id: workflow-routing-evidence
+task_id: mapping-excel-sync-20260729
+phase: CREATED
+kind: workflow_routing
+purpose: task_creation
+result: passed
+details: Mapping Excel同步为schema_change流程，用户指定按标准流程执行
+repository_revision: ad88a947414a74a664db42850a656dab2355d2cd
+created_at: '2026-07-29T13:57:05+00:00'

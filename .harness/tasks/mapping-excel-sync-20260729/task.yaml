@@ -1,0 +1,44 @@
+schema_version: '0.1'
+task_id: mapping-excel-sync-20260729
+purpose: schema_change
+workflow_profile: schema_change
+state: ASSETS_UPDATED
+branch: master
+created_at: '2026-07-29T13:56:31+00:00'
+updated_at: '2026-07-29T14:11:40+00:00'
+evidence_ids:
+- workflow-routing-evidence
+- workflow-routing-v2
+- excel-analysis-ev
+- related-files-scan-ev
+- change-scope-ev
+- asset-update-ev
+- scope-confirmation-v2
+- skill-execution-v2
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-29T13:56:31+00:00'
+- from: CREATED
+  to: MAPPING_EXCEL_ANALYZED
+  reason: 3个Excel均晚于MD，全部需要同步
+  at: '2026-07-29T13:58:15+00:00'
+- from: MAPPING_EXCEL_ANALYZED
+  to: RELATED_FILES_SCANNED
+  reason: 需同步3组文件：Mapping MD + DDL + 数据字典
+  at: '2026-07-29T13:58:27+00:00'
+- from: RELATED_FILES_SCANNED
+  to: CHANGE_SCOPE_IDENTIFIED
+  reason: 变更范围：全量同步3个Mapping层的MD+DDL+数据字典
+  at: '2026-07-29T13:58:39+00:00'
+- from: CHANGE_SCOPE_IDENTIFIED
+  to: USER_SCOPE_CONFIRMED
+  reason: 用户已确认：根据Excel更新MD文件及DDL
+  at: '2026-07-29T13:58:52+00:00'
+- from: USER_SCOPE_CONFIRMED
+  to: ASSETS_UPDATED
+  reason: 3个Mapping MD已同步，21张ADS表DDL和数据字典已生成，资产已更新
+  at: '2026-07-29T14:11:40+00:00'
+state_seal: 23b1afaae1b7ae6176f47fc2d5600fd634a39f8fbae89f5205257657cffc79a2

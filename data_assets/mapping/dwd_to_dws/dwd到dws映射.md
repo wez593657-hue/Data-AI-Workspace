@@ -3,19 +3,19 @@
 ## 映射来源
 
 - Excel：`data_assets/mapping/dwd_to_dws/DWS汇总层数据模型_CRM_ V1.0.xlsx`
-- Excel SHA-256：`c11376787670aff7bfbfb5df8fb69aa1cecf9182407510d8acd679e8de47072f`
+- Excel SHA-256：`d3b45631f1190939e38152eb98ff570860bc63638143c06419a4f0f4b90dfede`
 
 ## 映射概览
 
 | 目标表 | 字段数 |
 |--------|-------:|
-| DWS_CUST_ASSE_LIAB | 14 |
+| DWS_CUST_ASSE_LIAB | 15 |
 | DWS_CUST_ASSE_LIAB_CUMU | 15 |
 | DWS_CUST_CAPITAL_RMND | 21 |
 | DWS_CUST_CARE_RMND | 17 |
 | DWS_CUST_DEADLINE_RMND | 20 |
 | DWS_CUST_INDIV_REFERRAL | 14 |
-| DWS_CUST_LVL_INFO | 3 |
+| DWS_CUST_LVL_INFO | 4 |
 | DWS_CUST_REFERRAL_RMND | 10 |
 
 ## 字段映射详情
@@ -60,7 +60,7 @@
 | ORG_ID | 所属机构(客户经理所在机构) | VARCHAR2(7) |  |  |  |
 | HDLE_STATE | 处理状态(0 未处理，1 已处理，2已到期) | VARCHAR2(2) |  |  |  |
 | CATE_TIME | 关怀时间 | VARCHAR2(20) |  |  |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(7) |  |  |  |
 | HDLE_TIME | 处理时间 | VARCHAR2(20) |  |  |  |
 | CTKTR_NAME | 联系人姓名 | VARCHAR2(64) |  |  |  |
 | CTKTR_REL | 联系人关系 | VARCHAR2(6) |  |  |  |
@@ -87,7 +87,7 @@
 | TX_CHNL | 交易渠道 | VARCHAR2(20) |  |  |  |
 | OPNT_BK_KEEP | 对手行 | VARCHAR2(200) |  |  |  |
 | OPNT_NAME | 对手姓名 | VARCHAR2(200) |  |  |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(7) |  |  |  |
 | HDLE_TIME | 处理时间 | VARCHAR2(20) |  |  |  |
 | REMARK | 备注 | VARCHAR2(200) |  |  |  |
 | CUST_LVL | 客户层级 | VARCHAR2(2) |  |  |  |
@@ -165,14 +165,16 @@
 | FIN_BAL | 理财余额 | NUMBER(20,2) |  |  |  |
 | INSUR_BAL | 保险余额 | NUMBER(20,2) |  |  |  |
 | LOAN_BAL | 贷款余额 | NUMBER(20,2) |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(7) |  |  |  |
 
 ### DWS_CUST_LVL_INFO
 
 | 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
 |----------|----------------|--------------|------|--------|----------|
-| DATA_DT | 数据日期 | VARCHAR2(8) |  |  |  |
+| DATA_DATE | 数据日期 | VARCHAR2(8) |  |  |  |
 | CUST_ID | 客户编号 | VARCHAR2(20) |  |  |  |
 | CUST_LVL | 客户等级 | VARCHAR2(2) |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(7) |  |  |  |
 
 ---
 

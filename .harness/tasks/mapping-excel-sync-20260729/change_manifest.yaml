@@ -1,0 +1,19 @@
+schema_version: '0.1'
+task_id: mapping-excel-sync-20260729
+purpose: schema_change
+user_confirmation: confirmed
+description: 根据3个Mapping Excel的最新版本同步MD、DDL和数据字典文件
+allowed_changes:
+  - path: data_assets/mapping/
+  - path: data_assets/ddl/ads/
+  - path: data_assets/ddl/dwd/
+  - path: data_assets/ddl/dws/
+  - path: data_assets/ddl/tmp/
+  - path: data_assets/data_dictionary/ads/
+  - path: data_assets/data_dictionary/dwd/
+  - path: data_assets/data_dictionary/dws/
+  - path: .harness/tasks/mapping-excel-sync-20260729/
+read_only_inputs:
+  - path: data_assets/mapping/ods_to_dwd/DWD明细层数据模型_CRM_ V1.0.xlsx
+  - path: data_assets/mapping/dwd_to_dws/DWS汇总层数据模型_CRM_ V1.0.xlsx
+  - path: data_assets/mapping/dws_to_ads/ADS应用层数据模型_CRM_ V1.0.xlsx

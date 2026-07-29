@@ -1,0 +1,10 @@
+evidence_id: excel-analysis-ev
+task_id: mapping-excel-sync-20260729
+phase: MAPPING_EXCEL_ANALYZED
+kind: mapping_excel_analysis
+purpose: mapping_excel_analysis
+result: passed
+details: 3个Mapping Excel分析结果：ods_to_dwd(2026-07-29)、dwd_to_dws(2026-07-28)、dws_to_ads(2026-07-29)
+  均晚于对应MD(2026-07-23~28)，需全量同步
+repository_revision: ad88a947414a74a664db42850a656dab2355d2cd
+created_at: '2026-07-29T13:58:22+00:00'

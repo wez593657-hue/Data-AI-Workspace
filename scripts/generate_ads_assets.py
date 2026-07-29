@@ -74,8 +74,9 @@ def parse_type(raw_type: str, size: object, scale: object) -> tuple[str, str, st
         decimal_scale = text(scale)
         if not precision.isdigit():
             raise ValueError(f"{raw_type} 缺少有效精度: {size!r}")
+        # col6 是属性校验规则列，非小数位精度列；非数字时忽略
         if decimal_scale and not decimal_scale.isdigit():
-            raise ValueError(f"{raw_type} 精度位无效: {scale!r}")
+            decimal_scale = ""
         number_type = "NUMBER" if raw_type == "NUMBER" else raw_type
         precision_scale = f"{precision},{decimal_scale}" if decimal_scale else precision
         return number_type, f"{number_type}({precision_scale})", precision_scale

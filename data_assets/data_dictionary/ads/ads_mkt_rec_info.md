@@ -1,37 +1,47 @@
-# 营销记录表
+# ADS数据字典 - ADS_MKT_REC_INFO
 
-**表名**: `ADS_MKT_REC_INFO`  
-**中文名**: 营销记录表  
-**来源**: Mapping Excel (ADS应用层数据模型)  
-**更新时间**: 2026-07-29  
+## 表信息
+
+| 属性 | 值 |
+| --- | --- |
+| 层级 | ADS - 应用数据层 |
+| 表名 | ADS_MKT_REC_INFO |
+| 中文名称 | 营销记录表 |
+| 来源模型 | ADS应用层数据模型_CRM_ V1.0.xlsx / 营销记录表 |
+| 更新时间 | 2026-07-29 |
 
 ## 字段列表
 
-| 字段名 | 数据类型 | 中文名 | 备注 |
-|---|---|---|---|
-| MKT_REC_SEQ_ID | VARCHAR2 | 营销记录流水号 | |
-| REL_ID | VARCHAR2 | 关联ID(商机ID、客户群ID/营销活动ID) | |
-| MKT_TYP | VARCHAR2 | 营销类型(1面访/2电话/3短信/4企微) | |
-| REL_TYP | VARCHAR2 | 关联类型(客户群/商机/营销活动) | |
-| CUST_ID | VARCHAR2 | 客户ID | |
-| CUST_NAME | VARCHAR2 | 客户名称 | |
-| MKT_SITE | VARCHAR2 | 营销地点 | |
-| MKT_TIME | VARCHAR2 | 营销时间 | |
-| MKT_PERSN | VARCHAR2 | 营销人ID | |
-| MKT_PERSN_NAME | VARCHAR2 | 营销人名称 | |
-| MKT_ORG | VARCHAR2 | 营销机构 | |
-| MKT_DURA | VARCHAR2 | 营销时长 | |
-| MKT_DTL_SITU | VARCHAR2 | 营销详细情况 | |
-| MKT_APDIX_ID | VARCHAR2 | 营销附件ID(录音/图片) | |
-| TEMP_ID | VARCHAR2 | 模板ID | |
-| TEMP_NAME | VARCHAR2 | 模板名称 | |
-| MSG_SHORT_SEQ_ID | VARCHAR2 | 短信流水号 | |
-| PERSN_LEGAL_BK_CODE | VARCHAR2 | 法人行号 | |
-| CORDNAT_VISITOR | VARCHAR2 | 协同拜访人 | |
-| CORDNAT_VISITOR_NAME | VARCHAR2 | 协同拜访人名称 | |
-| LGTUD | VARCHAR2 | 经度 | |
-| LATTUD | VARCHAR2 | 纬度 | |
-| TEL_NO | VARCHAR2 | 联系电话 | |
-| CHNL_NO | VARCHAR2 | 渠道编号 | |
-| NO_BAT | VARCHAR2 | 批次号 | |
-| MSG_SHORT_INF | VARCHAR2 | 短信内容 | |
+| 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MKT_REC_SEQ_ID | 营销记录流水号 | VARCHAR2 | 40 | 【待确认】 | - | - | - | - | 营销记录流水号 |
+| REL_ID | 关联ID(商机ID、客户群ID/营销活动ID) | VARCHAR2 | 40 | 【待确认】 | - | - | - | - | 关联ID(商机ID、客户群ID/营销活动ID) |
+| MKT_TYP | 营销类型(1面访/2电话/3短信/4企微) | VARCHAR2 | 6 | 【待确认】 | - | - | - | - | 营销类型(1面访/2电话/3短信/4企微) |
+| REL_TYP | 关联类型(客户群/商机/营销活动) | VARCHAR2 | 6 | 【待确认】 | - | - | - | - | 关联类型(客户群/商机/营销活动) |
+| CUST_ID | 客户ID | VARCHAR2 | 20 | 【待确认】 | - | - | - | - | 客户ID |
+| CUST_NAME | 客户名称 | VARCHAR2 | 100 | 【待确认】 | - | - | - | - | 客户名称 |
+| MKT_SITE | 营销地点 | VARCHAR2 | 200 | 【待确认】 | - | - | - | - | 营销地点 |
+| MKT_TIME | 营销时间 | VARCHAR2 | 20 | 【待确认】 | - | - | - | - | 营销时间 |
+| MKT_PERSN | 营销人ID | VARCHAR2 | 30 | 【待确认】 | - | - | - | - | 营销人ID |
+| MKT_PERSN_NAME | 营销人名称 | VARCHAR2 | 64 | 【待确认】 | - | - | - | - | 营销人名称 |
+| MKT_ORG | 营销机构 | VARCHAR2 | 7 | 【待确认】 | - | - | - | - | 营销机构 |
+| MKT_DURA | 营销时长 | VARCHAR2 | 20 | 【待确认】 | - | - | - | - | 营销时长 |
+| MKT_DTL_SITU | 营销详细情况 | VARCHAR2 | 400 | 【待确认】 | - | - | - | - | 营销详细情况 |
+| MKT_APDIX_ID | 营销附件ID(录音/图片) | VARCHAR2 | 40 | 【待确认】 | - | - | - | - | 营销附件ID(录音/图片) |
+| TEMP_ID | 模板ID | VARCHAR2 | 40 | 【待确认】 | - | - | - | - | 模板ID |
+| TEMP_NAME | 模板名称 | VARCHAR2 | 100 | 【待确认】 | - | - | - | - | 模板名称 |
+| MSG_SHORT_SEQ_ID | 短信流水号 | VARCHAR2 | 40 | 【待确认】 | - | - | - | - | 短信流水号 |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 | 30 | 【待确认】 | - | - | - | - | 法人行号 |
+| CORDNAT_VISITOR | 协同拜访人 | VARCHAR2 | 100 | 【待确认】 | - | - | - | - | 协同拜访人 |
+| CORDNAT_VISITOR_NAME | 协同拜访人名称 | VARCHAR2 | 200 | 【待确认】 | - | - | - | - | 协同拜访人名称 |
+| LGTUD | 经度 | VARCHAR2 | 40 | 【待确认】 | - | - | - | - | 经度 |
+| LATTUD | 纬度 | VARCHAR2 | 40 | 【待确认】 | - | - | - | - | 纬度 |
+| TEL_NO | 联系电话 | VARCHAR2 | 40 | 【待确认】 | - | - | - | - | 联系电话 |
+| CHNL_NO | 渠道编号 | VARCHAR2 | 6 | 【待确认】 | - | - | - | - | 渠道编号 |
+| RMARK | 备注 | VARCHAR2 | 400 | 【待确认】 | - | - | - | - | 备注 |
+| NO_BAT | 批次号 | VARCHAR2 | 40 | 【待确认】 | - | - | - | - | 批次号 |
+| MSG_SHORT_INF | 短信内容 | VARCHAR2 | 500 | 【待确认】 | - | - | - | - | 短信内容 |
+
+---
+
+*数据字典版本: v1.0 | 生成时间: 2026-07-29*

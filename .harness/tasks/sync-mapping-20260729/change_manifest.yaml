@@ -1,0 +1,20 @@
+schema_version: '0.1'
+task_id: sync-mapping-20260729
+purpose: schema_change
+user_confirmation: confirmed
+description: Mapping Excel → MD/DDL/数据字典 自动同步
+allowed_changes:
+- path: data_assets/mapping/
+- path: data_assets/ddl/ads/
+- path: data_assets/ddl/dwd/
+- path: data_assets/ddl/dws/
+- path: data_assets/ddl/tmp/
+- path: data_assets/data_dictionary/ads/
+- path: data_assets/data_dictionary/dwd/
+- path: data_assets/data_dictionary/dws/
+- path: .harness/tasks/sync-mapping-20260729/
+- path: .harness/tasks/mapping-excel-sync-20260729/
+- path: scripts/generate_ads_assets.py
+- path: scripts/sync_mapping_assets.py
+read_only_inputs:
+- path: .harness/policies/phase_gates.yaml

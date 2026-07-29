@@ -3,14 +3,14 @@
 ## 映射来源
 
 - Excel：`data_assets/mapping/ods_to_dwd/DWD明细层数据模型_CRM_ V1.0.xlsx`
-- Excel SHA-256：`0bb9a6405975249f0a7569ecc90bae9f4e1b927a14b076ea32cbf08c2edb4f06`
+- Excel SHA-256：`4486ad0622e4e8cd8f8eeeaf2dd44e600953a2d54e1a6ddd8cce3a7a508a2499`
 
 ## 映射概览
 
 | 目标表 | 字段数 |
 |--------|-------:|
 | DWD_ACCT_DEPO | 22 |
-| DWD_ACCT_FIN | 19 |
+| DWD_ACCT_FIN | 20 |
 | DWD_ACCT_INSUR | 23 |
 | DWD_ACCT_LOAN | 23 |
 | DWD_CRM_SYS_XTHLCS | 5 |
@@ -22,6 +22,10 @@
 | DWD_CUST_INDV_KYC | 27 |
 | DWD_CUST_MAN | 9 |
 | DWD_CUST_SIGN_CTRAKT | 9 |
+| DWD_MKT_ACT_INFO | 15 |
+| DWD_MKT_ACT_ORG_REL | 2 |
+| DWD_MKT_INDX_TSK | 22 |
+| DWD_MKT_TSK_INFO | 16 |
 | DWD_PRDKT_INFO | 12 |
 | DWD_SYS_ORG | 20 |
 | DWD_TX_ASET | 22 |
@@ -194,6 +198,7 @@
 | ISSU_ORG | 发行机构 | VARCHAR2(6) | TD_PROD_INFO | TANO |  |
 | ISSU_DATE | 办理日期 | VARCHAR2(10) | T1_CUST_FNC_ACCT | CRT_DATE |  |
 | RISK_LVL | 风险等级 | VARCHAR2(2) | TD_PROD_INFO | PROD_RISK_LEVEL |  |
+| CFM_AMT | 确认金额 | NUMBER(20,2) |  |  |  |
 
 ### DWD_ACCT_INSUR
 
@@ -376,6 +381,81 @@
 | DATA_SRC | 数据来源 | VARCHAR2 |  |  |  |
 | VALID_DATE | 有效日期 | VARCHAR2 |  |  |  |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+
+### DWD_MKT_TSK_INFO
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| MKT_TSK_ID | 营销任务编号 | VARCHAR2 |  |  |  |
+| MKT_ACT_ID | 活动编号 | VARCHAR2 |  |  |  |
+| CUST_ID | 客户编号 | VARCHAR2 |  |  |  |
+| CUST_NAME | 客户名称 | VARCHAR2 |  |  |  |
+| COVER_FLG | 是否接触 | VARCHAR2 |  |  |  |
+| CONVRS_FLG | 是否成功 | VARCHAR2 |  |  |  |
+| MKT_PERSN | 营销人 | VARCHAR2 |  |  |  |
+| MKT_PERSN_ORG | 营销人机构 | VARCHAR2 |  |  |  |
+| CREATR | 创建人 | VARCHAR2 |  |  |  |
+| CREAT_TIME | 创建时间 | VARCHAR2 |  |  |  |
+| CREAT_ORG | 创建机构 | VARCHAR2 |  |  |  |
+| BASE_VAL | 基准值 | NUMBER |  |  |  |
+| CURNT_VAL | 当前值 | NUMBER |  |  |  |
+| DATA_DATE | 数据日期 | VARCHAR2 |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+| ACT_DSC | 备注 | VARCHAR2 |  |  |  |
+
+### DWD_MKT_ACT_INFO
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| MKT_ACT_ID | 营销活动编号 | VARCHAR2 |  |  |  |
+| CAMP_ACT_NAME | 活动名称 | VARCHAR2 |  |  |  |
+| CAMP_ACT_TYP | 活动类型 | VARCHAR2 |  |  |  |
+| ACT_BGN_DATE | 活动开始日期 | VARCHAR2 |  |  |  |
+| ACT_END_DATE | 活动结束日期 | VARCHAR2 |  |  |  |
+| ACT_DSC | 活动说明 | VARCHAR2 |  |  |  |
+| CREAT_TIME | 创建日期 | VARCHAR2 |  |  |  |
+| CREATOR | 创建人 | VARCHAR2 |  |  |  |
+| CREAT_ORG | 创建机构 | VARCHAR2 |  |  |  |
+| ACT_STATE | 活动状态(0:待提交 1:待审批 2:审核通过 3:审核不通过) | VARCHAR2 |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+| APPRVR | 审批人 | VARCHAR2 |  |  |  |
+| APPRV_TIME | 审批时间 | DATE |  |  |  |
+| APPRV_ORG | 审批机构 | VARCHAR2 |  |  |  |
+| STATIS_STOP_DATE | 统计截止日期 | VARCHAR2 |  |  |  |
+
+### DWD_MKT_ACT_ORG_REL
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| MKT_ACT_ID | 营销活动编号 | VARCHAR2 |  |  |  |
+| PRTSPT_ORG | 参与机构 | VARCHAR2 |  |  |  |
+
+### DWD_MKT_INDX_TSK
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| TSK_ID | 任务编号 | VARCHAR2 |  |  |  |
+| SUP_TSK_ID | 上级任务编号 | VARCHAR2 |  |  |  |
+| MAIN_TSK_ID | 主任务编号 | VARCHAR2 |  |  |  |
+| TSK_TITL | 任务标题 | VARCHAR2 |  |  |  |
+| TSK_ALOKT_TYP | 任务分发类型(0分解式下发,1导入式下发) | VARCHAR2 |  |  |  |
+| TSK_INF | 任务内容 | VARCHAR2 |  |  |  |
+| TSK_BGN_DATE | 任务开始时间 | VARCHAR2 |  |  |  |
+| TSK_END_DATE | 任务结束时间 | VARCHAR2 |  |  |  |
+| TSK_NEXT_SEND_TYP | 任务下发类型0总行1分行/区域2支行 | VARCHAR2 |  |  |  |
+| RSV_OBJ | 接收对象(0机构1客户经理) | VARCHAR2 |  |  |  |
+| RSV_OBJ_ID | 接收对象ID | VARCHAR2 |  |  |  |
+| TSK_APDIX_ID | 任务附件ID | VARCHAR2 |  |  |  |
+| CREATR | 任务创建/下发人 | VARCHAR2 |  |  |  |
+| CREAT_ORG | 任务创建/下发机构 | VARCHAR2 |  |  |  |
+| CREAT_TIME | 任务创建时间 | VARCHAR2 |  |  |  |
+| TSK_NEXT_SEND_TIME | 任务下发时间 | VARCHAR2 |  |  |  |
+| TSK_STATE | 任务状态(待提交，待审核，审核通过，审核拒绝，0未下发,1已下发,2已接收,9已删除) | VARCHAR2 |  |  |  |
+| TSK_TYP | 任务类型(0年度任务，1季度任务，2月度任务，3阶段任务) | VARCHAR2 |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+| RSV_OBJ_NAME | 接收对象名称 | VARCHAR2 |  |  |  |
+| BIZ_LINE | 条线(公司/零售) | VARCHAR2 |  |  |  |
+| TSK_YEAR | 任务年份 | VARCHAR2 |  |  |  |
 
 ---
 

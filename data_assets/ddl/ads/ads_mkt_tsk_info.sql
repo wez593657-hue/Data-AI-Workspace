@@ -1,27 +1,27 @@
 /*
  * ADS_MKT_TSK_INFO
  * 中文名称: 营销任务表
- * 版本: v1.0.0
+ * 版本: v1.0
  * 创建时间: 2026-07-29
- * 来源: Mapping Excel (ADS应用层数据模型)
  */
 
 CREATE TABLE IF NOT EXISTS ADS_MKT_TSK_INFO (
-    MKT_TSK_ID           VARCHAR2(40) , -- 营销任务编号
-    MKT_ACT_ID           VARCHAR2(40) , -- 活动编号
-    CUST_ID              VARCHAR2(21) , -- 客户编号
-    CUST_NAME            VARCHAR2(200), -- 客户名称
-    COVER_FLG            VARCHAR2(1)  , -- 是否接触
-    CONVRS_FLG           VARCHAR2(1)  , -- 是否成功
-    MKT_PERSN            VARCHAR2(30) , -- 营销人
-    MKT_PERSN_ORG        VARCHAR2(7)  , -- 营销人机构
-    CREATR               VARCHAR2(64) , -- 创建人
-    CREAT_TIME           VARCHAR2(20) , -- 创建时间
-    CREAT_ORG            VARCHAR2(7)  , -- 创建机构
-    BASE_VAL             NUMBER(18,4) , -- 基数
-    CURNT_VAL            NUMBER(18,4) , -- 当前值
-    DATA_DATE            VARCHAR2(30) , -- 数据日期
-    PERSN_LEGAL_BK_CODE  VARCHAR2(30)   -- 法人行号
+    MKT_TSK_ID VARCHAR(40),
+    MKT_ACT_ID VARCHAR(40),
+    CUST_ID VARCHAR(21),
+    CUST_NAME VARCHAR(200),
+    COVER_FLG VARCHAR(1),
+    CONVRS_FLG VARCHAR(1),
+    MKT_PERSN VARCHAR(30),
+    MKT_PERSN_ORG VARCHAR(7),
+    CREATR VARCHAR(64),
+    CREAT_TIME VARCHAR(20),
+    CREAT_ORG VARCHAR(7),
+    BASE_VAL NUMBER(18,4),
+    CURNT_VAL NUMBER(18,4),
+    DATA_DATE VARCHAR(30),
+    PERSN_LEGAL_BK_CODE VARCHAR(30),
+    ACT_DSC VARCHAR(2000)
 );
 
 COMMENT ON TABLE ADS_MKT_TSK_INFO IS '营销任务表';
@@ -40,3 +40,4 @@ COMMENT ON COLUMN ADS_MKT_TSK_INFO.BASE_VAL IS '基数';
 COMMENT ON COLUMN ADS_MKT_TSK_INFO.CURNT_VAL IS '当前值';
 COMMENT ON COLUMN ADS_MKT_TSK_INFO.DATA_DATE IS '数据日期';
 COMMENT ON COLUMN ADS_MKT_TSK_INFO.PERSN_LEGAL_BK_CODE IS '法人行号';
+COMMENT ON COLUMN ADS_MKT_TSK_INFO.ACT_DSC IS '备注';

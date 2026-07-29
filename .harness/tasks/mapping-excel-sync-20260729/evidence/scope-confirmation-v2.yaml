@@ -1,0 +1,9 @@
+evidence_id: scope-confirmation-v2
+task_id: mapping-excel-sync-20260729
+phase: USER_SCOPE_CONFIRMED
+kind: scope_confirmation
+purpose: scope_confirmation
+result: passed
+details: 用户确认变更范围：全量同步三个Mapping层的MD、DDL和数据字典文件
+repository_revision: ad88a947414a74a664db42850a656dab2355d2cd
+created_at: '2026-07-29T14:10:40+00:00'
