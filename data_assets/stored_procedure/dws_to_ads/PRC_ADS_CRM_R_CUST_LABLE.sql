@@ -10,13 +10,13 @@ AS
   -- 来源表: DWD_CUST_INDV_INFO, DWD_TX_ASET, crmdm.mbk_cust_log_fee, crmdm.mbk_cust_info
   -- 目标表: ADS_CRM_R_CUST_LABLE
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v1.2.0
+  -- 需求版本: v1.2.1
   -- 变更记录:
+  --   v1.2.1 2026-07-29 双键关联：所有源表关联统一使用CUST_ID+PERSN_LEGAL_BK_CODE作为计算单位
   --   v1.2.0 2026-07-29 补充材料开发：YR_CAMPUS_PAY_CNT(校园缴费)+MTH_UTIL_PAY_*(水电气缴费)，源表mbk_cust_log_fee
   --   v1.1.0 2026-07-29 合规修复：日期参数改用sys_fun_deal_date(code=20/21)，移除DATA_DATE，目标表改为全量快照
   --   v1.0.0 2026-07-28 初始版本：实现8个Y标记可直接开发字段
   --     - PERSN_LEGAL_BK_CODE, CUST_ID（取自DWD_CUST_INDV_INFO）
-  --     - NEAR_MTH_TX_CNT, NEAR_MTH_TX_AMT（DWD_TX_ASET近1月主动动账）
   --     - NEAR_MTH_THIRD_PAY_OUT_CNT, NEAR_MTH_THIRD_PAY_OUT_AMT（网联渠道）
   --     - IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME（近半年每月至少一笔他行同名转账）
   --     - 4个字段待补充材料后开发（收单商户、校园缴费、水电气缴费）
@@ -92,7 +92,6 @@ BEGIN
 
   ------------------------------------------------------------------
   -- 3.1 基础客户+近1月交易汇总（主动动账）
-  -- TODO[待确认]: 主动动账判定字段，当前不过滤主动/被动，后续需根据TX_TYP或TX_DSC区分
   ------------------------------------------------------------------
   INSERT INTO TMP_ADS_CRM_CUST_LABLE_BASE (
       PERSN_LEGAL_BK_CODE,
@@ -113,14 +112,16 @@ BEGIN
     FROM DWD_CUST_INDV_INFO c
     LEFT JOIN (
          SELECT CUST_ID,
+                PERSN_LEGAL_BK_CODE,
                 COUNT(*)    AS TX_CNT,
                 SUM(AMT)    AS TX_AMT
            FROM DWD_TX_ASET
           WHERE TX_DATE >= V_ONE_MONTH_AGO
             AND JIOYCFFS = '0' --主动动账
-          GROUP BY CUST_ID
+          GROUP BY CUST_ID, PERSN_LEGAL_BK_CODE
     ) t
-      ON t.CUST_ID = c.CUST_ID;
+      ON t.CUST_ID            = c.CUST_ID
+     AND t.PERSN_LEGAL_BK_CODE = c.PERSN_LEGAL_BK_CODE;
 
   ------------------------------------------------------------------
   -- 3.2 更新：近1月第三方支付交易（网联渠道）
@@ -129,15 +130,17 @@ BEGIN
   MERGE INTO TMP_ADS_CRM_CUST_LABLE_BASE b
   USING (
       SELECT CUST_ID,
+             PERSN_LEGAL_BK_CODE,
              COUNT(*)    AS THIRD_TX_CNT,
              SUM(AMT)    AS THIRD_TX_AMT
         FROM DWD_TX_ASET
        WHERE TX_DATE >= V_ONE_MONTH_AGO
          -- TODO[待确认]: 网联渠道码值，当前：3026(WLYYPT网联应用平台) + 3030(WLYZF网联翼支付)
          AND TX_CHNL IN ('3026', '3030')
-       GROUP BY CUST_ID
+       GROUP BY CUST_ID, PERSN_LEGAL_BK_CODE
   ) t
-     ON (b.CUST_ID = t.CUST_ID)
+     ON (b.CUST_ID            = t.CUST_ID
+    AND  b.PERSN_LEGAL_BK_CODE = t.PERSN_LEGAL_BK_CODE)
   WHEN MATCHED THEN UPDATE SET
       b.NEAR_MTH_THIRD_PAY_OUT_CNT  = t.THIRD_TX_CNT,
       b.NEAR_MTH_THIRD_PAY_OUT_AMT  = t.THIRD_TX_AMT;
@@ -151,14 +154,17 @@ BEGIN
   USING (
       -- 统计近6个月每月的他行同名转账月数
       SELECT CUST_ID,
+             PERSN_LEGAL_BK_CODE,
              CASE WHEN COUNT(DISTINCT TX_MONTH) >= 6 THEN 'Y' ELSE 'N' END AS RGLAR_FLAG
         FROM (
              -- 按月统计符合条件的转账
              SELECT a.CUST_ID,
+                    a.PERSN_LEGAL_BK_CODE,
                     SUBSTR(a.TX_DATE, 1, 6) AS TX_MONTH
                FROM DWD_TX_ASET a
                JOIN DWD_CUST_INDV_INFO c
-                 ON c.CUST_ID = a.CUST_ID
+                 ON c.CUST_ID             = a.CUST_ID
+                AND c.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
               WHERE a.TX_DATE >= V_SIX_MONTH_AGO
                 -- 过滤转出交易（贷方=资金流出）
                 AND a.LOAN_FLG = '贷方'
@@ -166,11 +172,12 @@ BEGIN
                 AND a.OPNT_BK_KEEP NOT LIKE '9999%'
                 -- 同名判定：对方户名包含客户姓名
                 AND INSTR(a.OPNT_ACCT_NAME_FST, c.CUST_NAME) > 0
-              GROUP BY a.CUST_ID, SUBSTR(a.TX_DATE, 1, 6)
+              GROUP BY a.CUST_ID, a.PERSN_LEGAL_BK_CODE, SUBSTR(a.TX_DATE, 1, 6)
         ) m
-       GROUP BY CUST_ID
+       GROUP BY CUST_ID, PERSN_LEGAL_BK_CODE
   ) t
-     ON (b.CUST_ID = t.CUST_ID)
+     ON (b.CUST_ID            = t.CUST_ID
+    AND  b.PERSN_LEGAL_BK_CODE = t.PERSN_LEGAL_BK_CODE)
   WHEN MATCHED THEN UPDATE SET
       b.IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME = t.RGLAR_FLAG;
 
@@ -181,6 +188,7 @@ BEGIN
   MERGE INTO TMP_ADS_CRM_CUST_LABLE_BASE b
   USING (
       SELECT i.cust_core_no AS CUST_ID,
+             i.incorp_no    AS PERSN_LEGAL_BK_CODE,
              COUNT(*)        AS CAMPUS_CNT
         FROM crmdm.mbk_cust_log_fee f
         JOIN crmdm.mbk_cust_info    i
@@ -188,9 +196,10 @@ BEGIN
        WHERE f.tran_type   = '1'           -- 1:校园缴费
          AND f.tran_status = '1'           -- 1:成功
          AND f.tran_date  >= V_CURR_YEAR_BEGIN
-       GROUP BY i.cust_core_no
+       GROUP BY i.cust_core_no, i.incorp_no
   ) t
-     ON (b.CUST_ID = t.CUST_ID)
+     ON (b.CUST_ID            = t.CUST_ID
+    AND  b.PERSN_LEGAL_BK_CODE = t.PERSN_LEGAL_BK_CODE)
   WHEN MATCHED THEN UPDATE SET
       b.YR_CAMPUS_PAY_CNT = t.CAMPUS_CNT;
 
@@ -200,18 +209,20 @@ BEGIN
   ------------------------------------------------------------------
   MERGE INTO TMP_ADS_CRM_CUST_LABLE_BASE b
   USING (
-      SELECT i.cust_core_no        AS CUST_ID,
+      SELECT i.cust_core_no             AS CUST_ID,
+             i.incorp_no                AS PERSN_LEGAL_BK_CODE,
              SUM(TO_NUMBER(f.tran_amt)) AS UTIL_TRAN_AMT,
-             COUNT(*)               AS UTIL_TRAN_CNT
+             COUNT(*)                   AS UTIL_TRAN_CNT
         FROM crmdm.mbk_cust_log_fee f
         JOIN crmdm.mbk_cust_info    i
           ON i.cust_no = f.cust_no
        WHERE f.tran_type   = '0'           -- 0:水电气
          AND f.tran_status = '1'           -- 1:成功
          AND f.tran_date  >= V_CURR_MONTH_BEGIN
-       GROUP BY i.cust_core_no
+       GROUP BY i.cust_core_no, i.incorp_no
   ) t
-     ON (b.CUST_ID = t.CUST_ID)
+     ON (b.CUST_ID            = t.CUST_ID
+    AND  b.PERSN_LEGAL_BK_CODE = t.PERSN_LEGAL_BK_CODE)
   WHEN MATCHED THEN UPDATE SET
       b.MTH_UTIL_PAY_TRAN_AMT = t.UTIL_TRAN_AMT,
       b.MTH_UTIL_PAY_TRAN_CNT = t.UTIL_TRAN_CNT;
