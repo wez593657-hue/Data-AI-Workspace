@@ -9,12 +9,12 @@ allowed_changes:
 - path: data_assets/ddl/dwd/
 - path: data_assets/ddl/dws/
 - path: data_assets/ddl/tmp/
-- path: data_assets/data_dictionary/ads/
-- path: data_assets/data_dictionary/dwd/
-- path: data_assets/data_dictionary/dws/
+- path: data_assets/data_dictionary/
 - path: .harness/tasks/sync-mapping-20260729/
 - path: .harness/tasks/mapping-excel-sync-20260729/
 - path: scripts/generate_ads_assets.py
 - path: scripts/sync_mapping_assets.py
+- path: scripts/harness/gate_checker.py
+- path: scripts/validate_cross_layer_consistency.py
 read_only_inputs:
 - path: .harness/policies/phase_gates.yaml

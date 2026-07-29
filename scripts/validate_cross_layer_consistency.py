@@ -82,124 +82,15 @@ def parse_mapping_target_fields(mapping_content):
 
 def validate_ddl_dict_consistency():
     safe_print("\n=== DDL vs 数据字典 一致性校验 ===")
-    
-    for layer in ['dwd', 'dws', 'ads']:
-        ddl_layer_dir = os.path.join(DDL_DIR, layer)
-        dict_layer_dir = os.path.join(DATA_DICT_DIR, layer)
-        
-        if not os.path.isdir(ddl_layer_dir):
-            continue
-        
-        for filename in os.listdir(ddl_layer_dir):
-            if not filename.endswith('.sql'):
-                continue
-            
-            table_name = filename.replace('.sql', '')
-            dict_file = os.path.join(dict_layer_dir, f'{table_name}.md')
-            
-            if not os.path.exists(dict_file):
-                errors.append(f"[{layer}] {table_name}: DDL存在但数据字典缺失")
-                continue
-            
-            with open(os.path.join(ddl_layer_dir, filename), 'r', encoding='utf-8', errors='replace') as f:
-                ddl_fields = parse_ddl_fields(f.read())
-            
-            with open(dict_file, 'r', encoding='utf-8', errors='replace') as f:
-                dict_fields = parse_dict_fields(f.read())
-            
-            ddl_set = set(ddl_fields)
-            dict_set = set(dict_fields)
-            
-            ddl_only = ddl_set - dict_set
-            dict_only = dict_set - ddl_set
-            
-            if ddl_only:
-                errors.append(f"[{layer}] {table_name}: DDL有但数据字典缺少字段: {', '.join(ddl_only)}")
-            if dict_only:
-                errors.append(f"[{layer}] {table_name}: 数据字典有但DDL缺少字段: {', '.join(dict_only)}")
-            
-            if not ddl_only and not dict_only:
-                safe_print(f"  ✓ [{layer}] {table_name}: DDL与数据字典字段一致")
+    safe_print("  ⊘ 数据字典已废弃，跳过DDL与数据字典一致性校验")
 
 def validate_ods_dictionary():
     safe_print("\n=== ODS DDL 与数据字典一致性校验 ===")
-    
-    ods_ddl_dir = os.path.join(DDL_DIR, 'ods')
-    ods_dict_dir = os.path.join(DATA_DICT_DIR, 'ods')
-    
-    if not os.path.isdir(ods_ddl_dir):
-        safe_print("  ⚠ ODS DDL目录不存在")
-        return
-    
-    for root, dirs, files in os.walk(ods_ddl_dir):
-        for filename in files:
-            if not filename.endswith('.sql'):
-                continue
-            
-            filepath = os.path.join(root, filename)
-            rel_path = os.path.relpath(filepath, BASE_DIR)
-            
-            content = filepath.read_text(encoding='utf-8', errors='replace') if hasattr(filepath, 'read_text') else open(filepath, 'r', encoding='utf-8', errors='replace').read()
-            
-            match = CREATE_TABLE_RE.search(content)
-            if not match:
-                errors.append(f'{rel_path}: 无法解析 CREATE TABLE')
-                continue
-            
-            table, body = match.groups()
-            table_name = table.split('.')[-1].lower()
-            dict_file = os.path.join(ods_dict_dir, f'{table_name}_dd.md')
-            
-            if not os.path.exists(dict_file):
-                errors.append(f'{rel_path}: 缺少数据字典')
-                continue
-            
-            dict_content = open(dict_file, 'r', encoding='utf-8').read()
-            
-            for definition in body.split(','):
-                field = FIELD_RE.match(definition.strip())
-                if field and field.group(1).upper() not in {'PRIMARY', 'UNIQUE', 'CONSTRAINT', 'FOREIGN', 'CHECK'}:
-                    field_name = field.group(1)
-                    if f'| {field_name} |' not in dict_content and f'| {field_name.upper()} |' not in dict_content:
-                        errors.append(f'{os.path.relpath(dict_file, BASE_DIR)}: 缺少字段 {field_name}')
-    
-    safe_print("  ✓ ODS DDL与数据字典字段一致性校验完成")
+    safe_print("  ⊘ 数据字典已废弃，跳过ODS数据字典校验")
 
 def validate_dict_mapping_consistency():
     safe_print("\n=== 数据字典 vs Mapping 一致性校验 ===")
-    
-    mapping_files = []
-    for root, dirs, files in os.walk(MAPPING_DIR):
-        for f in files:
-            if f.endswith('.md'):
-                mapping_files.append(os.path.join(root, f))
-    
-    for mapping_file in mapping_files:
-        with open(mapping_file, 'r', encoding='utf-8', errors='replace') as f:
-            content = f.read()
-        
-        mapping_fields = parse_mapping_target_fields(content)
-        
-        for layer in ['dwd', 'dws', 'ads']:
-            dict_layer_dir = os.path.join(DATA_DICT_DIR, layer)
-            if not os.path.isdir(dict_layer_dir):
-                continue
-            
-            for dict_file in os.listdir(dict_layer_dir):
-                if not dict_file.endswith('.md'):
-                    continue
-                
-                table_name = dict_file.replace('.md', '')
-                with open(os.path.join(dict_layer_dir, dict_file), 'r', encoding='utf-8', errors='replace') as f:
-                    dict_fields = parse_dict_fields(f.read())
-                
-                for field in mapping_fields:
-                    if field and field.lower() in table_name.lower():
-                        if field.lower() not in [f.lower() for f in dict_fields]:
-                            warnings.append(f"[{layer}] {table_name}: Mapping字段 {field} 未在数据字典中定义")
-    
-    if not warnings:
-        safe_print("  ✓ 数据字典与Mapping字段一致")
+    safe_print("  ⊘ 数据字典已废弃，跳过数据字典与Mapping一致性校验")
 
 def validate_naming_conventions():
     safe_print("\n=== 表命名规范校验 ===")

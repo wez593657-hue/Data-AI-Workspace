@@ -1,5 +1,5 @@
 """
-统一入口：根据 Mapping Excel 同步 MD、DDL 和数据字典。
+统一入口：根据 Mapping Excel 同步 MD 和 DDL。
 
 调用方式:
     python scripts/sync_mapping_assets.py
@@ -8,7 +8,7 @@
     1. 检查 Excel 文件 → 创建/复用 harness task (schema_change)
     2. 逐状态迁移并记录证据 (CREATED → ... → ASSETS_UPDATED)
     3. 执行 mapping_excel_sync → 同步 3 个 Mapping MD
-    4. 执行 generate_ads_assets → 生成 ADS DDL + 数据字典
+    4. 执行 generate_ads_assets → 生成 ADS DDL
     5. 逐文件校验 Excel→MD→DDL 一致性
 """
 
@@ -37,7 +37,6 @@ LAYERS = [
         "excel_dir": "ods_to_dwd",
         "md": "ods到dwd映射.md",
         "ddl_dir": "dwd",
-        "dd": "dwd",
     },
     {
         "name": "dwd_to_dws",
@@ -45,7 +44,6 @@ LAYERS = [
         "excel_dir": "dwd_to_dws",
         "md": "dwd到dws映射.md",
         "ddl_dir": "dws",
-        "dd": "dws",
     },
     {
         "name": "dws_to_ads",
@@ -53,7 +51,6 @@ LAYERS = [
         "excel_dir": "dws_to_ads",
         "md": "dws到ads映射.md",
         "ddl_dir": "ads",
-        "dd": "ads",
     },
 ]
 
@@ -65,8 +62,6 @@ def _resolve(layer: dict, key: str) -> Path:
         return ROOT / "data_assets" / "mapping" / layer["excel_dir"] / layer["md"]
     if key == "ddl_dir":
         return ROOT / "data_assets" / "ddl" / layer["ddl_dir"]
-    if key == "dd_dir":
-        return ROOT / "data_assets" / "data_dictionary" / layer["dd"]
     raise KeyError(key)
 
 
@@ -201,16 +196,13 @@ def step_setup_task(checksums: dict[str, str]) -> str:
         "task_id": tid,
         "purpose": "schema_change",
         "user_confirmation": "confirmed",
-        "description": "Mapping Excel → MD/DDL/数据字典 自动同步",
+        "description": "Mapping Excel → MD/DDL 自动同步",
         "allowed_changes": [
             {"path": "data_assets/mapping/"},
             {"path": "data_assets/ddl/ads/"},
             {"path": "data_assets/ddl/dwd/"},
             {"path": "data_assets/ddl/dws/"},
             {"path": "data_assets/ddl/tmp/"},
-            {"path": "data_assets/data_dictionary/ads/"},
-            {"path": "data_assets/data_dictionary/dwd/"},
-            {"path": "data_assets/data_dictionary/dws/"},
             {"path": f".harness/tasks/{tid}/"},
         ],
         "read_only_inputs": [
@@ -238,18 +230,18 @@ def step_initial_states(task_id: str) -> None:
 
     record_ev(task_id, "workflow-routing-ev", "CREATED", "workflow_routing",
               "workflow_routing", "Mapping Excel → MD/DDL 同步触发")
-    transit(task_id, "MAPPING_EXCEL_ANALYZED", "3个Excel文件最新，需要同步MD/DDL/数据字典")
+    transit(task_id, "MAPPING_EXCEL_ANALYZED", "3个Excel文件最新，需要同步MD/DDL")
 
     record_ev(task_id, "excel-analysis-ev", "MAPPING_EXCEL_ANALYZED",
               "mapping_excel_analysis", "mapping_excel_analysis",
-              "根据3个Excel文件同步对应层的MD、DDL和数据字典")
-    transit(task_id, "RELATED_FILES_SCANNED", "需同步3组文件: Mapping MD + DDL + 数据字典")
+              "根据3个Excel文件同步对应层的MD和DDL")
+    transit(task_id, "RELATED_FILES_SCANNED", "需同步: Mapping MD + DDL")
 
     record_ev(task_id, "related-files-scan-ev", "RELATED_FILES_SCANNED",
               "related_files_scan", "related_files_scan",
-              "3层Mapping MD + 3层DDL + 3层数据字典")
+              "3层Mapping MD + 3层DDL")
     transit(task_id, "CHANGE_SCOPE_IDENTIFIED",
-            "变更范围: 全量同步3个Mapping层的MD、DDL和数据字典")
+            "变更范围: 全量同步3个Mapping层的MD和DDL")
 
 
 def step_sync_mapping_md(task_id: str) -> list[dict]:
@@ -275,20 +267,18 @@ def step_sync_mapping_md(task_id: str) -> list[dict]:
 
 
 def step_generate_ads_assets(task_id: str) -> None:
-    """步骤 7b: 执行 ADS DDL + 数据字典生成"""
+    """步骤 7b: 生成 ADS DDL"""
     print(f"\n{'=' * 55}")
-    print("  7b/9: 生成 ADS DDL + 数据字典")
+    print("  7b/9: 生成 ADS DDL")
     print(f"{'=' * 55}")
 
     from scripts.generate_ads_assets import main as generate_ads
-    generate_ads()  # 内置写入 + 验证
+    generate_ads()
 
-    # 记录 asset_update 证据（CLI record）
     record_ev(task_id, "asset-update-ev", "USER_SCOPE_CONFIRMED",
               "asset_update", "asset_update",
-              "generate_ads_assets: ADS 21张表 DDL + 数据字典已生成")
+              "generate_ads_assets: ADS DDL 已生成")
 
-    # skill_execution 需要特殊格式，直接写 evidence yaml
     rev = git_revision()
     now = utc_now()
     ads_excel = str(_resolve(LAYERS[2], "excel").relative_to(ROOT))
@@ -299,18 +289,17 @@ def step_generate_ads_assets(task_id: str) -> None:
         "kind": "skill_execution",
         "purpose": "skill_execution",
         "result": "passed",
-        "details": "Mapping MD同步 + ADS DDL/数据字典生成",
+        "details": "Mapping MD同步 + ADS DDL生成",
         "repository_revision": rev,
         "created_at": now,
         "input_workbook": ads_excel,
         "skills": ["kingbase-ddl-generator", "excel-to-md-sync"],
-        "steps": ["excel_to_mapping", "excel_to_ddl", "excel_to_dictionary"],
+        "steps": ["excel_to_mapping", "excel_to_ddl"],
         "output_files": [
             "data_assets/mapping/ods_to_dwd/ods到dwd映射.md",
             "data_assets/mapping/dwd_to_dws/dwd到dws映射.md",
             "data_assets/mapping/dws_to_ads/dws到ads映射.md",
             "data_assets/ddl/ads/",
-            "data_assets/data_dictionary/ads/",
         ],
     }
     write_evidence_yaml(task_id, skill_ev)
@@ -362,11 +351,11 @@ def step_verify_consistency(task_id: str, mapping_results: list[dict]) -> None:
         print(f"  ✓ {mr['flow']}: {mr['record_count']} 条记录一致")
 
     transit(task_id, "ASSETS_UPDATED",
-            "Mapping MD + ADS DDL + 数据字典已全部生成并验证一致性")
+            "Mapping MD + ADS DDL 已全部生成并验证一致性")
 
 
 def main() -> None:
-    print("Mapping Excel → MD / DDL / 数据字典 统一同步工具")
+    print("Mapping Excel → MD / DDL 统一同步工具")
     print(f"仓库: {ROOT}")
 
     step_check_excels()

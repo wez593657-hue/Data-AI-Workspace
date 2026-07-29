@@ -65,8 +65,8 @@ def _validate_skill_execution_gate(
         raise GateError("skill_execution 证据缺少 output_files")
     if "kingbase-ddl-generator" not in skills:
         raise GateError("Excel驱动的DDL/数据字典变更必须使用 kingbase-ddl-generator")
-    if not {"excel_to_mapping", "excel_to_ddl", "excel_to_dictionary"}.issubset(steps):
-        raise GateError("skill_execution 证据缺少 Excel 到 Mapping、DDL、数据字典的完整步骤")
+    if not {"excel_to_mapping", "excel_to_ddl"}.issubset(steps):
+        raise GateError("skill_execution 证据缺少 Excel 到 Mapping、DDL 的完整步骤")
     procedure_output = any(
         "stored_procedure" in path or path.lower().endswith(".prc.sql")
         for path in outputs

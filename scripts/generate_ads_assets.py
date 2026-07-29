@@ -1,4 +1,4 @@
-"""Generate ADS Kingbase DDL and data dictionaries from the ADS mapping workbook."""
+"""Generate ADS Kingbase DDL from the ADS mapping workbook."""
 
 from __future__ import annotations
 
@@ -13,7 +13,6 @@ import openpyxl
 ROOT = Path(__file__).resolve().parents[1]
 WORKBOOK = ROOT / "data_assets" / "mapping" / "dws_to_ads" / "ADS应用层数据模型_CRM_ V1.0.xlsx"
 DDL_DIR = ROOT / "data_assets" / "ddl" / "ads"
-DICTIONARY_DIR = ROOT / "data_assets" / "data_dictionary" / "ads"
 FIRST_ENTITY_SHEET = 3
 LAST_ENTITY_SHEET = -1
 
@@ -155,71 +154,31 @@ def render_ddl(entity: Entity) -> str:
     return "\n".join(lines).replace("\n );", "\n);") + "\n"
 
 
-def render_dictionary(entity: Entity) -> str:
-    today = date.today().isoformat()
-    lines = [
-        f"# ADS数据字典 - {entity.table_name}",
-        "",
-        "## 表信息",
-        "",
-        "| 属性 | 值 |",
-        "| --- | --- |",
-        "| 层级 | ADS - 应用数据层 |",
-        f"| 表名 | {entity.table_name} |",
-        f"| 中文名称 | {entity.chinese_name} |",
-        f"| 来源模型 | ADS应用层数据模型_CRM_ V1.0.xlsx / {entity.sheet_name} |",
-        f"| 更新时间 | {today} |",
-        "",
-        "## 字段列表",
-        "",
-        "| 字段名 | 字段中文说明 | 数据类型 | 长度 | 是否为空 | 默认值 | 主键 | 外键 | 枚举说明 | 业务含义 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
-    ]
-    for column in entity.columns:
-        primary_key = column.primary_key if column.primary_key else "-"
-        enum = column.enum.replace("|", "\\|") if column.enum else "-"
-        comment = column.comment.replace("|", "\\|") if column.comment else "-"
-        lines.append(
-            f"| {column.name} | {comment} | {column.source_type} | {column.length} | 【待确认】 | - | {primary_key} | - | {enum} | {comment} |"
-        )
-    lines.extend(["", "---", "", f"*数据字典版本: v1.0 | 生成时间: {today}*"])
-    return "\n".join(lines) + "\n"
-
-
 def validate_outputs(entities: tuple[Entity, ...]) -> None:
     expected_names = {entity.table_name.lower() for entity in entities}
     actual_ddl = {path.stem for path in DDL_DIR.glob("*.sql")}
-    actual_dictionary = {path.stem for path in DICTIONARY_DIR.glob("*.md")}
     if actual_ddl != expected_names:
         raise ValueError(f"DDL 文件集合不一致: {sorted(actual_ddl ^ expected_names)}")
-    if actual_dictionary != expected_names:
-        raise ValueError(f"数据字典文件集合不一致: {sorted(actual_dictionary ^ expected_names)}")
     for entity in entities:
         filename = entity.table_name.lower()
         ddl_path = DDL_DIR / f"{filename}.sql"
-        dictionary_path = DICTIONARY_DIR / f"{filename}.md"
         if ddl_path.read_text(encoding="utf-8") != render_ddl(entity):
             raise ValueError(f"{entity.table_name}: DDL 内容与映射文件不一致")
-        if dictionary_path.read_text(encoding="utf-8") != render_dictionary(entity):
-            raise ValueError(f"{entity.table_name}: 数据字典内容与映射文件不一致")
 
 
 def main() -> None:
     entities = parse_entities()
     DDL_DIR.mkdir(parents=True, exist_ok=True)
-    DICTIONARY_DIR.mkdir(parents=True, exist_ok=True)
     expected_names = {entity.table_name.lower() for entity in entities}
-    for directory, suffix in ((DDL_DIR, ".sql"), (DICTIONARY_DIR, ".md")):
-        for path in directory.glob(f"ads_*{suffix}"):
-            if path.stem not in expected_names:
-                path.unlink()
+    for path in DDL_DIR.glob("ads_*.sql"):
+        if path.stem not in expected_names:
+            path.unlink()
 
     for entity in entities:
         filename = entity.table_name.lower()
         (DDL_DIR / f"{filename}.sql").write_text(render_ddl(entity), encoding="utf-8")
-        (DICTIONARY_DIR / f"{filename}.md").write_text(render_dictionary(entity), encoding="utf-8")
     validate_outputs(entities)
-    print(f"已生成并验证 {len(entities)} 张 ADS 表的 DDL 和数据字典。")
+    print(f"已生成并验证 {len(entities)} 张 ADS 表的 DDL。")
 
 
 if __name__ == "__main__":
