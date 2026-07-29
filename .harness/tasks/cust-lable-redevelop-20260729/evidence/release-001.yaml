@@ -1,0 +1,9 @@
+evidence_id: release-001
+task_id: cust-lable-redevelop-20260729
+phase: approval
+kind: approval
+purpose: release_approval
+result: passed
+details: 用户批准对外私客户标签表ADS_CRM_R_CUST_LABLE v1.1.0代码发布，QA/QB/QC质检28/28通过
+repository_revision: 85b19ded31ec1a7e2e806d11927d08c0b3ca9569
+created_at: '2026-07-29T05:12:52+00:00'

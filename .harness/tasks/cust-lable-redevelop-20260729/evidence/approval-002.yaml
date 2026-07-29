@@ -1,0 +1,9 @@
+evidence_id: approval-002
+task_id: cust-lable-redevelop-20260729
+phase: approval
+kind: approval
+purpose: user_approval
+result: passed
+details: 用户已审批：确认代码变更、QA/QB/QC三层质检结果、变更范围7个文件全部通过，批准进入Git提交(commit 85b19de)
+repository_revision: 85b19ded31ec1a7e2e806d11927d08c0b3ca9569
+created_at: '2026-07-29T05:12:59+00:00'
