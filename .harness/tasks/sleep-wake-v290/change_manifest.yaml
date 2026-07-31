@@ -1,0 +1,27 @@
+schema_version: '0.1'
+task_id: sleep-wake-v290
+user_confirmation: confirmed
+objective: 睡眠户唤醒模块完整重构v2.9.0：双快照唤醒架构+INSUR_AMT消除幽灵唤醒+月首日继承修正+错误案例库
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_SLEEP_WAKE_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_SLEEP_WAKE_STATIS.sql
+  - path: data_assets/ddl/ads/ads_cust_sleep_wake_dtl.sql
+  - path: data_assets/ddl/ads/ads_cust_sleep_wake_statis.sql
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_wake_base.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_candidate.ddl
+  - path: data_assets/ddl/dwd/dwd_tx_aset.sql
+  - path: data_assets/mapping/ods_to_dwd/ods到dwd映射.md
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_stat_src.ddl
+  - path: requirements/睡眠户唤醒规则记忆卡片.md
+  - path: docs/changes/2026-07-31-sleep-wake-v2.10.0.md
+  - path: governance/tmp_tables/tmp_ads_sleep_candidate.json
+  - path: governance/tmp_tables/tmp_ads_sleep_stat_src.json
+  - path: governance/tmp_tables/tmp_ads_sleep_wake_base.json
+  - path: scripts/harness/tests/test_sleep_wake_logic.py
+  - path: docs/16_Execution_Rules.md
+  - path: .harness/tasks/sleep-wake-v290/
+read_only_inputs:
+  - path: templates/procedure_template.sql
+  - path: docs/quality_rules.md
+  - path: docs/project_goals.md
+forbidden_changes: []

@@ -1,0 +1,14 @@
+evidence_id: ev-qc-001
+task_id: cust-potn-v311
+phase: qc
+kind: review
+purpose: QC业务审查：字段口径正确、计算逻辑正确、数据来源可追溯
+result: passed
+details: PNT_AUM_BAL从b.AUM_BAL(DATA_DATE=V_SYSDAT,BAL_TYPE=1)取数，T-1日=跑批日期。达标判断阈值不变。数据链路可追溯
+repository_revision: 3fd0ce90eba1845e83be2d611a587ae36f160ab9
+created_at: '2026-07-30T09:24:37+00:00'
+review_type: ''
+return_to: ''
+checked_files: []
+rules_checked: []
+issues: []

@@ -2,7 +2,7 @@
  * ADS_MKT_REC_INFO
  * 中文名称: 营销记录表
  * 版本: v1.0
- * 创建时间: 2026-07-29
+ * 创建时间: 2026-07-30
  */
 
 CREATE TABLE IF NOT EXISTS ADS_MKT_REC_INFO (

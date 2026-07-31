@@ -3,7 +3,7 @@
 ## 映射来源
 
 - Excel：`data_assets/mapping/dwd_to_dws/DWS汇总层数据模型_CRM_ V1.0.xlsx`
-- Excel SHA-256：`d3b45631f1190939e38152eb98ff570860bc63638143c06419a4f0f4b90dfede`
+- Excel SHA-256：`62d07c4de18e908f7d581e2b2f2cedec25c9cedc10ec0f4d8cf312c85301f785`
 
 ## 映射概览
 

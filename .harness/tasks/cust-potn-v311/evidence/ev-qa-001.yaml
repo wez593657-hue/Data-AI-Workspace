@@ -1,0 +1,14 @@
+evidence_id: ev-qa-001
+task_id: cust-potn-v311
+phase: qa
+kind: review
+purpose: QA静态检查：代码语法、模板规范、注释完整性、版本号格式
+result: passed
+details: 发现2处记忆卡片版本不一致，已修复：1)存储过程属性需求版本v3.1.0->v3.1.1 2)数据来源表T-1日取数日期修正为V_SYSDAT
+repository_revision: 3fd0ce90eba1845e83be2d611a587ae36f160ab9
+created_at: '2026-07-30T09:24:23+00:00'
+review_type: ''
+return_to: ''
+checked_files: []
+rules_checked: []
+issues: []

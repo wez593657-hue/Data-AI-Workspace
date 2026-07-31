@@ -1,0 +1,9 @@
+evidence_id: scope-confirmation-ev
+task_id: sync-mapping-20260730
+phase: CHANGE_SCOPE_IDENTIFIED
+kind: change_scope
+purpose: change_scope
+result: passed
+details: 'Mapping MD已同步: 3 层'
+repository_revision: 70ae729666b3d12ba1788ed1523a6a5244009be6
+created_at: '2026-07-30T07:42:10+00:00'

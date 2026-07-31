@@ -1,0 +1,12 @@
+{"created_at": "2026-07-30T07:42:05+00:00", "event": "task_created", "task_id": "sync-mapping-20260730"}
+{"created_at": "2026-07-30T07:42:05+00:00", "event": "evidence_recorded", "evidence_id": "workflow-routing-ev"}
+{"created_at": "2026-07-30T07:42:05+00:00", "event": "state_transition", "from": "CREATED", "to": "MAPPING_EXCEL_ANALYZED"}
+{"created_at": "2026-07-30T07:42:06+00:00", "event": "evidence_recorded", "evidence_id": "excel-analysis-ev"}
+{"created_at": "2026-07-30T07:42:06+00:00", "event": "state_transition", "from": "MAPPING_EXCEL_ANALYZED", "to": "RELATED_FILES_SCANNED"}
+{"created_at": "2026-07-30T07:42:07+00:00", "event": "evidence_recorded", "evidence_id": "related-files-scan-ev"}
+{"created_at": "2026-07-30T07:42:07+00:00", "event": "state_transition", "from": "RELATED_FILES_SCANNED", "to": "CHANGE_SCOPE_IDENTIFIED"}
+{"created_at": "2026-07-30T07:42:10+00:00", "event": "evidence_recorded", "evidence_id": "scope-confirmation-ev"}
+{"created_at": "2026-07-30T07:42:11+00:00", "event": "evidence_recorded", "evidence_id": "scope-confirmation-v2"}
+{"created_at": "2026-07-30T07:42:11+00:00", "event": "state_transition", "from": "CHANGE_SCOPE_IDENTIFIED", "to": "USER_SCOPE_CONFIRMED"}
+{"created_at": "2026-07-30T07:42:27+00:00", "event": "evidence_recorded", "evidence_id": "asset-update-ev"}
+{"created_at": "2026-07-30T07:42:31+00:00", "event": "state_transition", "from": "USER_SCOPE_CONFIRMED", "to": "ASSETS_UPDATED"}

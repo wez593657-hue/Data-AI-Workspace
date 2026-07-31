@@ -2,7 +2,7 @@
  * ADS_CUST_INDV_POTEN
  * 中文名称: 零售潜在客户信息
  * 版本: v1.0
- * 创建时间: 2026-07-29
+ * 创建时间: 2026-07-30
  */
 
 CREATE TABLE IF NOT EXISTS ADS_CUST_INDV_POTEN (

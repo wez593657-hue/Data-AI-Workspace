@@ -1,0 +1,29 @@
+schema_version: '0.1'
+task_id: cust-new-v234
+user_confirmation: confirmed
+objective: 新客经营存储过程v2.3.4：去季年切片+接触时间调整+法人行号联动+月度隔离+理财管户经理
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_NEW_CUST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_NEW_CUST_STATIS.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_LOST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_LOST_STATIS.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_STATIS.sql
+  - path: data_assets/ddl/dws/dws_cust_lvl_info.sql
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_lost_dtl.ddl
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_lost_statis.ddl
+  - path: data_assets/mapping/dwd_to_dws/DWS汇总层数据模型_CRM_ V1.0.xlsx
+  - path: data_assets/mapping/ods_to_dwd/DWD明细层数据模型_CRM_ V1.0.xlsx
+  - path: requirements/新客经营规则记忆卡片.md
+  - path: requirements/流失挽回规则记忆卡片.md
+  - path: requirements/05_经营管理.md
+  - path: requirements/指标数据统计_记忆卡片.md
+  - path: requirements/指标需求_从v2.0.3提取.md
+  - path: requirements/指标交叉分析报告.md
+  - path: .harness/tasks/cust-new-v234/
+  - path: .gitignore
+read_only_inputs:
+  - path: templates/procedure_template.sql
+  - path: docs/quality_rules.md
+  - path: docs/project_goals.md
+forbidden_changes: []

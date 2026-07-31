@@ -2,7 +2,7 @@
  * ADS_MKT_TASK_INDX_SUB_CMPLT
  * 中文名称: 指标任务完成情况
  * 版本: v1.0
- * 创建时间: 2026-07-29
+ * 创建时间: 2026-07-30
  */
 
 CREATE TABLE IF NOT EXISTS ADS_MKT_TASK_INDX_SUB_CMPLT (

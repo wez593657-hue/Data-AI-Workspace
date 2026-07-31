@@ -2,7 +2,7 @@
  * ADS_CUST_POTN_UPGRADE_STATIS
  * 中文名称: 潜力提升统计表
  * 版本: v1.0
- * 创建时间: 2026-07-29
+ * 创建时间: 2026-07-30
  */
 
 CREATE TABLE IF NOT EXISTS ADS_CUST_POTN_UPGRADE_STATIS (

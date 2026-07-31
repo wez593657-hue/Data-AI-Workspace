@@ -3,7 +3,7 @@
 ## 映射来源
 
 - Excel：`data_assets/mapping/ods_to_dwd/DWD明细层数据模型_CRM_ V1.0.xlsx`
-- Excel SHA-256：`4486ad0622e4e8cd8f8eeeaf2dd44e600953a2d54e1a6ddd8cce3a7a508a2499`
+- Excel SHA-256：`03c3618e3cb3f14a5a7438f872bce48cf536b55fecc8163c3a488cdcfb768dba`
 
 ## 映射概览
 
@@ -28,7 +28,8 @@
 | DWD_MKT_TSK_INFO | 16 |
 | DWD_PRDKT_INFO | 12 |
 | DWD_SYS_ORG | 20 |
-| DWD_TX_ASET | 22 |
+| DWD_SYS_POST | 21 |
+| DWD_TX_ASET | 23 |
 
 ## 字段映射详情
 
@@ -95,6 +96,7 @@
 | LOAN_FLG | 借贷标识 | VARCHAR2(3) | CBS_KDPL_ZHMINX | JIEDAIBZ |  |
 | ACCT_BAL | 账户余额 | NUMBER(18,4) | CBS_KDPL_ZHMINX | ZHANGHYE |  |
 | TX_DSC | 交易说明 | VARCHAR2(200) | CBS_KDPL_ZHMINX | BEIZHUUU |  |
+| JIOYCFFS | 主动动账标识 | VARCHAR2(1) | CBS_KDPL_ZHMINX | JIOYCFFS | 0=主动动账；其他值=非主动动账或未识别 |
 | OPNT_ACCT | 对方账户 | VARCHAR2(32) | CBS_KDPL_ZHMINX | DUIFKHZH |  |
 | OPNT_ACCT_NAME_FST | 对方户名 | VARCHAR2(200) | CBS_KDPL_ZHMINX | DUIFMINC |  |
 | OPNT_BK_KEEP | 对方行 | VARCHAR2(20) | CBS_KDPL_ZHMINX | DUIFJGDM |  |
@@ -456,6 +458,32 @@
 | RSV_OBJ_NAME | 接收对象名称 | VARCHAR2 |  |  |  |
 | BIZ_LINE | 条线(公司/零售) | VARCHAR2 |  |  |  |
 | TSK_YEAR | 任务年份 | VARCHAR2 |  |  |  |
+
+### DWD_SYS_POST
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| POST_ID | 职位ID(员工号-条线-岗位分类-机构) | VARCHAR2 |  |  |  |
+| EMP_ID | 工号 | VARCHAR2 |  |  |  |
+| POST_NAME | 职位名称 | VARCHAR2 |  |  |  |
+| JOB_NAME | 岗位名称 | VARCHAR2 |  |  |  |
+| JOB_CLS | 岗位分类(C客户经理岗/M管理岗) | VARCHAR2 |  |  |  |
+| POST_STATE | 职位状态 | VARCHAR2 |  |  |  |
+| BIZ_LINE | 条线 | VARCHAR2 |  |  |  |
+| ORG_ID | 机构ID | VARCHAR2 |  |  |  |
+| ORG_CATE | 机构类别 | VARCHAR2 |  |  |  |
+| STAT_ORG_ID | 统计机构ID | VARCHAR2 |  |  |  |
+| DIRECT_UNDER_ORG | 直属机构 | VARCHAR2 |  |  |  |
+| SUP_POST_ID | 上级职位编号 | VARCHAR2 |  |  |  |
+| DEL_FLG | 是否删除 | VARCHAR2 |  |  |  |
+| USR_NAME | 用户名称 | VARCHAR2 |  |  |  |
+| CREATR | 创建人 | VARCHAR2 |  |  |  |
+| CREAT_TIME | 创建时间 | VARCHAR2 |  |  |  |
+| CREAT_ORG | 创建机构 | VARCHAR2 |  |  |  |
+| UPDATR | 更新人 | VARCHAR2 |  |  |  |
+| UPD_TIME | 更新时间 | VARCHAR2 |  |  |  |
+| MAIN_POS_FLAG | 是否主职位 | VARCHAR2 |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
 
 ---
 

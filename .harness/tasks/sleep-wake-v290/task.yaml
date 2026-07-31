@@ -1,0 +1,16 @@
+schema_version: '0.1'
+task_id: sleep-wake-v290
+purpose: 睡眠户唤醒模块完整重构v2.9.0：双快照唤醒架构、INSUR_AMT消除幽灵唤醒、月首日继承修正、错误案例库+记忆卡片同步
+workflow_profile: requirement_development
+state: CREATED
+branch: master
+created_at: '2026-07-31T07:57:22+00:00'
+updated_at: '2026-07-31T07:57:22+00:00'
+evidence_ids: []
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-31T07:57:22+00:00'
+state_seal: f8f965476fceb4cefe0570edaeac0633f26230e13727ce26095a795dc45ed240

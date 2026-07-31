@@ -1,0 +1,20 @@
+evidence_id: ev-pr-002
+task_id: cust-potn-v311
+phase: procedure_review
+kind: review
+purpose: procedure_review
+result: passed
+details: QA/QB/QC三层质检通过
+repository_revision: 3fd0ce90eba1845e83be2d611a587ae36f160ab9
+created_at: '2026-07-30T09:29:10+00:00'
+review_type: ''
+return_to: ''
+checked_files:
+- data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL.sql
+- data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_STATIS.sql
+- data_assets/ddl/tmp/tmp_pro_ads_cust_potn_upgrade_dtl.ddl
+rules_checked:
+- code_syntax
+- ddl_sp_consistency
+- business_logic
+issues: []

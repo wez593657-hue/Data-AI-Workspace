@@ -1,0 +1,24 @@
+{
+  "table_name": "TMP_ADS_SLEEP_WAKE_BASE",
+  "procedure": "PRC_ADS_CUST_SLEEP_WAKE_DTL.sql",
+  "purpose": "承接上月末或昨日睡眠户清单，并合并当日新增候选及状态计算。",
+  "source_tables": ["ADS_CUST_SLEEP_WAKE_DTL", "DWS_CUST_ASSE_LIAB", "ADS_MKT_REC_INFO"],
+  "columns": [
+    {"name": "PERSN_LEGAL_BK_CODE", "type": "VARCHAR(4)", "nullable": true},
+    {"name": "CUST_ID", "type": "VARCHAR(20)", "nullable": true},
+    {"name": "CUST_NAME", "type": "VARCHAR(100)", "nullable": true},
+    {"name": "CUST_LVL", "type": "VARCHAR(2)", "nullable": true},
+    {"name": "DEPO_CURNT_DEPO_BAL", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "FIXD_DEPO_BAL", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "FIN_AMT", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "INSUR_AMT", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "CNTCT_STATE", "type": "VARCHAR(1)", "nullable": true},
+    {"name": "WAKE_STATE", "type": "VARCHAR(1)", "nullable": true},
+    {"name": "POST_ID", "type": "VARCHAR(20)", "nullable": true},
+    {"name": "ORG_ID", "type": "VARCHAR(7)", "nullable": true}
+  ],
+  "indexes": ["PERSN_LEGAL_BK_CODE, CUST_ID, ORG_ID"],
+  "lifecycle": {"cleanup": "过程开始时TRUNCATE，成功或异常后不保留批次数据。", "concurrency": "当前过程使用批次内独占临时表，禁止并发执行。"},
+  "approval_status": "approved",
+  "approved_by": "Codex"
+}

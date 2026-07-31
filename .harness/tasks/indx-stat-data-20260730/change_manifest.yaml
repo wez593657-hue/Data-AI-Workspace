@@ -1,0 +1,18 @@
+schema_version: '0.1'
+task_id: indx-stat-data-20260730
+purpose: requirement_development
+description: 指标数据统计ADS_STAT_INDX_DATA存储过程开发 - 28个指标, 营销活动+目标任务两条路径
+user_confirmation: confirmed
+allowed_changes:
+  - path: requirements/指标数据统计_记忆卡片.md
+  - path: data_assets/stored_procedure/dws_to_ads/
+  - path: data_assets/ddl/tmp/
+  - path: data_assets/ddl/ads/ads_stat_indx_data.sql
+  - path: .harness/tasks/indx-stat-data-20260730/
+read_only_inputs:
+  - path: requirements/指标.xlsx
+  - path: requirements/客户等级.md
+  - path: data_assets/mapping/ods_to_dwd/ods到dwd映射.md
+  - path: data_assets/mapping/dwd_to_dws/dwd到dws映射.md
+  - path: data_assets/mapping/dws_to_ads/dws到ads映射.md
+  - path: data_assets/ddl/ads/ads_stat_indx_data.sql

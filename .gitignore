@@ -65,5 +65,12 @@ CREATE_TMP_*.sql
 # Harness source and task state are versioned; only local reports are ignored.
 .harness/validation-report-*.txt
 
-# Local inventory helpers
-branch_files_*.txt
+# Temp analysis files
+temp_docx_full.txt
+
+# Temporary extraction scripts
+_extract_*.py
+_v*_full_text.txt
+
+# Work-in-progress harness tasks (to be committed with their respective features)
+.harness/tasks/cust-lost-v241/

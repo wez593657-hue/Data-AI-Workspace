@@ -3,9 +3,16 @@ task_id: workspace-publish-20260728
 user_confirmation: confirmed
 objective: 提交并推送当前工作区全部新增和修改文件
 allowed_changes:
+  - path: .gitignore
+  - path: .harness/tasks/
+  - path: CHANGELOG.md
+  - path: data_assets/
+  - path: docs/
+  - path: governance/
+  - path: requirements/
+  - path: scripts/harness/tests/
   - path: .harness/policies/phase_gates.yaml
   - path: .harness/policies/required_evidence.yaml
-  - path: .harness/tasks/potn-upgrade-rule-alignment-20260727/
   - path: .harness/tasks/workspace-publish-20260728/
   - path: data_assets/data_dictionary/dwd/dwd_acct_insur.md
   - path: data_assets/ddl/SYDDL.ddl.sql

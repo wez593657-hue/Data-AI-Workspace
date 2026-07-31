@@ -1,0 +1,9 @@
+evidence_id: scope-confirmation-ev
+task_id: indx-stat-data-20260730
+phase: SCOPE_CONFIRMED
+kind: scope_confirmation
+purpose: scope_confirmation
+result: passed
+details: 开发范围:存储过程PRC_ADS_STAT_INDX_DATA,28个指标,营销活动+目标任务两路径,涉及DWD表7张+DWS表2张+ODS表4张,本期值+上期值两字段,其余4字段暂不处理,0073-0079综合报表平台本期排除
+repository_revision: 70ae729666b3d12ba1788ed1523a6a5244009be6
+created_at: '2026-07-30T08:14:32+00:00'

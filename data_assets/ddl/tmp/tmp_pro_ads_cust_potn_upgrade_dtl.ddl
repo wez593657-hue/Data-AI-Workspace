@@ -1,7 +1,7 @@
 -- ============================================================
 -- 潜力提升客户明细表存储过程临时表建表语句
 -- 存储过程名称: PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL
--- 需求版本: v3.0.0
+-- 需求版本: v3.1.1
 -- ============================================================
 
 -- 2.1 临界客户基础中间表
@@ -17,8 +17,6 @@ CREATE TABLE IF NOT EXISTS TMP_ADS_POTN_BASE (
     CURR_MTH_AVG_AUM      NUMBER(20,2),      -- 当前月日均AUM
     PNT_AUM_BAL           NUMBER(20,2),      -- T-1日时点AUM
     CNTCT_STATE_M         VARCHAR2(1),       -- 月接触状态(当月初~跑批日)
-    CNTCT_STATE_Q         VARCHAR2(1),       -- 季接触状态(当季初~跑批日)
-    CNTCT_STATE_Y         VARCHAR2(1),       -- 年接触状态(当年初~跑批日)
     POST_ID               VARCHAR2(20),      -- 管户经理
     ORG_ID                VARCHAR2(7)        -- 归属机构
 );

@@ -1,0 +1,18 @@
+{
+  "table_name": "TMP_ADS_SLEEP_STAT_SRC",
+  "procedure": "PRC_ADS_CUST_SLEEP_WAKE_STATIS.sql",
+  "purpose": "保存机构递归和客户经理维度展开后的睡眠户统计源数据。",
+  "source_tables": ["ADS_CUST_SLEEP_WAKE_DTL", "DWD_SYS_ORG"],
+  "columns": [
+    {"name": "PERSN_LEGAL_BK_CODE", "type": "VARCHAR(4)", "nullable": true},
+    {"name": "DATA_DATE", "type": "VARCHAR(8)", "nullable": true},
+    {"name": "STATIS_CYCLE", "type": "VARCHAR(2)", "nullable": true},
+    {"name": "STATIS_OBJ", "type": "VARCHAR(20)", "nullable": true},
+    {"name": "CNTCT_STATE", "type": "VARCHAR(1)", "nullable": true},
+    {"name": "WAKE_STATE", "type": "VARCHAR(1)", "nullable": true}
+  ],
+  "indexes": ["PERSN_LEGAL_BK_CODE, DATA_DATE, STATIS_CYCLE, STATIS_OBJ"],
+  "lifecycle": {"cleanup": "过程开始时TRUNCATE，聚合完成后不保留统计源数据。", "concurrency": "当前过程使用批次内独占临时表，禁止并发执行。"},
+  "approval_status": "approved",
+  "approved_by": "Codex"
+}

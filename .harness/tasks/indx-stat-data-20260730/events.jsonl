@@ -1,0 +1,6 @@
+{"created_at": "2026-07-30T08:13:16+00:00", "event": "task_created", "task_id": "indx-stat-data-20260730"}
+{"created_at": "2026-07-30T08:14:01+00:00", "event": "evidence_recorded", "evidence_id": "workflow-routing-ev"}
+{"created_at": "2026-07-30T08:14:09+00:00", "event": "state_transition", "from": "CREATED", "to": "REQUIREMENT_ANALYZED"}
+{"created_at": "2026-07-30T08:14:16+00:00", "event": "evidence_recorded", "evidence_id": "requirement-analysis-ev"}
+{"created_at": "2026-07-30T08:14:24+00:00", "event": "state_transition", "from": "REQUIREMENT_ANALYZED", "to": "SCOPE_CONFIRMED"}
+{"created_at": "2026-07-30T08:14:32+00:00", "event": "evidence_recorded", "evidence_id": "scope-confirmation-ev"}

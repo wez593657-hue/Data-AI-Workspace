@@ -1,0 +1,9 @@
+evidence_id: ev-ra-001
+task_id: cust-potn-v311
+phase: requirement_analysis
+kind: analysis
+purpose: requirement_analysis
+result: passed
+details: v2.0.3:去季/年切片+T-1日=跑批日期
+repository_revision: 3fd0ce90eba1845e83be2d611a587ae36f160ab9
+created_at: '2026-07-30T09:27:24+00:00'

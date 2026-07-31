@@ -1,0 +1,14 @@
+evidence_id: ev-qb-001
+task_id: cust-potn-v311
+phase: qb
+kind: review
+purpose: QB一致性检查：DDL与SP一致、SP与MD一致、临时表DDL同步
+result: passed
+details: 发现1处DTL临时表DDL版本落后(v3.1.0->v3.1.1)，已修复。SP DTL INSERT列与临表DDL列一一对应，无冗余
+repository_revision: 3fd0ce90eba1845e83be2d611a587ae36f160ab9
+created_at: '2026-07-30T09:24:30+00:00'
+review_type: ''
+return_to: ''
+checked_files: []
+rules_checked: []
+issues: []

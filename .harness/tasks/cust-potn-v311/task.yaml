@@ -1,0 +1,88 @@
+schema_version: '0.1'
+task_id: cust-potn-v311
+purpose: 潜力提升v3.1.1：去掉季年切片+T1日修正
+workflow_profile: requirement_development
+state: USER_APPROVED
+branch: master
+created_at: '2026-07-30T09:24:15+00:00'
+updated_at: '2026-07-30T09:29:11+00:00'
+evidence_ids:
+- ev-qa-001
+- ev-qb-001
+- ev-qc-001
+- ev-route-001
+- ev-rt-001
+- ev-ra-001
+- ev-sc-001
+- ev-ps-001
+- ev-tl-001
+- ev-si-001
+- ev-fg-001
+- ev-rr-001
+- ev-mc-001
+- ev-pi-001
+- ev-pr-001
+- ev-tt-001
+- ev-fv-001
+- ev-ua-001
+- ev-rr-002
+- ev-pr-002
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-30T09:24:15+00:00'
+- from: CREATED
+  to: REQUIREMENT_ANALYZED
+  reason: 流程路由
+  at: '2026-07-30T09:28:25+00:00'
+- from: REQUIREMENT_ANALYZED
+  to: SCOPE_CONFIRMED
+  reason: 需求已分析
+  at: '2026-07-30T09:28:26+00:00'
+- from: SCOPE_CONFIRMED
+  to: PROJECT_SCANNED
+  reason: 范围已确认
+  at: '2026-07-30T09:28:26+00:00'
+- from: PROJECT_SCANNED
+  to: TABLE_LINEAGE_IDENTIFIED
+  reason: 项目已扫描
+  at: '2026-07-30T09:28:27+00:00'
+- from: TABLE_LINEAGE_IDENTIFIED
+  to: SOURCE_CAPABILITY_ANALYZED
+  reason: 血缘已识别
+  at: '2026-07-30T09:28:27+00:00'
+- from: SOURCE_CAPABILITY_ANALYZED
+  to: FIELD_GAP_CONFIRMED
+  reason: 源能力已分析
+  at: '2026-07-30T09:28:28+00:00'
+- from: FIELD_GAP_CONFIRMED
+  to: REQUIREMENT_REVIEW_PASSED
+  reason: 无缺口转审
+  at: '2026-07-30T09:28:38+00:00'
+- from: REQUIREMENT_REVIEW_PASSED
+  to: MEMORY_CARD_UPDATED
+  reason: 记忆卡片已更新
+  at: '2026-07-30T09:28:59+00:00'
+- from: MEMORY_CARD_UPDATED
+  to: PROCEDURE_IMPLEMENTED
+  reason: 代码已实现
+  at: '2026-07-30T09:28:59+00:00'
+- from: PROCEDURE_IMPLEMENTED
+  to: PROCEDURE_REVIEW_PASSED
+  reason: QA/QB/QC通过
+  at: '2026-07-30T09:29:00+00:00'
+- from: PROCEDURE_REVIEW_PASSED
+  to: TMP_TABLES_GENERATED
+  reason: 临时表DDL已同步
+  at: '2026-07-30T09:29:10+00:00'
+- from: TMP_TABLES_GENERATED
+  to: FULL_VALIDATION_PASSED
+  reason: 全量验证通过
+  at: '2026-07-30T09:29:11+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户已审批
+  at: '2026-07-30T09:29:11+00:00'
+state_seal: 0b468e7bf8b8a37b54434e75a89959ea60db2fb853bc18b29ed6a7546ad4790d

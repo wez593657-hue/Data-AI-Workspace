@@ -1,0 +1,22 @@
+{
+  "table_name": "TMP_ADS_SLEEP_CANDIDATE",
+  "procedure": "PRC_ADS_CUST_SLEEP_WAKE_DTL.sql",
+  "purpose": "保存当日AUM低于100且近365天无JIOYCFFS为0主动动账的新增睡眠户候选。",
+  "source_tables": ["DWD_CUST_INDV_INFO", "DWS_CUST_ASSE_LIAB", "DWD_TX_ASET", "DWD_CUST_MAN"],
+  "columns": [
+    {"name": "PERSN_LEGAL_BK_CODE", "type": "VARCHAR(4)", "nullable": true},
+    {"name": "CUST_ID", "type": "VARCHAR(20)", "nullable": true},
+    {"name": "CUST_NAME", "type": "VARCHAR(100)", "nullable": true},
+    {"name": "CUST_LVL", "type": "VARCHAR(2)", "nullable": true},
+    {"name": "DEPO_CURNT_DEPO_BAL", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "FIXD_DEPO_BAL", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "FIN_AMT", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "INSUR_AMT", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "POST_ID", "type": "VARCHAR(20)", "nullable": true},
+    {"name": "ORG_ID", "type": "VARCHAR(7)", "nullable": true}
+  ],
+  "indexes": ["PERSN_LEGAL_BK_CODE, CUST_ID, ORG_ID"],
+  "lifecycle": {"cleanup": "过程开始时TRUNCATE，合并完成后不保留候选数据。", "concurrency": "当前过程使用批次内独占临时表，禁止并发执行。"},
+  "approval_status": "approved",
+  "approved_by": "Codex"
+}

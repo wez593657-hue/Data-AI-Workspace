@@ -1,0 +1,43 @@
+schema_version: '0.1'
+task_id: sync-mapping-20260730
+purpose: schema_change
+workflow_profile: schema_change
+state: ASSETS_UPDATED
+branch: master
+created_at: '2026-07-30T07:42:05+00:00'
+updated_at: '2026-07-30T07:42:31+00:00'
+evidence_ids:
+- workflow-routing-ev
+- excel-analysis-ev
+- related-files-scan-ev
+- scope-confirmation-ev
+- scope-confirmation-v2
+- asset-update-ev
+- skill-execution-ev
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-07-30T07:42:05+00:00'
+- from: CREATED
+  to: MAPPING_EXCEL_ANALYZED
+  reason: 3个Excel文件最新，需要同步MD/DDL
+  at: '2026-07-30T07:42:05+00:00'
+- from: MAPPING_EXCEL_ANALYZED
+  to: RELATED_FILES_SCANNED
+  reason: '需同步: Mapping MD + DDL'
+  at: '2026-07-30T07:42:06+00:00'
+- from: RELATED_FILES_SCANNED
+  to: CHANGE_SCOPE_IDENTIFIED
+  reason: '变更范围: 全量同步3个Mapping层的MD和DDL'
+  at: '2026-07-30T07:42:07+00:00'
+- from: CHANGE_SCOPE_IDENTIFIED
+  to: USER_SCOPE_CONFIRMED
+  reason: Mapping MD文件已同步完成
+  at: '2026-07-30T07:42:11+00:00'
+- from: USER_SCOPE_CONFIRMED
+  to: ASSETS_UPDATED
+  reason: Mapping MD + ADS DDL 已全部生成并验证一致性
+  at: '2026-07-30T07:42:31+00:00'
+state_seal: 87275bf5c4343c772c3106f8c8cabfab7083e7f86ba92af2a6c461f42e44694b

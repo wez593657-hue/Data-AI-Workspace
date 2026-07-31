@@ -1,0 +1,21 @@
+schema_version: '0.1'
+task_id: cust-potn-v311
+user_confirmation: confirmed
+objective: 重点经营视图v2.0.3：去季年切片+T-1日修正+新客未评级
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_STATIS.sql
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_potn_upgrade_dtl.ddl
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_potn_upgrade_statis.ddl
+  - path: requirements/潜力提升规则记忆卡片.md
+  - path: requirements/流失挽回规则记忆卡片.md
+  - path: requirements/新客经营规则记忆卡片.md
+  - path: requirements/睡眠户唤醒规则记忆卡片.md
+  - path: requirements/05_经营管理.md
+  - path: .harness/tasks/cust-potn-v311/
+  - path: .gitignore
+read_only_inputs:
+  - path: templates/procedure_template.sql
+  - path: docs/quality_rules.md
+  - path: docs/project_goals.md
+forbidden_changes: []
