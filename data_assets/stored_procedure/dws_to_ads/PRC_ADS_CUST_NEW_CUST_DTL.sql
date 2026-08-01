@@ -72,9 +72,13 @@ AS
   V_DURA_DATE            INTEGER;
   -- V_DATA_DATE:     数据日期，取V_SYSDAT值，格式YYYYMMDD
   V_DATA_DATE            VARCHAR2(8);
-  -- V_CUTOFF_DATE:   历史数据保留截止日期（三年前），用于清理过期数据
-  V_CUTOFF_DATE          DATE;
-  -- V_BN_MONTH:      当月月初日期，用于判断当月新客
+  -- V_CURR_MONTH_BEGIN: 当月初（参数9），用于判断当月新客
+  V_CURR_MONTH_BEGIN     VARCHAR2(8);
+  -- V_HISTORY_CUTOFF_DATE: 三年历史清理边界（参数19），用于清理过期数据
+  V_HISTORY_CUTOFF_DATE  VARCHAR2(8);
+  -- V_180D_WINDOW_BEGIN: 180天新客窗口开始日（参数23）
+  V_180D_WINDOW_BEGIN    VARCHAR2(8);
+  -- V_BN_MONTH:      当月月初日期（DATE类型，=TO_DATE(V_CURR_MONTH_BEGIN)），用于判断当月新客
   V_BN_MONTH             DATE;
 
   ------------------------------------------------------------------
@@ -99,8 +103,13 @@ BEGIN
 
   -- 设置数据日期 = 跑批日期
   V_DATA_DATE := V_SYSDAT;
-  -- 计算当月月初（用于判断是否为当月新客）
-  V_BN_MONTH := TRUNC(TO_DATE(V_DATA_DATE, 'YYYYMMDD'), 'MM');
+  -- 当月初（参数9），用于判断是否为当月新客
+  V_CURR_MONTH_BEGIN := sys_fun_deal_date(V_SYSDAT, 9);
+  V_BN_MONTH := TO_DATE(V_CURR_MONTH_BEGIN, 'YYYYMMDD');
+  -- 三年历史清理边界（参数19）
+  V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);
+  -- 180天新客窗口开始日（参数23）
+  V_180D_WINDOW_BEGIN := sys_fun_deal_date(V_SYSDAT, 23);
   -- 初始化步骤结束时间
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
 
@@ -117,10 +126,9 @@ BEGIN
   DELETE FROM ADS_CUST_NEW_CUST_DTL D
    WHERE D.DATA_DATE = V_DATA_DATE;
 
-  -- 删除三年前历史数据（按年清理，保留近三年内的数据）
-  V_CUTOFF_DATE := ADD_MONTHS(TRUNC(TO_DATE(V_DATA_DATE, 'YYYYMMDD'), 'YYYY'), -36);
+  -- 删除三年历史清理边界（参数19）之前的历史数据
   DELETE FROM ADS_CUST_NEW_CUST_DTL D
-   WHERE D.DATA_DATE < TO_CHAR(V_CUTOFF_DATE, 'YYYYMMDD');
+   WHERE D.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   -- 清空临时表
   TRUNC_TMP('TMP_ADS_NEW_CUST_BASE');
@@ -287,15 +295,15 @@ BEGIN
     LEFT JOIN DWS_CUST_LVL_INFO l                                              -- 客户等级信息(当前等级)
       ON l.CUST_ID = c.CUST_ID
      AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE                        -- v2.3.2: 强制联动法人行号作为基础计算单位
-     AND l.DATA_DTTE = V_DATA_DATE                                               -- 取当日等级快照
+     AND l.DATA_DATE = V_DATA_DATE                                               -- 取当日等级快照
     LEFT JOIN DWD_CUST_INDV_KYC k                                              -- 客户KYC信息(22字段完整度)
       ON k.CUST_ID = c.CUST_ID                                                 -- v2.3.2: DWD_CUST_INDV_KYC无PERSN_LEGAL_BK_CODE字段，仅用CUST_ID关联
    WHERE a.DATA_DATE = V_DATA_DATE                                             -- 取当日资产快照
      AND a.BAL_TYPE = '1'                                                      -- BAL_TYPE='1'=余额类型
      AND c.OPEN_DATE IS NOT NULL                                               -- 开户日期不为空
-     AND TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD')
-         BETWEEN TO_DATE(V_DATA_DATE, 'YYYYMMDD') - 180                        -- 开户日≥180天前（左闭）
-             AND TO_DATE(V_DATA_DATE, 'YYYYMMDD');                             -- 开户日≤当天（右闭）—即180天内新客
+    AND TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD')
+        BETWEEN TO_DATE(V_180D_WINDOW_BEGIN, 'YYYYMMDD')                       -- 开户日≥180天前（左闭，参数23）
+            AND TO_DATE(V_DATA_DATE, 'YYYYMMDD');                             -- 开户日≤当天（右闭）—即180天内新客
 
   COMMIT;
 

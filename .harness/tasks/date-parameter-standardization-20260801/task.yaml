@@ -1,0 +1,24 @@
+schema_version: '0.1'
+task_id: date-parameter-standardization-20260801
+purpose: 日期参数标准化改造：统一具名参数、新增22/23并同步函数实现、统一DATA_DATE、补充日期参数使用与新增规范
+workflow_profile: harness
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-08-01T08:00:00+00:00'
+updated_at: '2026-08-01T08:00:00+00:00'
+evidence_ids:
+- user-approval-20260801
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-08-01T08:00:00+00:00'
+- from: CREATED
+  to: USER_APPROVED
+  reason: 用户确认三个决策点（参数19统一、新增22/23、DATA_DATE），并要求提交并推送
+  at: '2026-08-01T08:00:00+00:00'
+- from: USER_APPROVED
+  to: PUSH_ALLOWED
+  reason: 全量校验通过（日期参数规则、单元测试、SQL语法、跨层一致性），用户明确命令提交并推送
+  at: '2026-08-01T08:00:00+00:00'

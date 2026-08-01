@@ -1,0 +1,18 @@
+schema_version: '0.1'
+task_id: date-parameter-standardization-20260801
+user_confirmation: confirmed
+objective: DWS_CUST_ASSE_LIAB与dwd_acct_*_his相关存储过程日期参数标准化：统一sys_fun_deal_date具名参数（1/2/6/9/11/13/19/22/23）、新增参数22/23并同步函数实现、等级表日期列统一为DATA_DATE、3个ODS过程移除未使用预留区间参数、补充日期参数使用与新增规范
+allowed_changes:
+  - path: data_assets/stored_procedure/
+  - path: data_assets/ddl/dws/dws_cust_lvl_info.sql
+  - path: data_assets/function/sys_fun_deal_date.sql
+  - path: governance/stored_procedure_date_parameter_rules.md
+  - path: docs/16_Execution_Rules.md
+  - path: docs/analysis/
+  - path: docs/changes/2026-08-01-date-parameter-standardization.md
+  - path: requirements/
+  - path: scripts/validate_procedure_date_parameters.py
+  - path: scripts/harness/tests/test_procedure_date_parameters.py
+  - path: .harness/tasks/date-parameter-standardization-20260801/
+read_only_inputs: []
+forbidden_changes: []

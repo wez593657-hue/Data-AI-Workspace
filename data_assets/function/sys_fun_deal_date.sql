@@ -53,6 +53,10 @@ BEGIN
             V_RETUR_DATE := to_char(add_months(V_DATE, -1), 'YYYYMMDD'); -- 1月前
         WHEN 21 THEN
             V_RETUR_DATE := to_char(add_months(V_DATE, -6), 'YYYYMMDD'); -- 6月前
+        WHEN 22 THEN
+            V_RETUR_DATE := to_char(V_DATE - interval '365' day, 'YYYYMMDD'); -- 365天动账窗口开始日
+        WHEN 23 THEN
+            V_RETUR_DATE := to_char(V_DATE - interval '180' day, 'YYYYMMDD'); -- 180天新客窗口开始日
 
         ELSE
             V_RETUR_DATE := NULL;

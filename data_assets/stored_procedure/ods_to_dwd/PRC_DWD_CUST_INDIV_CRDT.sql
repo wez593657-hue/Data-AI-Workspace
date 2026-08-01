@@ -30,16 +30,12 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
-  P_INTERVAL_START_DATE  VARCHAR(8);
-  P_INTERVAL_END_DATE    VARCHAR(8);
 BEGIN
   --***************************************
   -- 2. 业务逻辑区
   --***************************************
   V_START_DT := SYSDATE;
   V_SYSDAT2 := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'yyyy-mm-dd');
-  P_INTERVAL_START_DATE := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd') - 30, 'yyyymmdd');
-  P_INTERVAL_END_DATE   := V_SYSDAT;
 
   EXECUTE IMMEDIATE 'TRUNCATE TABLE DWD_CUST_INDIV_CRDT';
 

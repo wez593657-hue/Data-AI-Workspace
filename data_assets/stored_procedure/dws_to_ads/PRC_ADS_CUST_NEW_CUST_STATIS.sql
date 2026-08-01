@@ -66,8 +66,8 @@ AS
   V_PREV_DAY             VARCHAR2(8);
   -- V_PREV_MONTH_END: 上月末日期，用于关联上一月的明细数据和清理上一月统计结果
   V_PREV_MONTH_END       VARCHAR2(8);
-  -- V_BN_YEAR:        三年前的年初日期，用于清理过期历史数据
-  V_BN_YEAR              DATE;
+  -- V_HISTORY_CUTOFF_DATE: 三年历史清理边界（参数19），用于清理过期历史数据
+  V_HISTORY_CUTOFF_DATE   VARCHAR2(8);
 
   ------------------------------------------------------------------
   -- 内部辅助过程：清空指定物理临时表
@@ -113,10 +113,10 @@ BEGIN
    WHERE T.DATA_DATE = V_DATA_DATE                                        -- 当天生成的统计
       OR (T.STATIS_CYCLE = 'M' AND T.DATA_DATE = V_PREV_MONTH_END);       -- 上一月末的月度统计
 
-  -- 删除三年前的历史数据（按年清理）
-  V_BN_YEAR := ADD_MONTHS(TRUNC(TO_DATE(V_DATA_DATE, 'YYYYMMDD'), 'YYYY'), -36);
+  -- 删除三年历史清理边界（参数19）之前的历史数据
+  V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);
   DELETE FROM ADS_CUST_NEW_CUST_STATIS T
-   WHERE T.DATA_DATE < TO_CHAR(V_BN_YEAR, 'YYYYMMDD');
+   WHERE T.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   -- 清空临时表
   TRUNC_TMP('TMP_ADS_NEW_CUST_STAT_SRC');

@@ -191,6 +191,17 @@
 
 执行器只能修改清单中的文件和目标表。上游文件即使被下游过程读取，也只能读取和取证，不得因被引用而修改。需求文档或现有存储过程没有明确证据的源表、源字段、别名、中文名和转换规则必须保持为空并记录原因，禁止猜测补齐。Excel 到 Markdown 同步也必须限定在清单目标表，禁止重写非目标表。
 
+### 16.3.6 日期参数使用规范
+
+存储过程使用或新增日期参数，必须遵循"先查函数、再使用、新增必同步"的统一标准：
+
+1. 使用前先查阅 `data_assets/function/sys_fun_deal_date.sql` 的 `CASE p_pd` 实现，确认参数编号是否已存在。
+2. 参数已存在 → 直接用具名变量调用 `sys_fun_deal_date(V_SYSDAT, n)`。
+3. 参数不存在 → 必须先同步修改 `sys_fun_deal_date.sql` 的函数逻辑实现该参数，并同步更新 `governance/stored_procedure_date_parameter_rules.md` 的日期参数映射表、需求记忆卡片及审核证据，之后才可在存储过程中使用。
+4. 禁止仅登记参数编号而不实现函数逻辑；`scripts/validate_procedure_date_parameters.py` 将强制校验所有使用到的参数编号均已在函数中实现。
+
+详细规则见 `governance/stored_procedure_date_parameter_rules.md`。
+
 ## 16.4 权限边界
 
 | 权限级别 | 允许操作 | 禁止操作 |

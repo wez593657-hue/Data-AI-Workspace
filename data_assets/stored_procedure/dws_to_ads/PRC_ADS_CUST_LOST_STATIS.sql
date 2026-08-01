@@ -29,6 +29,7 @@ AS
   V_END_DATE             DATE;                                                 -- 步骤结束时间
   V_DURA_DATE            INTEGER;                                              -- 步骤耗时（秒）
   V_DATA_DATE            VARCHAR2(8);                                          -- 跑批日期（=V_SYSDAT）
+  V_HISTORY_CUTOFF_DATE  VARCHAR2(8);                                          -- 三年历史清理边界（参数19）
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS                                 -- 清空物理临时表
   BEGIN
@@ -45,6 +46,7 @@ BEGIN
     RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
   END IF;
   V_DATA_DATE := V_SYSDAT;                                                  -- 跑批日期
+  V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);                 -- 三年历史清理边界（参数19）
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');                              -- 转换为DATE类型
 
   ------------------------------------------------------------------
@@ -57,7 +59,7 @@ BEGIN
    WHERE T.DATA_DATE = V_DATA_DATE;
 
   DELETE FROM ADS_CUST_LOST_STATIS T                                       -- 清理超过三年的历史数据
-   WHERE TO_DATE(T.DATA_DATE, 'YYYYMMDD') < ADD_MONTHS(TRUNC(TO_DATE(V_DATA_DATE, 'YYYYMMDD'), 'YYYY'), -36);
+   WHERE T.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   TRUNC_TMP('TMP_ADS_LOST_STAT_SRC');                                       -- 清空物理临时表
   COMMIT;

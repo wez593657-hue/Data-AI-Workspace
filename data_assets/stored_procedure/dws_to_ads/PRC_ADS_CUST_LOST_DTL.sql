@@ -32,6 +32,7 @@ AS
   V_PREV_MONTH_END       VARCHAR2(8);                                           -- 上月末日期（YYYYMMDD），用于判定轻度流失和上月末余额
   V_PREV_PREV_MONTH_END  VARCHAR2(8);                                           -- 上上月末日期（YYYYMMDD），用于判定重度流失
   V_CURR_MONTH_BEGIN_DT  DATE;                                                  -- 当月初日期，用于限定月接触窗口起点
+  V_HISTORY_CUTOFF_DATE  VARCHAR2(8);                                           -- 三年历史清理边界（参数19）
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS                                 -- 清空物理临时表
   BEGIN
@@ -53,7 +54,8 @@ BEGIN
   V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);                       -- 上月末（参数2）
   V_PREV_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 6);                  -- 上上月末（参数6）
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');                              -- 转换为DATE类型
-  V_CURR_MONTH_BEGIN_DT := TRUNC(TO_DATE(V_DATA_DATE, 'YYYYMMDD'), 'MM');      -- 当月初（TRUNC month）
+  V_CURR_MONTH_BEGIN_DT := TO_DATE(sys_fun_deal_date(V_SYSDAT, 9), 'YYYYMMDD');  -- 当月初（参数9）
+  V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);                      -- 三年历史清理边界（参数19）
 
   ------------------------------------------------------------------
   -- 2. TMP1：清理当前数据日明细、三年历史数据和物理临时表，保证可重跑
@@ -64,8 +66,8 @@ BEGIN
   DELETE FROM ADS_CUST_LOST_DTL D                                           -- 清理当天数据（支持重跑）
    WHERE D.DATA_DATE = V_DATA_DATE;
 
-  DELETE FROM ADS_CUST_LOST_DTL D                                           -- 清理超过三年的历史数据
-   WHERE D.DATA_DATE < TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE(V_DATA_DATE, 'YYYYMMDD'), 'YYYY'), -36), 'YYYYMMDD');
+  DELETE FROM ADS_CUST_LOST_DTL D                                           -- 清理三年历史清理边界（参数19）之前的数据
+   WHERE D.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   TRUNC_TMP('TMP_ADS_LOST_BASE');                                           -- 清空物理临时表
   COMMIT;
@@ -209,7 +211,7 @@ BEGIN
             JOIN DWS_CUST_LVL_INFO l
               ON l.CUST_ID = a.CUST_ID
              AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
-             AND l.DATA_DT = a.DATA_DATE                           -- 等级取月日均同一天
+             AND l.DATA_DATE = a.DATA_DATE                           -- 等级取月日均同一天
            WHERE a.DATA_DATE = V_PREV_MONTH_END                    -- 上月末
              AND a.BAL_TYPE = '2'                                  -- 月日均余额类型
          ) p
@@ -224,7 +226,7 @@ BEGIN
             JOIN DWS_CUST_LVL_INFO l
               ON l.CUST_ID = a.CUST_ID
              AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
-             AND l.DATA_DT = a.DATA_DATE
+             AND l.DATA_DATE = a.DATA_DATE
            WHERE a.DATA_DATE = V_PREV_PREV_MONTH_END               -- 上上月末
              AND a.BAL_TYPE = '2'
          ) pp
@@ -237,7 +239,7 @@ BEGIN
     LEFT JOIN DWS_CUST_LVL_INFO cur_l                              -- cur_l：当前客户等级（跑批日最新）
       ON cur_l.CUST_ID = c.CUST_ID
      AND cur_l.PERSN_LEGAL_BK_CODE = c.PERSN_LEGAL_BK_CODE
-     AND cur_l.DATA_DT = V_DATA_DATE
+     AND cur_l.DATA_DATE = V_DATA_DATE
     LEFT JOIN DWS_CUST_ASSE_LIAB e                                 -- e：上月末时点AUM（用于判定上月末余额达标）
      ON e.CUST_ID = c.CUST_ID
      AND e.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)

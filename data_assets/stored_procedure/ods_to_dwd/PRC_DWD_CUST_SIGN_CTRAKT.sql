@@ -34,8 +34,6 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
-  P_INTERVAL_START_DATE  VARCHAR(8);
-  P_INTERVAL_END_DATE    VARCHAR(8);
 BEGIN
   --***************************************
   -- 2. 业务逻辑区
@@ -48,10 +46,6 @@ BEGIN
 
   -- 将输入的批处理日期转换为标准格式，便于后续日志和区间处理
   V_SYSDAT2 := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd'), 'yyyy-mm-dd');
-
-  -- 预留时间区间参数，方便后续扩展按天/按月增量处理
-  P_INTERVAL_START_DATE := TO_CHAR(TO_DATE(V_SYSDAT, 'yyyymmdd') - 30, 'yyyymmdd');
-  P_INTERVAL_END_DATE   := V_SYSDAT;
 
   -- 每次跑批前先清空目标表，保证结果为当日全量重算
   EXECUTE IMMEDIATE 'TRUNCATE TABLE DWD_CUST_SIGN_CTRAKT';

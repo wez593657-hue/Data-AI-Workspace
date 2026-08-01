@@ -30,10 +30,10 @@ AS
   P_INTERVAL_END_DATE    VARCHAR(8);
   V_DATA_DATE            VARCHAR(8);
   V_DT                   DATE;
-  V_MTH_BEGIN            VARCHAR(8);
-  V_QRT_BEGIN            VARCHAR(8);
-  V_YAR_BEGIN            VARCHAR(8);
-  V_PRE_DATA_DATE        VARCHAR(8);
+  V_MTH_BEGIN            VARCHAR(8);  -- 当月初（参数9，sys_fun_deal_date）
+  V_QRT_BEGIN            VARCHAR(8);  -- 当季初（参数11，sys_fun_deal_date）
+  V_YAR_BEGIN            VARCHAR(8);  -- 当年初（参数13，sys_fun_deal_date）
+  V_PRE_DATA_DATE        VARCHAR(8);  -- 上一日（参数1，sys_fun_deal_date）
   V_MTH_DAYS             NUMBER(10);
   V_QRT_DAYS             NUMBER(10);
   V_YAR_DAYS             NUMBER(10);
@@ -44,13 +44,13 @@ BEGIN
   V_DATA_DATE := V_SYSDAT;
   V_DT := TO_DATE(V_DATA_DATE, 'YYYYMMDD');
   V_SYSDAT2 := TO_CHAR(V_DT, 'YYYY-MM-DD');
-  V_MTH_BEGIN := TO_CHAR(TRUNC(V_DT, 'MM'), 'YYYYMMDD');
-  V_QRT_BEGIN := TO_CHAR(TRUNC(V_DT, 'Q'), 'YYYYMMDD');
-  V_YAR_BEGIN := TO_CHAR(TRUNC(V_DT, 'YYYY'), 'YYYYMMDD');
-  V_PRE_DATA_DATE := TO_CHAR(V_DT - 1, 'YYYYMMDD');
-  V_MTH_DAYS := V_DT - TRUNC(V_DT, 'MM') + 1;
-  V_QRT_DAYS := V_DT - TRUNC(V_DT, 'Q') + 1;
-  V_YAR_DAYS := V_DT - TRUNC(V_DT, 'YYYY') + 1;
+  V_PRE_DATA_DATE := sys_fun_deal_date(V_SYSDAT, 1);   -- 上一日（参数1）
+  V_MTH_BEGIN := sys_fun_deal_date(V_SYSDAT, 9);       -- 当月初（参数9）
+  V_QRT_BEGIN := sys_fun_deal_date(V_SYSDAT, 11);      -- 当季初（参数11）
+  V_YAR_BEGIN := sys_fun_deal_date(V_SYSDAT, 13);      -- 当年初（参数13）
+  V_MTH_DAYS := V_DT - TO_DATE(V_MTH_BEGIN, 'YYYYMMDD') + 1;   -- 月已过天数（记录日期运算）
+  V_QRT_DAYS := V_DT - TO_DATE(V_QRT_BEGIN, 'YYYYMMDD') + 1;   -- 季已过天数（记录日期运算）
+  V_YAR_DAYS := V_DT - TO_DATE(V_YAR_BEGIN, 'YYYYMMDD') + 1;   -- 年已过天数（记录日期运算）
   P_INTERVAL_START_DATE := V_YAR_BEGIN;
   P_INTERVAL_END_DATE   := V_DATA_DATE;
 

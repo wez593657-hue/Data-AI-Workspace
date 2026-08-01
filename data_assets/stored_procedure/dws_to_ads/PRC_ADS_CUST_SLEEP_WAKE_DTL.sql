@@ -37,7 +37,8 @@ AS
   V_CURR_MONTH_BEGIN     VARCHAR2(8);                                 -- 当月首日，YYYYMMDD，由sys_fun_deal_date(V_SYSDAT,9)生成。
   V_IS_MONTH_BEGIN       CHAR(1);                                     -- 月首标志，仅允许Y/N；Y时复核上月末清单并重置月度状态。
   V_WAKE_BASELINE_DATE   VARCHAR2(8);                                 -- 唤醒基线日期；月首为上月末，非月首为当月首日。
-  V_PREV_MONTH_END       VARCHAR2(8);                                 -- 上月末日期（YYYYMMDD），用于判定轻度流失和上月末余额
+  V_HISTORY_CUTOFF_DATE  VARCHAR2(8);                                 -- 三年历史清理边界（参数19）
+  V_365D_WINDOW_BEGIN    VARCHAR2(8);                                 -- 365天动账窗口开始日（参数22）
   -- 截断指定临时表
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -57,18 +58,19 @@ BEGIN
   END IF;
 
   V_DATA_DATE       := V_SYSDAT;
-  V_PREV_DAY        := sys_fun_deal_date(V_SYSDAT, 1);             -- T-1日
-  V_CURR_MONTH_BEGIN:= sys_fun_deal_date(V_SYSDAT, 9);             -- 当月首日(参数9)
-  V_PREV_MONTH_END  := sys_fun_deal_date(V_SYSDAT, 2);             -- 上月末（参数2）
+  V_PREV_DAY        := sys_fun_deal_date(V_SYSDAT, 1);             -- T-1日（参数1）
+  V_CURR_MONTH_BEGIN:= sys_fun_deal_date(V_SYSDAT, 9);             -- 当月首日（参数9）
+  V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);        -- 三年历史清理边界（参数19）
+  V_365D_WINDOW_BEGIN   := sys_fun_deal_date(V_SYSDAT, 22);        -- 365天动账窗口开始日（参数22）
   -- 判断月首日并确定唤醒基线：
   --   月首日：[A]读昨日DTL作为上月末基石，唤醒基线用T-1(上月末快照做增量对比)
   --   非月首：[A]读昨日DTL继续累积，      唤醒基线用当月首日
   IF V_DATA_DATE = V_CURR_MONTH_BEGIN THEN
     V_IS_MONTH_BEGIN := 'Y';
-    V_PREV_MONTH_END := V_PREV_DAY;
+    V_WAKE_BASELINE_DATE := V_PREV_DAY;
   ELSE
     V_IS_MONTH_BEGIN := 'N';
-    V_PREV_MONTH_END := V_CURR_MONTH_BEGIN;
+    V_WAKE_BASELINE_DATE := V_CURR_MONTH_BEGIN;
   END IF;
 
   ------------------------------------------------------------------
@@ -78,8 +80,7 @@ BEGIN
    WHERE D.DATA_DATE = V_DATA_DATE;                                  -- 当日(支持重跑)
 
   DELETE FROM ADS_CUST_SLEEP_WAKE_DTL D
-   WHERE D.DATA_DATE < TO_CHAR(
-           ADD_MONTHS(TRUNC(TO_DATE(V_DATA_DATE,'YYYYMMDD'),'YYYY'),-36),'YYYYMMDD');
+   WHERE D.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   TRUNC_TMP('TMP_ADS_SLEEP_WAKE_BASE');
   TRUNC_TMP('TMP_ADS_SLEEP_CANDIDATE');
@@ -147,9 +148,9 @@ BEGIN
                       SELECT 1
                         FROM DWD_TX_ASET t0
                        WHERE t0.CUST_ID = y.CUST_ID
-                         AND TO_DATE(REPLACE(SUBSTR(t0.TX_DATE, 1, 10), '-', ''), 'YYYYMMDD')
-                             BETWEEN TO_DATE(V_DATA_DATE, 'YYYYMMDD') - 365
-                                 AND TO_DATE(V_DATA_DATE, 'YYYYMMDD')
+                          AND TO_DATE(REPLACE(SUBSTR(t0.TX_DATE, 1, 10), '-', ''), 'YYYYMMDD')
+                              BETWEEN TO_DATE(V_365D_WINDOW_BEGIN, 'YYYYMMDD')
+                                  AND TO_DATE(V_DATA_DATE, 'YYYYMMDD')
                          AND t0.JIOYCFFS = '0'
                   )
              )
@@ -197,7 +198,7 @@ BEGIN
            WHERE t.CUST_ID = c.CUST_ID
               AND t.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
               AND TO_DATE(REPLACE(SUBSTR(t.TX_DATE,1,10),'-',''),'YYYYMMDD')
-                  BETWEEN TO_DATE(V_DATA_DATE,'YYYYMMDD') - 365
+                  BETWEEN TO_DATE(V_365D_WINDOW_BEGIN,'YYYYMMDD')
                       AND TO_DATE(V_DATA_DATE,'YYYYMMDD')
               AND t.JIOYCFFS = '0'                                    -- 主动动账标识
          )
@@ -249,9 +250,9 @@ BEGIN
                            AND r.MKT_PERSN = b.POST_ID
                            AND r.MKT_TYP IN ('1','2','3','4')          -- 有效接触类型
                            AND r.MKT_TIME IS NOT NULL
-                           AND TO_DATE(REPLACE(SUBSTR(r.MKT_TIME,1,10),'-',''),'YYYYMMDD')
-                               BETWEEN TRUNC(TO_DATE(V_DATA_DATE,'YYYYMMDD'),'MM')
-                                   AND TO_DATE(V_DATA_DATE,'YYYYMMDD')
+                          AND TO_DATE(REPLACE(SUBSTR(r.MKT_TIME,1,10),'-',''),'YYYYMMDD')
+                              BETWEEN TO_DATE(V_CURR_MONTH_BEGIN,'YYYYMMDD')
+                                  AND TO_DATE(V_DATA_DATE,'YYYYMMDD')
                       ) THEN '1' ELSE '0'
                  END,
                  CASE WHEN b.WAKE_STATE = '1' THEN '1'                 -- 已唤醒保持
@@ -274,7 +275,7 @@ BEGIN
                      ON mb.CUST_ID = a2.CUST_ID
                      AND mb.PERSN_LEGAL_BK_CODE = a2.PERSN_LEGAL_BK_CODE
                      AND mb.ORG_ID = a2.ORG_ID
-                     AND mb.DATA_DATE = V_PREV_MONTH_END             -- 月首=T-1/非月首=上月末
+                     AND mb.DATA_DATE = V_WAKE_BASELINE_DATE         -- 月首=T-1/非月首=当月首日
                      AND mb.BAL_TYPE = '1'
                    WHERE a2.DATA_DATE = V_DATA_DATE
                      AND a2.BAL_TYPE = '1'

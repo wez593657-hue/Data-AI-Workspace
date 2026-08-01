@@ -32,6 +32,7 @@ AS
   V_DURA_DATE            INTEGER;                                       -- 步骤耗时，单位秒，非负整数。
   V_DATA_DATE            VARCHAR2(8);                                   -- 当前统计日期，YYYYMMDD，等于V_SYSDAT。
   V_PREV_MONTH_END       VARCHAR2(8);                                   -- 上月末日期，YYYYMMDD，由sys_fun_deal_date(V_SYSDAT,2)生成。
+  V_HISTORY_CUTOFF_DATE  VARCHAR2(8);                                   -- 三年历史清理边界（参数19）
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -51,6 +52,7 @@ BEGIN
 
   V_DATA_DATE := V_SYSDAT;
   V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);               -- 上月末
+  V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);         -- 三年历史清理边界（参数19）
   V_END_DATE := TO_DATE(V_SYSDAT,'YYYYMMDD');
 
   ------------------------------------------------------------------
@@ -64,8 +66,7 @@ BEGIN
      AND s.DATA_DATE = V_PREV_MONTH_END;
 
   DELETE FROM ADS_CUST_SLEEP_WAKE_STATIS s
-   WHERE s.DATA_DATE < TO_CHAR(
-           ADD_MONTHS(TRUNC(TO_DATE(V_DATA_DATE,'YYYYMMDD'),'YYYY'),-36),'YYYYMMDD');
+   WHERE s.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   TRUNC_TMP('TMP_ADS_SLEEP_STAT_SRC');
   COMMIT;
