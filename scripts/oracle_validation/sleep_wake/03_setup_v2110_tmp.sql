@@ -1,0 +1,23 @@
+-- Setup TMP tables for sleep-wake v2.11.0
+DROP TABLE TMP_ADS_SLEEP_DWS_WAKE;
+CREATE TABLE TMP_ADS_SLEEP_DWS_WAKE (
+    PERSN_LEGAL_BK_CODE   VARCHAR2(4),
+    CUST_ID               VARCHAR2(20),
+    ORG_ID                VARCHAR2(7),
+    AUM_BAL               NUMBER(20,2),
+    DEPO_CURNT_DEPO_BAL   NUMBER(20,2),
+    FIXD_DEPO_BAL         NUMBER(20,2),
+    FIN_BAL               NUMBER(20,2),
+    INSUR_BAL             NUMBER(20,2),
+    IS_WAKE               NUMBER(1)
+);
+
+DROP TABLE TMP_ADS_SLEEP_CNTCT;
+CREATE TABLE TMP_ADS_SLEEP_CNTCT (
+    PERSN_LEGAL_BK_CODE   VARCHAR2(4),
+    CUST_ID               VARCHAR2(20),
+    MKT_PERSN             VARCHAR2(20)
+);
+
+PROMPT NEW_TMP_TABLES_CREATED
+EXIT;

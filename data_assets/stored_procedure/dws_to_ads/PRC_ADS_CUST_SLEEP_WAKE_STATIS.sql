@@ -7,18 +7,16 @@ AS
   -- 存储过程：睡眠户唤醒统计
   -- 处理周期: 日
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.11.0
+  -- 需求版本: v2.12.0
   -- 关联需求: REQ-CUST-008(睡眠户唤醒), REQ-CUST-020(精简重构)
   -- 变更记录:
-  --   v2.1.0-v2.6.0: 见前续版本
-  --   v2.8.0(2026-07-30): 移除睡眠类型分组及存量/新增拆分字段
+  --   v2.1.0-v2.8.0: 见前续版本
   --   v2.10.0(2026-07-31): 月首先由明细过程完成上月末复核及当日合并；
-  --                        统计仍只输出总数、接触和唤醒，不新增存量/新增字段；
-  --                        历史日期清理改为YYYYMMDD字符串比较以保留索引可用性。
   --   v2.11.0(2026-08-04): F-06: 删除V_END_DATE无效初始化；
-  --                        F-09: 移除上月末数据取数条件及清理逻辑，
-  --                        统计仅基于DTL当日(V_DATA_DATE)数据，
-  --                        消除上月末未复核数据的重复计算。
+  --                        F-09: 移除上月末数据取数条件及清理逻辑。
+  --   v2.12.0(2026-08-04): O-04: CONNECT BY机构递归预物化到
+  --        TMP_ADS_SLEEP_ORG_HIER临时表，消除TMP2步骤INSERT子查询内
+  --        的实时递归计算，提升大机构树场景下的执行效率。
   ------------------------------------------------------------------
   -- === 输入参数 ===
   -- V_SYSDAT: 系统跑批日期 VARCHAR(8)，取值YYYYMMDD，非NULL且必须为有效日期格式；
@@ -67,6 +65,7 @@ BEGIN
    WHERE s.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   TRUNC_TMP('TMP_ADS_SLEEP_STAT_SRC');
+  TRUNC_TMP('TMP_ADS_SLEEP_ORG_HIER');                               -- v2.12.0 O-04机构递归预物化
   COMMIT;
 
   V_END_DATE := SYSDATE;
@@ -78,16 +77,35 @@ BEGIN
       V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
 
   ------------------------------------------------------------------
-  -- 步骤3: TMP2 — 展开机构递归汇总和客户经理维度
+  -- 步骤3: TMP2 — 预物化机构层级 + 展开统计维度
+  --   [O-04] 预物化CONNECT BY机构递归 → TMP_ADS_SLEEP_ORG_HIER
+  --   展开: 机构维度(JOIN预物化表) + 客户经理维度(UNION ALL)
   ------------------------------------------------------------------
   V_NO_ID := 'TMP2';
   V_BGN_DATE := SYSDATE;
+
+  -- ================================================================
+  -- [O-04] 预物化机构层级: 从DTL叶子机构递归找所有祖先
+  -- ================================================================
+  INSERT INTO TMP_ADS_SLEEP_ORG_HIER (LEAF_ORG_ID, ANCESTOR_ORG_ID)
+  SELECT DISTINCT
+         CONNECT_BY_ROOT o.ORG_ID AS LEAF_ORG_ID,
+         o.ORG_ID AS ANCESTOR_ORG_ID
+    FROM DWD_SYS_ORG o
+   START WITH o.ORG_ID IN (
+         SELECT DISTINCT d1.ORG_ID
+           FROM ADS_CUST_SLEEP_WAKE_DTL d1
+          WHERE d1.DATA_DATE = V_DATA_DATE
+            AND d1.ORG_ID IS NOT NULL
+   )
+ CONNECT BY NOCYCLE PRIOR o.SUP_ORG_ID = o.ORG_ID;
+  COMMIT;
 
   INSERT INTO TMP_ADS_SLEEP_STAT_SRC (
       PERSN_LEGAL_BK_CODE, DATA_DATE, STATIS_CYCLE, STATIS_OBJ,
       CNTCT_STATE, WAKE_STATE
   )
-  -- 维度1: 机构递归向上汇总 (CONNECT BY)
+  -- 维度1: 机构递归向上汇总 (JOIN预物化表)
   SELECT d.PERSN_LEGAL_BK_CODE,                                       -- 法人行号
          d.DATA_DATE,                                                  -- 数据日期
          d.STATIS_CYCLE,                                               -- 统计周期
@@ -95,21 +113,9 @@ BEGIN
          d.CNTCT_STATE,                                                -- 接触状态
          d.WAKE_STATE                                                  -- 唤醒状态
     FROM ADS_CUST_SLEEP_WAKE_DTL d                                     -- 明细表
-    JOIN (-- 机构递归: 从明细中的叶子机构出发，向上找所有祖先机构
-          SELECT DISTINCT
-                 CONNECT_BY_ROOT o.ORG_ID AS LEAF_ORG_ID,             -- 叶子机构
-                 o.ORG_ID AS ANCESTOR_ORG_ID                           -- 祖先机构(含自身)
-            FROM DWD_SYS_ORG o                                         -- 系统机构表
-           START WITH o.ORG_ID IN (
-                 SELECT DISTINCT d1.ORG_ID
-                   FROM ADS_CUST_SLEEP_WAKE_DTL d1
-                  WHERE d1.DATA_DATE = V_DATA_DATE                     -- F-09: 仅取当日数据
-                    AND d1.ORG_ID IS NOT NULL
-           )
-         CONNECT BY NOCYCLE PRIOR o.SUP_ORG_ID = o.ORG_ID             -- 沿上级机构递归
-    ) o
+    JOIN TMP_ADS_SLEEP_ORG_HIER o                                      -- v2.12.0 O-04: 预物化层级表
       ON o.LEAF_ORG_ID = d.ORG_ID
-   WHERE d.DATA_DATE = V_DATA_DATE                                     -- F-09: 仅取当日数据
+   WHERE d.DATA_DATE = V_DATA_DATE
 
   UNION ALL
 

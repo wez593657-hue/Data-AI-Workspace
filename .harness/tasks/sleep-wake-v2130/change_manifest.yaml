@@ -1,0 +1,21 @@
+schema_version: '0.1'
+task_id: sleep-wake-v2130
+user_confirmation: confirmed
+objective: 睡眠户唤醒明细及统计存储过程性能优化v2.13.0（O-01预聚合主动动账/O-02合并B+C/O-03拆分D1+D2/O-04机构层级预物化）+ Oracle 11g全场景回归测试18项断言全部通过
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_SLEEP_WAKE_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_SLEEP_WAKE_STATIS.sql
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_active_txn.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_org_hier.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_wake_prod.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_wake_base.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_stat_src.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_dws_wake.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_cntct.ddl
+  - path: requirements/睡眠户唤醒规则记忆卡片.md
+  - path: scripts/oracle_validation/sleep_wake/
+  - path: data_assets/ddl/ods/cms/cms_business_contract.sql
+  - path: .harness/tasks/sleep-wake-v2130/
+read_only_inputs:
+  - path: docs/quality_rules.md
+forbidden_changes: []

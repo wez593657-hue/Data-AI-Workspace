@@ -16,7 +16,7 @@ CREATE TABLE crmdm.cms_business_contract (
 	businesssubtype varchar(18) NULL, -- 信用证类型
 	occurtype varchar(18) NULL, -- 发生类型
 	creditdigest varchar(18) NULL, -- 额度是否融通
-	creditcycle varchar(18) NULL, -- 是否循环
+	creditcycle varchar(18) NULL, -- 是否循环   业务额度是否循环
 	credittype varchar(18) NULL, -- 额度品种
 	currenylist varchar(18) NULL, -- 其他可融通币种表
 	currencymode varchar(18) NULL, -- 汇率计算模式
@@ -217,7 +217,7 @@ CREATE TABLE crmdm.cms_business_contract (
 	shifttype varchar(18) NULL, -- 移交类型
 	operatetype varchar(18) NULL, -- 操作方式
 	fundsource varchar(18) NULL, -- 资金来源
-	cycleflag varchar(18) NULL, -- 循环标志
+	cycleflag varchar(18) NULL, -- 循环标志  授信额度是否循环
 	creditfreezeflag varchar(18) NULL, -- 额度是否冻结
 	shiftbalance numeric(24, 6) NULL, -- 移交余额
 	classifyfrequency numeric NULL, -- 检查频率
