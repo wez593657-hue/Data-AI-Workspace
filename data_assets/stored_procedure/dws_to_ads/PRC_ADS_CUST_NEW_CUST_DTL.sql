@@ -25,7 +25,7 @@ AS
   -- 目标表: ADS_CUST_NEW_CUST_DTL(新客经营明细)
   -- 临时表: TMP_ADS_NEW_CUST_BASE(物理临时表，存储新客基础数据)
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.3.4
+  -- 需求版本: v2.3.5
   -- 关联需求: REQ-CUST-007(新客定义), REQ-CUST-009(计算单位),
   --           REQ-CUST-010(去季年切片+未评级), REQ-CUST-011(接触时间调整),
   --           REQ-CUST-012(关联计算补齐法人行号), REQ-CUST-013(月度数据隔离),
@@ -48,6 +48,9 @@ AS
   --   v2.3.4(2026-07-30): 管户经理信息源从DWD_CUST_INDV_INFO.HOST_CUST_MNGR_POST_ID
   --                       改为DWD_CUST_MAN(MNG_TYP='1'理财管户).MNGR_POST_ID；
   --                       归属机构同步改为DWD_CUST_MAN.ORG_ID
+  --   v2.3.5(2026-08-04): F-01:记录2026-08-01口径确认(ORG_ID取DWS_CUST_ASSE_LIAB资产快照，
+  --                       非DWD_CUST_MAN.ORG_ID)；客户等级一律取DWS_CUST_LVL_INFO(无记录兜底'11')，
+  --                       不再按开户月判断当月新客；F-06:删除V_END_DATE无效初始化
   ------------------------------------------------------------------
   ------------------------------------------------------------------
   -- 局部变量声明
@@ -103,8 +106,6 @@ BEGIN
   V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);
   -- 180天新客窗口开始日（参数23）
   V_180D_WINDOW_BEGIN := sys_fun_deal_date(V_SYSDAT, 23);
-  -- 初始化步骤结束时间
-  V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
 
   ------------------------------------------------------------------
   -- 步骤2_TMP1: 清理当前数据日明细和物理临时表

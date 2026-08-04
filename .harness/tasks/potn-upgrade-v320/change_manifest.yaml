@@ -1,0 +1,12 @@
+schema_version: '0.1'
+task_id: potn-upgrade-v320
+user_confirmation: confirmed
+objective: 潜力提升DTL+STATIS v3.2.0：F-01接触双键关联+F-02 WHERE优化+F-04变量分离+F-05/06/07 STATIS优化
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_STATIS.sql
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_potn_upgrade_statis.ddl
+  - path: .harness/tasks/potn-upgrade-v320/
+read_only_inputs:
+  - path: docs/quality_rules.md
+forbidden_changes: []

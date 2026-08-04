@@ -1,0 +1,13 @@
+schema_version: '0.1'
+task_id: deadline-rmnd-v310
+user_confirmation: confirmed
+objective: 到期承接DTL v3.1.0：F-01 30天窗口统一计算(口径40) + F-02 理财购买源过滤统一
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_DTL.sql
+  - path: requirements/到期承接规则记忆卡片.md
+  - path: .harness/tasks/deadline-rmnd-v310/
+read_only_inputs:
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_deadline_rmnd_dtl.ddl
+  - path: docs/quality_rules.md
+  - path: docs/project_goals.md
+forbidden_changes: []

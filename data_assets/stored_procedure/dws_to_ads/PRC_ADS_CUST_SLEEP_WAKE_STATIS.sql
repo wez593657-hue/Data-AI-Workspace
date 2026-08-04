@@ -7,7 +7,7 @@ AS
   -- 存储过程：睡眠户唤醒统计
   -- 处理周期: 日
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.10.0
+  -- 需求版本: v2.11.0
   -- 关联需求: REQ-CUST-008(睡眠户唤醒), REQ-CUST-020(精简重构)
   -- 变更记录:
   --   v2.1.0-v2.6.0: 见前续版本
@@ -15,10 +15,14 @@ AS
   --   v2.10.0(2026-07-31): 月首先由明细过程完成上月末复核及当日合并；
   --                        统计仍只输出总数、接触和唤醒，不新增存量/新增字段；
   --                        历史日期清理改为YYYYMMDD字符串比较以保留索引可用性。
+  --   v2.11.0(2026-08-04): F-06: 删除V_END_DATE无效初始化；
+  --                        F-09: 移除上月末数据取数条件及清理逻辑，
+  --                        统计仅基于DTL当日(V_DATA_DATE)数据，
+  --                        消除上月末未复核数据的重复计算。
   ------------------------------------------------------------------
   -- === 输入参数 ===
   -- V_SYSDAT: 系统跑批日期 VARCHAR(8)，取值YYYYMMDD，非NULL且必须为有效日期格式；
-  --           用于当前统计日及上月末统计日重算。
+  --           用于当前统计日数据聚合。
   -- OUTCDE:   输出状态码 INTEGER OUT，0=成功，-1=异常；异常时回滚并记录步骤日志。
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '睡眠户唤醒统计表';             -- 过程描述，固定值。
@@ -31,7 +35,6 @@ AS
   V_END_DATE             DATE;                                          -- 步骤结束时间，仅用于耗时日志。
   V_DURA_DATE            INTEGER;                                       -- 步骤耗时，单位秒，非负整数。
   V_DATA_DATE            VARCHAR2(8);                                   -- 当前统计日期，YYYYMMDD，等于V_SYSDAT。
-  V_PREV_MONTH_END       VARCHAR2(8);                                   -- 上月末日期，YYYYMMDD，由sys_fun_deal_date(V_SYSDAT,2)生成。
   V_HISTORY_CUTOFF_DATE  VARCHAR2(8);                                   -- 三年历史清理边界（参数19）
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
@@ -51,19 +54,14 @@ BEGIN
   END IF;
 
   V_DATA_DATE := V_SYSDAT;
-  V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);               -- 上月末
   V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);         -- 三年历史清理边界（参数19）
-  V_END_DATE := TO_DATE(V_SYSDAT,'YYYYMMDD');
 
   ------------------------------------------------------------------
-  -- 步骤2: 清理当日和上月统计、三年前历史、统计临时表
+  -- 步骤2: 清理当日统计、三年前历史、统计临时表
+  -- F-09: 移除上月末统计清理(DTL月首已复核并写入当日，不再需要上月末数据)
   ------------------------------------------------------------------
   DELETE FROM ADS_CUST_SLEEP_WAKE_STATIS s
    WHERE s.DATA_DATE = V_DATA_DATE;
-
-  DELETE FROM ADS_CUST_SLEEP_WAKE_STATIS s
-   WHERE s.STATIS_CYCLE = 'M'
-     AND s.DATA_DATE = V_PREV_MONTH_END;
 
   DELETE FROM ADS_CUST_SLEEP_WAKE_STATIS s
    WHERE s.DATA_DATE < V_HISTORY_CUTOFF_DATE;
@@ -105,15 +103,13 @@ BEGIN
            START WITH o.ORG_ID IN (
                  SELECT DISTINCT d1.ORG_ID
                    FROM ADS_CUST_SLEEP_WAKE_DTL d1
-                  WHERE (d1.DATA_DATE = V_DATA_DATE
-                     OR (d1.STATIS_CYCLE = 'M' AND d1.DATA_DATE = V_PREV_MONTH_END))
+                  WHERE d1.DATA_DATE = V_DATA_DATE                     -- F-09: 仅取当日数据
                     AND d1.ORG_ID IS NOT NULL
            )
          CONNECT BY NOCYCLE PRIOR o.SUP_ORG_ID = o.ORG_ID             -- 沿上级机构递归
     ) o
       ON o.LEAF_ORG_ID = d.ORG_ID
-   WHERE d.DATA_DATE = V_DATA_DATE
-      OR (d.STATIS_CYCLE = 'M' AND d.DATA_DATE = V_PREV_MONTH_END)
+   WHERE d.DATA_DATE = V_DATA_DATE                                     -- F-09: 仅取当日数据
 
   UNION ALL
 
@@ -125,8 +121,7 @@ BEGIN
          d.CNTCT_STATE,                                                -- 接触状态
          d.WAKE_STATE                                                  -- 唤醒状态
     FROM ADS_CUST_SLEEP_WAKE_DTL d                                     -- 明细表
-   WHERE (d.DATA_DATE = V_DATA_DATE
-      OR (d.STATIS_CYCLE = 'M' AND d.DATA_DATE = V_PREV_MONTH_END))
+   WHERE d.DATA_DATE = V_DATA_DATE                                     -- F-09: 仅取当日数据
      AND d.POST_ID IS NOT NULL;
   COMMIT;
 
@@ -169,7 +164,7 @@ BEGIN
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := '第3段完成: 写入睡眠户唤醒统计(v2.10.0 月首合并后统计)';
+  V_LOG_MSG := '第3段完成: 写入睡眠户唤醒统计(v2.11.0 F-06/F-09优化)';
   V_LOG_FLG := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
       V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);

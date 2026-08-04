@@ -10,7 +10,7 @@ AS
   -- 来源表: ADS_CUST_LOST_DTL, DWS_CUST_ASSE_LIAB, DWD_SYS_ORG
   -- 目标表: ADS_CUST_LOST_STATIS
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.4.1
+  -- 需求版本: v2.4.2
   -- 关联需求: REQ-CUST-001
   -- 变更记录:
   --   v2.1.0: 1.已挽回金融资产口径确认
@@ -18,6 +18,7 @@ AS
   --   v2.3.0 2026-07-28 年码值N→Y统一；配合DTL月/季/年切片接触状态按不同时间窗口独立计算
   --   v2.4.1 2026-07-30 去掉季/年统计周期切片仅保留月度；简化TMP1/TMP2清理逻辑；
   --            统计周期统一为月度；全字段补充注释
+  --   v2.4.2 2026-08-04 F-07:删除V_END_DATE无效初始化赋值
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '客户挽回统计处理';                     -- 过程描述
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_LOST_STATIS';          -- 过程名称
@@ -47,7 +48,6 @@ BEGIN
   END IF;
   V_DATA_DATE := V_SYSDAT;                                                  -- 跑批日期
   V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);                 -- 三年历史清理边界（参数19）
-  V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');                              -- 转换为DATE类型
 
   ------------------------------------------------------------------
   -- 2. TMP1：清理当前数据日统计结果、三年历史数据和物理临时表，保证可重跑

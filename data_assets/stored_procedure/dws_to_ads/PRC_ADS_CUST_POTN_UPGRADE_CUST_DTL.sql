@@ -24,6 +24,9 @@ AS
   --   v3.1.0 2026-07-30 去掉季/年统计周期切片，仅保留月度（对应v2.0.3需求变更）
   --   v3.1.1 2026-07-30 T-1日=跑批日期V_SYSDAT；PNT_AUM_BAL改为从b取AUM_BAL，移除冗余q关联和V_PREV_DAY变量
   --   v3.1.2 2026-07-30 补充所有变量、字段、表别名、逻辑参数的注释
+  --   v3.2.0 2026-08-04 F-01:接触EXISTS补PERSN_LEGAL_BK_CODE+MKT_PERSN关联(防跨法人行误匹配)；
+  --                       F-02:LVL_CRIT先INSERT后DELETE改为WHERE条件直接过滤；
+  --                       F-04:新增V_RUN_DATE_DT变量专用于业务逻辑，V_END_DATE仅用于日志
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '潜力提升客户明细处理';                  -- 过程描述
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL';  -- 过程名称
@@ -36,6 +39,7 @@ AS
   V_DURA_DATE            INTEGER;                                               -- 步骤耗时（秒）
   V_PREV_MONTH_END       VARCHAR2(8);                                           -- 上月末日期（YYYYMMDD），用于取上月月日均资产筛选临界客户
   V_CURR_MONTH_BEGIN_DT  DATE;                                                  -- 当月初日期，用于限定月接触窗口起点
+  V_RUN_DATE_DT          DATE;                                                  -- 跑批日期DATE类型，专用于业务逻辑（接触窗口上界）
   V_HISTORY_CUTOFF_DATE  VARCHAR2(8);                                           -- 三年历史清理边界（YYYYMMDD），sys_fun_deal_date(V_SYSDAT,19)
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
@@ -55,6 +59,7 @@ BEGIN
   END IF;
 
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
+  V_RUN_DATE_DT := V_END_DATE;                                                  -- 跑批日期DATE类型（业务逻辑用，V_END_DATE后续仅用于日志）
   V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);
   V_CURR_MONTH_BEGIN_DT := TO_DATE(sys_fun_deal_date(V_SYSDAT, 9), 'YYYYMMDD');
   V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);
@@ -137,10 +142,12 @@ BEGIN
              SELECT 1
                FROM ADS_MKT_REC_INFO r                           -- 营销接触记录表
               WHERE r.CUST_ID = c.CUST_ID
+                AND r.PERSN_LEGAL_BK_CODE = c.PERSN_LEGAL_BK_CODE  -- 双键关联：客户号+法人行号
+                AND r.MKT_PERSN = cm.MNGR_POST_ID               -- 仅统计本管户经理的接触
                 AND r.MKT_TYP IN ('1', '2', '3', '4')           -- 营销接触类型（1=电话/2=短信/3=微信/4=上门）
                 AND r.MKT_TIME IS NOT NULL                      -- 接触时间不为空
                 AND TO_DATE(REPLACE(SUBSTR(r.MKT_TIME, 1, 10), '-', ''), 'YYYYMMDD')
-                    BETWEEN V_CURR_MONTH_BEGIN_DT AND V_END_DATE -- 接触时间在当月初至跑批日范围内
+                    BETWEEN V_CURR_MONTH_BEGIN_DT AND V_RUN_DATE_DT  -- 接触时间在当月初至跑批日范围内
            ) THEN '1'                                           -- 有接触
            ELSE '0'                                             -- 无接触
          END,
@@ -170,11 +177,13 @@ BEGIN
      AND b.BAL_TYPE = '1'                                       -- 时点余额类型
    WHERE p.DATA_DATE = V_PREV_MONTH_END                         -- 取上月末月日均资产
      AND p.BAL_TYPE = '2'                                       -- 月日均余额类型
-     AND p.AUM_BAL >= 45000                                     -- AUM≥4.5万（进入临界观察范围下限）
-     AND p.AUM_BAL < 3000000;                                   -- AUM<300万（临界私行上限，≥300万已达标私行不再视为临界）
-
-  DELETE FROM TMP_ADS_POTN_BASE
-   WHERE LVL_CRIT IS NULL;
+     AND (
+       (p.AUM_BAL >= 45000 AND p.AUM_BAL < 50000) OR           -- 临界优质：4.5万≤AUM<5万
+       (p.AUM_BAL >= 270000 AND p.AUM_BAL < 300000) OR         -- 临界财富1：27万≤AUM<30万
+       (p.AUM_BAL >= 450000 AND p.AUM_BAL < 500000) OR         -- 临界财富2：45万≤AUM<50万
+       (p.AUM_BAL >= 900000 AND p.AUM_BAL < 1000000) OR        -- 临界贵宾：90万≤AUM<100万
+       (p.AUM_BAL >= 2700000 AND p.AUM_BAL < 3000000)          -- 临界私行：270万≤AUM<300万
+     );
 
   COMMIT;
 

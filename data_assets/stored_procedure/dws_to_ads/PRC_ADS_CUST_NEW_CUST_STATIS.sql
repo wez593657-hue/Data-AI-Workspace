@@ -24,7 +24,7 @@ AS
   -- 目标表: ADS_CUST_NEW_CUST_STATIS(新客经营统计表)
   -- 临时表: TMP_ADS_NEW_CUST_STAT_SRC(物理临时表，存储展开后的统计源数据)
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.3.2
+  -- 需求版本: v2.4.0
   -- 关联需求: REQ-CUST-007(新客定义), REQ-CUST-009(计算单位),
   --           REQ-CUST-010(去季年切片)
   -- 变更记录:
@@ -37,6 +37,9 @@ AS
   --   v2.3.1(2026-07-30): 继承DTL的接触状态变更（无需独立修改统计逻辑）
   --   v2.3.2(2026-07-30): 修复关联计算缺少PERSN_LEGAL_BK_CODE问题，
   --                       DWS_CUST_ASSE_LIAB左关联强制联动法人行号
+  --   v2.4.0(2026-08-04): F-04:DWS T-1日AUM预查询写入TMP共用(消除UNION ALL重复JOIN)；
+  --                       F-05:非月末日不再重算上月末统计(消除冗余)；
+  --                       F-07:删除V_END_DATE无效初始化
   ------------------------------------------------------------------
   ------------------------------------------------------------------
   -- 局部变量声明
@@ -96,8 +99,6 @@ BEGIN
   -- 计算上月末日期
   V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);
 
-  V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
-
   ------------------------------------------------------------------
   -- 步骤2_TMP1: 清理当前数据日统计结果和历史数据
   --   - 删除当天+上月末的统计结果（幂等重跑）
@@ -110,8 +111,7 @@ BEGIN
 
   -- 删除当天月度统计（支持重跑幂等）和上一月末统计（将被重新计算覆盖）
   DELETE FROM ADS_CUST_NEW_CUST_STATIS T
-   WHERE T.DATA_DATE = V_DATA_DATE                                        -- 当天生成的统计
-      OR (T.STATIS_CYCLE = 'M' AND T.DATA_DATE = V_PREV_MONTH_END);       -- 上一月末的月度统计
+   WHERE T.DATA_DATE = V_DATA_DATE;                                       -- 当天统计（支持重跑幂等）
 
   -- 删除三年历史清理边界（参数19）之前的历史数据
   V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);
@@ -120,6 +120,7 @@ BEGIN
 
   -- 清空临时表
   TRUNC_TMP('TMP_ADS_NEW_CUST_STAT_SRC');
+  TRUNC_TMP('TMP_ADS_NEW_CUST_AUM');                                     -- 清空T-1日AUM预查询表
   COMMIT;
 
   V_END_DATE := SYSDATE;
@@ -151,6 +152,19 @@ BEGIN
   --   数据来源: ADS_CUST_NEW_CUST_DTL(新客明细) + DWS_CUST_ASSE_LIAB(T-1日AUM)
   --   v2.3.0: 去掉季/年切片，仅处理M(月度)统计周期数据
   ------------------------------------------------------------------
+  -- F-04: T-1日AUM预查询（DWS只扫描一次，两个UNION ALL分支共用）
+  INSERT INTO TMP_ADS_NEW_CUST_AUM (
+      CUST_ID, PERSN_LEGAL_BK_CODE, ORG_ID, AUM_BAL
+  )
+  SELECT A.CUST_ID,
+         A.PERSN_LEGAL_BK_CODE,
+         A.ORG_ID,
+         NVL(A.AUM_BAL, 0)
+    FROM DWS_CUST_ASSE_LIAB A
+   WHERE A.DATA_DATE = V_PREV_DAY
+     AND A.BAL_TYPE = '1';
+  COMMIT;
+
   V_NO_ID := 'TMP2';
   V_BGN_DATE := SYSDATE;
 
@@ -166,67 +180,55 @@ BEGIN
   )
   -- ============================
   -- 维度1: 机构向上汇总
-  -- 使用CONNECT_BY_ROOT从网点级机构递归展开到所有上级机构
   -- ============================
-  SELECT D.PERSN_LEGAL_BK_CODE,                                               -- 法人行号_取明细的法人行号
+  SELECT D.PERSN_LEGAL_BK_CODE,                                               -- 法人行号
          D.DATA_DATE,                                                         -- 数据日期
          D.STATIS_CYCLE,                                                      -- 统计周期(M)
-         O.ANCESTOR_ORG_ID,                                                    -- 统计对象=上级机构编号(递归展开)
+         O.ANCESTOR_ORG_ID,                                                   -- 统计对象=上级机构编号
          D.NEW_CUST_CYCLE,                                                    -- 新客周期
          D.CNTCT_STATE,                                                       -- 接触状态
          D.KYC_STATE,                                                         -- KYC状态
-         NVL(A.AUM_BAL, 0)                                                     -- T-1日AUM余额_取前一自然日快照
-    FROM ADS_CUST_NEW_CUST_DTL D                                               -- 新客经营明细
+         NVL(P.AUM_BAL, 0)                                                    -- T-1日AUM余额（来自预查询表）
+    FROM ADS_CUST_NEW_CUST_DTL D
     JOIN (
-          -- 递归机构树: 从明细表中出现的ORG_ID出发，向上找到所有祖先机构
           SELECT DISTINCT
-                 CONNECT_BY_ROOT X.ORG_ID AS LEAF_ORG_ID,                     -- 叶子节点=明细的ORG_ID
-                 X.ORG_ID AS ANCESTOR_ORG_ID                                   -- 祖先节点=向上递归到的机构
-            FROM DWD_SYS_ORG X                                                  -- 机构层级表
+                 CONNECT_BY_ROOT X.ORG_ID AS LEAF_ORG_ID,
+                 X.ORG_ID AS ANCESTOR_ORG_ID
+            FROM DWD_SYS_ORG X
            START WITH X.ORG_ID IN (
-                 -- 从明细表中获取所有出现的归属机构作为递归起点
                  SELECT DISTINCT ORG_ID
                    FROM ADS_CUST_NEW_CUST_DTL
                   WHERE ORG_ID IS NOT NULL
                 )
-         CONNECT BY NOCYCLE PRIOR X.SUP_ORG_ID = X.ORG_ID                     -- PRIOR上级机构=当前机构,向上递归
+         CONNECT BY NOCYCLE PRIOR X.SUP_ORG_ID = X.ORG_ID
     ) O
-      ON O.LEAF_ORG_ID = D.ORG_ID                                              -- 通过叶子机构关联明细
-    LEFT JOIN DWS_CUST_ASSE_LIAB A                                              -- 客户资产负债(T-1快照)
-     ON A.CUST_ID = D.CUST_ID                                                   -- 关联客户号
-     AND A.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE                          -- v2.3.2: 强制联动法人行号作为基础计算单位
-     AND A.ORG_ID = D.ORG_ID                                                    -- 关联归属机构
-     AND A.DATA_DATE = V_PREV_DAY                                               -- 取T-1日(前一自然日)快照
-     AND A.BAL_TYPE = '1'                                                       -- BAL_TYPE='1'=余额类型
-   -- v2.3.0: 仅处理M(月度)数据
-   WHERE D.DATA_DATE = V_DATA_DATE                                              -- 当天生成的月度明细
-      OR (D.STATIS_CYCLE = 'M' AND D.DATA_DATE = V_PREV_MONTH_END)             -- 上一月末的月度明细
+      ON O.LEAF_ORG_ID = D.ORG_ID
+    LEFT JOIN TMP_ADS_NEW_CUST_AUM P                                          -- F-04: 预查询AUM表（替代DWS直接JOIN）
+     ON P.CUST_ID = D.CUST_ID
+     AND P.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE
+     AND P.ORG_ID = D.ORG_ID
+   WHERE D.DATA_DATE = V_DATA_DATE                                            -- F-05: 仅当日明细
 
   UNION ALL
 
   -- ============================
   -- 维度2: 客户经理维度
-  -- 直接从明细表取POST_ID作为统计对象
   -- ============================
-  SELECT D.PERSN_LEGAL_BK_CODE,                                               -- 法人行号
-         D.DATA_DATE,                                                         -- 数据日期
-         D.STATIS_CYCLE,                                                      -- 统计周期(M)
-         D.POST_ID,                                                            -- 统计对象=客户经理岗位编号
-         D.NEW_CUST_CYCLE,                                                    -- 新客周期
-         D.CNTCT_STATE,                                                       -- 接触状态
-         D.KYC_STATE,                                                         -- KYC状态
-         NVL(A.AUM_BAL, 0)                                                     -- T-1日AUM余额
-    FROM ADS_CUST_NEW_CUST_DTL D                                               -- 新客经营明细
-    LEFT JOIN DWS_CUST_ASSE_LIAB A                                              -- 客户资产负债(T-1快照)
-     ON A.CUST_ID = D.CUST_ID
-     AND A.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE                          -- v2.3.2: 强制联动法人行号作为基础计算单位
-     AND A.ORG_ID = D.ORG_ID
-     AND A.DATA_DATE = V_PREV_DAY                                               -- T-1日
-     AND A.BAL_TYPE = '1'
-   WHERE D.POST_ID IS NOT NULL                                                  -- 仅统计有管户经理的客户
-     -- v2.3.0: 仅处理M(月度)数据
-     AND (D.DATA_DATE = V_DATA_DATE                                             -- 当天月度明细
-        OR (D.STATIS_CYCLE = 'M' AND D.DATA_DATE = V_PREV_MONTH_END));         -- 上一月月度明细
+  SELECT D.PERSN_LEGAL_BK_CODE,
+         D.DATA_DATE,
+         D.STATIS_CYCLE,
+         D.POST_ID,                                                           -- 统计对象=客户经理岗位编号
+         D.NEW_CUST_CYCLE,
+         D.CNTCT_STATE,
+         D.KYC_STATE,
+         NVL(P.AUM_BAL, 0)                                                    -- T-1日AUM余额（来自预查询表）
+    FROM ADS_CUST_NEW_CUST_DTL D
+    LEFT JOIN TMP_ADS_NEW_CUST_AUM P                                          -- F-04: 预查询AUM表
+     ON P.CUST_ID = D.CUST_ID
+     AND P.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE
+     AND P.ORG_ID = D.ORG_ID
+   WHERE D.POST_ID IS NOT NULL
+     AND D.DATA_DATE = V_DATA_DATE;                                           -- F-05: 仅当日明细
 
   COMMIT;
 

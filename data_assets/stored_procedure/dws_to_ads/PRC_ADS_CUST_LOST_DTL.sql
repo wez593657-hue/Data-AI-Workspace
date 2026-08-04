@@ -10,7 +10,7 @@ AS
   -- 来源表: DWS_CUST_ASSE_LIAB, DWD_CUST_INDV_INFO, DWS_CUST_LVL_INFO, ADS_MKT_REC_INFO
   -- 目标表: ADS_CUST_LOST_DTL
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.4.1
+  -- 需求版本: v2.5.0
   -- 关联需求: REQ-CUST-001
   -- 变更记录:
   --   v2.1.0: 1.已挽回金融资产口径确认：T-1日金融资产余额达标的客户，从月初~T-1日金融资产新增总金额
@@ -18,6 +18,11 @@ AS
   --   v2.3.0 2026-07-28 月/季/年切片接触状态按不同时间窗口独立计算
   --   v2.4.1 2026-07-30 去掉季/年统计周期切片仅保留月度；T-1日统一为V_SYSDAT(与潜力提升一致)；
   --            删除第5段历史客群持续经营；全字段补充注释
+  --   v2.5.0 2026-08-04 F-01:接触EXISTS补PERSN_LEGAL_BK_CODE+MKT_PERSN关联；
+  --                       F-02:POST_ID改用m.MNGR_POST_ID(DWD_CUST_MAN,与潜力提升一致)；
+  --                       F-03:新增V_RUN_DATE_DT变量分离业务/日志用途；
+  --                       F-05:阈值CASE封装为TMP_ADS_LOST_THRESH查找表(消除6处重复)；
+  --                       F-06:子查询过滤NULL LVL_CHURN(消除先INSERT后DELETE)
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '客户流失清单处理';                     -- 过程描述
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_LOST_DTL';              -- 过程名称
@@ -32,6 +37,7 @@ AS
   V_PREV_MONTH_END       VARCHAR2(8);                                           -- 上月末日期（YYYYMMDD），用于判定轻度流失和上月末余额
   V_PREV_PREV_MONTH_END  VARCHAR2(8);                                           -- 上上月末日期（YYYYMMDD），用于判定重度流失
   V_CURR_MONTH_BEGIN_DT  DATE;                                                  -- 当月初日期，用于限定月接触窗口起点
+  V_RUN_DATE_DT          DATE;                                                  -- 跑批日期DATE类型，专用于业务逻辑（接触窗口上界）
   V_HISTORY_CUTOFF_DATE  VARCHAR2(8);                                           -- 三年历史清理边界（参数19）
 
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS                                 -- 清空物理临时表
@@ -54,6 +60,7 @@ BEGIN
   V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);                       -- 上月末（参数2）
   V_PREV_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 6);                  -- 上上月末（参数6）
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');                              -- 转换为DATE类型
+  V_RUN_DATE_DT := V_END_DATE;                              -- 跑批日期DATE类型（业务逻辑用，V_END_DATE后续仅用于日志）
   V_CURR_MONTH_BEGIN_DT := TO_DATE(sys_fun_deal_date(V_SYSDAT, 9), 'YYYYMMDD');  -- 当月初（参数9）
   V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);                      -- 三年历史清理边界（参数19）
 
@@ -70,6 +77,7 @@ BEGIN
    WHERE D.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   TRUNC_TMP('TMP_ADS_LOST_BASE');                                           -- 清空物理临时表
+  TRUNC_TMP('TMP_ADS_LOST_THRESH');                             -- 清空阈值查找表
   COMMIT;
 
   V_END_DATE := SYSDATE;
@@ -106,156 +114,142 @@ BEGIN
   --   e  = 上月末时点AUM（DATA_DATE=V_PREV_MONTH_END, BAL_TYPE='1'）—用于判定上月末余额是否达标
   --   b  = T-1日时点资产（DATA_DATE=V_DATA_DATE, BAL_TYPE='1'）—用于取T-1日各资产余额
   ------------------------------------------------------------------
+  -- F-05: 客户等级达标阈值查找表（消除6处CASE WHEN重复）
+  INSERT INTO TMP_ADS_LOST_THRESH (LVL_CODE, THRESHOLD)
+  SELECT '04', 50000 FROM DUAL UNION ALL                       -- 优质/财富1/财富2：5万
+  SELECT '05', 50000 FROM DUAL UNION ALL
+  SELECT '06', 50000 FROM DUAL UNION ALL
+  SELECT '07', 300000 FROM DUAL UNION ALL                      -- 贵宾：30万
+  SELECT '08', 500000 FROM DUAL UNION ALL                      -- 私行1：50万
+  SELECT '09', 1000000 FROM DUAL UNION ALL                     -- 私行2：100万
+  SELECT '10', 3000000 FROM DUAL;                              -- 私行3：300万
+  COMMIT;
+
   V_NO_ID := 'TMP2';
   V_BGN_DATE := SYSDATE;
 
+  -- F-05/F-06: 阈值通过TMP_ADS_LOST_THRESH查找；子查询过滤NULL LVL_CHURN
   INSERT INTO TMP_ADS_LOST_BASE (
       PERSN_LEGAL_BK_CODE,                                      -- 法人行号
       CUST_ID,                                                  -- 客户号
       CUST_NAME,                                                -- 客户姓名
-      CUST_LVL,                                                 -- 当前客户等级（来源cur_l.CUST_LVL）
+      CUST_LVL,                                                 -- 当前客户等级
       LVL_CHURN,                                                -- 流失等级（1=轻度流失，2=重度流失）
-      DEPO_CURNT_DEPO_BAL,                                      -- T-1日活期存款余额（来源b.DEPO_CURNT_DEPO_BAL）
-      FIXD_DEPO_BAL,                                            -- T-1日定期存款余额（来源b.FIXD_DEPO_BAL）
-      FIN_AMT,                                                  -- T-1日理财余额（来源b.FIN_BAL）
-      CNTCT_STATE_M,                                            -- 月接触状态（1=当月初至跑批日有营销接触，0=无）
-      RESCUE_STATE,                                             -- 挽回状态（1=T-1日时点AUM达标，0=未达标）
-      CUR_AUM_BAL,                                              -- T-1日时点AUM（来源b.AUM_BAL，用于RESCUED_FINA_ASSET计算）
-      LAST_MONTH_END_AUM_BAL,                                    -- 上月末时点AUM（来源e.AUM_BAL，用于RESCUED_FINA_ASSET计算）
-      POST_ID,                                                  -- 管户经理岗位ID（来源DWD_CUST_INDV_INFO.HOST_CUST_MNGR_POST_ID）
-      ORG_ID                                                    -- 归属机构ID（优先取p.ORG_ID，其次pp.ORG_ID）
+      DEPO_CURNT_DEPO_BAL,                                      -- T-1日活期存款余额
+      FIXD_DEPO_BAL,                                            -- T-1日定期存款余额
+      FIN_AMT,                                                  -- T-1日理财余额
+      CNTCT_STATE_M,                                            -- 月接触状态
+      RESCUE_STATE,                                             -- 挽回状态
+      CUR_AUM_BAL,                                              -- T-1日时点AUM
+      LAST_MONTH_END_AUM_BAL,                                   -- 上月末时点AUM
+      POST_ID,                                                  -- 管户经理岗位ID
+      ORG_ID                                                    -- 归属机构ID
   )
-  SELECT COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE), -- 法人行号（优先上月，其次上上月）
-         c.CUST_ID,                                               -- 客户号
-         c.CUST_NAME,                                             -- 客户姓名（来源DWD_CUST_INDV_INFO）
-         cur_l.CUST_LVL,                                          -- 当前客户等级（跑批日最新等级）
-         CASE                                                     -- 流失等级判定
-           -- 轻度流失(1)：上月月日均达标 AND 上月末时点不达标
-           WHEN p.AUM_BAL >= CASE                                 -- 上月月日均达标阈值：按客户等级判定
-                               WHEN p.LVL IN ('04', '05', '06') THEN 50000      -- 优质/财富1/财富2：5万
-                               WHEN p.LVL = '07' THEN 300000                   -- 贵宾：30万
-                               WHEN p.LVL = '08' THEN 500000                   -- 财富2（高等级）：50万
-                               WHEN p.LVL = '09' THEN 1000000                  -- 私行1：100万
-                               WHEN p.LVL = '10' THEN 3000000                  -- 私行2：300万
-                             END
-                AND NVL(e.AUM_BAL, 0) < CASE                     -- 上月末时点AUM不达标
-                                           WHEN p.LVL IN ('04', '05', '06') THEN 50000
-                                           WHEN p.LVL = '07' THEN 300000
-                                           WHEN p.LVL = '08' THEN 500000
-                                           WHEN p.LVL = '09' THEN 1000000
-                                           WHEN p.LVL = '10' THEN 3000000
-                                         END
-           THEN '1'                                               -- 轻度流失
-           -- 重度流失(2)：上上月月日均达标 AND 上月月日均不达标 AND 上月末时点不达标
-           WHEN pp.AUM_BAL >= CASE                                -- 上上月月日均达标
-                               WHEN pp.LVL IN ('04', '05', '06') THEN 50000
-                               WHEN pp.LVL = '07' THEN 300000
-                               WHEN pp.LVL = '08' THEN 500000
-                               WHEN pp.LVL = '09' THEN 1000000
-                               WHEN pp.LVL = '10' THEN 3000000
-                             END
-                AND NVL(p.AUM_BAL, 0) < CASE                     -- 上月月日均不达标
-                                           WHEN pp.LVL IN ('04', '05', '06') THEN 50000
-                                           WHEN pp.LVL = '07' THEN 300000
-                                           WHEN pp.LVL = '08' THEN 500000
-                                           WHEN pp.LVL = '09' THEN 1000000
-                                           WHEN pp.LVL = '10' THEN 3000000
-                                         END
-                AND NVL(e.AUM_BAL, 0) < CASE                     -- 上月末时点AUM不达标
-                                           WHEN pp.LVL IN ('04', '05', '06') THEN 50000
-                                           WHEN pp.LVL = '07' THEN 300000
-                                           WHEN pp.LVL = '08' THEN 500000
-                                           WHEN pp.LVL = '09' THEN 1000000
-                                           WHEN pp.LVL = '10' THEN 3000000
-                                         END
-           THEN '2'                                               -- 重度流失
-         END,
-         NVL(b.DEPO_CURNT_DEPO_BAL, 0),                           -- T-1日活期存款余额（BAL_TYPE='1'时点，若无则0）
-         NVL(b.FIXD_DEPO_BAL, 0),                                 -- T-1日定期存款余额（BAL_TYPE='1'时点，若无则0）
-         NVL(b.FIN_BAL, 0),                                       -- T-1日理财余额（BAL_TYPE='1'时点，若无则0）
-         CASE                                                     -- 月接触：当月初至跑批日存在有效营销接触记录
-           WHEN EXISTS (
-             SELECT 1
-               FROM ADS_MKT_REC_INFO r                             -- 营销接触记录表
-              WHERE r.CUST_ID = c.CUST_ID
-                AND r.MKT_TYP IN ('1', '2', '3', '4')             -- 营销接触类型（1=电话/2=短信/3=微信/4=上门）
-                AND r.MKT_TIME IS NOT NULL                        -- 接触时间不为空
-                AND TO_DATE(REPLACE(SUBSTR(r.MKT_TIME, 1, 10), '-', ''), 'YYYYMMDD')
-                    BETWEEN V_CURR_MONTH_BEGIN_DT AND V_END_DATE   -- 接触时间在当月初至跑批日范围内
-           ) THEN '1'                                             -- 有接触
-           ELSE '0'                                               -- 无接触
-         END,
-         CASE                                                     -- 挽回状态：T-1日时点AUM达到客户等级对应阈值
-           WHEN NVL(b.AUM_BAL, 0) >= CASE                         -- T-1日=T-1时点AUM（b.DATA_DATE=V_DATA_DATE, BAL_TYPE='1'）
-                                        WHEN COALESCE(p.LVL, pp.LVL) IN ('04', '05', '06') THEN 50000
-                                        WHEN COALESCE(p.LVL, pp.LVL) = '07' THEN 300000
-                                        WHEN COALESCE(p.LVL, pp.LVL) = '08' THEN 500000
-                                        WHEN COALESCE(p.LVL, pp.LVL) = '09' THEN 1000000
-                                        WHEN COALESCE(p.LVL, pp.LVL) = '10' THEN 3000000
-                                      END
-           THEN '1'                                               -- 已挽回
-           ELSE '0'                                               -- 未挽回
-         END,
-         NVL(b.AUM_BAL, 0),                                       -- T-1日时点AUM（用于计算已挽回金融资产）
-         NVL(e.AUM_BAL, 0),                                       -- 上月末时点AUM（用于计算已挽回金融资产）
-         c.HOST_CUST_MNGR_POST_ID,                                 -- 管户经理岗位ID（取自DWD_CUST_INDV_INFO）
-         COALESCE(p.ORG_ID, pp.ORG_ID)                            -- 归属机构ID（优先上月，其次上上月）
+  SELECT src.PERSN_LEGAL_BK_CODE,
+         src.CUST_ID,
+         src.CUST_NAME,
+         src.CUST_LVL,
+         src.LVL_CHURN,
+         src.DEPO_CURNT_DEPO_BAL,
+         src.FIXD_DEPO_BAL,
+         src.FIN_AMT,
+         src.CNTCT_STATE_M,
+         src.RESCUE_STATE,
+         src.CUR_AUM_BAL,
+         src.LAST_MONTH_END_AUM_BAL,
+         src.POST_ID,
+         src.ORG_ID
     FROM (
-          -- p：上月月日均AUM + 上月客户等级，用于筛选轻度流失候选
-          SELECT a.CUST_ID,
-                 a.ORG_ID,
-                 a.PERSN_LEGAL_BK_CODE,
-                 a.AUM_BAL,                                        -- 上月月日均AUM
-                 l.CUST_LVL LVL                                    -- 上月客户等级（与月日均同一日期）
-            FROM DWS_CUST_ASSE_LIAB a
-            JOIN DWS_CUST_LVL_INFO l
-              ON l.CUST_ID = a.CUST_ID
-             AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
-             AND l.DATA_DATE = a.DATA_DATE                           -- 等级取月日均同一天
-           WHERE a.DATA_DATE = V_PREV_MONTH_END                    -- 上月末
-             AND a.BAL_TYPE = '2'                                  -- 月日均余额类型
-         ) p
-    FULL JOIN (                                                    -- FULL JOIN确保上月无但上上月有的客户也能被识别
-          -- pp：上上月月日均AUM + 上上月客户等级，用于筛选重度流失候选
-          SELECT a.CUST_ID,
-                 a.ORG_ID,
-                 a.PERSN_LEGAL_BK_CODE,
-                 a.AUM_BAL,                                        -- 上上月月日均AUM
-                 l.CUST_LVL LVL                                    -- 上上月客户等级
-            FROM DWS_CUST_ASSE_LIAB a
-            JOIN DWS_CUST_LVL_INFO l
-              ON l.CUST_ID = a.CUST_ID
-             AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
-             AND l.DATA_DATE = a.DATA_DATE
-           WHERE a.DATA_DATE = V_PREV_PREV_MONTH_END               -- 上上月末
-             AND a.BAL_TYPE = '2'
-         ) pp
-      ON pp.CUST_ID = p.CUST_ID
-     AND pp.PERSN_LEGAL_BK_CODE = p.PERSN_LEGAL_BK_CODE            -- 二键关联：客户号+法人行号
-    JOIN DWD_CUST_INDV_INFO c                                      -- c：客户基本信息（姓名+管户经理）
-      ON c.CUST_ID = COALESCE(p.CUST_ID, pp.CUST_ID)
-     AND c.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
-    LEFT JOIN DWD_CUST_MAN m                                                    -- v2.3.4: 信贷管户关系表
-      ON m.CUST_ID = c.CUST_ID                                                  -- 关联客户号
-     AND m.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE) -- v2.3.2: 强制联动法人行号
-     AND m.MNG_TYP = '1'                                                        -- MNG_TYP='1'=理财管户,仅取理财管户经理
-    LEFT JOIN DWS_CUST_LVL_INFO cur_l                              -- cur_l：当前客户等级（跑批日最新）
-      ON cur_l.CUST_ID = c.CUST_ID
-     AND cur_l.PERSN_LEGAL_BK_CODE = c.PERSN_LEGAL_BK_CODE
-     AND cur_l.DATA_DATE = V_DATA_DATE
-    LEFT JOIN DWS_CUST_ASSE_LIAB e                                 -- e：上月末时点AUM（用于判定上月末余额达标）
-     ON e.CUST_ID = c.CUST_ID
-     AND e.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
-     AND e.DATA_DATE = V_PREV_MONTH_END                            -- 上月末
-     AND e.BAL_TYPE = '1'                                          -- 时点余额类型
-    LEFT JOIN DWS_CUST_ASSE_LIAB b                                 -- b：T-1日时点资产（T-1=跑批日，BAL_TYPE='1'）
-     ON b.CUST_ID = c.CUST_ID
-     AND b.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
-     AND b.DATA_DATE = V_DATA_DATE                                 -- T-1日=跑批日期
-     AND b.BAL_TYPE = '1';                                         -- 时点余额类型
-
-  DELETE FROM TMP_ADS_LOST_BASE                                    -- 删除未命中任何流失等级的记录
-   WHERE LVL_CHURN IS NULL;
+         SELECT COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE) AS PERSN_LEGAL_BK_CODE,
+                c.CUST_ID,
+                c.CUST_NAME,
+                cur_l.CUST_LVL,
+                CASE                                                     -- 流失等级判定（F-05: 阈值来自TMP_ADS_LOST_THRESH）
+                  -- 轻度流失(1)：上月月日均达标 AND 上月末时点不达标
+                  WHEN p.AUM_BAL >= NVL(pt.THRESHOLD, 0)
+                   AND NVL(e.AUM_BAL, 0) < NVL(pt.THRESHOLD, 0)
+                  THEN '1'
+                  -- 重度流失(2)：上上月月日均达标 AND 上月月日均不达标 AND 上月末时点不达标
+                  WHEN pp.AUM_BAL >= NVL(ppt.THRESHOLD, 0)
+                   AND NVL(p.AUM_BAL, 0) < NVL(ppt.THRESHOLD, 0)
+                   AND NVL(e.AUM_BAL, 0) < NVL(ppt.THRESHOLD, 0)
+                  THEN '2'
+                END AS LVL_CHURN,
+                NVL(b.DEPO_CURNT_DEPO_BAL, 0) AS DEPO_CURNT_DEPO_BAL,
+                NVL(b.FIXD_DEPO_BAL, 0) AS FIXD_DEPO_BAL,
+                NVL(b.FIN_BAL, 0) AS FIN_AMT,
+                CASE                                                     -- 月接触（F-01: 补PERSN_LEGAL_BK_CODE+MKT_PERSN）
+                  WHEN EXISTS (
+                    SELECT 1
+                      FROM ADS_MKT_REC_INFO r
+                     WHERE r.CUST_ID = c.CUST_ID
+                       AND r.PERSN_LEGAL_BK_CODE = c.PERSN_LEGAL_BK_CODE  -- 双键关联
+                       AND r.MKT_PERSN = m.MNGR_POST_ID                    -- 仅统计本管户经理的接触
+                       AND r.MKT_TYP IN ('1', '2', '3', '4')
+                       AND r.MKT_TIME IS NOT NULL
+                       AND TO_DATE(REPLACE(SUBSTR(r.MKT_TIME, 1, 10), '-', ''), 'YYYYMMDD')
+                           BETWEEN V_CURR_MONTH_BEGIN_DT AND V_RUN_DATE_DT  -- F-03: 使用V_RUN_DATE_DT
+                  ) THEN '1'
+                  ELSE '0'
+                END AS CNTCT_STATE_M,
+                CASE                                                     -- 挽回状态（F-05: 阈值来自TMP_ADS_LOST_THRESH）
+                  WHEN NVL(b.AUM_BAL, 0) >= NVL(COALESCE(pt.THRESHOLD, ppt.THRESHOLD), 0)
+                  THEN '1'
+                  ELSE '0'
+                END AS RESCUE_STATE,
+                NVL(b.AUM_BAL, 0) AS CUR_AUM_BAL,
+                NVL(e.AUM_BAL, 0) AS LAST_MONTH_END_AUM_BAL,
+                m.MNGR_POST_ID AS POST_ID,                               -- F-02: 改用DWD_CUST_MAN的理财管户经理
+                COALESCE(p.ORG_ID, pp.ORG_ID) AS ORG_ID
+           FROM (
+                 -- p：上月月日均AUM + 上月客户等级
+                 SELECT a.CUST_ID, a.ORG_ID, a.PERSN_LEGAL_BK_CODE, a.AUM_BAL, l.CUST_LVL LVL
+                   FROM DWS_CUST_ASSE_LIAB a
+                   JOIN DWS_CUST_LVL_INFO l
+                     ON l.CUST_ID = a.CUST_ID
+                    AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
+                    AND l.DATA_DATE = a.DATA_DATE
+                  WHERE a.DATA_DATE = V_PREV_MONTH_END
+                    AND a.BAL_TYPE = '2'
+                ) p
+           LEFT JOIN TMP_ADS_LOST_THRESH pt ON pt.LVL_CODE = p.LVL      -- F-05: p对应达标阈值
+           FULL JOIN (                                                  -- FULL JOIN确保上月无但上上月有的客户
+                 -- pp：上上月月日均AUM + 上上月客户等级
+                 SELECT a.CUST_ID, a.ORG_ID, a.PERSN_LEGAL_BK_CODE, a.AUM_BAL, l.CUST_LVL LVL
+                   FROM DWS_CUST_ASSE_LIAB a
+                   JOIN DWS_CUST_LVL_INFO l
+                     ON l.CUST_ID = a.CUST_ID
+                    AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
+                    AND l.DATA_DATE = a.DATA_DATE
+                  WHERE a.DATA_DATE = V_PREV_PREV_MONTH_END
+                    AND a.BAL_TYPE = '2'
+                ) pp
+             ON pp.CUST_ID = p.CUST_ID
+            AND pp.PERSN_LEGAL_BK_CODE = p.PERSN_LEGAL_BK_CODE
+           LEFT JOIN TMP_ADS_LOST_THRESH ppt ON ppt.LVL_CODE = pp.LVL   -- F-05: pp对应达标阈值
+           JOIN DWD_CUST_INDV_INFO c                                    -- c：客户基本信息
+             ON c.CUST_ID = COALESCE(p.CUST_ID, pp.CUST_ID)
+            AND c.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
+           LEFT JOIN DWD_CUST_MAN m                                     -- m：理财管户（F-02: POST_ID来源）
+             ON m.CUST_ID = c.CUST_ID
+            AND m.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
+            AND m.MNG_TYP = '1'
+           LEFT JOIN DWS_CUST_LVL_INFO cur_l                            -- cur_l：当前客户等级
+             ON cur_l.CUST_ID = c.CUST_ID
+            AND cur_l.PERSN_LEGAL_BK_CODE = c.PERSN_LEGAL_BK_CODE
+            AND cur_l.DATA_DATE = V_DATA_DATE
+           LEFT JOIN DWS_CUST_ASSE_LIAB e                               -- e：上月末时点AUM
+             ON e.CUST_ID = c.CUST_ID
+            AND e.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
+            AND e.DATA_DATE = V_PREV_MONTH_END
+            AND e.BAL_TYPE = '1'
+           LEFT JOIN DWS_CUST_ASSE_LIAB b                               -- b：T-1日时点资产
+             ON b.CUST_ID = c.CUST_ID
+            AND b.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
+            AND b.DATA_DATE = V_DATA_DATE
+            AND b.BAL_TYPE = '1'
+         ) src
+   WHERE src.LVL_CHURN IS NOT NULL;                                     -- F-06: 子查询过滤NULL（消除DELETE）
 
   COMMIT;
 

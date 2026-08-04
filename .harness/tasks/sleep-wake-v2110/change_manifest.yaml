@@ -1,0 +1,34 @@
+schema_version: '0.1'
+task_id: sleep-wake-v2110
+user_confirmation: confirmed
+objective: 批量审核修复推送：到期承接v3.1.0/v3.1.1+潜力提升v3.2.0+流失挽回v2.5.0+新客经营v2.3.5/v2.4.0+睡眠户唤醒v2.11.0
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_POTN_UPGRADE_STATIS.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_LOST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_LOST_STATIS.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_NEW_CUST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_NEW_CUST_STATIS.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_SLEEP_WAKE_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_SLEEP_WAKE_STATIS.sql
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_lost_dtl.ddl
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_new_cust_statis.ddl
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_potn_upgrade_statis.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_wake_base.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_candidate.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_stat_src.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_dws_wake.ddl
+  - path: data_assets/ddl/tmp/tmp_ads_sleep_cntct.ddl
+  - path: requirements/到期承接规则记忆卡片.md
+  - path: requirements/新客经营规则记忆卡片.md
+  - path: requirements/睡眠户唤醒规则记忆卡片.md
+  - path: .harness/tasks/deadline-rmnd-v310/
+  - path: .harness/tasks/deadline-rmnd-v311/
+  - path: .harness/tasks/potn-upgrade-v320/
+  - path: .harness/tasks/lost-cust-v250/
+  - path: .harness/tasks/new-cust-v240/
+  - path: .harness/tasks/sleep-wake-v2110/
+read_only_inputs:
+  - path: docs/quality_rules.md
+forbidden_changes: []

@@ -1,0 +1,13 @@
+schema_version: '0.1'
+task_id: lost-cust-v250
+user_confirmation: confirmed
+objective: 流失挽回DTL v2.5.0+STATIS v2.4.2：F-01接触双键+F-02管户经理+F-03变量分离+F-05阈值TMP+F-06子查询过滤+F-07删除无效赋值
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_LOST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_LOST_STATIS.sql
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_lost_dtl.ddl
+  - path: .harness/tasks/lost-cust-v250/
+read_only_inputs:
+  - path: requirements/流失挽回规则记忆卡片.md
+  - path: docs/quality_rules.md
+forbidden_changes: []

@@ -1,0 +1,11 @@
+schema_version: '0.1'
+task_id: deadline-rmnd-v311
+user_confirmation: confirmed
+objective: 到期承接DTL v3.1.1：DUE_WIN两INSERT合并为单INSERT优化
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_DTL.sql
+  - path: .harness/tasks/deadline-rmnd-v311/
+read_only_inputs:
+  - path: requirements/到期承接规则记忆卡片.md
+  - path: docs/quality_rules.md
+forbidden_changes: []

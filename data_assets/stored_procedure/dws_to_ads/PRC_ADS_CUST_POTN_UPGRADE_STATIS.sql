@@ -19,6 +19,9 @@ AS
   --   v3.0.0 2026-07-28 同步DTL：月/季/年切片接触状态按不同时间窗口独立计算
   --   v3.1.0 2026-07-30 去掉季/年统计周期切片，仅保留月度（对应v2.0.3需求变更）
   --   v3.1.1 2026-07-30 补充所有变量、字段、表别名、逻辑参数的注释
+  --   v3.2.0 2026-08-04 F-05:DWS月日均AUM预计算写入TMP_ADS_POTN_MTH_AVG，两分支共用(消除重复JOIN)；
+  --                       F-06:CASE WHEN达标逻辑随F-05消除重复；
+  --                       F-07:删除V_END_DATE无效初始化赋值
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '潜力提升统计处理';                     -- 过程描述
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_POTN_UPGRADE_STATIS';  -- 过程名称
@@ -47,7 +50,6 @@ BEGIN
     RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
   END IF;
 
-  V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
   V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);
 
   ------------------------------------------------------------------
@@ -64,6 +66,7 @@ BEGIN
    WHERE T.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   TRUNC_TMP('TMP_ADS_POTN_STAT_SRC');
+  TRUNC_TMP('TMP_ADS_POTN_MTH_AVG');
   COMMIT;
 
   V_END_DATE := SYSDATE;
@@ -86,12 +89,37 @@ BEGIN
   );
 
   ------------------------------------------------------------------
-  -- 3. TMP2：展开机构和客户经理统计对象
+  -- 3. TMP2：预计算月日均达标状态 + 展开机构和客户经理统计对象
   ------------------------------------------------------------------
   V_NO_ID := 'TMP2';
   V_BGN_DATE := SYSDATE;
 
-  -- 3. 将明细按机构层级和客户经理展开为统计对象，并关联当前月日均资产计算达标状态。
+  -- 3a. 预计算月日均达标状态（DWS只扫描一次，两个分支共用）
+  INSERT INTO TMP_ADS_POTN_MTH_AVG (
+      CUST_ID,                                                  -- 客户编号
+      PERSN_LEGAL_BK_CODE,                                      -- 法人行号
+      MTH_AVG_QUAL_STATE                                        -- 月日均达标状态
+  )
+  SELECT D.CUST_ID,                                             -- 客户编号
+         D.PERSN_LEGAL_BK_CODE,                                 -- 法人行号
+         CASE                                                   -- 按跑批日月日均AUM判断是否达到临界等级阈值
+           WHEN (D.LVL_CRIT = '03' AND NVL(M.AUM_BAL, 0) >= 50000)      -- 临界优质：月日均AUM≥5万
+             OR (D.LVL_CRIT = '04' AND NVL(M.AUM_BAL, 0) >= 300000)     -- 临界财富1：月日均AUM≥30万
+             OR (D.LVL_CRIT = '05' AND NVL(M.AUM_BAL, 0) >= 500000)     -- 临界财富2：月日均AUM≥50万
+             OR (D.LVL_CRIT = '06' AND NVL(M.AUM_BAL, 0) >= 1000000)    -- 临界贵宾：月日均AUM≥100万
+             OR (D.LVL_CRIT = '07' AND NVL(M.AUM_BAL, 0) >= 3000000)    -- 临界私行：月日均AUM≥300万
+           THEN '1'                                             -- 达标
+           ELSE '0'                                             -- 未达标
+         END AS MTH_AVG_QUAL_STATE
+    FROM ADS_CUST_POTN_UPGRADE_CUST_DTL D                       -- D：潜力提升客户明细
+    LEFT JOIN DWS_CUST_ASSE_LIAB M                              -- M：当月月日均AUM（DATA_DATE=V_SYSDAT, BAL_TYPE='2'）
+     ON M.CUST_ID = D.CUST_ID
+     AND M.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE         -- 双键关联：客户号+法人行号
+     AND M.DATA_DATE = V_SYSDAT                                 -- 取跑批日数据
+     AND M.BAL_TYPE = '2'                                       -- 月日均余额类型
+   WHERE D.DATA_DATE = V_SYSDAT;                                -- 仅统计当天跑批产生的明细
+
+  -- 3b. 展开机构和客户经理统计对象（JOIN预计算表，DWS不再重复扫描）
   INSERT INTO TMP_ADS_POTN_STAT_SRC (
       PERSN_LEGAL_BK_CODE,                                      -- 法人行号
       DATA_DATE,                                                -- 数据日期（YYYYMMDD）
@@ -108,15 +136,7 @@ BEGIN
          D.STATIS_CYCLE,                                        -- 统计周期
          O.ANCESTOR_ORG_ID,                                     -- 祖先机构ID（作为统计对象）
          D.LVL_CRIT,                                            -- 临界等级
-         CASE                                                   -- 按跑批日月日均AUM判断是否达到临界等级阈值
-           WHEN (D.LVL_CRIT = '03' AND NVL(M.AUM_BAL, 0) >= 50000)      -- 临界优质：月日均AUM≥5万
-             OR (D.LVL_CRIT = '04' AND NVL(M.AUM_BAL, 0) >= 300000)     -- 临界财富1：月日均AUM≥30万
-             OR (D.LVL_CRIT = '05' AND NVL(M.AUM_BAL, 0) >= 500000)     -- 临界财富2：月日均AUM≥50万
-             OR (D.LVL_CRIT = '06' AND NVL(M.AUM_BAL, 0) >= 1000000)    -- 临界贵宾：月日均AUM≥100万
-             OR (D.LVL_CRIT = '07' AND NVL(M.AUM_BAL, 0) >= 3000000)    -- 临界私行：月日均AUM≥300万
-           THEN '1'                                             -- 达标
-           ELSE '0'                                             -- 未达标
-         END,
+         NVL(MA.MTH_AVG_QUAL_STATE, '0'),                       -- 月日均达标状态（来自预计算表）
          D.QUAL_STATE,                                          -- T-1时点达标状态（直接取自明细表）
          D.CNTCT_STATE                                          -- 月接触状态（直接取自明细表）
     FROM ADS_CUST_POTN_UPGRADE_CUST_DTL D                       -- D：潜力提升客户明细
@@ -133,11 +153,9 @@ BEGIN
          CONNECT BY NOCYCLE PRIOR X.SUP_ORG_ID = X.ORG_ID       -- 沿上级机构向上递归
     ) O                                                        -- O：机构层级展开结果
       ON O.LEAF_ORG_ID = D.ORG_ID                               -- 明细的叶子机构匹配展开起点的叶子机构
-    LEFT JOIN DWS_CUST_ASSE_LIAB M                              -- M：当月月日均AUM（DATA_DATE=V_SYSDAT, BAL_TYPE='2'）
-     ON M.CUST_ID = D.CUST_ID
-     AND M.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE         -- 双键关联：客户号+法人行号
-     AND M.DATA_DATE = V_SYSDAT                                 -- 取跑批日数据
-     AND M.BAL_TYPE = '2'                                       -- 月日均余额类型
+    LEFT JOIN TMP_ADS_POTN_MTH_AVG MA                           -- MA：预计算的月日均达标状态
+     ON MA.CUST_ID = D.CUST_ID
+     AND MA.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE         -- 双键关联：客户号+法人行号
    WHERE D.DATA_DATE = V_SYSDAT                                 -- 仅统计当天跑批产生的明细
 
   UNION ALL
@@ -148,23 +166,13 @@ BEGIN
          D.STATIS_CYCLE,                                        -- 统计周期
          D.POST_ID,                                             -- 管户经理岗位ID（作为统计对象）
          D.LVL_CRIT,                                            -- 临界等级
-         CASE                                                   -- 按跑批日月日均AUM判断是否达到临界等级阈值
-           WHEN (D.LVL_CRIT = '03' AND NVL(M.AUM_BAL, 0) >= 50000)      -- 临界优质：月日均AUM≥5万
-             OR (D.LVL_CRIT = '04' AND NVL(M.AUM_BAL, 0) >= 300000)     -- 临界财富1：月日均AUM≥30万
-             OR (D.LVL_CRIT = '05' AND NVL(M.AUM_BAL, 0) >= 500000)     -- 临界财富2：月日均AUM≥50万
-             OR (D.LVL_CRIT = '06' AND NVL(M.AUM_BAL, 0) >= 1000000)    -- 临界贵宾：月日均AUM≥100万
-             OR (D.LVL_CRIT = '07' AND NVL(M.AUM_BAL, 0) >= 3000000)    -- 临界私行：月日均AUM≥300万
-           THEN '1'                                             -- 达标
-           ELSE '0'                                             -- 未达标
-         END,
+         NVL(MA.MTH_AVG_QUAL_STATE, '0'),                       -- 月日均达标状态（来自预计算表）
          D.QUAL_STATE,                                          -- T-1时点达标状态
          D.CNTCT_STATE                                          -- 月接触状态
     FROM ADS_CUST_POTN_UPGRADE_CUST_DTL D                       -- D：潜力提升客户明细
-    LEFT JOIN DWS_CUST_ASSE_LIAB M                              -- M：当月月日均AUM
-     ON M.CUST_ID = D.CUST_ID
-     AND M.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE
-     AND M.DATA_DATE = V_SYSDAT
-     AND M.BAL_TYPE = '2'
+    LEFT JOIN TMP_ADS_POTN_MTH_AVG MA                           -- MA：预计算的月日均达标状态
+     ON MA.CUST_ID = D.CUST_ID
+     AND MA.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE         -- 双键关联：客户号+法人行号
    WHERE D.POST_ID IS NOT NULL                                  -- 仅统计有管户经理的客户
      AND D.DATA_DATE = V_SYSDAT;
 

@@ -1,0 +1,13 @@
+schema_version: '0.1'
+task_id: new-cust-v240
+user_confirmation: confirmed
+objective: 新客经营DTL v2.3.5+STATIS v2.4.0：F-01口径记录+F-02记忆卡片同步+F-04 AUM预查询TMP+F-05月末日优化+F-06/F-07删除无效赋值
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_NEW_CUST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_NEW_CUST_STATIS.sql
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_new_cust_statis.ddl
+  - path: requirements/新客经营规则记忆卡片.md
+  - path: .harness/tasks/new-cust-v240/
+read_only_inputs:
+  - path: docs/quality_rules.md
+forbidden_changes: []

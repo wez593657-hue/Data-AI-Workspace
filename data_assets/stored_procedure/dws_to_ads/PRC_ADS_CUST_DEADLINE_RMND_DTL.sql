@@ -21,6 +21,13 @@ AS
   -- 需求版本: v2.7.0
   -- 关联需求: REQ-CUST-001, REQ-CUST-002
   -- 变更记录:
+  --   v3.1.1: DUE_WIN生成优化：两条INSERT合并为一条（统一窗口子查询w × 按类型金额子查询a），
+  --           三个日期字段统一来自w，金额按类型独立来自a，逻辑更清晰
+  --   v3.1.0: 1.F-01修复：30天到期窗口仅按STATIS_TYP=0统一计算（口径40），STATIS_TYP=1/2
+  --             JOIN复用统一窗口日期(FIRST_EXPR_DT/LAST_EXPR_DT/TAKE_END_DT_30D)，
+  --             金额按类型独立汇总；消除存款/理财页签窗口被缩短导致承接金额遗漏
+  --           2.F-02修复：理财购买源过滤条件由文字'开放式理财'改为数字代码NOT IN('1','3')，
+  --             与到期源过滤条件统一(口径3)
   --   v3.0.0: 两期计算完全分离架构（单过程、单块分段落、禁止嵌套过程）：
   --           段9为单个BEGIN...END块，块内以注释段落分隔本期计算段(C1/C2)/上期计算段(P1/P2)/
   --           数据验证段(V1)；独立存储TMP_CDR_DTL_CURR_STAGE/TMP_CDR_DTL_PREV_STAGE/
@@ -337,70 +344,91 @@ BEGIN
 
   --***************************************
   -- 2.3 -- 第4段处理开始：生成到期窗口中间表
-  -- 业务含义：按客户+承接类型+周期计算到期窗口（首笔/末笔到期日、已到期/总到期金额、30天承接窗口结束点）
+  -- 业务含义：三个日期字段(FIRST_EXPR_DT/LAST_EXPR_DT/TAKE_END_DT_30D)均按STATIS_TYP=0
+  --           (全部产品)统一计算（口径40），金额(EXPR_AMT/MATURE_TTL_AMT)按类型独立汇总
   -- 数据来源：TMP_CDR_DTL_MATURE_SRC × TMP_CDR_DTL_PERIOD
-  -- 处理逻辑：窗口结束点优先级(口径16)：初始=最后一笔到期日+30天；若下一期到期日落在该+30范围内，取下一期到期日前一日为最终结束点
+  -- 处理逻辑：单条INSERT，统一窗口子查询w × 按类型金额子查询a，一次JOIN完成
   --***************************************
   V_NO_ID := '4';
   V_BGN_DATE := SYSDATE;
 
+  -- 统一窗口(口径40)：w子查询提供三个日期字段(仅STATIS_TYP=0计算)，a子查询提供按类型金额
   INSERT INTO TMP_CDR_DTL_DUE_WIN (
       STAT_PERD,            -- 统计周期：M-月,Q-季,Y-年
       BGN_DT,               -- 统计周期开始日期
       END_DT,               -- 统计周期结束日期
       CUST_ID,              -- 客户编号
       STATIS_TYP,           -- 承接类型：0-全部,1-存款,2-理财
-      FIRST_EXPR_DT,        -- 本期第一笔到期日期
-      LAST_EXPR_DT,         -- 本期最后一笔到期日期
-      EXPR_AMT,             -- 已到期金额
-      MATURE_TTL_AMT,       -- 总到期金额
-      TAKE_END_DT_30D,      -- 30天承接窗口结束日期
+      FIRST_EXPR_DT,        -- 本期第一笔到期日期（统一，来自STATIS_TYP=0）
+      LAST_EXPR_DT,         -- 本期最后一笔到期日期（统一，来自STATIS_TYP=0）
+      EXPR_AMT,             -- 已到期金额（按类型独立）
+      MATURE_TTL_AMT,       -- 总到期金额（按类型独立）
+      TAKE_END_DT_30D,      -- 30天承接窗口结束日期（统一，来自STATIS_TYP=0）
       PERSN_LEGAL_BK_CODE,  -- 法人行号
       ORG_ID                -- 归属机构
   )
-  SELECT g.STAT_PERD,
-         g.BGN_DT,
-         g.END_DT,
-         g.CUST_ID,
-         g.STATIS_TYP,
-         g.FIRST_EXPR_DT,
-         g.LAST_EXPR_DT,
-         g.EXPR_AMT,
-         g.MATURE_TTL_AMT,
-         NVL(
-             -- 【待确认】到期窗口基准规则二选一：
-             --   Ａ当期口径(当前实现): LAST_EXPR_DT = 当期(月/季/年)最后一笔到期日
-             (SELECT MIN(n.EXPR_DT) - 1
-               FROM TMP_CDR_DTL_MATURE_SRC n
-               WHERE n.CUST_ID = g.CUST_ID
-                 AND n.STATIS_TYP = g.STATIS_TYP
-                 AND n.PERSN_LEGAL_BK_CODE = g.PERSN_LEGAL_BK_CODE
-                 AND n.ORG_ID = g.ORG_ID
-                 AND n.EXPR_DT > g.LAST_EXPR_DT
-                 AND n.EXPR_DT <= g.LAST_EXPR_DT + 30),
-             g.LAST_EXPR_DT + 30
-         ) AS TAKE_END_DT_30D,
-         g.PERSN_LEGAL_BK_CODE,
-         g.ORG_ID
+  SELECT w.STAT_PERD,
+         w.BGN_DT,
+         w.END_DT,
+         a.CUST_ID,
+         a.STATIS_TYP,                                          -- 0-全部/1-存款/2-理财
+         w.FIRST_EXPR_DT,                                       -- 统一窗口（全部产品最早到期日）
+         w.LAST_EXPR_DT,                                        -- 统一窗口（全部产品最晚到期日）
+         a.EXPR_AMT,                                            -- 金额按类型独立
+         a.MATURE_TTL_AMT,                                      -- 金额按类型独立
+         w.TAKE_END_DT_30D,                                     -- 统一窗口
+         a.PERSN_LEGAL_BK_CODE,
+         a.ORG_ID
     FROM (
-          SELECT p.STAT_PERD,
-                 p.BGN_DT,
-                 p.END_DT,
-                 m.CUST_ID,
-                 m.STATIS_TYP,
-                 m.PERSN_LEGAL_BK_CODE,
-                 m.ORG_ID,
-                 MIN(m.EXPR_DT) AS FIRST_EXPR_DT,
-                 MAX(m.EXPR_DT) AS LAST_EXPR_DT,
-                 -- DEFECT-004 修复(2026-08-01): 已到期金额截止日由 SYSDATE 改为跑批日 V_SYSDAT(口径12/T-1)
+          -- 统一窗口子查询w：仅STATIS_TYP=0(全部产品)计算FIRST/LAST_EXPR_DT + TAKE_END_DT_30D
+          SELECT g.STAT_PERD, g.BGN_DT, g.END_DT, g.CUST_ID,
+                 g.PERSN_LEGAL_BK_CODE, g.ORG_ID,
+                 g.FIRST_EXPR_DT, g.LAST_EXPR_DT,
+                 NVL(
+                     -- 窗口结束点优先级(口径16)：初始=最后一笔到期日+30天；
+                     -- 若下一期到期日落在该+30范围内，取下一期到期日前一日为最终结束点
+                     (SELECT MIN(n.EXPR_DT) - 1
+                       FROM TMP_CDR_DTL_MATURE_SRC n
+                       WHERE n.CUST_ID = g.CUST_ID
+                         AND n.STATIS_TYP = '0'                                      -- 统一窗口：查全部产品
+                         AND n.PERSN_LEGAL_BK_CODE = g.PERSN_LEGAL_BK_CODE
+                         AND n.ORG_ID = g.ORG_ID
+                         AND n.EXPR_DT > g.LAST_EXPR_DT
+                         AND n.EXPR_DT <= g.LAST_EXPR_DT + 30),
+                     g.LAST_EXPR_DT + 30
+                 ) AS TAKE_END_DT_30D
+            FROM (
+                  SELECT p.STAT_PERD, p.BGN_DT, p.END_DT, m.CUST_ID,
+                         m.PERSN_LEGAL_BK_CODE, m.ORG_ID,
+                         MIN(m.EXPR_DT) AS FIRST_EXPR_DT,
+                         MAX(m.EXPR_DT) AS LAST_EXPR_DT
+                    FROM TMP_CDR_DTL_MATURE_SRC m
+                    JOIN TMP_CDR_DTL_PERIOD p
+                      ON m.EXPR_DT BETWEEN p.BGN_DT AND p.END_DT
+                   WHERE m.STATIS_TYP = '0'                                          -- 仅STATIS_TYP=0计算统一窗口
+                   GROUP BY p.STAT_PERD, p.BGN_DT, p.END_DT, m.CUST_ID, m.PERSN_LEGAL_BK_CODE, m.ORG_ID
+                 ) g
+         ) w
+    JOIN (
+          -- 按类型金额子查询a：STATIS_TYP=0(全部)+1(存款)+2(理财)各自汇总金额
+          SELECT p.STAT_PERD, p.BGN_DT, p.END_DT, m.CUST_ID, m.STATIS_TYP,
+                 m.PERSN_LEGAL_BK_CODE, m.ORG_ID,
+                 -- 已到期金额截止日=跑批日V_SYSDAT(口径12/T-1)
                  SUM(CASE WHEN m.EXPR_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
                           THEN NVL(m.EXPR_AMT, 0) ELSE 0 END) AS EXPR_AMT,
                  SUM(NVL(m.EXPR_AMT, 0)) AS MATURE_TTL_AMT
             FROM TMP_CDR_DTL_MATURE_SRC m
             JOIN TMP_CDR_DTL_PERIOD p
               ON m.EXPR_DT BETWEEN p.BGN_DT AND p.END_DT
+           WHERE m.STATIS_TYP IN ('0', '1', '2')                     -- 0=全部产品,1=存款,2=理财
            GROUP BY p.STAT_PERD, p.BGN_DT, p.END_DT, m.CUST_ID, m.STATIS_TYP, m.PERSN_LEGAL_BK_CODE, m.ORG_ID
-         ) g;
+         ) a
+      ON a.STAT_PERD = w.STAT_PERD
+     AND a.BGN_DT = w.BGN_DT
+     AND a.END_DT = w.END_DT
+     AND a.CUST_ID = w.CUST_ID
+     AND a.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
+     AND a.ORG_ID = w.ORG_ID;
 
   COMMIT;
 
@@ -458,7 +486,7 @@ BEGIN
          f.PERSN_LEGAL_BK_CODE                                AS PERSN_LEGAL_BK_CODE, -- 法人行号
          f.OPRT_ORG                                           AS ORG_ID               -- 归属机构
     FROM DWD_ACCT_FIN f                                       -- 理财账户
-   WHERE NVL(f.PRDKT_CATE_BIG, '#') <> '开放式理财'          -- 已知文字值；其他开放式理财分类代码待业务确认
+   WHERE NVL(f.PRDKT_CATE_BIG, '#') NOT IN ('1','3')          -- 剔除开放式理财(口径3: PRDKT_CATE_BIG=1或3为开放式)，与到期源过滤一致
      AND COALESCE(f.ESTAB_DATE, f.INTRI_BGN_DATE, f.ISSU_DATE) IS NOT NULL
   UNION ALL
   SELECT i.CUST_ID                                            AS CUST_ID,             -- 客户编号
