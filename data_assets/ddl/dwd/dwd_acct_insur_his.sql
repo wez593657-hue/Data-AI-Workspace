@@ -2,6 +2,9 @@
  * DWD层表
  * 表名: crmdm.dwd_acct_insur_his
  * 来源: TB.ddl
+ * 变更记录:
+ *   v1.1.0 2026-08-03 新增 new_insur_amt/renew_insur_amt，与 DWD_ACCT_INSUR 当前表同步
+ *   v2.0.0 2026-08-03 DWS 不再依赖本表(仅归档)；同步 last_tx_date/actl_term_date，移除 renew_insur_amt
  */
 
 -- crmdm.dwd_acct_insur_his 定义
@@ -31,9 +34,12 @@ CREATE TABLE crmdm.dwd_acct_insur_his (
     pay_period_typ varchar(2) NULL,
     pay_period varchar(6) NULL,
     pay_patrn varchar(2) NULL,
-    insur_amt numeric(20,
-    2) NULL,
-    policy_state varchar(10) NULL,
+	insur_amt numeric(20,
+	2) NULL,
+	last_tx_date varchar(8) NULL,
+	actl_term_date varchar(8) NULL,
+	new_insur_amt numeric(20, 2) NULL,
+	policy_state varchar(8) NULL,
     tx_typ varchar(6) NULL,
     persn_legal_bk_code varchar(4) NULL
 );

@@ -1,0 +1,100 @@
+-- ============================================================
+-- Parameter validation & error handling tests
+-- ============================================================
+SET SERVEROUTPUT ON
+SET PAGESIZE 200
+SET LINESIZE 200
+
+PROMPT ============ P1 Parameter validation (DTL & STATIS) ============
+DECLARE
+  v_rc NUMBER;
+  PROCEDURE t_case(p_name VARCHAR2, p_val VARCHAR2, p_proc VARCHAR2) IS
+    v_rc2 NUMBER;
+    v_code NUMBER;
+    v_msg VARCHAR2(4000);
+  BEGIN
+    BEGIN
+      IF p_proc = 'DTL' THEN
+        PRC_ADS_CUST_POTN_UPGRADE_DTL(p_val, v_rc2);
+      ELSE
+        PRC_ADS_CUST_POTN_UPGRADE_STAT(p_val, v_rc2);
+      END IF;
+      DBMS_OUTPUT.PUT_LINE(p_name||' | '||p_proc||' | NO_ERROR rc='||v_rc2);
+    EXCEPTION WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE(p_name||' | '||p_proc||' | '||SQLCODE||' '||SUBSTR(SQLERRM,1,80));
+    END;
+  END;
+BEGIN
+  t_case('NULL','', 'DTL');
+  t_case('7digit','2026063','DTL');
+  t_case('alpha','ABCDEFGH','DTL');
+  t_case('space','2026 630','DTL');
+  t_case('invalid_date','20260230','DTL');
+  t_case('NULL','', 'STAT');
+  t_case('7digit','2026063','STAT');
+  t_case('alpha','ABCDEFGH','STAT');
+  t_case('invalid_date','20260230','STAT');
+END;
+/
+
+PROMPT ============ P2 Valid batch still returns RC=0 ============
+DECLARE
+  v_rc NUMBER;
+BEGIN
+  PRC_ADS_CUST_POTN_UPGRADE_DTL('20260630', v_rc);
+  DBMS_OUTPUT.PUT_LINE('DTL valid rc='||v_rc);
+  PRC_ADS_CUST_POTN_UPGRADE_STAT('20260630', v_rc);
+  DBMS_OUTPUT.PUT_LINE('STAT valid rc='||v_rc);
+END;
+/
+
+PROMPT ============ P3 Error handling: missing temp table ============
+PROMPT -- drop TMP_ADS_POTN_BASE then run DTL; expect ORA-00942 caught, OUTCDE=-1, log row
+DROP TABLE TMP_ADS_POTN_BASE;
+DECLARE
+  v_rc NUMBER;
+BEGIN
+  BEGIN
+    PRC_ADS_CUST_POTN_UPGRADE_DTL('20260630', v_rc);
+    DBMS_OUTPUT.PUT_LINE('UNEXPECTED_SUCCESS rc='||v_rc);
+  EXCEPTION WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('CAUGHT '||SQLCODE||' '||SUBSTR(SQLERRM,1,80));
+  END;
+END;
+/
+PROMPT -- log evidence (last failure rows)
+SELECT DATA_DATE, PRC_NAME, STEP_NO, LOG_FLG, SUBSTR(LOG_MSG,1,80) AS LOG_MSG
+  FROM SYS_PRC_STEP_LOG
+ WHERE PRC_NAME LIKE 'PRC_ADS_CUST_POTN%' AND LOG_FLG < 0
+   AND ROWNUM <= 5
+ ORDER BY BGN_DATE DESC;
+
+-- restore table
+CREATE TABLE TMP_ADS_POTN_BASE (
+    PERSN_LEGAL_BK_CODE VARCHAR2(4),
+    CUST_ID             VARCHAR2(20),
+    CUST_NAME           VARCHAR2(100),
+    CUST_LVL            VARCHAR2(2),
+    LVL_CRIT            VARCHAR2(2),
+    DEPO_CURNT_DEPO_BAL NUMBER(20,2),
+    FIXD_DEPO_BAL       NUMBER(20,2),
+    FIN_AMT             NUMBER(20,2),
+    CURR_MTH_AVG_AUM    NUMBER(20,2),
+    PNT_AUM_BAL         NUMBER(20,2),
+    CNTCT_STATE_M       VARCHAR2(1),
+    POST_ID             VARCHAR2(20),
+    ORG_ID              VARCHAR2(7)
+);
+
+PROMPT ============ P4 Recovery after restore ============
+DECLARE
+  v_rc NUMBER;
+BEGIN
+  PRC_ADS_CUST_POTN_UPGRADE_DTL('20260630', v_rc);
+  DBMS_OUTPUT.PUT_LINE('DTL recovered rc='||v_rc);
+  PRC_ADS_CUST_POTN_UPGRADE_STAT('20260630', v_rc);
+  DBMS_OUTPUT.PUT_LINE('STAT recovered rc='||v_rc);
+END;
+/
+
+EXIT

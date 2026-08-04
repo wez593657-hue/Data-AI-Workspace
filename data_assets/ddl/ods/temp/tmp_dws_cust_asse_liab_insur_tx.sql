@@ -19,6 +19,8 @@ CREATE TABLE crmdm.tmp_dws_cust_asse_liab_insur_tx (
 	pay_period_typ varchar(2) NULL,
 	pay_period numeric NULL,
 	insur_amt numeric(20, 2) NULL,
+	new_insur_amt numeric(20, 2) NULL,
+	renew_insur_amt numeric(20, 2) NULL,
 	policy_key varchar(200) NULL,
 	tx_seq numeric NULL,
 	tx_key varchar(200) NULL

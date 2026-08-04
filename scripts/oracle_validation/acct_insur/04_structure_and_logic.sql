@@ -1,0 +1,118 @@
+-- ============================================================
+-- Structure, constraints, idempotency and logic assertions
+-- ============================================================
+SET SERVEROUTPUT ON
+SET PAGESIZE 200
+SET LINESIZE 220
+
+PROMPT ============ T1 Structure: columns vs DDL (26) & NOT NULL & PK ============
+SELECT COUNT(*) AS DTL_COL_CNT FROM user_tab_columns WHERE table_name='DWD_ACCT_INSUR';
+SELECT column_name, nullable, data_type FROM user_tab_columns
+ WHERE table_name='DWD_ACCT_INSUR' AND (nullable='N' OR column_name IN ('POLICY_STATE','ACCT_ID','INSUR_BID_FORM_NO'))
+ ORDER BY column_id;
+SELECT constraint_name, constraint_type, search_condition
+  FROM user_constraints WHERE table_name='DWD_ACCT_INSUR' ORDER BY constraint_type;
+SELECT index_name, column_name FROM user_ind_columns
+ WHERE table_name='DWD_ACCT_INSUR' ORDER BY index_name, column_position;
+
+PROMPT ============ T2 Business logic spot checks ============
+SELECT CASE WHEN (SELECT INSUR_AMT FROM DWD_ACCT_INSUR WHERE INSUR_BID_FORM_NO='C001') = 20000
+             AND (SELECT INSUR_AMT FROM DWD_ACCT_INSUR WHERE INSUR_BID_FORM_NO='C003') = 0
+             AND (SELECT INSUR_AMT FROM DWD_ACCT_INSUR WHERE INSUR_BID_FORM_NO='C004') = 0
+             AND (SELECT INSUR_AMT FROM DWD_ACCT_INSUR WHERE INSUR_BID_FORM_NO='C008') = 36000
+             AND (SELECT ACTL_TERM_DATE FROM DWD_ACCT_INSUR WHERE INSUR_BID_FORM_NO='C009') = '20260520'
+             AND (SELECT CANCL_INSUR_DATE FROM DWD_ACCT_INSUR WHERE INSUR_BID_FORM_NO='C010') = '2045-01-01'
+             AND (SELECT CANCL_INSUR_DATE FROM DWD_ACCT_INSUR WHERE INSUR_BID_FORM_NO='C011') = '9999-12-31'
+             AND (SELECT PERSN_LEGAL_BK_CODE FROM DWD_ACCT_INSUR WHERE INSUR_BID_FORM_NO='C001') = '1500'
+             AND (SELECT PERSN_LEGAL_BK_CODE FROM DWD_ACCT_INSUR WHERE INSUR_BID_FORM_NO='C009') = '9999'
+             AND (SELECT TX_TYP FROM DWD_ACCT_INSUR WHERE ROWNUM=1) IS NULL
+            THEN 'PASS' ELSE 'FAIL' END AS T2_LOGIC
+  FROM dual;
+
+PROMPT ============ T3 Idempotency: rerun same batch ============
+VARIABLE rc NUMBER
+EXEC PRC_DWD_ACCT_INSUR('20260803', :rc)
+PRINT :rc
+SELECT COUNT(*) AS ROWS_AFTER_RERUN FROM DWD_ACCT_INSUR;
+SELECT CASE WHEN (SELECT COUNT(*) FROM DWD_ACCT_INSUR) = 13
+             AND (SELECT INSUR_AMT FROM DWD_ACCT_INSUR WHERE INSUR_BID_FORM_NO='C001') = 20000
+            THEN 'PASS' ELSE 'FAIL' END AS T3_IDEMPOTENT
+  FROM dual;
+
+PROMPT ============ T4 Parameter validation ============
+DECLARE
+  v_rc NUMBER;
+  PROCEDURE t(p VARCHAR2, pv VARCHAR2) IS
+    r NUMBER;
+  BEGIN
+    BEGIN
+      PRC_DWD_ACCT_INSUR(pv, r);
+      DBMS_OUTPUT.PUT_LINE(p||' rc='||r);
+    EXCEPTION WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE(p||' EXC '||SQLCODE);
+    END;
+  END;
+BEGIN
+  t('NULL','');
+  t('7digit','2026083');
+  t('alpha','ABCDEFGH');
+  t('invalid_date','20260230');
+  t('valid','20260803');
+END;
+/
+
+PROMPT ============ T5 Exception handling: drop snapshot table ============
+DROP TABLE TMP_DWD_ACCT_INSUR_SNAP;
+DECLARE
+  v_rc NUMBER;
+BEGIN
+  BEGIN
+    PRC_DWD_ACCT_INSUR('20260803', v_rc);
+    DBMS_OUTPUT.PUT_LINE('UNEXPECTED_SUCCESS rc='||v_rc);
+  EXCEPTION WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('CAUGHT '||SQLCODE);
+  END;
+END;
+/
+SELECT DATA_DATE, PRC_NAME, STEP_NO, LOG_FLG, SUBSTR(LOG_MSG,1,60) AS LOG_MSG
+  FROM SYS_PRC_STEP_LOG
+ WHERE PRC_NAME LIKE 'PRC_DWD_ACCT_INSUR%' AND LOG_FLG < 0
+   AND ROWNUM <= 3
+ ORDER BY BGN_DATE DESC;
+
+CREATE TABLE TMP_DWD_ACCT_INSUR_SNAP (
+    CUST_ID              VARCHAR2(20) NOT NULL,
+    CUST_TYP             VARCHAR2(4),
+    ACCT_ID              VARCHAR2(40) NOT NULL,
+    PRDKT_ID             VARCHAR2(40) NOT NULL,
+    PRDKT_NAME           VARCHAR2(100),
+    PRDKT_CATE_BIG       VARCHAR2(64),
+    INSUR_BID_FORM_NO    VARCHAR2(40) NOT NULL,
+    TX_DATE              VARCHAR2(8),
+    LAST_TX_DATE         VARCHAR2(8),
+    TX_ORG               VARCHAR2(7),
+    TX_CHNL              VARCHAR2(10),
+    MKT_ORG              VARCHAR2(7),
+    BGN_INSUR_DATE       VARCHAR2(10),
+    CANCL_INSUR_DATE     VARCHAR2(10),
+    ACTL_TERM_DATE       VARCHAR2(8),
+    PAY_UPTO_DATE        VARCHAR2(8),
+    INSUR_PERIOD_TYP     VARCHAR2(2),
+    INSUR_PERIOD         VARCHAR2(6),
+    PAY_PERIOD_TYP       VARCHAR2(2),
+    PAY_PERIOD           VARCHAR2(6),
+    PAY_PATRN            VARCHAR2(2),
+    NEW_INSUR_AMT        NUMBER(20,2),
+    INSUR_AMT            NUMBER(20,2),
+    POLICY_STATE         VARCHAR2(8) NOT NULL,
+    TX_TYP               VARCHAR2(1),
+    PERSN_LEGAL_BK_CODE  VARCHAR2(4),
+    CONSTRAINT PK_TMP_SNAP PRIMARY KEY (CUST_ID, ACCT_ID, PRDKT_ID, INSUR_BID_FORM_NO)
+);
+
+PROMPT ============ T6 Recovery ============
+EXEC PRC_DWD_ACCT_INSUR('20260803', :rc)
+PRINT :rc
+SELECT COUNT(*) AS ROWS_RECOVERED FROM DWD_ACCT_INSUR;
+
+EXIT

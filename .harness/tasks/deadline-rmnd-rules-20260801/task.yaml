@@ -1,0 +1,24 @@
+schema_version: '0.1'
+task_id: deadline-rmnd-rules-20260801
+purpose: 到期承接模块口径落地实施：代码对齐+需求文档/记忆卡片同步+变更记录
+workflow_profile: harness
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-08-01T10:00:00+00:00'
+updated_at: '2026-08-01T10:00:00+00:00'
+evidence_ids:
+- user-approval-20260801
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-08-01T10:00:00+00:00'
+- from: CREATED
+  to: USER_APPROVED
+  reason: 用户确认33条业务口径并要求实施与提交
+  at: '2026-08-01T10:00:00+00:00'
+- from: USER_APPROVED
+  to: PUSH_ALLOWED
+  reason: 代码改造完成且全量校验通过（日期参数规则/SQL语法/跨层一致性/单元测试），用户确认提交
+  at: '2026-08-01T10:00:00+00:00'

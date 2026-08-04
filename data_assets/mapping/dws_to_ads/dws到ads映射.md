@@ -13,7 +13,7 @@
 | ADS_CUST_DEADLINE_RMND_DTL | 25 |
 | ADS_CUST_DEADLINE_RMND_STATIS | 15 |
 | ADS_CUST_INDV_POTEN | 30 |
-| ADS_CUST_LOST_DTL | 14 |
+| ADS_CUST_LOST_DTL | 15 |
 | ADS_CUST_LOST_STATIS | 11 |
 | ADS_CUST_NEW_CUST_DTL | 14 |
 | ADS_CUST_NEW_CUST_STATIS | 15 |
@@ -245,6 +245,7 @@
 | FIN_AMT | 理财余额 | NUMBER(20,2) |  |  |  |
 | CNTCT_STATE | 接触状态 | VARCHAR2(1) |  |  |  |
 | RESCUE_STATE | 挽回状态 | VARCHAR2(1) |  |  |  |
+| RESCUED_FINA_ASSET | 已挽回金融资产 | NUMBER(20,2) |  |  | MAX(T-1日时点AUM-上月末时点AUM,0)，仅挽回客户计 |
 | POST_ID | 管户经理 | VARCHAR2(20) |  |  |  |
 | ORG_ID | 归属机构 | VARCHAR2(7) |  |  |  |
 | STATIS_CYCLE | 统计周期(月/季/年) | VARCHAR2(2) |  |  |  |

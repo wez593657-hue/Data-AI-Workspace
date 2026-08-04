@@ -1,0 +1,27 @@
+{
+  "table_name": "TMP_CDR_STAT_PREV_STAGE",
+  "procedure": "PRC_ADS_CUST_DEADLINE_RMND_STATIS.sql",
+  "purpose": "上期统计隔离存储：仅存放上期统计结果（DATA_DATE=上期期末日期），目标表仅更新6个率值列（方案B）。",
+  "source_tables": ["TMP_CDR_STAT_SRC"],
+  "columns": [
+    {"name": "PERSN_LEGAL_BK_CODE", "type": "VARCHAR2(4)", "nullable": true},
+    {"name": "DATA_DATE", "type": "VARCHAR2(8)", "nullable": true},
+    {"name": "STATIS_OBJ", "type": "VARCHAR2(20)", "nullable": true},
+    {"name": "STATIS_CYCLE", "type": "VARCHAR2(2)", "nullable": true},
+    {"name": "STATIS_TYP", "type": "VARCHAR2(2)", "nullable": true},
+    {"name": "EXPR_CUST_CNT", "type": "NUMBER(8)", "nullable": true},
+    {"name": "TTL_EXPR_CUST_CNT", "type": "NUMBER(8)", "nullable": true},
+    {"name": "EXPR_AMT", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "TTL_EXPR_AMT", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "CUST_UNDTAKE_RATE", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "ASSET_KEEP_RATE", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "ASSET_UNDTAKE_RATE", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "DEPO_TO_FIN_CONVRS_RATE", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "INSUR_CONVRS_RATE", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "FIN_TO_DEPO_CONVRS_RATE", "type": "NUMBER(20,2)", "nullable": true}
+  ],
+  "indexes": ["PERSN_LEGAL_BK_CODE, DATA_DATE, STATIS_OBJ, STATIS_CYCLE, STATIS_TYP"],
+  "lifecycle": {"cleanup": "过程开始时TRUNCATE，仅过程内使用。", "concurrency": "批次内独占，禁止并发执行。"},
+  "approval_status": "approved",
+  "approved_by": "Codex（用户确认REQ-CHG-20260803-002）"
+}

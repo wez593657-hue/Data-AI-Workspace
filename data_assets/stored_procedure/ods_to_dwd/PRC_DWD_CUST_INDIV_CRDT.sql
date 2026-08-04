@@ -60,15 +60,19 @@ BEGIN
       c.mfcustomerid     AS CUST_ID,             -- 客户编号；核心客户号
       c.customername     AS CUST_NAME,           -- 客户名称
       bc.serialno        AS CRDT_AGRE_NO,        -- 授信协议号；合同流水号
-      NULL               AS CRDT_AGRE_TYP,       -- 授信协议类型；映射表未提供可确认来源
+      bc.creditcycle     AS CRDT_AGRE_TYP,       -- 授信协议类型；映射表未提供可确认来源 使用是否循环
       bc.businesssum     AS CRDT_TTL_LMT,        -- 授信额度；单笔授信额度
       bc.putoutdate      AS BGN_DATE,            -- 开始日期；授信起始日期
       bc.maturity        AS EXPR_DATE,           -- 到期日期；映射字段 MaturityDate 在 new 5 中对应 maturity
-      NULL               AS CRDT_STATUS,         -- 授信状态；映射表未提供可确认来源
-      NULL               AS PERSN_LEGAL_BK_CODE  -- 法人行号；映射表未提供可确认来源
+      bc.status          AS CRDT_STATUS,         -- 授信状态；映射表未提供可确认来源
+      CASE WHEN bc.manageorgid LIKE '15%' THEN '1500' 
+      	   WHEN bc.manageorgid LIKE '12%' THEN '1200'
+      	   WHEN bc.manageorgid LIKE '18%' THEN '1800'
+      	   ELSE '9999' END    AS PERSN_LEGAL_BK_CODE  -- 法人行号；映射表未提供可确认来源
     FROM CMS_CUSTOMER_INFO c                          -- 客户信息表
    INNER JOIN CMS_BUSINESS_CONTRACT bc                -- 合同业务表
-      ON bc.customerid = c.customerid;
+      ON bc.customerid = c.customerid
+   where c.mfcustomerid is not null;
 
   COMMIT;
 

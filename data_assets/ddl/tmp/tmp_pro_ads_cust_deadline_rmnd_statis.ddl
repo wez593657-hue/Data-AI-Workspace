@@ -50,3 +50,64 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_SRC (
     FIX_DEPO_MATURE_TTL_AMT          NUMBER(20,2),   -- 定期存款到期总金额
     FIX_DEPO_TAKE_RATE               NUMBER(10,4)    -- 定期存款30天承接率
 );
+
+-- 2.3 本期统计隔离存储表（v3.0.0：本期统计结果仅写入本表）
+DROP TABLE IF NOT EXISTS TMP_CDR_STAT_CURR_STAGE;
+CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_CURR_STAGE (
+    PERSN_LEGAL_BK_CODE     VARCHAR2(4),    -- 法人行号
+    DATA_DATE               VARCHAR2(8),    -- 数据日期=跑批日期V_SYSDAT
+    STATIS_OBJ              VARCHAR2(20),   -- 统计对象（机构ID/管户经理岗位ID）
+    STATIS_CYCLE            VARCHAR2(2),    -- 统计周期（M-月/Q-季/Y-年）
+    STATIS_TYP              VARCHAR2(2),    -- 承接类型（0-全部/1-定期存款/2-理财）
+    EXPR_CUST_CNT           NUMBER(8),      -- 已到期客户数
+    TTL_EXPR_CUST_CNT       NUMBER(8),      -- 总到期客户数
+    EXPR_AMT                NUMBER(20,2),   -- 已到期金额
+    TTL_EXPR_AMT            NUMBER(20,2),   -- 总到期金额
+    CUST_UNDTAKE_RATE       NUMBER(20,2),   -- 客户承接率
+    ASSET_KEEP_RATE         NUMBER(20,2),   -- 资产留存率
+    ASSET_UNDTAKE_RATE      NUMBER(20,2),   -- 资产承接率
+    DEPO_TO_FIN_CONVRS_RATE NUMBER(20,2),   -- 存款转理财转化率
+    INSUR_CONVRS_RATE       NUMBER(20,2),   -- 保险转化率
+    FIN_TO_DEPO_CONVRS_RATE NUMBER(20,2)    -- 理财转存款转化率
+);
+
+-- 2.4 上期统计隔离存储表（v3.0.0：上期统计结果仅写入本表，目标表仅更新6率值列）
+DROP TABLE IF NOT EXISTS TMP_CDR_STAT_PREV_STAGE;
+CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_PREV_STAGE (
+    PERSN_LEGAL_BK_CODE     VARCHAR2(4),    -- 法人行号
+    DATA_DATE               VARCHAR2(8),    -- 数据日期=上期期末日期
+    STATIS_OBJ              VARCHAR2(20),   -- 统计对象
+    STATIS_CYCLE            VARCHAR2(2),    -- 统计周期
+    STATIS_TYP              VARCHAR2(2),    -- 承接类型
+    EXPR_CUST_CNT           NUMBER(8),      -- 已到期客户数
+    TTL_EXPR_CUST_CNT       NUMBER(8),      -- 总到期客户数
+    EXPR_AMT                NUMBER(20,2),   -- 已到期金额
+    TTL_EXPR_AMT            NUMBER(20,2),   -- 总到期金额
+    CUST_UNDTAKE_RATE       NUMBER(20,2),   -- 客户承接率
+    ASSET_KEEP_RATE         NUMBER(20,2),   -- 资产留存率
+    ASSET_UNDTAKE_RATE      NUMBER(20,2),   -- 资产承接率
+    DEPO_TO_FIN_CONVRS_RATE NUMBER(20,2),   -- 存款转理财转化率
+    INSUR_CONVRS_RATE       NUMBER(20,2),   -- 保险转化率
+    FIN_TO_DEPO_CONVRS_RATE NUMBER(20,2)    -- 理财转存款转化率
+);
+
+-- 2.5 上期统计冻结快照表（v3.0.0：验证段比对9基础列是否被修改）
+DROP TABLE IF NOT EXISTS TMP_CDR_STAT_FREEZE_LOG;
+CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_FREEZE_LOG (
+    BATCH_DATE              VARCHAR2(8),    -- 跑批日期
+    PERSN_LEGAL_BK_CODE     VARCHAR2(4),    -- 法人行号
+    DATA_DATE               VARCHAR2(8),    -- 数据日期
+    STATIS_OBJ              VARCHAR2(20),   -- 统计对象
+    STATIS_CYCLE            VARCHAR2(2),    -- 统计周期
+    STATIS_TYP              VARCHAR2(2),    -- 承接类型
+    EXPR_CUST_CNT           NUMBER(8),      -- 已到期客户数
+    TTL_EXPR_CUST_CNT       NUMBER(8),      -- 总到期客户数
+    EXPR_AMT                NUMBER(20,2),   -- 已到期金额
+    TTL_EXPR_AMT            NUMBER(20,2),   -- 总到期金额
+    CUST_UNDTAKE_RATE       NUMBER(20,2),   -- 客户承接率
+    ASSET_KEEP_RATE         NUMBER(20,2),   -- 资产留存率
+    ASSET_UNDTAKE_RATE      NUMBER(20,2),   -- 资产承接率
+    DEPO_TO_FIN_CONVRS_RATE NUMBER(20,2),   -- 存款转理财转化率
+    INSUR_CONVRS_RATE       NUMBER(20,2),   -- 保险转化率
+    FIN_TO_DEPO_CONVRS_RATE NUMBER(20,2)    -- 理财转存款转化率
+);

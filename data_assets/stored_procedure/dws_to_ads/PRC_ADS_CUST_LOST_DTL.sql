@@ -231,11 +231,14 @@ BEGIN
              AND a.BAL_TYPE = '2'
          ) pp
       ON pp.CUST_ID = p.CUST_ID
-     AND pp.ORG_ID = p.ORG_ID
-     AND pp.PERSN_LEGAL_BK_CODE = p.PERSN_LEGAL_BK_CODE            -- 三键关联：客户号+机构+法人行号
+     AND pp.PERSN_LEGAL_BK_CODE = p.PERSN_LEGAL_BK_CODE            -- 二键关联：客户号+法人行号
     JOIN DWD_CUST_INDV_INFO c                                      -- c：客户基本信息（姓名+管户经理）
       ON c.CUST_ID = COALESCE(p.CUST_ID, pp.CUST_ID)
      AND c.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
+    LEFT JOIN DWD_CUST_MAN m                                                    -- v2.3.4: 信贷管户关系表
+      ON m.CUST_ID = c.CUST_ID                                                  -- 关联客户号
+     AND m.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE) -- v2.3.2: 强制联动法人行号
+     AND m.MNG_TYP = '1'                                                        -- MNG_TYP='1'=理财管户,仅取理财管户经理
     LEFT JOIN DWS_CUST_LVL_INFO cur_l                              -- cur_l：当前客户等级（跑批日最新）
       ON cur_l.CUST_ID = c.CUST_ID
      AND cur_l.PERSN_LEGAL_BK_CODE = c.PERSN_LEGAL_BK_CODE
@@ -243,13 +246,11 @@ BEGIN
     LEFT JOIN DWS_CUST_ASSE_LIAB e                                 -- e：上月末时点AUM（用于判定上月末余额达标）
      ON e.CUST_ID = c.CUST_ID
      AND e.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
-     AND e.ORG_ID = COALESCE(p.ORG_ID, pp.ORG_ID)
      AND e.DATA_DATE = V_PREV_MONTH_END                            -- 上月末
      AND e.BAL_TYPE = '1'                                          -- 时点余额类型
     LEFT JOIN DWS_CUST_ASSE_LIAB b                                 -- b：T-1日时点资产（T-1=跑批日，BAL_TYPE='1'）
      ON b.CUST_ID = c.CUST_ID
      AND b.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
-     AND b.ORG_ID = COALESCE(p.ORG_ID, pp.ORG_ID)
      AND b.DATA_DATE = V_DATA_DATE                                 -- T-1日=跑批日期
      AND b.BAL_TYPE = '1';                                         -- 时点余额类型
 

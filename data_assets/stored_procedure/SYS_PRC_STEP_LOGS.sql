@@ -1,0 +1,62 @@
+CREATE OR REPLACE PROCEDURE SYS_PRC_STEP_LOGS(
+    LOGDATE    IN VARCHAR,
+    PRC_NAME   IN VARCHAR,
+    PRC_DESC   IN VARCHAR,
+    NO_ID      IN VARCHAR,
+    BGN_DATE   IN DATE,
+    END_DATE   IN DATE,
+    DURA_DATE  IN INTEGER,
+    LOG_MSG    IN VARCHAR,
+    LOG_FLG    IN INTEGER,
+    LOG_BUTTON IN INTEGER
+)
+AS
+  V_LOGDATE  VARCHAR(8);
+  V_PRC_NAME VARCHAR(80);
+  V_PRC_DESC VARCHAR(300);
+  V_NO_ID    VARCHAR(10);
+  V_BGN_DATE DATE;
+  V_END_DATE DATE;
+  V_DURA_DATE INTEGER;
+  V_LOG_MSG  VARCHAR(1000);
+  V_LOG_FLG  INTEGER;
+BEGIN
+  -- 调试开关关闭时直接退出，不写日志
+  IF NVL(LOG_BUTTON, 0) = 1 THEN
+    -- 先规范日志日期格式，确保日志表中的日期字段统一
+    IF LOGDATE IS NOT NULL AND TRANSLATE(LOGDATE, '1234567890', '0000000000') = '00000000' THEN
+      V_LOGDATE := SUBSTR(LOGDATE, 1, 8);
+    ELSE
+      -- 如果传入日期不合法，则回退到当前系统日期，避免日志过程自身报错
+      V_LOGDATE := SUBSTR(TO_CHAR(SYSDATE, 'YYYYMMDD'), 1, 8);
+    END IF;
+
+    -- 截断长度，防止字符超长写入失败
+    V_PRC_NAME := SUBSTR(PRC_NAME, 1, 80);
+    V_PRC_DESC := SUBSTR(PRC_DESC, 1, 300);
+    V_NO_ID := SUBSTR(NO_ID, 1, 10);
+    V_BGN_DATE := BGN_DATE;
+    V_END_DATE := END_DATE;
+    V_DURA_DATE := DURA_DATE;
+    V_LOG_MSG := SUBSTR(LOG_MSG, 1, 1000);
+    V_LOG_FLG := LOG_FLG;
+
+    -- 将步骤运行信息写入日志表
+    INSERT INTO PRC_LOGS
+      (LOGID, PRC_NAME, PRC_DESC, LOGDATE, NO_ID, BGN_DATE, END_DATE, DURA_DATE, LOGMSG, LOG_FLG)
+    VALUES
+      (CRM_PRC_LOGSEQ.NEXTVAL,
+       V_PRC_NAME,
+       V_PRC_DESC,
+       V_LOGDATE,
+       V_NO_ID,
+       V_BGN_DATE,
+       V_END_DATE,
+       V_DURA_DATE,
+       V_LOG_MSG,
+       V_LOG_FLG);
+
+    -- 日志独立提交，避免被主过程回滚影响
+    COMMIT;
+  END IF;
+END;

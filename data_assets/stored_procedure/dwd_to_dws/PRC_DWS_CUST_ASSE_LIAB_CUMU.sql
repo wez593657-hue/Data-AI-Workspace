@@ -8,9 +8,14 @@ AS
   -- 报表编号：PRC_CUST_ASSE_LIAB_CUMU
   -- 处理周期：日
   -- 过程描述：按客户 + 账户 + 产品 + 日期生成存款、贷款、理财、保险余额基数及月/季/年累计余额基数。
-  -- 来源表：DWD_ACCT_DEPO、DWD_ACCT_LOAN、DWD_ACCT_FIN、DWD_ACCT_INSUR、DWD_ACCT_INSUR_HIS、DWS_CUST_ASSE_LIAB_CUMU_HIS
+  -- 来源表：DWD_ACCT_DEPO、DWD_ACCT_LOAN、DWD_ACCT_FIN、DWD_ACCT_INSUR(保单级主档)、DWS_CUST_ASSE_LIAB_CUMU_HIS
   -- 目标表：DWS_CUST_ASSE_LIAB_CUMU、DWS_CUST_ASSE_LIAB_CUMU_HIS
   -- 适配数据库：Oracle 兼容模式 / Kingbase Oracle 兼容模式
+  -- 变更记录:
+  --   v2.1.0 2026-08-03 适配DWD_ACCT_INSUR v1.1.0（TX_TYP置空等，已被v3.0.0取代）
+  --   v3.0.0 2026-08-03 保单级主档重构：不再依赖HIS与交易类型；
+  --                     状态判定完全基于DWD_ACCT_INSUR.POLICY_STATE(0/1/2)；
+  --                     直接聚合INSUR_AMT生成保险余额，删除2.3-2.10中间段
   ------------------------------------------------------------------
   ------------------------------------------------------------------
   --***************************************
@@ -18,7 +23,6 @@ AS
   --***************************************
   V_PRC_DESC             VARCHAR(100) := '客户资产负债基数处理';
   V_PRC_NAME             VARCHAR(32)  := 'PRC_DWS_CUST_ASSE_LIAB_CUMU';
-  V_SYSDAT2              VARCHAR(10);
   V_LOG_MSG              VARCHAR(4000);
   V_LOG_FLG              INTEGER;
   V_LOG_BUTTON           INTEGER := 1;
@@ -43,7 +47,6 @@ BEGIN
   --***************************************
   V_DATA_DATE := V_SYSDAT;
   V_DT := TO_DATE(V_DATA_DATE, 'YYYYMMDD');
-  V_SYSDAT2 := TO_CHAR(V_DT, 'YYYY-MM-DD');
   V_PRE_DATA_DATE := sys_fun_deal_date(V_SYSDAT, 1);   -- 上一日（参数1）
   V_MTH_BEGIN := sys_fun_deal_date(V_SYSDAT, 9);       -- 当月初（参数9）
   V_QRT_BEGIN := sys_fun_deal_date(V_SYSDAT, 11);      -- 当季初（参数11）
@@ -67,14 +70,6 @@ BEGIN
   DELETE FROM DWS_CUST_ASSE_LIAB_CUMU_HIS
    WHERE DATA_DATE = V_DATA_DATE;
 
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWS_CUST_ASSE_LIAB_INSUR_TX';
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWS_CUST_ASSE_LIAB_POLICY_BASE';
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWS_CUST_ASSE_LIAB_LAST_STATUS';
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWS_CUST_ASSE_LIAB_PAY_PLAN';
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWS_CUST_ASSE_LIAB_PAY_TX';
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWS_CUST_ASSE_LIAB_PLAN_MATCH';
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWS_CUST_ASSE_LIAB_CURR_PERIOD';
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWS_CUST_ASSE_LIAB_LAST_PAID';
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWS_CUST_ASSE_LIAB_INSUR_BAL';
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWS_CUST_ASSE_LIAB_TODAY_BAL';
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWS_CUST_ASSE_LIAB_TODAY_AGG';
@@ -92,494 +87,11 @@ BEGIN
   SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
 
   --***************************************
-  -- 2.2 生成保险历史交易临时表
-  -- 作用：历史表只取交易流水、交易类型、交易金额；保单当前属性优先从当前保险账户表去重后取得。
+  -- 2.2 生成保险当日余额临时表
+  -- 作用：v3.0 起直接读取 DWD_ACCT_INSUR 保单级主档；状态判定完全基于 POLICY_STATE，
+  --       余额直接取 INSUR_AMT（DWD 已按终止/缴费期满/宽限期规则清零），不再依赖 HIS 与交易类型。
   --***************************************
   V_NO_ID := '2';
-  V_BGN_DATE := SYSDATE;
-
-  INSERT INTO TMP_DWS_CUST_ASSE_LIAB_INSUR_TX (
-      CUST_ID,
-      ACCT_ID,
-      PRDKT_ID,
-      PRDKT_CATE_BIG,
-      INSUR_BID_FORM_NO,
-      TX_TYP,
-      TX_DT,
-      BGN_DT,
-      CANCL_DT,
-      PAY_UPTO_DT,
-      PAY_PATRN,
-      PAY_PERIOD_TYP,
-      PAY_PERIOD,
-      INSUR_AMT,
-      POLICY_KEY,
-      TX_SEQ,
-      TX_KEY
-  )
-  SELECT
-      X.CUST_ID                                                        AS CUST_ID,           -- 客户号
-      X.ACCT_ID                                                        AS ACCT_ID,           -- 账号
-      X.PRDKT_ID                                                       AS PRDKT_ID,          -- 产品编号
-      X.PRDKT_CATE_BIG                                                 AS PRDKT_CATE_BIG,    -- 产品大类
-      X.INSUR_BID_FORM_NO                                              AS INSUR_BID_FORM_NO, -- 投保单号
-      X.TX_TYP                                                         AS TX_TYP,            -- 交易类型
-      X.TX_DT                                                          AS TX_DT,             -- 交易日期
-      X.BGN_DT                                                         AS BGN_DT,            -- 起保日期
-      X.CANCL_DT                                                       AS CANCL_DT,          -- 退保或终止日期
-      X.PAY_UPTO_DT                                                    AS PAY_UPTO_DT,       -- 缴费截止日期
-      X.PAY_PATRN                                                      AS PAY_PATRN,         -- 缴费方式
-      X.PAY_PERIOD_TYP                                                 AS PAY_PERIOD_TYP,    -- 缴费期间类型
-      X.PAY_PERIOD                                                     AS PAY_PERIOD,        -- 缴费期间值
-      X.INSUR_AMT                                                      AS INSUR_AMT,         -- 保费金额
-      X.POLICY_KEY                                                     AS POLICY_KEY,        -- 保单分组键
-      X.TX_SEQ                                                         AS TX_SEQ,            -- 保单内交易序号
-      X.POLICY_KEY || '|' || LPAD(X.TX_SEQ, 8, '0')                    AS TX_KEY             -- 交易级排查键
-  FROM (
-      SELECT
-          T.CUST_ID                                                    AS CUST_ID,
-          T.ACCT_ID                                                    AS ACCT_ID,
-          T.PRDKT_ID                                                   AS PRDKT_ID,
-          COALESCE(C.PRDKT_CATE_BIG, T.PRDKT_CATE_BIG, 'INSUR')        AS PRDKT_CATE_BIG,
-          T.INSUR_BID_FORM_NO                                          AS INSUR_BID_FORM_NO,
-          T.TX_TYP                                                     AS TX_TYP,
-          CASE
-              WHEN T.TX_DATE IS NOT NULL
-               AND REGEXP_LIKE(REPLACE(SUBSTR(T.TX_DATE, 1, 10), '-', ''), '^[0-9]{8}$')
-              THEN TO_DATE(REPLACE(SUBSTR(T.TX_DATE, 1, 10), '-', ''), 'YYYYMMDD')
-          END                                                          AS TX_DT,
-          CASE
-              WHEN COALESCE(C.BGN_INSUR_DATE, T.BGN_INSUR_DATE) IS NOT NULL
-               AND REGEXP_LIKE(REPLACE(SUBSTR(COALESCE(C.BGN_INSUR_DATE, T.BGN_INSUR_DATE), 1, 10), '-', ''), '^[0-9]{8}$')
-              THEN TO_DATE(REPLACE(SUBSTR(COALESCE(C.BGN_INSUR_DATE, T.BGN_INSUR_DATE), 1, 10), '-', ''), 'YYYYMMDD')
-          END                                                          AS BGN_DT,
-          CASE
-              WHEN COALESCE(C.CANCL_INSUR_DATE, T.CANCL_INSUR_DATE) IS NOT NULL
-               AND REGEXP_LIKE(REPLACE(SUBSTR(COALESCE(C.CANCL_INSUR_DATE, T.CANCL_INSUR_DATE), 1, 10), '-', ''), '^[0-9]{8}$')
-              THEN TO_DATE(REPLACE(SUBSTR(COALESCE(C.CANCL_INSUR_DATE, T.CANCL_INSUR_DATE), 1, 10), '-', ''), 'YYYYMMDD')
-          END                                                          AS CANCL_DT,
-          CASE
-              WHEN C.PAY_UPTO_DATE IS NOT NULL
-               AND REGEXP_LIKE(REPLACE(SUBSTR(C.PAY_UPTO_DATE, 1, 10), '-', ''), '^[0-9]{8}$')
-              THEN TO_DATE(REPLACE(SUBSTR(C.PAY_UPTO_DATE, 1, 10), '-', ''), 'YYYYMMDD')
-          END                                                          AS PAY_UPTO_DT,
-          COALESCE(C.PAY_PATRN, T.PAY_PATRN)                           AS PAY_PATRN,
-          COALESCE(C.PAY_PERIOD_TYP, T.PAY_PERIOD_TYP)                 AS PAY_PERIOD_TYP,
-          CASE
-              WHEN REGEXP_LIKE(COALESCE(TO_CHAR(C.PAY_PERIOD), TO_CHAR(T.PAY_PERIOD)), '^[0-9]+$')
-              THEN TO_NUMBER(COALESCE(TO_CHAR(C.PAY_PERIOD), TO_CHAR(T.PAY_PERIOD)))
-          END                                                          AS PAY_PERIOD,
-          NVL(T.INSUR_AMT, 0)                                           AS INSUR_AMT,
-          T.CUST_ID || '|' || T.ACCT_ID || '|' || T.PRDKT_ID || '|' ||
-          T.INSUR_BID_FORM_NO                                          AS POLICY_KEY,
-          ROW_NUMBER() OVER (
-              PARTITION BY T.CUST_ID, T.ACCT_ID, T.PRDKT_ID, T.INSUR_BID_FORM_NO
-              ORDER BY
-                  CASE
-                      WHEN T.TX_DATE IS NOT NULL
-                       AND REGEXP_LIKE(REPLACE(SUBSTR(T.TX_DATE, 1, 10), '-', ''), '^[0-9]{8}$')
-                      THEN TO_DATE(REPLACE(SUBSTR(T.TX_DATE, 1, 10), '-', ''), 'YYYYMMDD')
-                  END,
-                  T.TX_TYP,
-                  NVL(T.INSUR_AMT, 0)
-          )                                                            AS TX_SEQ
-      FROM (
-          SELECT
-              H.CUST_ID,
-              H.ACCT_ID,
-              H.PRDKT_ID,
-              H.PRDKT_CATE_BIG,
-              H.INSUR_BID_FORM_NO,
-              H.TX_TYP,
-              H.TX_DATE,
-              H.BGN_INSUR_DATE,
-              H.CANCL_INSUR_DATE,
-              H.PAY_PATRN,
-              H.PAY_PERIOD_TYP,
-              H.PAY_PERIOD,
-              H.INSUR_AMT
-          FROM DWD_ACCT_INSUR_HIS H
-          WHERE H.DATA_DATE <= V_DATA_DATE
-            AND H.CUST_ID IS NOT NULL
-            AND H.ACCT_ID IS NOT NULL
-            AND H.PRDKT_ID IS NOT NULL
-            AND H.INSUR_BID_FORM_NO IS NOT NULL
-          GROUP BY
-              H.CUST_ID,
-              H.ACCT_ID,
-              H.PRDKT_ID,
-              H.PRDKT_CATE_BIG,
-              H.INSUR_BID_FORM_NO,
-              H.TX_TYP,
-              H.TX_DATE,
-              H.BGN_INSUR_DATE,
-              H.CANCL_INSUR_DATE,
-              H.PAY_PATRN,
-              H.PAY_PERIOD_TYP,
-              H.PAY_PERIOD,
-              H.INSUR_AMT
-      ) T
-      LEFT JOIN (
-          SELECT
-              C1.CUST_ID,
-              C1.ACCT_ID,
-              C1.PRDKT_ID,
-              C1.PRDKT_CATE_BIG,
-              C1.INSUR_BID_FORM_NO,
-              C1.BGN_INSUR_DATE,
-              C1.CANCL_INSUR_DATE,
-              C1.PAY_UPTO_DATE,
-              C1.PAY_PATRN,
-              C1.PAY_PERIOD_TYP,
-              C1.PAY_PERIOD
-          FROM (
-              SELECT
-                  C0.*,
-                  ROW_NUMBER() OVER (
-                      PARTITION BY C0.CUST_ID, C0.ACCT_ID, C0.PRDKT_ID, C0.INSUR_BID_FORM_NO
-                      ORDER BY C0.TX_DATE DESC, C0.TX_TYP DESC
-                  )                                                    AS RN
-              FROM DWD_ACCT_INSUR C0
-              WHERE C0.CUST_ID IS NOT NULL
-                AND C0.ACCT_ID IS NOT NULL
-                AND C0.PRDKT_ID IS NOT NULL
-                AND C0.INSUR_BID_FORM_NO IS NOT NULL
-          ) C1
-          WHERE C1.RN = 1
-      ) C
-        ON T.CUST_ID = C.CUST_ID
-       AND T.ACCT_ID = C.ACCT_ID
-       AND T.PRDKT_ID = C.PRDKT_ID
-       AND T.INSUR_BID_FORM_NO = C.INSUR_BID_FORM_NO
-      WHERE T.CUST_ID IS NOT NULL
-        AND T.ACCT_ID IS NOT NULL
-        AND T.PRDKT_ID IS NOT NULL
-        AND T.INSUR_BID_FORM_NO IS NOT NULL
-  ) X;
-
-  COMMIT;
-
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.2 生成保险历史交易临时表';
-  V_LOG_FLG   := OUTCDE;
-
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  --***************************************
-  -- 2.3 生成保单基础临时表
-  -- 作用：按保单分组键汇总首期承保日期、缴费截止日期、缴费方式、缴费期间、首期保费等基础信息。
-  --***************************************
-  V_NO_ID := '3';
-  V_BGN_DATE := SYSDATE;
-
-  INSERT INTO TMP_DWS_CUST_ASSE_LIAB_POLICY_BASE (
-      CUST_ID,
-      ACCT_ID,
-      PRDKT_ID,
-      PRDKT_CATE_BIG,
-      INSUR_BID_FORM_NO,
-      POLICY_KEY,
-      FIRST_TX_DT,
-      BGN_DT,
-      CANCL_DT,
-      PAY_UPTO_DT,
-      PAY_PATRN,
-      PAY_PERIOD_TYP,
-      PAY_PERIOD,
-      FIRST_INSUR_AMT
-  )
-  SELECT
-      T.CUST_ID                                                        AS CUST_ID,           -- 客户号
-      T.ACCT_ID                                                        AS ACCT_ID,           -- 账号
-      T.PRDKT_ID                                                       AS PRDKT_ID,          -- 产品编号
-      T.PRDKT_CATE_BIG                                                 AS PRDKT_CATE_BIG,    -- 产品大类
-      T.INSUR_BID_FORM_NO                                              AS INSUR_BID_FORM_NO, -- 投保单号
-      T.POLICY_KEY                                                     AS POLICY_KEY,        -- 保单分组键
-      MIN(CASE WHEN T.TX_TYP = '0' THEN T.TX_DT END)                   AS FIRST_TX_DT,       -- 新单承保日期
-      MIN(T.BGN_DT)                                                    AS BGN_DT,            -- 最早起保日期
-      MAX(T.CANCL_DT)                                                  AS CANCL_DT,          -- 退保或终止日期
-      MAX(T.PAY_UPTO_DT)                                               AS PAY_UPTO_DT,       -- 缴费截止日期
-      MAX(T.PAY_PATRN)                                                 AS PAY_PATRN,         -- 最新缴费方式
-      MAX(T.PAY_PERIOD_TYP)                                            AS PAY_PERIOD_TYP,    -- 最新缴费期间类型
-      MAX(T.PAY_PERIOD)                                                AS PAY_PERIOD,        -- 最新缴费期间值
-      MAX(CASE WHEN T.TX_TYP = '0' THEN T.INSUR_AMT END)               AS FIRST_INSUR_AMT    -- 首期保费金额
-  FROM TMP_DWS_CUST_ASSE_LIAB_INSUR_TX T
-  GROUP BY
-      T.CUST_ID,
-      T.ACCT_ID,
-      T.PRDKT_ID,
-      T.PRDKT_CATE_BIG,
-      T.INSUR_BID_FORM_NO,
-      T.POLICY_KEY;
-
-  COMMIT;
-
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.3 生成保单基础临时表';
-  V_LOG_FLG   := OUTCDE;
-
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  --***************************************
-  -- 2.4 生成保险最后状态临时表
-  -- 作用：识别截至加工日最后一笔撤单、退保、满期、理赔终止、终止撤销等状态交易。
-  --***************************************
-  V_NO_ID := '4';
-  V_BGN_DATE := SYSDATE;
-
-  INSERT INTO TMP_DWS_CUST_ASSE_LIAB_LAST_STATUS (
-      POLICY_KEY,
-      LAST_STATUS_TX_TYP,
-      LAST_STATUS_DT
-  )
-  SELECT
-      X.POLICY_KEY                                                     AS POLICY_KEY,         -- 保单分组键
-      X.LAST_STATUS_TX_TYP                                             AS LAST_STATUS_TX_TYP, -- 最后状态交易类型
-      X.LAST_STATUS_DT                                                 AS LAST_STATUS_DT      -- 最后状态交易日期
-  FROM (
-      SELECT
-          T.POLICY_KEY                                                 AS POLICY_KEY,
-          T.TX_TYP                                                     AS LAST_STATUS_TX_TYP,
-          T.TX_DT                                                      AS LAST_STATUS_DT,
-          ROW_NUMBER() OVER (
-              PARTITION BY T.POLICY_KEY
-              ORDER BY T.TX_DT DESC, T.TX_KEY DESC
-          )                                                            AS RN
-      FROM TMP_DWS_CUST_ASSE_LIAB_INSUR_TX T
-      WHERE T.TX_TYP IN ('2', '3', '4', '5', '6', '8', '9')
-        AND T.TX_DT <= V_DT
-  ) X
-  WHERE X.RN = 1;
-
-  COMMIT;
-
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.4 生成保险最后状态临时表';
-  V_LOG_FLG   := OUTCDE;
-
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  --***************************************
-  -- 2.5 生成保险应缴计划临时表
-  -- 作用：根据新单承保日期和缴费期间类型生成期缴保单各期应缴日期。
-  --***************************************
-  V_NO_ID := '5';
-  V_BGN_DATE := SYSDATE;
-
-  INSERT INTO TMP_DWS_CUST_ASSE_LIAB_PAY_PLAN (
-      POLICY_KEY,
-      INSUR_BID_FORM_NO,
-      PERIOD_NO,
-      DUE_DT
-  )
-  SELECT
-      B.POLICY_KEY                                                     AS POLICY_KEY,        -- 保单分组键
-      B.INSUR_BID_FORM_NO                                              AS INSUR_BID_FORM_NO, -- 投保单号
-      LEVEL                                                            AS PERIOD_NO,         -- 应缴期数
-      CASE
-          WHEN B.PAY_PERIOD_TYP = '12' THEN ADD_MONTHS(B.FIRST_TX_DT, (LEVEL - 1) * 12)
-          WHEN B.PAY_PERIOD_TYP = '1'  THEN ADD_MONTHS(B.FIRST_TX_DT, LEVEL - 1)
-          WHEN B.PAY_PERIOD_TYP = '2'  THEN B.FIRST_TX_DT + LEVEL - 1
-          WHEN B.PAY_PERIOD_TYP IN ('0', '-1') THEN B.FIRST_TX_DT
-      END                                                              AS DUE_DT             -- 本期应缴日期
-  FROM TMP_DWS_CUST_ASSE_LIAB_POLICY_BASE B
-  WHERE B.PAY_PATRN = '1'
-    AND B.FIRST_TX_DT IS NOT NULL
-  CONNECT BY
-      PRIOR B.POLICY_KEY = B.POLICY_KEY
-      AND PRIOR SYS_GUID() IS NOT NULL
-      AND LEVEL <= CASE
-                     WHEN B.PAY_PERIOD_TYP IN ('12', '1', '2') THEN NVL(B.PAY_PERIOD, 1)
-                     ELSE 1
-                   END;
-
-  COMMIT;
-
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.5 生成保险应缴计划临时表';
-  V_LOG_FLG   := OUTCDE;
-
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  --***************************************
-  -- 2.6 生成保险缴费交易序号临时表
-  -- 作用：把新单承保和续期缴费交易按保单内日期顺序编号，用于与应缴计划逐期匹配。
-  --***************************************
-  V_NO_ID := '6';
-  V_BGN_DATE := SYSDATE;
-
-  INSERT INTO TMP_DWS_CUST_ASSE_LIAB_PAY_TX (
-      POLICY_KEY,
-      PAY_TX_KEY,
-      TX_DT,
-      INSUR_AMT,
-      PAY_SEQ
-  )
-  SELECT
-      T.POLICY_KEY                                                     AS POLICY_KEY, -- 保单分组键
-      T.TX_KEY                                                         AS PAY_TX_KEY, -- 缴费交易排查键
-      T.TX_DT                                                          AS TX_DT,      -- 缴费交易日期
-      T.INSUR_AMT                                                      AS INSUR_AMT,  -- 缴费金额
-      ROW_NUMBER() OVER (
-          PARTITION BY T.POLICY_KEY
-          ORDER BY T.TX_DT, T.TX_TYP, T.TX_KEY
-      )                                                                AS PAY_SEQ     -- 缴费交易序号
-  FROM TMP_DWS_CUST_ASSE_LIAB_INSUR_TX T
-  WHERE T.TX_TYP IN ('0', '1')
-    AND T.TX_DT <= V_DT;
-
-  COMMIT;
-
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.6 生成保险缴费交易序号临时表';
-  V_LOG_FLG   := OUTCDE;
-
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  --***************************************
-  -- 2.7 生成保险应缴计划与实缴匹配临时表
-  -- 作用：按保单内期数把每期应缴计划与已发生缴费交易匹配，支持提前缴费识别。
-  --***************************************
-  V_NO_ID := '7';
-  V_BGN_DATE := SYSDATE;
-
-  INSERT INTO TMP_DWS_CUST_ASSE_LIAB_PLAN_MATCH (
-      POLICY_KEY,
-      INSUR_BID_FORM_NO,
-      PERIOD_NO,
-      DUE_DT,
-      PAY_TX_KEY,
-      PAID_DT,
-      PAID_AMT
-  )
-  SELECT
-      PP.POLICY_KEY                                                    AS POLICY_KEY,        -- 保单分组键
-      PP.INSUR_BID_FORM_NO                                             AS INSUR_BID_FORM_NO, -- 投保单号
-      PP.PERIOD_NO                                                     AS PERIOD_NO,         -- 应缴期数
-      PP.DUE_DT                                                        AS DUE_DT,            -- 本期应缴日期
-      PT.PAY_TX_KEY                                                    AS PAY_TX_KEY,        -- 匹配缴费交易排查键
-      PT.TX_DT                                                         AS PAID_DT,           -- 匹配缴费日期
-      PT.INSUR_AMT                                                     AS PAID_AMT           -- 匹配缴费金额
-  FROM TMP_DWS_CUST_ASSE_LIAB_PAY_PLAN PP
-  LEFT JOIN TMP_DWS_CUST_ASSE_LIAB_PAY_TX PT
-    ON PP.POLICY_KEY = PT.POLICY_KEY
-   AND PP.PERIOD_NO = PT.PAY_SEQ;
-
-  COMMIT;
-
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.7 生成保险应缴计划与实缴匹配临时表';
-  V_LOG_FLG   := OUTCDE;
-
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  --***************************************
-  -- 2.8 生成保险当前应缴期临时表
-  -- 作用：取加工日之前最近一期应缴计划，判断当前期是否已缴、是否仍在60天宽限期内。
-  --***************************************
-  V_NO_ID := '8';
-  V_BGN_DATE := SYSDATE;
-
-  INSERT INTO TMP_DWS_CUST_ASSE_LIAB_CURR_PERIOD (
-      POLICY_KEY,
-      INSUR_BID_FORM_NO,
-      PERIOD_NO,
-      DUE_DT,
-      PAY_TX_KEY,
-      PAID_DT,
-      PAID_AMT
-  )
-  SELECT
-      X.POLICY_KEY                                                     AS POLICY_KEY,        -- 保单分组键
-      X.INSUR_BID_FORM_NO                                              AS INSUR_BID_FORM_NO, -- 投保单号
-      X.PERIOD_NO                                                      AS PERIOD_NO,         -- 当前应缴期数
-      X.DUE_DT                                                         AS DUE_DT,            -- 当前应缴日期
-      X.PAY_TX_KEY                                                     AS PAY_TX_KEY,        -- 当前期缴费交易排查键
-      X.PAID_DT                                                        AS PAID_DT,           -- 当前期缴费日期
-      X.PAID_AMT                                                       AS PAID_AMT           -- 当前期缴费金额
-  FROM (
-      SELECT
-          M.POLICY_KEY,
-          M.INSUR_BID_FORM_NO,
-          M.PERIOD_NO,
-          M.DUE_DT,
-          M.PAY_TX_KEY,
-          M.PAID_DT,
-          M.PAID_AMT,
-          ROW_NUMBER() OVER (
-              PARTITION BY M.POLICY_KEY
-              ORDER BY M.DUE_DT DESC, M.PERIOD_NO DESC
-          )                                                            AS RN
-      FROM TMP_DWS_CUST_ASSE_LIAB_PLAN_MATCH M
-      WHERE M.DUE_DT <= V_DT
-  ) X
-  WHERE X.RN = 1;
-
-  COMMIT;
-
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.8 生成保险当前应缴期临时表';
-  V_LOG_FLG   := OUTCDE;
-
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  --***************************************
-  -- 2.9 生成保险最近有效缴费金额临时表
-  -- 作用：取截至加工日最近一次已缴金额，当前期未缴但仍在宽限期内时用于余额沿用。
-  --***************************************
-  V_NO_ID := '9';
-  V_BGN_DATE := SYSDATE;
-
-  INSERT INTO TMP_DWS_CUST_ASSE_LIAB_LAST_PAID (
-      POLICY_KEY,
-      LAST_PAID_AMT
-  )
-  SELECT
-      X.POLICY_KEY                                                     AS POLICY_KEY,    -- 保单分组键
-      X.LAST_PAID_AMT                                                  AS LAST_PAID_AMT  -- 最近有效缴费金额
-  FROM (
-      SELECT
-          M.POLICY_KEY                                                 AS POLICY_KEY,
-          M.PAID_AMT                                                   AS LAST_PAID_AMT,
-          ROW_NUMBER() OVER (
-              PARTITION BY M.POLICY_KEY
-              ORDER BY M.PERIOD_NO DESC
-          )                                                            AS RN
-      FROM TMP_DWS_CUST_ASSE_LIAB_PLAN_MATCH M
-      WHERE M.PAID_DT IS NOT NULL
-        AND M.PAID_DT <= V_DT
-  ) X
-  WHERE X.RN = 1;
-
-  COMMIT;
-
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.9 生成保险最近有效缴费金额临时表';
-  V_LOG_FLG   := OUTCDE;
-
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  --***************************************
-  -- 2.10 生成保险当日余额临时表
-  -- 作用：按趸交一年后清零、期缴60天宽限期、最后一期缴清后再过一个缴费期间清零等规则生成保险余额基数。
-  --***************************************
-  V_NO_ID := '10';
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO TMP_DWS_CUST_ASSE_LIAB_INSUR_BAL (
@@ -588,75 +100,33 @@ BEGIN
       ACCT_ID,
       PRDKT_ID,
       PRDKT_CATE_BIG,
-      BAL
+      BAL,
+      PERSN_LEGAL_BK_CODE,
+      OPRT_ORG
   )
   SELECT
       V_DATA_DATE                                                       AS DATA_DATE,      -- 数据日期
-      B.CUST_ID                                                         AS CUST_ID,        -- 客户号
-      B.ACCT_ID                                                         AS ACCT_ID,        -- 账号
-      B.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
-      B.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG, -- 产品大类
-      CASE
-          WHEN B.FIRST_TX_DT IS NULL THEN 0
-          WHEN B.CANCL_DT IS NOT NULL AND B.CANCL_DT <= V_DT THEN 0
-          WHEN LS.LAST_STATUS_TX_TYP IN ('2', '3', '4', '5', '6') THEN 0
-          WHEN B.PAY_PATRN = '0'
-           AND V_DT >= B.FIRST_TX_DT
-           AND V_DT < ADD_MONTHS(B.FIRST_TX_DT, 12)
-          THEN NVL(B.FIRST_INSUR_AMT, 0)
-          WHEN B.PAY_PATRN = '0'
-           AND V_DT >= ADD_MONTHS(B.FIRST_TX_DT, 12)
-          THEN 0
-          WHEN B.PAY_PATRN = '1'
-           AND B.PAY_UPTO_DT IS NOT NULL
-           AND V_DT >= CASE
-                         WHEN B.PAY_PERIOD_TYP = '12' THEN ADD_MONTHS(B.PAY_UPTO_DT, 12)
-                         WHEN B.PAY_PERIOD_TYP = '1'  THEN ADD_MONTHS(B.PAY_UPTO_DT, 1)
-                         WHEN B.PAY_PERIOD_TYP = '2'  THEN B.PAY_UPTO_DT + 1
-                       END
-           AND EXISTS (
-                 SELECT 1
-                 FROM TMP_DWS_CUST_ASSE_LIAB_PLAN_MATCH FM
-                 WHERE FM.POLICY_KEY = B.POLICY_KEY
-                   AND FM.PAID_DT IS NOT NULL
-                   AND FM.PAID_DT <= V_DT
-                   AND FM.DUE_DT = (
-                       SELECT MAX(FM2.DUE_DT)
-                       FROM TMP_DWS_CUST_ASSE_LIAB_PLAN_MATCH FM2
-                       WHERE FM2.POLICY_KEY = B.POLICY_KEY
-                         AND FM2.DUE_DT <= NVL(B.PAY_UPTO_DT, FM2.DUE_DT)
-                   )
-             )
-          THEN 0
-          WHEN B.PAY_PATRN = '1'
-           AND CP.PAID_DT IS NOT NULL
-          THEN NVL(CP.PAID_AMT, 0)
-          WHEN B.PAY_PATRN = '1'
-           AND CP.PAID_DT IS NULL
-           AND CP.DUE_DT IS NOT NULL
-           AND V_DT <= CP.DUE_DT + 60
-          THEN NVL(LP.LAST_PAID_AMT, NVL(B.FIRST_INSUR_AMT, 0))
-          WHEN B.PAY_PATRN = '1'
-           AND CP.PAID_DT IS NULL
-           AND CP.DUE_DT IS NOT NULL
-           AND V_DT > CP.DUE_DT + 60
-          THEN 0
-          ELSE 0
-      END                                                               AS BAL             -- 保险当日余额基数
-  FROM TMP_DWS_CUST_ASSE_LIAB_POLICY_BASE B
-  LEFT JOIN TMP_DWS_CUST_ASSE_LIAB_LAST_STATUS LS
-    ON B.POLICY_KEY = LS.POLICY_KEY
-  LEFT JOIN TMP_DWS_CUST_ASSE_LIAB_CURR_PERIOD CP
-    ON B.POLICY_KEY = CP.POLICY_KEY
-  LEFT JOIN TMP_DWS_CUST_ASSE_LIAB_LAST_PAID LP
-    ON B.POLICY_KEY = LP.POLICY_KEY;
+      I.CUST_ID                                                         AS CUST_ID,        -- 客户号
+      I.ACCT_ID                                                         AS ACCT_ID,        -- 账号
+      I.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
+      I.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG, -- 产品大类
+      SUM(NVL(I.INSUR_AMT, 0))                                          AS BAL,            -- 保险当日余额(仅有效保单)
+      MAX(I.PERSN_LEGAL_BK_CODE)                                        AS PERSN_LEGAL_BK_CODE, -- 法人行号(组内取最大值)
+      MAX(I.MKT_ORG)                                                    AS OPRT_ORG        -- 归属机构(同上)
+  FROM DWD_ACCT_INSUR I
+  WHERE I.POLICY_STATE = '1'          -- 唯一状态判定源：仅正常保单参与(0/2余额已为0)
+  GROUP BY
+      I.CUST_ID,
+      I.ACCT_ID,
+      I.PRDKT_ID,
+      I.PRDKT_CATE_BIG;
 
   COMMIT;
 
   OUTCDE      := 0;
   V_END_DATE  := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.10 生成保险当日余额临时表';
+  V_LOG_MSG   := '2.2 生成保险当日余额临时表';
   V_LOG_FLG   := OUTCDE;
 
   SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
@@ -665,6 +135,7 @@ BEGIN
   -- 2.11 生成四类产品当日余额明细临时表
   -- 作用：存款、贷款、理财优先从当前账户表取当日余额，保险取前序规则计算后的余额。
   --***************************************
+
   V_NO_ID := '11';
   V_BGN_DATE := SYSDATE;
 
@@ -726,22 +197,17 @@ BEGIN
     AND F.ACCT_ID IS NOT NULL
 
   UNION ALL
-
   SELECT
       I.DATA_DATE                                                       AS DATA_DATE,      -- 数据日期
-      C.PERSN_LEGAL_BK_CODE                                             AS PERSN_LEGAL_BK_CODE, -- 法人行号
-      C.MKT_ORG                                                         AS OPRT_ORG,       -- 归属机构
+      I.PERSN_LEGAL_BK_CODE                                             AS PERSN_LEGAL_BK_CODE, -- 法人行号
+      I.OPRT_ORG                                                        AS OPRT_ORG,       -- 归属机构
       I.CUST_ID                                                         AS CUST_ID,        -- 客户号
       I.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       I.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       I.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG, -- 产品大类
       I.BAL                                                             AS BAL,             -- 保险余额
       '4'                                                               AS PRDKT_TYP        -- 产品类型
-  FROM TMP_DWS_CUST_ASSE_LIAB_INSUR_BAL I
-  LEFT JOIN DWD_ACCT_INSUR C
-    ON I.CUST_ID = C.CUST_ID
-   AND I.ACCT_ID = C.ACCT_ID
-   AND I.PRDKT_ID = C.PRDKT_ID;
+  FROM TMP_DWS_CUST_ASSE_LIAB_INSUR_BAL I;
 
   COMMIT;
 

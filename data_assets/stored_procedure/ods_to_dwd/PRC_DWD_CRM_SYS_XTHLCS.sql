@@ -18,8 +18,8 @@ AS
   --***************************************
   --1.自定义参数区
   --***************************************
-  V_PRC_DESC             VARCHAR(100) := '单位性质';
-  V_PRC_NAME             VARCHAR(32)  := 'P_MTS_CUST_LABEL_AF03';
+  V_PRC_DESC             VARCHAR(100) := '货币汇率表';
+  V_PRC_NAME             VARCHAR(32)  := 'PRC_DWD_CRM_SYS_XTHLCS';
   V_SYSDAT2              VARCHAR(10);
   V_SQL                  VARCHAR(4000);
   V_LOG_MSG              VARCHAR(4000);

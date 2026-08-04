@@ -1,0 +1,481 @@
+-- ============================================================
+-- Local Oracle 11g validation environment for
+-- PRC_ADS_CUST_DEADLINE_RMND_DTL / PRC_ADS_CUST_DEADLINE_RMND_STATIS
+-- Converted from Kingbase Oracle-compatible DDL to Oracle 11g syntax.
+-- Schema owner: SCOTT
+-- ============================================================
+
+-- ---------- Source tables (ODS/DWD/DWS/ADS layers) ----------
+BEGIN
+  FOR t IN (SELECT table_name FROM user_tables
+             WHERE table_name IN (
+               'DWD_ACCT_DEPO','DWD_ACCT_FIN','DWD_ACCT_INSUR',
+               'DWD_CUST_INDV_INFO','DWD_CUST_MAN','DWS_CUST_LVL_INFO',
+               'DWS_CUST_ASSE_LIAB','DWD_SYS_ORG','ADS_MKT_REC_INFO',
+               'TMP_CDR_DTL_PERIOD','TMP_CDR_DTL_MATURE_SRC','TMP_CDR_DTL_DUE_WIN',
+               'TMP_CDR_DTL_PURCHASE_SRC','TMP_CDR_DTL_TAKE_AMT','TMP_CDR_DTL_CUST_BASE',
+               'TMP_CDR_DTL_AUM_BAL','TMP_CDR_DTL_CROSS_CONV','TMP_CDR_STAT_BASE',
+               'TMP_CDR_STAT_SRC','ADS_CUST_DEADLINE_RMND_DTL','ADS_CUST_DEADLINE_RMND_STATIS',
+               'SYS_PRC_STEP_LOG')) LOOP
+    EXECUTE IMMEDIATE 'DROP TABLE ' || t.table_name;
+  END LOOP;
+END;
+/
+
+CREATE TABLE DWD_ACCT_DEPO (
+    CUST_ID             VARCHAR2(20)  NOT NULL,
+    CUST_TYP            VARCHAR2(2),
+    ACCT_ID             VARCHAR2(40),
+    CARD_NO             VARCHAR2(40),
+    PRDKT_ID            VARCHAR2(30),
+    PRDKT_NAME          VARCHAR2(200),
+    PRDKT_CATE_BIG      VARCHAR2(64),
+    ACCT_TYP            VARCHAR2(10),
+    CCY_CD              VARCHAR2(4),
+    BAL                 NUMBER(20,2),
+    RMB_BAL             NUMBER(20,2),
+    OPEN_ACCT_ORG       VARCHAR2(7),
+    OPEN_DATE           VARCHAR2(10),
+    RATE_INTRI          NUMBER(20,2),
+    INTRI_BGN_DATE      VARCHAR2(10),
+    EXPR_DATE           VARCHAR2(10),
+    ACCT_CLOZ_DATE      VARCHAR2(10),
+    ACCT_STATE          VARCHAR2(10),
+    PERSN_LEGAL_BK_CODE VARCHAR2(4),
+    VCHR_TYP            VARCHAR2(10),
+    CUNQ                VARCHAR2(10),
+    FIX_CURNT_FLG       VARCHAR2(1)
+);
+
+CREATE TABLE DWD_ACCT_FIN (
+    CUST_ID             VARCHAR2(20)  NOT NULL,
+    CUST_TYP            VARCHAR2(2),
+    ACCT_ID             VARCHAR2(40),
+    CARD_NO             VARCHAR2(30),
+    PRDKT_ID            VARCHAR2(40),
+    PRDKT_NAME          VARCHAR2(100),
+    PRDKT_CATE_BIG      VARCHAR2(64),
+    ESTAB_DATE          VARCHAR2(10),
+    FIN_AMT             NUMBER(20,2),
+    RATE_INTRI          NUMBER(20,2),
+    ACCT_STATE          VARCHAR2(10),
+    INTRI_BGN_DATE      VARCHAR2(10),
+    EXPR_DATE           VARCHAR2(10),
+    OPRT_ORG            VARCHAR2(7),
+    CHNL_NO             VARCHAR2(10),
+    PERSN_LEGAL_BK_CODE VARCHAR2(4),
+    ISSU_ORG            VARCHAR2(6),
+    ISSU_DATE           VARCHAR2(10),
+    RISK_LVL            VARCHAR2(2)
+);
+
+CREATE TABLE DWD_ACCT_INSUR (
+    CUST_ID             VARCHAR2(20)  NOT NULL,
+    CUST_TYP            VARCHAR2(4),
+    ACCT_ID             VARCHAR2(40),
+    PRDKT_ID            VARCHAR2(40),
+    PRDKT_NAME          VARCHAR2(100),
+    PRDKT_CATE_BIG      VARCHAR2(64),
+    INSUR_BID_FORM_NO   VARCHAR2(40),
+    TX_DATE             VARCHAR2(10),
+    TX_ORG              VARCHAR2(7),
+    TX_CHNL             VARCHAR2(10),
+    MKT_ORG             VARCHAR2(7),
+    BGN_INSUR_DATE      VARCHAR2(10),
+    CANCL_INSUR_DATE    VARCHAR2(10),
+    PAY_UPTO_DATE       VARCHAR2(8),
+    INSUR_PERIOD_TYP    VARCHAR2(2),
+    INSUR_PERIOD        VARCHAR2(6),
+    PAY_PERIOD_TYP      VARCHAR2(2),
+    PAY_PERIOD          VARCHAR2(6),
+    PAY_PATRN           VARCHAR2(2),
+    INSUR_AMT           NUMBER(20,2),
+    POLICY_STATE        VARCHAR2(10),
+    TX_TYP              VARCHAR2(1),
+    PERSN_LEGAL_BK_CODE VARCHAR2(4)
+);
+
+CREATE TABLE DWD_CUST_INDV_INFO (
+    CUST_ID                  VARCHAR2(20) NOT NULL,
+    CUST_NAME                VARCHAR2(100),
+    CERT_TYP                 VARCHAR2(6),
+    CERT_ID                  VARCHAR2(32),
+    CERT_PRD_VLID            VARCHAR2(10),
+    CERT_PRD_VLID_END        VARCHAR2(10),
+    CERT_ISSUING_AUTHORITY   VARCHAR2(100),
+    CUST_TYP                 VARCHAR2(2),
+    OPEN_DATE                VARCHAR2(10),
+    OPEN_ORG                 VARCHAR2(20),
+    NATIONALITY              VARCHAR2(6),
+    NATION                   VARCHAR2(6),
+    MARI_SITU                VARCHAR2(6),
+    MAX_DEG_EDU              VARCHAR2(6),
+    NOW_ENTER                VARCHAR2(120),
+    OCCU_CLS                 VARCHAR2(6),
+    CUST_HRAKY               VARCHAR2(2),
+    PERSN_LEGAL_BK_CODE      VARCHAR2(4),
+    GEND                     VARCHAR2(2),
+    PHONE_NO                 VARCHAR2(20),
+    CONTACT_ADDRESS          VARCHAR2(254),
+    CONTACT_ADDRESS_DETAIL   VARCHAR2(254),
+    ID_ADDRESS               VARCHAR2(254),
+    ID_ADDRESS_DETAIL        VARCHAR2(254),
+    HOME_ADDRESS             VARCHAR2(254),
+    HOME_ADDRESS_DETAIL      VARCHAR2(254),
+    RESIDENCE_ADDRESS        VARCHAR2(254),
+    RESIDENCE_ADDRESS_DETAIL VARCHAR2(254),
+    OFFICE_ADDRESS           VARCHAR2(254),
+    OFFICE_ADDRESS_DETAIL    VARCHAR2(254),
+    HOST_CUST_MNGR_POST_ID   VARCHAR2(20),
+    HOST_CUST_MNGR_NAME      VARCHAR2(60),
+    HOST_CUST_MNGR_EMP_ID    VARCHAR2(6),
+    ORG_LEAD                 VARCHAR2(7),
+    ORG_LEAD_PATH            VARCHAR2(50),
+    COSPSR_CUST_MNGR_POST_ID VARCHAR2(20),
+    COSPSR_CUST_MNGR_NAME    VARCHAR2(60),
+    COSPSR_CUST_MNGR_EMP_ID  VARCHAR2(6),
+    COSPSR_ORG               VARCHAR2(7),
+    COSPSR_ORG_PATH          VARCHAR2(50)
+);
+
+CREATE TABLE DWD_CUST_MAN (
+    CUST_ID             VARCHAR2(20),
+    MNGR_POST_ID        VARCHAR2(20),
+    ORG_ID              VARCHAR2(6),
+    MNG_TYP             VARCHAR2(1),
+    MODF_TIME           VARCHAR2(20),
+    MODF_TYP            VARCHAR2(10),
+    DATA_SRC            VARCHAR2(10),
+    VALID_DATE          VARCHAR2(8),
+    PERSN_LEGAL_BK_CODE VARCHAR2(4)
+);
+
+CREATE TABLE DWS_CUST_LVL_INFO (
+    DATA_DATE           VARCHAR2(8) NOT NULL,
+    CUST_ID             VARCHAR2(20),
+    CUST_LVL            VARCHAR2(2),
+    PERSN_LEGAL_BK_CODE VARCHAR2(7)
+);
+
+CREATE TABLE DWS_CUST_ASSE_LIAB (
+    DATA_DATE           VARCHAR2(8) NOT NULL,
+    PERSN_LEGAL_BK_CODE VARCHAR2(4),
+    CUST_ID             VARCHAR2(20),
+    ORG_ID              VARCHAR2(7),
+    ORG_ID_LOAN         VARCHAR2(6),
+    BAL_TYPE            CHAR(1),
+    AUM_BAL             NUMBER(20,2),
+    DEPO_BAL            NUMBER(20,2),
+    DEPO_CURNT_DEPO_BAL NUMBER(20,2),
+    FIXD_DEPO_BAL       NUMBER(20,2),
+    LEHUI_BAL           NUMBER(20,2),
+    LARGEDP_BAL         NUMBER(20,2),
+    FIN_BAL             NUMBER(20,2),
+    INSUR_BAL           NUMBER(20,2),
+    LOAN_BAL            NUMBER(20,2)
+);
+
+CREATE TABLE DWD_SYS_ORG (
+    ORG_ID              VARCHAR2(7) NOT NULL,
+    SUP_ORG_ID          VARCHAR2(7),
+    ORG_PATH            VARCHAR2(200),
+    ORG_NAME            VARCHAR2(100),
+    SUP_ORG_NAME        VARCHAR2(100),
+    DIRECT_UNDER_ORG    VARCHAR2(7),
+    ORG_TYP             VARCHAR2(10),
+    ORG_HARCY           VARCHAR2(10),
+    ORG_ADDRS           VARCHAR2(800),
+    ORG_STATE           VARCHAR2(1),
+    DSPLY_SEQ           VARCHAR2(100),
+    CREATR              VARCHAR2(64),
+    CREAT_TIME          VARCHAR2(20),
+    CREAT_ORG           VARCHAR2(7),
+    PERSN_LEGAL_BK_CODE VARCHAR2(4),
+    HR_MS_ORG_ID        VARCHAR2(80),
+    ORG_LGTUD           VARCHAR2(30),
+    ORG_LATTUD          VARCHAR2(30),
+    ORG_RSPONR          VARCHAR2(40),
+    ORG_TEL             VARCHAR2(30)
+);
+
+CREATE TABLE ADS_MKT_REC_INFO (
+    MKT_REC_SEQ_ID       VARCHAR2(40),
+    REL_ID               VARCHAR2(40),
+    MKT_TYP              VARCHAR2(6),
+    REL_TYP              VARCHAR2(6),
+    CUST_ID              VARCHAR2(20),
+    CUST_NAME            VARCHAR2(100),
+    MKT_SITE             VARCHAR2(200),
+    MKT_TIME             VARCHAR2(20),
+    MKT_PERSN            VARCHAR2(30),
+    MKT_PERSN_NAME       VARCHAR2(64),
+    MKT_ORG              VARCHAR2(7),
+    MKT_DURA             VARCHAR2(20),
+    MKT_DTL_SITU         VARCHAR2(400),
+    MKT_APDIX_ID         VARCHAR2(40),
+    TEMP_ID              VARCHAR2(40),
+    TEMP_NAME            VARCHAR2(100),
+    MSG_SHORT_SEQ_ID     VARCHAR2(40),
+    PERSN_LEGAL_BK_CODE  VARCHAR2(30),
+    CORDNAT_VISITOR      VARCHAR2(100),
+    CORDNAT_VISITOR_NAME VARCHAR2(200),
+    LGTUD                VARCHAR2(40),
+    LATTUD               VARCHAR2(40),
+    TEL_NO               VARCHAR2(40),
+    CHNL_NO              VARCHAR2(6),
+    RMARK                VARCHAR2(400),
+    NO_BAT               VARCHAR2(40),
+    MSG_SHORT_INF        VARCHAR2(500)
+);
+
+CREATE TABLE TMP_CDR_DTL_PERIOD (
+    STAT_PERD VARCHAR2(1),
+    BGN_DT    DATE,
+    END_DT    DATE
+);
+
+CREATE TABLE TMP_CDR_DTL_MATURE_SRC (
+    CUST_ID             VARCHAR2(64),
+    STATIS_TYP          VARCHAR2(1),
+    ACCT_ID             VARCHAR2(64),
+    PRDKT_ID            VARCHAR2(64),
+    PRDKT_NAME          VARCHAR2(200),
+    EXPR_AMT            NUMBER(20,2),
+    EXPR_DT             DATE,
+    PERSN_LEGAL_BK_CODE VARCHAR2(32),
+    ORG_ID              VARCHAR2(64)
+);
+
+CREATE TABLE TMP_CDR_DTL_DUE_WIN (
+    STAT_PERD           VARCHAR2(1),
+    BGN_DT              DATE,
+    END_DT              DATE,
+    CUST_ID             VARCHAR2(64),
+    STATIS_TYP          VARCHAR2(1),
+    FIRST_EXPR_DT       DATE,
+    LAST_EXPR_DT        DATE,
+    EXPR_AMT            NUMBER(20,2),
+    MATURE_TTL_AMT      NUMBER(20,2),
+    TAKE_END_DT_30D     DATE,
+    PERSN_LEGAL_BK_CODE VARCHAR2(32),
+    ORG_ID              VARCHAR2(64)
+);
+
+CREATE TABLE TMP_CDR_DTL_PURCHASE_SRC (
+    CUST_ID             VARCHAR2(64),
+    PRDKT_TYP           VARCHAR2(10),
+    BUY_AMT             NUMBER(20,2),
+    BUY_DT              DATE,
+    PERSN_LEGAL_BK_CODE VARCHAR2(32),
+    ORG_ID              VARCHAR2(64)
+);
+
+CREATE TABLE TMP_CDR_DTL_TAKE_AMT (
+    STAT_PERD           VARCHAR2(1),
+    CUST_ID             VARCHAR2(64),
+    STATIS_TYP          VARCHAR2(1),
+    TAKE_AMT_30D        NUMBER(20,2),
+    BUY_DEPO_AMT_30D    NUMBER(20,2),
+    BUY_FIN_AMT_30D     NUMBER(20,2),
+    BUY_INSUR_AMT_30D   NUMBER(20,2),
+    FIRST_BUY_DT_30D    DATE,
+    PERSN_LEGAL_BK_CODE VARCHAR2(32),
+    ORG_ID              VARCHAR2(64)
+);
+
+CREATE TABLE TMP_CDR_DTL_CROSS_CONV (
+    STAT_PERD                 VARCHAR2(1),
+    CUST_ID                   VARCHAR2(64),
+    STATIS_TYP                VARCHAR2(1),
+    PERSN_LEGAL_BK_CODE       VARCHAR2(32),
+    ORG_ID                    VARCHAR2(64),
+    FIN_MATURE_TRAN_FIXED_AMT NUMBER(20,2),
+    FIXED_MATURE_TRAN_FIN_AMT NUMBER(20,2)
+);
+
+CREATE TABLE TMP_CDR_DTL_CUST_BASE (
+    CUST_ID             VARCHAR2(64),
+    CUST_NAME           VARCHAR2(200),
+    CUST_LVL            VARCHAR2(20),
+    POST_ID             VARCHAR2(64),
+    PERSN_LEGAL_BK_CODE VARCHAR2(32),
+    DEPO_CURNT_DEPO_BAL NUMBER(20,2),
+    FIXD_DEPO_BAL       NUMBER(20,2),
+    FIN_AMT             NUMBER(20,2),
+    AUM_BAL             NUMBER(20,2)
+);
+
+CREATE TABLE TMP_CDR_DTL_AUM_BAL (
+    STAT_PERD           VARCHAR2(1),
+    CUST_ID             VARCHAR2(64),
+    STATIS_TYP          VARCHAR2(1),
+    AUM_TYP             VARCHAR2(10),
+    DATA_DATE           VARCHAR2(8),
+    AUM_BAL             NUMBER(20,2),
+    PERSN_LEGAL_BK_CODE VARCHAR2(32),
+    ORG_ID              VARCHAR2(64)
+);
+
+CREATE TABLE TMP_CDR_STAT_BASE (
+    PERSN_LEGAL_BK_CODE              VARCHAR2(32),
+    DATA_DATE                        VARCHAR2(8),
+    STAT_PERD                        VARCHAR2(1),
+    STATIS_TYP                       VARCHAR2(1),
+    CUST_ID                          VARCHAR2(64),
+    ORG_ID                           VARCHAR2(64),
+    POST_ID                          VARCHAR2(64),
+    EXPR_AMT                         NUMBER(20,2),
+    MATURE_TTL_AMT                   NUMBER(20,2),
+    TAKE_RATE_30D                    NUMBER(10,4),
+    CUST_TAKE_FLG                    VARCHAR2(1),
+    FIXED_MATURE_TRAN_FIN_AMT        NUMBER(20,2),
+    FIXED_FIN_TRAN_INSUR_AMT         NUMBER(20,2),
+    FIN_MATURE_TRAN_FIXED_AMT        NUMBER(20,2),
+    FRST_MATURE_PK_BF_DAY_AUM_BAL    NUMBER(20,2),
+    CURR_AUM_BAL                     NUMBER(20,2),
+    FIX_DEPO_MATURE_AMT              NUMBER(20,2),
+    FIX_DEPO_MATURE_TTL_AMT          NUMBER(20,2),
+    FIX_DEPO_TAKE_RATE               NUMBER(10,4)
+);
+
+CREATE TABLE TMP_CDR_STAT_SRC (
+    PERSN_LEGAL_BK_CODE              VARCHAR2(32),
+    STATIS_OBJ                       VARCHAR2(64),
+    DATA_DATE                        VARCHAR2(8),
+    STAT_PERD                        VARCHAR2(1),
+    STATIS_TYP                       VARCHAR2(1),
+    CUST_ID                          VARCHAR2(64),
+    ORG_ID                           VARCHAR2(64),
+    POST_ID                          VARCHAR2(64),
+    EXPR_AMT                         NUMBER(20,2),
+    MATURE_TTL_AMT                   NUMBER(20,2),
+    TAKE_RATE_30D                    NUMBER(10,4),
+    CUST_TAKE_FLG                    VARCHAR2(1),
+    FIXED_MATURE_TRAN_FIN_AMT        NUMBER(20,2),
+    FIXED_FIN_TRAN_INSUR_AMT         NUMBER(20,2),
+    FIN_MATURE_TRAN_FIXED_AMT        NUMBER(20,2),
+    FRST_MATURE_PK_BF_DAY_AUM_BAL    NUMBER(20,2),
+    CURR_AUM_BAL                     NUMBER(20,2),
+    FIX_DEPO_MATURE_AMT              NUMBER(20,2),
+    FIX_DEPO_MATURE_TTL_AMT          NUMBER(20,2),
+    FIX_DEPO_TAKE_RATE               NUMBER(10,4)
+);
+
+CREATE TABLE ADS_CUST_DEADLINE_RMND_DTL (
+    PERSN_LEGAL_BK_CODE             VARCHAR2(4),
+    DATA_DATE                       VARCHAR2(8),
+    CUST_ID                         VARCHAR2(20),
+    CUST_NAME                       VARCHAR2(100),
+    CUST_LVL                        VARCHAR2(2),
+    DEPO_CURNT_DEPO_BAL             NUMBER(20,2),
+    FIXD_DEPO_BAL                   NUMBER(20,2),
+    FIN_AMT                         NUMBER(20,2),
+    STAT_PERD                       VARCHAR2(2),
+    STATIS_TYP                      VARCHAR2(2),
+    EXPR_AMT                        NUMBER(20,2),
+    MATURE_TTL_AMT                  NUMBER(20,2),
+    TAKE_RATE                       NUMBER(10,2),
+    FIX_DEPO_MATURE_AMT             NUMBER(20,2),
+    FIX_DEPO_MATURE_TTL_AMT         NUMBER(20,2),
+    FIX_DEPO_TAKE_RATE              NUMBER(10,2),
+    CNTCT_STATE                     VARCHAR2(1),
+    UNDTAKE_STATE                   VARCHAR2(1),
+    FIXED_FIN_TRAN_INSUR_AMT        NUMBER(20,2),
+    FIN_MATURE_TRAN_FIXED_AMT       NUMBER(20,2),
+    FIXED_MATURE_TRAN_FIN_AMT       NUMBER(20,2),
+    FRST_MATURE_PK_BF_DAY_AUM_BAL   NUMBER(20,2),
+    LAST_END_DATE                   VARCHAR2(8),
+    POST_ID                         VARCHAR2(20),
+    ORG_ID                          VARCHAR2(7)
+);
+
+CREATE TABLE ADS_CUST_DEADLINE_RMND_STATIS (
+    PERSN_LEGAL_BK_CODE      VARCHAR2(4),
+    DATA_DATE                VARCHAR2(8),
+    STATIS_OBJ               VARCHAR2(20),
+    STATIS_CYCLE             VARCHAR2(2),
+    STATIS_TYP               VARCHAR2(2),
+    EXPR_CUST_CNT            NUMBER(8),
+    TTL_EXPR_CUST_CNT        NUMBER(8),
+    EXPR_AMT                 NUMBER(20,2),
+    TTL_EXPR_AMT             NUMBER(20,2),
+    CUST_UNDTAKE_RATE        NUMBER(20,2),
+    ASSET_KEEP_RATE          NUMBER(20,2),
+    ASSET_UNDTAKE_RATE       NUMBER(20,2),
+    DEPO_TO_FIN_CONVRS_RATE  NUMBER(20,2),
+    INSUR_CONVRS_RATE        NUMBER(20,2),
+    FIN_TO_DEPO_CONVRS_RATE  NUMBER(20,2)
+);
+
+CREATE TABLE SYS_PRC_STEP_LOG (
+    DATA_DATE   VARCHAR2(8),
+    PRC_NAME    VARCHAR2(64),
+    PRC_DESC    VARCHAR2(100),
+    STEP_NO     VARCHAR2(10),
+    BGN_DATE    DATE,
+    END_DATE    DATE,
+    DURA_SEC    NUMBER,
+    LOG_MSG     VARCHAR2(4000),
+    LOG_FLG     NUMBER,
+    LOG_BUTTON  NUMBER
+);
+
+-- ---------- Date utility function (Oracle PL/SQL port) ----------
+CREATE OR REPLACE FUNCTION SYS_FUN_DEAL_DATE(p_dat VARCHAR2, p_pd NUMBER)
+RETURN VARCHAR2 IS
+  V_DATE       DATE;
+  V_RETUR_DATE VARCHAR2(8);
+BEGIN
+  V_DATE := TO_DATE(p_dat, 'YYYYMMDD');
+  CASE p_pd
+    WHEN 1  THEN V_RETUR_DATE := TO_CHAR(V_DATE - 1, 'YYYYMMDD');
+    WHEN 2  THEN V_RETUR_DATE := TO_CHAR(LAST_DAY(ADD_MONTHS(V_DATE, -1)), 'YYYYMMDD');
+    WHEN 3  THEN V_RETUR_DATE := TO_CHAR(TRUNC(V_DATE, 'Q') - 1, 'YYYYMMDD');
+    WHEN 4  THEN V_RETUR_DATE := TO_CHAR(TRUNC(V_DATE, 'YEAR') - 1, 'YYYYMMDD');
+    WHEN 5  THEN V_RETUR_DATE := TO_CHAR(V_DATE - 2, 'YYYYMMDD');
+    WHEN 6  THEN V_RETUR_DATE := TO_CHAR(LAST_DAY(ADD_MONTHS(V_DATE, -2)), 'YYYYMMDD');
+    WHEN 7  THEN V_RETUR_DATE := TO_CHAR(TRUNC(ADD_MONTHS(V_DATE, -3), 'Q') - 1, 'YYYYMMDD');
+    WHEN 8  THEN V_RETUR_DATE := TO_CHAR(TRUNC(ADD_MONTHS(V_DATE, -12), 'YEAR') - 1, 'YYYYMMDD');
+    WHEN 9  THEN V_RETUR_DATE := TO_CHAR(TRUNC(V_DATE, 'MONTH'), 'YYYYMMDD');
+    WHEN 10 THEN V_RETUR_DATE := TO_CHAR(LAST_DAY(V_DATE), 'YYYYMMDD');
+    WHEN 11 THEN V_RETUR_DATE := TO_CHAR(TRUNC(V_DATE, 'Q'), 'YYYYMMDD');
+    WHEN 12 THEN V_RETUR_DATE := TO_CHAR(TRUNC(ADD_MONTHS(V_DATE, 3), 'Q') - 1, 'YYYYMMDD');
+    WHEN 13 THEN V_RETUR_DATE := TO_CHAR(TRUNC(V_DATE, 'YEAR'), 'YYYYMMDD');
+    WHEN 14 THEN V_RETUR_DATE := TO_CHAR(TRUNC(ADD_MONTHS(V_DATE, 12), 'YEAR') - 1, 'YYYYMMDD');
+    WHEN 15 THEN V_RETUR_DATE := TO_CHAR(TRUNC(ADD_MONTHS(V_DATE, -1), 'MONTH'), 'YYYYMMDD');
+    WHEN 16 THEN V_RETUR_DATE := TO_CHAR(TRUNC(ADD_MONTHS(V_DATE, -3), 'Q'), 'YYYYMMDD');
+    WHEN 17 THEN V_RETUR_DATE := TO_CHAR(TRUNC(ADD_MONTHS(V_DATE, -12), 'YEAR'), 'YYYYMMDD');
+    WHEN 18 THEN V_RETUR_DATE := TO_CHAR(V_DATE - 30, 'YYYYMMDD');
+    WHEN 19 THEN V_RETUR_DATE := TO_CHAR(ADD_MONTHS(V_DATE, -36), 'YYYYMMDD');
+    WHEN 20 THEN V_RETUR_DATE := TO_CHAR(ADD_MONTHS(V_DATE, -1), 'YYYYMMDD');
+    WHEN 21 THEN V_RETUR_DATE := TO_CHAR(ADD_MONTHS(V_DATE, -6), 'YYYYMMDD');
+    WHEN 22 THEN V_RETUR_DATE := TO_CHAR(V_DATE - 365, 'YYYYMMDD');
+    WHEN 23 THEN V_RETUR_DATE := TO_CHAR(V_DATE - 180, 'YYYYMMDD');
+    ELSE V_RETUR_DATE := NULL;
+  END CASE;
+  RETURN V_RETUR_DATE;
+END;
+/
+
+-- ---------- Shared step log procedure ----------
+CREATE OR REPLACE PROCEDURE SYS_PRC_STEP_LOGS(
+  P_DATA_DATE  IN VARCHAR2,
+  P_PRC_NAME   IN VARCHAR2,
+  P_PRC_DESC   IN VARCHAR2,
+  P_STEP_NO    IN VARCHAR2,
+  P_BGN_DATE   IN DATE,
+  P_END_DATE   IN DATE,
+  P_DURA_SEC   IN NUMBER,
+  P_LOG_MSG    IN VARCHAR2,
+  P_LOG_FLG    IN NUMBER,
+  P_LOG_BUTTON IN NUMBER
+) IS
+BEGIN
+  IF P_LOG_BUTTON = 1 THEN
+    INSERT INTO SYS_PRC_STEP_LOG(DATA_DATE, PRC_NAME, PRC_DESC, STEP_NO, BGN_DATE, END_DATE, DURA_SEC, LOG_MSG, LOG_FLG, LOG_BUTTON)
+    VALUES (P_DATA_DATE, P_PRC_NAME, P_PRC_DESC, P_STEP_NO, P_BGN_DATE, P_END_DATE, P_DURA_SEC, P_LOG_MSG, P_LOG_FLG, P_LOG_BUTTON);
+  END IF;
+END;
+/
+
+PROMPT SETUP_SCHEMA_DONE

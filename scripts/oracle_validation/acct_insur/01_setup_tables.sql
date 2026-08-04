@@ -1,0 +1,144 @@
+-- ============================================================
+-- Insurance account (PRC_DWD_ACCT_INSUR) validation env (SCOTT)
+-- NOTE: YBT_POLICY_FEE_LIST gets TX_DATE column (referenced by proc
+-- but missing from workspace ODS DDL) to allow business validation;
+-- this inconsistency is recorded as a finding.
+-- ============================================================
+BEGIN
+  FOR t IN (SELECT table_name FROM user_tables
+             WHERE table_name IN (
+               'YBT_POLICY_BASE_INFO','YBT_POLICY_FEE_LIST','IBP_IB_LIST_PLAT',
+               'YBT_POLICY_INSURANCE_INFO','YBT_PRODUCT_INFO',
+               'TMP_DWD_ACCT_INSUR_SNAP','DWD_ACCT_INSUR')) LOOP
+    EXECUTE IMMEDIATE 'DROP TABLE ' || t.table_name;
+  END LOOP;
+END;
+/
+
+-- ODS: policy base info (key columns + constraints)
+CREATE TABLE YBT_POLICY_BASE_INFO (
+    PLAT_POLICY_SERIAL VARCHAR2(200) NOT NULL,
+    ITEM_ID            VARCHAR2(40) NOT NULL,
+    CONT_NO            VARCHAR2(200),
+    PROPOSAL_PRT_NO    VARCHAR2(200) NOT NULL,
+    ACCEPT_DATE        VARCHAR2(32) NOT NULL,
+    VALI_DATE          VARCHAR2(32),
+    PRODUCT_ID         VARCHAR2(200) NOT NULL,
+    PRODUCT_NAME       VARCHAR2(800) NOT NULL,
+    CONT_STATUS        VARCHAR2(8) NOT NULL,
+    CONT_SOURCE        VARCHAR2(8) NOT NULL,
+    ACC_NO             VARCHAR2(200) NOT NULL,
+    THROW_COM          VARCHAR2(200) NOT NULL,
+    PLAT_DATE          VARCHAR2(8),
+    CONSTRAINT PK_YBT_POLICY_BASE PRIMARY KEY (PLAT_POLICY_SERIAL)
+);
+
+-- ODS: policy fee list (TX_DATE added for proc validation; missing in workspace DDL)
+CREATE TABLE YBT_POLICY_FEE_LIST (
+    PLAT_POLICY_SERIAL VARCHAR2(200) NOT NULL,
+    ORD_AMT            NUMBER(17,2),
+    ORD_PAY_SERIAL     VARCHAR2(200),
+    ORD_CREATE_DATE    VARCHAR2(32),
+    TRAN_TYPE          VARCHAR2(8),
+    TX_DATE            VARCHAR2(10),
+    -- NOTE: workspace DDL uses single-column PK (PLAT_POLICY_SERIAL) which
+    -- cannot hold multiple transactions per policy; proc aggregates many rows.
+    -- Test env uses composite PK to continue validation (finding recorded).
+    CONSTRAINT PK_YBT_POLICY_FEE PRIMARY KEY (PLAT_POLICY_SERIAL, ORD_PAY_SERIAL)
+);
+
+-- ODS: ib list plat (key columns)
+CREATE TABLE IBP_IB_LIST_PLAT (
+    PLAT_SERIAL       VARCHAR2(35) NOT NULL,
+    PLAT_DATE         VARCHAR2(8) NOT NULL,
+    PLAT_TRAD_STATUS  VARCHAR2(1) NOT NULL,
+    USER_ID           VARCHAR2(80),
+    TRAN_DATE         VARCHAR2(8) NOT NULL,
+    CONSTRAINT PK_IBP_IB_LIST PRIMARY KEY (PLAT_SERIAL)
+);
+
+-- ODS: policy insurance info (period/pay columns)
+CREATE TABLE YBT_POLICY_INSURANCE_INFO (
+    PLAT_POLICY_SERIAL VARCHAR2(200) NOT NULL,
+    PAY_TYPE           VARCHAR2(8) NOT NULL,
+    PAY_FREQ           VARCHAR2(16),
+    PAY_PER_UNIT       VARCHAR2(16),
+    PAY_PER_NUM        NUMBER(10),
+    VALID_PER_UNIT     VARCHAR2(16) NOT NULL,
+    VALID_PER_NUM      NUMBER(10) NOT NULL,
+    CONSTRAINT PK_YBT_POLICY_INSUR PRIMARY KEY (PLAT_POLICY_SERIAL)
+);
+
+-- ODS: product info
+CREATE TABLE YBT_PRODUCT_INFO (
+    PRODUCT_ID        VARCHAR2(200) NOT NULL,
+    PRODUCT_NAME      VARCHAR2(800) NOT NULL,
+    PRODUCT_BIG_TYPE  VARCHAR2(40) NOT NULL,
+    CONSTRAINT PK_YBT_PRODUCT PRIMARY KEY (PRODUCT_ID)
+);
+
+-- snapshot temp table (26 cols, 4-key PK)
+CREATE TABLE TMP_DWD_ACCT_INSUR_SNAP (
+    CUST_ID              VARCHAR2(20) NOT NULL,
+    CUST_TYP             VARCHAR2(4),
+    ACCT_ID              VARCHAR2(40) NOT NULL,
+    PRDKT_ID             VARCHAR2(40) NOT NULL,
+    PRDKT_NAME           VARCHAR2(100),
+    PRDKT_CATE_BIG       VARCHAR2(64),
+    INSUR_BID_FORM_NO    VARCHAR2(40) NOT NULL,
+    TX_DATE              VARCHAR2(8),
+    LAST_TX_DATE         VARCHAR2(8),
+    TX_ORG               VARCHAR2(7),
+    TX_CHNL              VARCHAR2(10),
+    MKT_ORG              VARCHAR2(7),
+    BGN_INSUR_DATE       VARCHAR2(10),
+    CANCL_INSUR_DATE     VARCHAR2(10),
+    ACTL_TERM_DATE       VARCHAR2(8),
+    PAY_UPTO_DATE        VARCHAR2(8),
+    INSUR_PERIOD_TYP     VARCHAR2(2),
+    INSUR_PERIOD         VARCHAR2(6),
+    PAY_PERIOD_TYP       VARCHAR2(2),
+    PAY_PERIOD           VARCHAR2(6),
+    PAY_PATRN            VARCHAR2(2),
+    NEW_INSUR_AMT        NUMBER(20,2),
+    INSUR_AMT            NUMBER(20,2),
+    POLICY_STATE         VARCHAR2(8) NOT NULL,
+    TX_TYP               VARCHAR2(1),
+    PERSN_LEGAL_BK_CODE  VARCHAR2(4),
+    CONSTRAINT PK_TMP_SNAP PRIMARY KEY (CUST_ID, ACCT_ID, PRDKT_ID, INSUR_BID_FORM_NO)
+);
+
+-- target DWD table v2.0 (26 cols, 4-key PK, NOT NULLs, indexes)
+CREATE TABLE DWD_ACCT_INSUR (
+    CUST_ID              VARCHAR2(20) NOT NULL,
+    CUST_TYP             VARCHAR2(4),
+    ACCT_ID              VARCHAR2(40) NOT NULL,
+    PRDKT_ID             VARCHAR2(40) NOT NULL,
+    PRDKT_NAME           VARCHAR2(100),
+    PRDKT_CATE_BIG       VARCHAR2(64),
+    INSUR_BID_FORM_NO    VARCHAR2(40) NOT NULL,
+    TX_DATE              VARCHAR2(8),
+    LAST_TX_DATE         VARCHAR2(8),
+    TX_ORG               VARCHAR2(7),
+    TX_CHNL              VARCHAR2(10),
+    MKT_ORG              VARCHAR2(7),
+    BGN_INSUR_DATE       VARCHAR2(10),
+    CANCL_INSUR_DATE     VARCHAR2(10),
+    ACTL_TERM_DATE       VARCHAR2(8),
+    PAY_UPTO_DATE        VARCHAR2(8),
+    INSUR_PERIOD_TYP     VARCHAR2(2),
+    INSUR_PERIOD         VARCHAR2(6),
+    PAY_PERIOD_TYP       VARCHAR2(2),
+    PAY_PERIOD           VARCHAR2(6),
+    PAY_PATRN            VARCHAR2(2),
+    NEW_INSUR_AMT        NUMBER(20,2),
+    INSUR_AMT            NUMBER(20,2),
+    POLICY_STATE         VARCHAR2(8) NOT NULL,
+    TX_TYP               VARCHAR2(1),
+    PERSN_LEGAL_BK_CODE  VARCHAR2(4),
+    CONSTRAINT PK_DWD_ACCT_INSUR PRIMARY KEY (CUST_ID, ACCT_ID, PRDKT_ID, INSUR_BID_FORM_NO)
+);
+CREATE INDEX IDX_DWD_ACCT_INSUR_STATE ON DWD_ACCT_INSUR(POLICY_STATE);
+CREATE INDEX IDX_DWD_ACCT_INSUR_CUST  ON DWD_ACCT_INSUR(CUST_ID);
+
+PROMPT SETUP_INSUR_TABLES_DONE

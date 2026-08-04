@@ -106,3 +106,105 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_AUM_BAL (
     PERSN_LEGAL_BK_CODE  VARCHAR2(32),  -- 法人行号
     ORG_ID               VARCHAR2(64)   -- 归属机构
 );
+
+-- 2.8 本期隔离存储表（v3.0.0：两期计算完全分离，本期结果仅写入本表）
+DROP TABLE IF NOT EXISTS TMP_CDR_DTL_CURR_STAGE;
+CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_CURR_STAGE (
+    PERSN_LEGAL_BK_CODE   VARCHAR2(4),   -- 法人行号
+    DATA_DATE             VARCHAR2(8),   -- 数据日期=跑批日期V_SYSDAT
+    CUST_ID               VARCHAR2(20),  -- 客户编号
+    CUST_NAME             VARCHAR2(100), -- 客户名称
+    CUST_LVL              VARCHAR2(2),   -- 客户等级
+    DEPO_CURNT_DEPO_BAL   NUMBER(20,2),  -- 活期余额
+    FIXD_DEPO_BAL         NUMBER(20,2),  -- 定期余额
+    FIN_AMT               NUMBER(20,2),  -- 理财余额
+    STAT_PERD             VARCHAR2(2),   -- 统计周期：M-月,Q-季,Y-年
+    STATIS_TYP            VARCHAR2(2),   -- 承接类型：0-全部,1-存款,2-理财
+    EXPR_AMT              NUMBER(20,2),  -- 到期金额
+    MATURE_TTL_AMT        NUMBER(20,2),  -- 到期总金额
+    TAKE_RATE             NUMBER(10,2),  -- 30天客户承接金额占比
+    FIX_DEPO_MATURE_AMT   NUMBER(20,2),  -- 定期存款到期金额
+    FIX_DEPO_MATURE_TTL_AMT NUMBER(20,2),-- 定期存款到期总金额
+    FIX_DEPO_TAKE_RATE    NUMBER(10,2),  -- 定期存款30天承接率
+    CNTCT_STATE           VARCHAR2(1),   -- 接触状态
+    UNDTAKE_STATE         VARCHAR2(1),   -- 承接状态
+    FIXED_FIN_MATURE_TRAN_INSUR_AMT NUMBER(20,2), -- 到期转保险金额
+    FIN_MATURE_TRAN_FIXED_AMT NUMBER(20,2), -- 理财到期转定期金额
+    FIXED_MATURE_TRAN_FIN_AMT NUMBER(20,2), -- 定期到期转理财金额
+    FRST_MATURE_PK_BF_DAY_AUM_BAL NUMBER(20,2), -- 本期第一笔到期产品前一日AUM余额
+    LAST_END_DATE         VARCHAR2(8),   -- 本期最后一笔到期产品日期
+    POST_ID               VARCHAR2(20),  -- 管户经理
+    ORG_ID                VARCHAR2(7)    -- 归属机构
+);
+
+-- 2.9 上期隔离存储表（v3.0.0：上期结果仅写入本表，目标表仅定点更新7字段）
+DROP TABLE IF NOT EXISTS TMP_CDR_DTL_PREV_STAGE;
+CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_PREV_STAGE (
+    PERSN_LEGAL_BK_CODE   VARCHAR2(4),   -- 法人行号
+    DATA_DATE             VARCHAR2(8),   -- 数据日期=上期期末日期
+    CUST_ID               VARCHAR2(20),  -- 客户编号
+    CUST_NAME             VARCHAR2(100), -- 客户名称
+    CUST_LVL              VARCHAR2(2),   -- 客户等级
+    DEPO_CURNT_DEPO_BAL   NUMBER(20,2),  -- 活期余额
+    FIXD_DEPO_BAL         NUMBER(20,2),  -- 定期余额
+    FIN_AMT               NUMBER(20,2),  -- 理财余额
+    STAT_PERD             VARCHAR2(2),   -- 统计周期：M-月,Q-季,Y-年
+    STATIS_TYP            VARCHAR2(2),   -- 承接类型：0-全部,1-存款,2-理财
+    EXPR_AMT              NUMBER(20,2),  -- 到期金额
+    MATURE_TTL_AMT        NUMBER(20,2),  -- 到期总金额
+    TAKE_RATE             NUMBER(10,2),  -- 30天客户承接金额占比
+    FIX_DEPO_MATURE_AMT   NUMBER(20,2),  -- 定期存款到期金额
+    FIX_DEPO_MATURE_TTL_AMT NUMBER(20,2),-- 定期存款到期总金额
+    FIX_DEPO_TAKE_RATE    NUMBER(10,2),  -- 定期存款30天承接率
+    CNTCT_STATE           VARCHAR2(1),   -- 接触状态
+    UNDTAKE_STATE         VARCHAR2(1),   -- 承接状态
+    FIXED_FIN_MATURE_TRAN_INSUR_AMT NUMBER(20,2), -- 到期转保险金额
+    FIN_MATURE_TRAN_FIXED_AMT NUMBER(20,2), -- 理财到期转定期金额
+    FIXED_MATURE_TRAN_FIN_AMT NUMBER(20,2), -- 定期到期转理财金额
+    FRST_MATURE_PK_BF_DAY_AUM_BAL NUMBER(20,2), -- 本期第一笔到期产品前一日AUM余额
+    LAST_END_DATE         VARCHAR2(8),   -- 本期最后一笔到期产品日期
+    POST_ID               VARCHAR2(20),  -- 管户经理
+    ORG_ID                VARCHAR2(7)    -- 归属机构
+);
+
+-- 2.10 上期冻结快照表（v3.0.0：验证段比对18基础字段是否被修改）
+DROP TABLE IF NOT EXISTS TMP_CDR_DTL_FREEZE_LOG;
+CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_FREEZE_LOG (
+    BATCH_DATE            VARCHAR2(8),   -- 跑批日期
+    PERSN_LEGAL_BK_CODE   VARCHAR2(4),   -- 法人行号
+    DATA_DATE             VARCHAR2(8),   -- 数据日期
+    CUST_ID               VARCHAR2(20),  -- 客户编号
+    CUST_NAME             VARCHAR2(100), -- 客户名称
+    CUST_LVL              VARCHAR2(2),   -- 客户等级
+    DEPO_CURNT_DEPO_BAL   NUMBER(20,2),  -- 活期余额
+    FIXD_DEPO_BAL         NUMBER(20,2),  -- 定期余额
+    FIN_AMT               NUMBER(20,2),  -- 理财余额
+    STAT_PERD             VARCHAR2(2),   -- 统计周期
+    STATIS_TYP            VARCHAR2(2),   -- 承接类型
+    EXPR_AMT              NUMBER(20,2),  -- 到期金额
+    MATURE_TTL_AMT        NUMBER(20,2),  -- 到期总金额
+    TAKE_RATE             NUMBER(10,2),  -- 承接率
+    FIX_DEPO_MATURE_AMT   NUMBER(20,2),  -- 定期存款到期金额
+    FIX_DEPO_MATURE_TTL_AMT NUMBER(20,2),-- 定期存款到期总金额
+    FIX_DEPO_TAKE_RATE    NUMBER(10,2),  -- 定期存款承接率
+    CNTCT_STATE           VARCHAR2(1),   -- 接触状态
+    UNDTAKE_STATE         VARCHAR2(1),   -- 承接状态
+    FIXED_FIN_MATURE_TRAN_INSUR_AMT NUMBER(20,2), -- 到期转保险金额
+    FIN_MATURE_TRAN_FIXED_AMT NUMBER(20,2), -- 理财到期转定期金额
+    FIXED_MATURE_TRAN_FIN_AMT NUMBER(20,2), -- 定期到期转理财金额
+    FRST_MATURE_PK_BF_DAY_AUM_BAL NUMBER(20,2), -- 第一笔到期前一日AUM
+    LAST_END_DATE         VARCHAR2(8),   -- 最后一笔到期产品日期
+    POST_ID               VARCHAR2(20),  -- 管户经理
+    ORG_ID                VARCHAR2(7)    -- 归属机构
+);
+
+-- 2.11 两期验证结果日志表（v3.0.0：DTL/STATIS 共用，FAIL即中止批次）
+DROP TABLE IF NOT EXISTS TMP_CDR_VALIDATE_RESULT;
+CREATE TABLE IF NOT EXISTS TMP_CDR_VALIDATE_RESULT (
+    BATCH_DATE    VARCHAR2(8),   -- 跑批日期
+    PERIOD_TYP    VARCHAR2(1),   -- 期别：C-本期,P-上期
+    VALIDATE_ITEM VARCHAR2(100), -- 校验项
+    RESULT        VARCHAR2(5),   -- PASS/FAIL
+    DETAIL        VARCHAR2(500), -- 校验说明
+    CHECK_TIME    DATE           -- 校验时间
+);

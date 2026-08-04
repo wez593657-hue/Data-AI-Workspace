@@ -1,0 +1,16 @@
+schema_version: '0.1'
+task_id: deadline-rmnd-rules-20260801
+user_confirmation: confirmed
+objective: 到期承接模块按七批33条确认口径实施代码对齐（DTL/STATIS v2.8.0）：BAL_TYPE=1、关联键移除ORG_ID、接触状态30天窗口、转化率按STATIS_TYP限定、统计表回退15列、CROSS_CONV补STATIS_TYP，并同步需求文档、记忆卡片与变更记录
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_DEADLINE_RMND_STATIS.sql
+  - path: requirements/05_经营管理.md
+  - path: requirements/08_移动端客户.md
+  - path: requirements/到期承接规则记忆卡片.md
+  - path: requirements/理财账户规则记忆卡片.md
+  - path: docs/analysis/
+  - path: docs/changes/2026-08-01-deadline-rmnd-rules-implementation.md
+  - path: .harness/tasks/deadline-rmnd-rules-20260801/
+read_only_inputs: []
+forbidden_changes: []

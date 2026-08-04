@@ -1,0 +1,28 @@
+{
+  "table_name": "TMP_CDR_STAT_FREEZE_LOG",
+  "procedure": "PRC_ADS_CUST_DEADLINE_RMND_STATIS.sql",
+  "purpose": "上期统计冻结快照：计算前快照上期9基础列，供验证段比对是否被修改（方案B/口径36）。",
+  "source_tables": ["ADS_CUST_DEADLINE_RMND_STATIS"],
+  "columns": [
+    {"name": "BATCH_DATE", "type": "VARCHAR2(8)", "nullable": true},
+    {"name": "PERSN_LEGAL_BK_CODE", "type": "VARCHAR2(4)", "nullable": true},
+    {"name": "DATA_DATE", "type": "VARCHAR2(8)", "nullable": true},
+    {"name": "STATIS_OBJ", "type": "VARCHAR2(20)", "nullable": true},
+    {"name": "STATIS_CYCLE", "type": "VARCHAR2(2)", "nullable": true},
+    {"name": "STATIS_TYP", "type": "VARCHAR2(2)", "nullable": true},
+    {"name": "EXPR_CUST_CNT", "type": "NUMBER(8)", "nullable": true},
+    {"name": "TTL_EXPR_CUST_CNT", "type": "NUMBER(8)", "nullable": true},
+    {"name": "EXPR_AMT", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "TTL_EXPR_AMT", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "CUST_UNDTAKE_RATE", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "ASSET_KEEP_RATE", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "ASSET_UNDTAKE_RATE", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "DEPO_TO_FIN_CONVRS_RATE", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "INSUR_CONVRS_RATE", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "FIN_TO_DEPO_CONVRS_RATE", "type": "NUMBER(20,2)", "nullable": true}
+  ],
+  "indexes": ["BATCH_DATE, STATIS_CYCLE, DATA_DATE"],
+  "lifecycle": {"cleanup": "过程开始时TRUNCATE，保留当次跑批验证用。", "concurrency": "批次内独占。"},
+  "approval_status": "approved",
+  "approved_by": "Codex（用户确认REQ-CHG-20260803-002）"
+}
