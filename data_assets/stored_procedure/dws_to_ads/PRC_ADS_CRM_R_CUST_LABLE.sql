@@ -10,8 +10,12 @@ AS
   -- 来源表: DWD_CUST_INDV_INFO, DWD_TX_ASET, crmdm.mbk_cust_log_fee, crmdm.mbk_cust_info, crmdm.uepp_pay_order_info
   -- 目标表: ADS_CRM_R_CUST_LABLE
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v1.3.1
+  -- 需求版本: v1.3.2
   -- 变更记录:
+  --   v1.3.2 2026-08-04 F-01:修复TMP_02/TMP_03 SELECT列顺序与INSERT不一致导致PERSN_LEGAL_BK_CODE与CUST_ID交叉写入；
+  --                        F-02:补充TMP_02/TMP_03近1月窗口上界TX_DATE<=V_SYSDAT；
+  --                        F-03:删除V_END_DATE无效初始化；
+  --                        F-04:确认DWD_TX_ASET.AMT字段存在(NUMBER(18,4)发生额)，引用正确
   --   v1.3.1 2026-07-29 补充材料开发：BILL_RSV_MKNT_CNT_MTH_LAST+AMT_MTH_LAST(收单商户上月交易)，源表uepp_pay_order_info
   --   v1.3.0 2026-07-29 架构重构：拆分6个独立临时表，每段独立INSERT，最终多表LEFT JOIN汇聚到目标表
   --   v1.2.1 2026-07-29 双键关联：所有源表关联统一使用CUST_ID+PERSN_LEGAL_BK_CODE作为计算单位
@@ -73,8 +77,6 @@ BEGIN
   TRUNC_TMP('TMP_ADS_CRM_CUST_LABLE_07');
   COMMIT;
 
-  V_END_DATE := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
   V_LOG_MSG := 'TMP1 完成：清理目标表和7个临时表';
   V_LOG_FLG := OUTCDE;
@@ -107,14 +109,15 @@ BEGIN
       NEAR_MTH_TX_CNT,
       NEAR_MTH_TX_AMT
   )
-  SELECT CUST_ID,
-         PERSN_LEGAL_BK_CODE,
+  SELECT PERSN_LEGAL_BK_CODE,
+         CUST_ID,
          COUNT(*)    AS TX_CNT,
          SUM(AMT)    AS TX_AMT
     FROM DWD_TX_ASET
    WHERE TX_DATE >= V_ONE_MONTH_AGO
+     AND TX_DATE <= V_SYSDAT
      AND JIOYCFFS = '0'
-   GROUP BY CUST_ID, PERSN_LEGAL_BK_CODE;
+   GROUP BY PERSN_LEGAL_BK_CODE, CUST_ID;
 
   -- 3.3 近1月第三方支付交易（网联渠道）
   INSERT INTO TMP_ADS_CRM_CUST_LABLE_03 (
@@ -123,15 +126,16 @@ BEGIN
       NEAR_MTH_THIRD_PAY_OUT_CNT,
       NEAR_MTH_THIRD_PAY_OUT_AMT
   )
-  SELECT CUST_ID,
-         PERSN_LEGAL_BK_CODE,
+  SELECT PERSN_LEGAL_BK_CODE,
+         CUST_ID,
          COUNT(*)    AS THIRD_TX_CNT,
          SUM(AMT)    AS THIRD_TX_AMT
     FROM DWD_TX_ASET
    WHERE TX_DATE >= V_ONE_MONTH_AGO
+     AND TX_DATE <= V_SYSDAT
      -- TODO[待确认]: 网联渠道码值，当前：3026(WLYYPT网联应用平台) + 3030(WLYZF网联翼支付)
      AND TX_CHNL IN ('3026', '3030')
-   GROUP BY CUST_ID, PERSN_LEGAL_BK_CODE;
+   GROUP BY PERSN_LEGAL_BK_CODE, CUST_ID;
 
   -- 3.4 是否向他行同名户规律转出
   -- 口径：近半年每月至少向他行同名账户转账一笔

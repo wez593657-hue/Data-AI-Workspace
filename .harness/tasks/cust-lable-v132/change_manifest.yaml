@@ -1,0 +1,12 @@
+schema_version: '0.1'
+task_id: cust-lable-v132
+user_confirmation: confirmed
+objective: 对私客户标签表Bug修复v1.3.2 - F-01修复SELECT/INSERT列顺序导致法人行号与客户号交叉写入/F-02补充近1月窗口上界/F-03删除V_END_DATE无效初始化/F-06 DDL版本号同步
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CRM_R_CUST_LABLE.sql
+  - path: data_assets/ddl/ads/ads_crm_r_cust_lable.sql
+  - path: requirements/对私客户标签表规则记忆卡片.md
+  - path: .harness/tasks/cust-lable-v132/
+read_only_inputs:
+  - path: docs/quality_rules.md
+forbidden_changes: []
