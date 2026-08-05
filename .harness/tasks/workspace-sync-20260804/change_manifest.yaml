@@ -11,6 +11,7 @@ allowed_changes:
   - path: governance/
   - path: scripts/
   - path: .harness/
+  - path: AGENTS.md
 read_only_inputs:
   - path: templates/procedure_template.sql
   - path: docs/quality_rules.md
