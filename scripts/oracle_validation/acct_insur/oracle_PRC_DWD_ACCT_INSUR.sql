@@ -13,11 +13,11 @@ AS
   --           2.3 更新逻辑：主键【已存在】时批量 UPDATE（刷新状态/余额/日期/机构）
   --           2.4 统一提交（新增+更新同一事务，失败整体回滚）
   --           永不删除，终止保单保留。
-  -- 来源表：YBT_POLICY_BASE_INFO(保单信息表)、YBT_POLICY_FEE_LIST(保单交易明细表)、
-  --         IBP_IB_LIST_PLAT(交易流水表)、YBT_POLICY_INSURANCE_INFO(保单承保险种信息表)、
-  --         YBT_PRODUCT_INFO(保险产品信息表)、DWD_CUST_INDV_INFO(客户基本信息)
+  -- 来源表：YBT_YBT_POLICY_BASE_INFO(保单信息表)、YBT_YBT_POLICY_FEE_LIST(保单交易明细表)、
+  --         YBT_IB_LIST_PLAT(交易流水表)、YBT_YBT_POLICY_INSURANCE_INFO(保单承保险种信息表)、
+  --         YBT_YBT_PRODUCT_INFO(保险产品信息表)、DWD_CUST_INDV_INFO(客户基本信息)
   -- 目标表：DWD_ACCT_INSUR(保险账户信息-保单级主档)、TMP_DWD_ACCT_INSUR_SNAP(聚合快照)
-  -- 需求版本: v2.2.0
+  -- 需求版本: v2.3.0
   -- 变更记录:
   --   v1.0.0 2026-06-30 初始版本
   --   v1.0.1 2026-07-28 字段映射修正(TX_TYP取TRAN_TYPE)、删除未使用变量、INSERT列顺序与DDL对齐
@@ -27,6 +27,9 @@ AS
   --   v2.1.0 2026-08-03 新增/更新逻辑分离(独立过程INS/UPD，已按评审要求合并回单过程)
   --   v2.2.0 2026-08-03 单过程分段执行新增与更新：快照一次计算 + 段落2.2新增 + 段落2.3更新，
   --                    参数验证、统一事务、批量/索引优化、字段与参数注释完整
+  --   v2.3.0 2026-08-05 对齐YBT源表：TX_DATE取ACCEPT_DATE；LAST_TX_DATE取缴费成功
+  --                    (ORD_TRAN_STATUS=2)的最近ORD_CREATE_DATE，无成功缴费时回退ACCEPT_DATE；
+  --                    交易日期和终止日期改为预聚合，避免相关子查询重复扫描
   -- 适配数据库：人大金仓 Oracle 兼容模式
   ------------------------------------------------------------------
   --***************************************
@@ -81,8 +84,11 @@ begin
       P.PRDKT_NAME                                                      AS PRDKT_NAME,
       P.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG,
       P.INSUR_BID_FORM_NO                                               AS INSUR_BID_FORM_NO,
-      TO_CHAR(MIN(P.TX_DATE_PARSED), 'YYYYMMDD')                        AS TX_DATE,      -- 首次交易日期
-      TO_CHAR(MAX(P.TX_DATE_PARSED), 'YYYYMMDD')                        AS LAST_TX_DATE, -- 最近交易日期
+      TO_CHAR(MIN(P.ACCEPT_DATE_PARSED), 'YYYYMMDD')                    AS TX_DATE,      -- 投保日期
+      COALESCE(
+          TO_CHAR(MAX(P.LAST_SUCCESS_TX_DATE), 'YYYYMMDD'),
+          TO_CHAR(MIN(P.ACCEPT_DATE_PARSED), 'YYYYMMDD')
+      )                                                                 AS LAST_TX_DATE, -- 最近成功缴费日期，无成功缴费回退投保日期
       P.TX_ORG                                                          AS TX_ORG,
       P.TX_CHNL                                                         AS TX_CHNL,
       P.MKT_ORG                                                         AS MKT_ORG,
@@ -90,10 +96,7 @@ begin
       P.CANCL_INSUR_DATE                                                AS CANCL_INSUR_DATE,
       -- 实际终止日期：状态交易最新日期 → 状态=2 时回退 CANCL_INSUR_DATE（排除9999）
       COALESCE(
-          (SELECT TO_CHAR(MAX(TO_DATE(SUBSTR(x.TX_DATE,1,10), 'YYYY-MM-DD')), 'YYYYMMDD')
-             FROM YBT_POLICY_FEE_LIST x
-            WHERE x.plat_policy_serial = P.plat_policy_serial
-              AND x.TRAN_TYPE IN ('2','3','4','5','6','8')),
+          TO_CHAR(MAX(P.ACTL_TERM_DATE_PARSED), 'YYYYMMDD'),
           CASE WHEN P.CONT_STATUS = '2'
                 AND P.CANCL_INSUR_DATE IS NOT NULL
                 AND P.CANCL_INSUR_DATE <> '9999-12-31'
@@ -112,25 +115,25 @@ begin
           WHEN P.CONT_STATUS = '0' THEN 0
           WHEN P.CONT_STATUS = '2' THEN 0
           WHEN P.PAY_PATRN = '0'
-           AND V_DATA_DATE >= ADD_MONTHS(MIN(P.TX_DATE_PARSED), 12) THEN 0
+           AND V_DATA_DATE >= ADD_MONTHS(MIN(P.ACCEPT_DATE_PARSED), 12) THEN 0
           WHEN P.PAY_PATRN = '1'
            AND P.PAY_PERIOD IS NOT NULL
            AND REGEXP_LIKE(P.PAY_PERIOD, '^[0-9]+$')
            AND P.PAY_PERIOD_TYP IN ('12','1','2')
            AND V_DATA_DATE >= CASE P.PAY_PERIOD_TYP
-                                   WHEN '12' THEN ADD_MONTHS(MIN(P.TX_DATE_PARSED), TO_NUMBER(P.PAY_PERIOD) * 12)
-                                   WHEN '1'  THEN ADD_MONTHS(MIN(P.TX_DATE_PARSED), TO_NUMBER(P.PAY_PERIOD))
-                                   WHEN '2'  THEN MIN(P.TX_DATE_PARSED) + TO_NUMBER(P.PAY_PERIOD)
+                                   WHEN '12' THEN ADD_MONTHS(MIN(P.ACCEPT_DATE_PARSED), TO_NUMBER(P.PAY_PERIOD) * 12)
+                                   WHEN '1'  THEN ADD_MONTHS(MIN(P.ACCEPT_DATE_PARSED), TO_NUMBER(P.PAY_PERIOD))
+                                   WHEN '2'  THEN MIN(P.ACCEPT_DATE_PARSED) + TO_NUMBER(P.PAY_PERIOD)
                               END
           THEN 0                                                        -- 期缴缴满(最后一期后再过一个缴费期间)
           WHEN P.PAY_PATRN = '1'
            AND P.PAY_PERIOD_TYP IN ('12','1','2')
            AND V_DATA_DATE > CASE P.PAY_PERIOD_TYP
-                                  WHEN '12' THEN ADD_MONTHS(MIN(P.TX_DATE_PARSED),
+                                  WHEN '12' THEN ADD_MONTHS(MIN(P.ACCEPT_DATE_PARSED),
                                               (1 + COUNT(CASE WHEN P.TRAN_TYPE = '1' THEN 1 END)) * 12) + 60
-                                  WHEN '1'  THEN ADD_MONTHS(MIN(P.TX_DATE_PARSED),
+                                  WHEN '1'  THEN ADD_MONTHS(MIN(P.ACCEPT_DATE_PARSED),
                                               (1 + COUNT(CASE WHEN P.TRAN_TYPE = '1' THEN 1 END))) + 60
-                                  WHEN '2'  THEN MIN(P.TX_DATE_PARSED)
+                                  WHEN '2'  THEN MIN(P.ACCEPT_DATE_PARSED)
                                               + (1 + COUNT(CASE WHEN P.TRAN_TYPE = '1' THEN 1 END)) + 60
                              END
           THEN 0                                                        -- 60天宽限期已过且未缴
@@ -151,10 +154,12 @@ begin
           c.CONT_NO                                                       AS INSUR_BID_FORM_NO,
           c.plat_policy_serial                                            AS plat_policy_serial,
           c.CONT_STATUS                                                   AS CONT_STATUS,
-          TO_DATE(SUBSTR(a.TX_DATE,1,10), 'YYYY-MM-DD')                   AS TX_DATE_PARSED, -- ODS交易日期(格式/字段名上线前核对)
+          TO_DATE(c.ACCEPT_DATE, 'YYYYMMDD')                              AS ACCEPT_DATE_PARSED,
+          FA.LAST_SUCCESS_TX_DATE                                         AS LAST_SUCCESS_TX_DATE,
+          FA.ACTL_TERM_DATE_PARSED                                        AS ACTL_TERM_DATE_PARSED,
           a.TRAN_TYPE                                                     AS TRAN_TYPE,
           a.ORD_AMT                                                       AS ORD_AMT,
-          TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYY-MM-DD'), 'YYYY-MM-DD')       AS BGN_INSUR_DATE,
+          TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYYMMDD'), 'YYYY-MM-DD')         AS BGN_INSUR_DATE,
           -- 保险期间结束日期(推算,仅参考)
           CASE
               WHEN d.VALID_PER_UNIT = '-1' THEN '9999-12-31'
@@ -164,16 +169,16 @@ begin
               WHEN d.VALID_PER_UNIT = '0'
                AND REGEXP_LIKE(f.CERT_ID, '^[0-9]{15}$')
               THEN TO_CHAR(ADD_MONTHS(TO_DATE('19' || SUBSTR(f.CERT_ID, 7, 6), 'YYYYMMDD'), 12 * d.VALID_PER_NUM), 'YYYY-MM-DD')
-              WHEN d.VALID_PER_UNIT = '12' THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYY-MM-DD'), 12 * d.VALID_PER_NUM), 'YYYY-MM-DD')
-              WHEN d.VALID_PER_UNIT = '1'  THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYY-MM-DD'), d.VALID_PER_NUM), 'YYYY-MM-DD')
-              WHEN d.VALID_PER_UNIT = '2'  THEN TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYY-MM-DD') + d.VALID_PER_NUM, 'YYYY-MM-DD')
+              WHEN d.VALID_PER_UNIT = '12' THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYYMMDD'), 12 * d.VALID_PER_NUM), 'YYYY-MM-DD')
+              WHEN d.VALID_PER_UNIT = '1'  THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYYMMDD'), d.VALID_PER_NUM), 'YYYY-MM-DD')
+              WHEN d.VALID_PER_UNIT = '2'  THEN TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYYMMDD') + d.VALID_PER_NUM, 'YYYY-MM-DD')
               ELSE NULL
           END                                                             AS CANCL_INSUR_DATE,
           CASE
-              WHEN d.PAY_TYPE = '0' THEN TO_CHAR(TO_DATE(c.ACCEPT_DATE, 'YYYY-MM-DD'), 'YYYYMMDD')
-              WHEN d.PAY_PER_UNIT = '12' THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYY-MM-DD'), 12 * d.PAY_PER_NUM), 'YYYYMMDD')
-              WHEN d.PAY_PER_UNIT = '1'  THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYY-MM-DD'), d.PAY_PER_NUM), 'YYYYMMDD')
-              WHEN d.PAY_PER_UNIT = '2'  THEN TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYY-MM-DD') + d.PAY_PER_NUM, 'YYYYMMDD')
+              WHEN d.PAY_TYPE = '0' THEN TO_CHAR(TO_DATE(c.ACCEPT_DATE, 'YYYYMMDD'), 'YYYYMMDD')
+              WHEN d.PAY_PER_UNIT = '12' THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYYMMDD'), 12 * d.PAY_PER_NUM), 'YYYYMMDD')
+              WHEN d.PAY_PER_UNIT = '1'  THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYYMMDD'), d.PAY_PER_NUM), 'YYYYMMDD')
+              WHEN d.PAY_PER_UNIT = '2'  THEN TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYYMMDD') + d.PAY_PER_NUM, 'YYYYMMDD')
               WHEN d.PAY_PER_UNIT = '0'
                AND REGEXP_LIKE(f.CERT_ID, '^[0-9]{17}[0-9Xx]$')
               THEN TO_CHAR(ADD_MONTHS(TO_DATE(SUBSTR(f.CERT_ID, 7, 8), 'YYYYMMDD'), 12 * d.PAY_PER_NUM), 'YYYYMMDD')
@@ -195,15 +200,32 @@ begin
                WHEN SUBSTR(c.THROW_COM,1,6) LIKE '12%' THEN '1200'
                WHEN SUBSTR(c.THROW_COM,1,6) LIKE '18%' THEN '1800'
                ELSE '9999' END                                           AS PERSN_LEGAL_BK_CODE
-      FROM YBT_POLICY_BASE_INFO c
-      INNER JOIN YBT_POLICY_FEE_LIST a
+      FROM YBT_YBT_POLICY_BASE_INFO c
+      INNER JOIN YBT_YBT_POLICY_FEE_LIST a
         ON a.plat_policy_serial = c.plat_policy_serial
-      INNER JOIN IBP_IB_LIST_PLAT b
+      LEFT JOIN (
+          SELECT
+              F.PLAT_POLICY_SERIAL,
+              MAX(CASE
+                  WHEN F.ORD_TRAN_STATUS = '2'
+                   AND REGEXP_LIKE(TRIM(F.ORD_CREATE_DATE), '^[0-9]{8}$')
+                  THEN TO_DATE(TRIM(F.ORD_CREATE_DATE), 'YYYYMMDD')
+              END) AS LAST_SUCCESS_TX_DATE,
+              MAX(CASE
+                  WHEN F.TRAN_TYPE IN ('2','3','4','5','6','8')
+                   AND REGEXP_LIKE(TRIM(F.ORD_CREATE_DATE), '^[0-9]{8}$')
+                  THEN TO_DATE(TRIM(F.ORD_CREATE_DATE), 'YYYYMMDD')
+              END) AS ACTL_TERM_DATE_PARSED
+          FROM YBT_YBT_POLICY_FEE_LIST F
+          GROUP BY F.PLAT_POLICY_SERIAL
+      ) FA
+        ON FA.PLAT_POLICY_SERIAL = c.PLAT_POLICY_SERIAL
+      INNER JOIN YBT_IB_LIST_PLAT b
         ON a.ord_pay_serial = b.plat_serial
        AND b.plat_trad_status = '2'
-      INNER JOIN YBT_POLICY_INSURANCE_INFO d
+      INNER JOIN YBT_YBT_POLICY_INSURANCE_INFO d
         ON c.plat_policy_serial = d.plat_policy_serial
-      INNER JOIN YBT_PRODUCT_INFO e
+      INNER JOIN YBT_YBT_PRODUCT_INFO e
         ON c.product_id = e.product_id
       LEFT JOIN DWD_CUST_INDV_INFO f
         ON b.user_id = f.cust_id

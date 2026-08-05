@@ -74,7 +74,7 @@ AS
   V_DATA_DATE            VARCHAR2(8);
   -- V_HISTORY_CUTOFF_DATE: 三年历史清理边界（参数19），用于清理过期数据
   V_HISTORY_CUTOFF_DATE  VARCHAR2(8);
-  -- V_180D_WINDOW_BEGIN: 180天新客窗口开始日（参数23）
+  -- V_180D_WINDOW_BEGIN: 180天新客窗口开始日（参数27）
   V_180D_WINDOW_BEGIN    VARCHAR2(8);
 
   ------------------------------------------------------------------
@@ -101,8 +101,8 @@ BEGIN
   V_DATA_DATE := V_SYSDAT;
   -- 三年历史清理边界（参数19）
   V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);
-  -- 180天新客窗口开始日（参数23）
-  V_180D_WINDOW_BEGIN := sys_fun_deal_date(V_SYSDAT, 23);
+  -- 180天新客窗口开始日（参数27）
+  V_180D_WINDOW_BEGIN := sys_fun_deal_date(V_SYSDAT, 27);
   -- 初始化步骤结束时间
   V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
 
@@ -290,7 +290,7 @@ BEGIN
      AND a.BAL_TYPE = '1'                                                      -- BAL_TYPE='1'=余额类型
      AND c.OPEN_DATE IS NOT NULL                                               -- 开户日期不为空
     AND TO_DATE(REPLACE(SUBSTR(c.OPEN_DATE, 1, 10), '-', ''), 'YYYYMMDD')
-        BETWEEN TO_DATE(V_180D_WINDOW_BEGIN, 'YYYYMMDD')                       -- 开户日≥180天前（左闭，参数23）
+        BETWEEN TO_DATE(V_180D_WINDOW_BEGIN, 'YYYYMMDD')                       -- 开户日≥180天前（左闭，参数27）
             AND TO_DATE(V_DATA_DATE, 'YYYYMMDD');                             -- 开户日≤当天（右闭）—即180天内新客
 
   COMMIT;

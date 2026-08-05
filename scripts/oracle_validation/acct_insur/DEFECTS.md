@@ -4,6 +4,18 @@
 
 ---
 
+## DEFECT-2026-08-05-004：v2.3.0 Oracle 编译在快照段结束后失败
+
+- **状态**：待审核
+- **具体位置**：`scripts/oracle_validation/acct_insur/oracle_PRC_DWD_ACCT_INSUR.sql`；Oracle `USER_ERRORS` 报告第 253 行，`V_NO_ID := '2';`。
+- **影响范围**：`PRC_DWD_ACCT_INSUR` 在本地 Oracle 11g `SCOTT` schema 中状态为 `INVALID`，后续功能回归、并发及性能测试无法执行。
+- **复现证据**：部署 YBT v2.3.0 测试表并编译后，Oracle 返回 `PLS-00103: 出现符号 "2"`。独立最小过程的 `VARCHAR2` 赋值通过，排除本地 Oracle 与赋值语法问题。
+- **初步分析**：错误位置位于快照段之后，疑似前置聚合 SQL 或 Oracle 兼容模式过程结构未被正确闭合；需对快照段逐段缩减/编译定位后修复。
+- **建议解决方案**：在 Oracle 验证副本中定位最小失败片段，确认修复不改变 Kingbase 业务语义后，再同步修改正式过程并重新生成 Oracle 副本。
+- **处理决策**：待用户确认。
+
+---
+
 ## DEFECT-INSUR-001：YBT_POLICY_FEE_LIST 主键单列导致一保单多交易无法存储（阻断级）
 
 - **状态**：待审核

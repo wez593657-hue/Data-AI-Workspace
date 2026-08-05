@@ -5,12 +5,13 @@ SET FEEDBACK OFF
 SET VERIFY OFF
 
 -- ============================================================
--- v2.13.0 Full Regression Test
+-- v2.14.0 Full Regression Test
 -- Covers: sleep detection, wake (account table date-driven),
---          month-begin review, F-10 retention, contact state
+--          month-begin review, F-10 retention, contact state,
+--          F-1 DWS→TMP reuse, F-2 string range compare, F-3 step split
 -- ============================================================
 
-BEGIN DBMS_OUTPUT.PUT_LINE('=== v2.13.0 Full Regression ==='); END;
+BEGIN DBMS_OUTPUT.PUT_LINE('=== v2.14.0 Full Regression ==='); END;
 /
 
 -- ============================================================

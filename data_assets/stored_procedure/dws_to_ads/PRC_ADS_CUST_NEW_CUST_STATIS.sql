@@ -24,7 +24,7 @@ AS
   -- 目标表: ADS_CUST_NEW_CUST_STATIS(新客经营统计表)
   -- 临时表: TMP_ADS_NEW_CUST_STAT_SRC(物理临时表，存储展开后的统计源数据)
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.4.0
+  -- 需求版本: v2.4.1
   -- 关联需求: REQ-CUST-007(新客定义), REQ-CUST-009(计算单位),
   --           REQ-CUST-010(去季年切片)
   -- 变更记录:
@@ -40,6 +40,9 @@ AS
   --   v2.4.0(2026-08-04): F-04:DWS T-1日AUM预查询写入TMP共用(消除UNION ALL重复JOIN)；
   --                       F-05:非月末日不再重算上月末统计(消除冗余)；
   --                       F-07:删除V_END_DATE无效初始化
+  --   v2.4.1(2026-08-05): F-01:TMP_AUM段独立日志步骤(模板合规修复)；
+  --                       F-03:删除V_PREV_MONTH_END死变量；
+  --                       F-06:CROSS JOIN改用静态值(避免重复扫描大临时表)
   ------------------------------------------------------------------
   ------------------------------------------------------------------
   -- 局部变量声明
@@ -67,8 +70,7 @@ AS
   -- V_PREV_DAY:       上一天日期（T-1），通过sys_fun_deal_date(V_SYSDAT, 1)计算，
   --                    用于获取T-1日的客户AUM余额快照
   V_PREV_DAY             VARCHAR2(8);
-  -- V_PREV_MONTH_END: 上月末日期，用于关联上一月的明细数据和清理上一月统计结果
-  V_PREV_MONTH_END       VARCHAR2(8);
+  -- V_PREV_MONTH_END: v2.4.1 F-03 删除死变量（v2.4.0 F-05去掉非月末重算后已无引用）
   -- V_HISTORY_CUTOFF_DATE: 三年历史清理边界（参数19），用于清理过期历史数据
   V_HISTORY_CUTOFF_DATE   VARCHAR2(8);
 
@@ -96,9 +98,7 @@ BEGIN
   V_DATA_DATE := V_SYSDAT;
   -- 计算上一天日期（T-1），用于获取T-1日AUM余额
   V_PREV_DAY := sys_fun_deal_date(V_SYSDAT, 1);
-  -- 计算上月末日期
-  V_PREV_MONTH_END := sys_fun_deal_date(V_SYSDAT, 2);
-
+  -- v2.4.1 F-03: 删除V_PREV_MONTH_END赋值（v2.4.0 F-05去掉非月末重算后已无引用）
   ------------------------------------------------------------------
   -- 步骤2_TMP1: 清理当前数据日统计结果和历史数据
   --   - 删除当天+上月末的统计结果（幂等重跑）
@@ -144,15 +144,12 @@ BEGIN
   );
 
   ------------------------------------------------------------------
-  -- 步骤3_TMP2: 展开机构和客户经理统计对象
-  --   从明细表读取新客数据，按两个维度展开：
-  --     维度1: 机构向上汇总 — 使用DWD_SYS_ORG递归CONNECT_BY_ROOT
-  --             从网点级机构向上汇总到所有上级机构
-  --     维度2: 客户经理维度 — 直接从明细表取POST_ID
-  --   数据来源: ADS_CUST_NEW_CUST_DTL(新客明细) + DWS_CUST_ASSE_LIAB(T-1日AUM)
-  --   v2.3.0: 去掉季/年切片，仅处理M(月度)统计周期数据
+  -- 步骤3_TMP_AUM: T-1日AUM预查询（F-04: DWS只扫描一次，两个UNION ALL分支共用）
+  --   v2.4.1 F-01: 独立日志步骤，符合模板规则#4
   ------------------------------------------------------------------
-  -- F-04: T-1日AUM预查询（DWS只扫描一次，两个UNION ALL分支共用）
+  V_NO_ID := 'TMP_AUM';
+  V_BGN_DATE := SYSDATE;
+
   INSERT INTO TMP_ADS_NEW_CUST_AUM (
       CUST_ID, PERSN_LEGAL_BK_CODE, ORG_ID, AUM_BAL
   )
@@ -165,6 +162,27 @@ BEGIN
      AND A.BAL_TYPE = '1';
   COMMIT;
 
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := 'TMP_AUM 完成：T-1日AUM预查询写入TMP';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+      V_BGN_DATE, V_END_DATE, V_DURA_DATE,
+      V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON
+  );
+
+  ------------------------------------------------------------------
+  -- 步骤4_TMP2: 展开机构和客户经理统计对象
+  --   从明细表读取新客数据，按两个维度展开：
+  --     维度1: 机构向上汇总 — 使用DWD_SYS_ORG递归CONNECT_BY_ROOT
+  --             从网点级机构向上汇总到所有上级机构
+  --     维度2: 客户经理维度 — 直接从明细表取POST_ID
+  --   数据来源: ADS_CUST_NEW_CUST_DTL(新客明细) + TMP_ADS_NEW_CUST_AUM(预查询AUM)
+  --   v2.3.0: 去掉季/年切片，仅处理M(月度)统计周期数据
+  ------------------------------------------------------------------
   V_NO_ID := 'TMP2';
   V_BGN_DATE := SYSDATE;
 
@@ -252,7 +270,7 @@ BEGIN
   );
 
   ------------------------------------------------------------------
-  -- 步骤4: 目标表写入 — 按统计对象和新客周期汇总
+  -- 步骤5: 目标表写入 — 按统计对象和新客周期汇总
   --   汇总维度: PERSN_LEGAL_BK_CODE + DATA_DATE + STATIS_OBJ + STATIS_CYCLE + NEW_CUST_CYCLE
   --   统计指标:
   --     NEW_CUST_CNT:          新客总数(COUNT)
@@ -309,11 +327,12 @@ BEGIN
          CASE WHEN COUNT(*) = 0 THEN 0 ELSE ROUND(SUM(CASE WHEN S.KYC_STATE = '1' THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) END AS COMP_RATE
     FROM TMP_ADS_NEW_CUST_STAT_SRC S                                            -- 展开后的统计源数据
    CROSS JOIN (
-         -- 生成新客周期维度: 1=0~30天, 2=30~100天, 3=100~180天
-         SELECT NEW_CUST_CYCLE FROM TMP_ADS_NEW_CUST_STAT_SRC
-         UNION
-         -- 4=全部(汇总)
-         SELECT '4' FROM DUAL
+         -- v2.4.1 F-06: 改用静态值避免重复扫描大临时表
+         -- 1=0~30天, 2=30~100天, 3=100~180天, 4=全部(汇总)
+         SELECT '1' AS NEW_CUST_CYCLE FROM DUAL
+         UNION ALL SELECT '2' FROM DUAL
+         UNION ALL SELECT '3' FROM DUAL
+         UNION ALL SELECT '4' FROM DUAL
    ) C
    -- 对于全部(4): 包含所有周期客户; 对于具体周期: 仅包含该周期客户
    WHERE C.NEW_CUST_CYCLE = '4' OR S.NEW_CUST_CYCLE = C.NEW_CUST_CYCLE
@@ -328,7 +347,7 @@ BEGIN
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := '第3段完成：按机构/客户经理和新客周期汇总写入统计';
+  V_LOG_MSG := '第3段完成：按机构/客户经理和新客周期汇总写入统计(v2.4.1)';
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(

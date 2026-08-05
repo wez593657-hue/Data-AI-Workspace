@@ -7,7 +7,7 @@ AS
   -- 存储过程：睡眠户唤醒统计
   -- 处理周期: 日
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.12.0
+  -- 需求版本: v2.12.1
   -- 关联需求: REQ-CUST-008(睡眠户唤醒), REQ-CUST-020(精简重构)
   -- 变更记录:
   --   v2.1.0-v2.8.0: 见前续版本
@@ -17,6 +17,9 @@ AS
   --   v2.12.0(2026-08-04): O-04: CONNECT BY机构递归预物化到
   --        TMP_ADS_SLEEP_ORG_HIER临时表，消除TMP2步骤INSERT子查询内
   --        的实时递归计算，提升大机构树场景下的执行效率。
+  --   v2.12.1(2026-08-04): 模板规范化
+  --        F-6: 步骤编号规范化: TMP1→'1'(清理), TMP2→'TMP1'(层级+维度展开),
+  --              '3'→'2'(目标表写入)，同步日志消息
   ------------------------------------------------------------------
   -- === 输入参数 ===
   -- V_SYSDAT: 系统跑批日期 VARCHAR(8)，取值YYYYMMDD，非NULL且必须为有效日期格式；
@@ -44,7 +47,7 @@ BEGIN
   ------------------------------------------------------------------
   -- 步骤1: 参数校验与日期初始化
   ------------------------------------------------------------------
-  V_NO_ID := 'TMP1';
+  V_NO_ID := '1';
   V_BGN_DATE := SYSDATE;
 
   IF V_SYSDAT IS NULL OR NOT REGEXP_LIKE(V_SYSDAT, '^[0-9]{8}$') THEN
@@ -71,17 +74,17 @@ BEGIN
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP1 完成: 清理统计表数据和临时表';
+  V_LOG_MSG := '1 完成: 清理统计表数据和临时表';
   V_LOG_FLG := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
       V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
 
   ------------------------------------------------------------------
-  -- 步骤3: TMP2 — 预物化机构层级 + 展开统计维度
+  -- 步骤3: TMP1 — 预物化机构层级 + 展开统计维度
   --   [O-04] 预物化CONNECT BY机构递归 → TMP_ADS_SLEEP_ORG_HIER
   --   展开: 机构维度(JOIN预物化表) + 客户经理维度(UNION ALL)
   ------------------------------------------------------------------
-  V_NO_ID := 'TMP2';
+  V_NO_ID := 'TMP1';
   V_BGN_DATE := SYSDATE;
 
   -- ================================================================
@@ -134,7 +137,7 @@ BEGIN
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP2 完成: 机构递归+客户经理维度展开';
+  V_LOG_MSG := 'TMP1 完成: 机构递归+客户经理维度展开';
   V_LOG_FLG := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
       V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
@@ -142,7 +145,7 @@ BEGIN
   ------------------------------------------------------------------
   -- 步骤4: 目标表写入 — 按统计对象聚合
   ------------------------------------------------------------------
-  V_NO_ID := '3';
+  V_NO_ID := '2';
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO ADS_CUST_SLEEP_WAKE_STATIS (
@@ -170,7 +173,7 @@ BEGIN
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := '第3段完成: 写入睡眠户唤醒统计(v2.11.0 F-06/F-09优化)';
+  V_LOG_MSG := '第2段完成: 写入睡眠户唤醒统计(v2.12.1 步骤编号规范化)';
   V_LOG_FLG := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
       V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);

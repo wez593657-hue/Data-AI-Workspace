@@ -1,6 +1,8 @@
+-- DROP FUNCTION crmdm.sys_fun_deal_date(varchar, int4);
+
 CREATE OR REPLACE FUNCTION crmdm.sys_fun_deal_date(p_dat varchar, p_pd integer)
  RETURNS varchar
-AS
+AS 
 DECLARE
     V_DATE       date;
     V_RETUR_DATE varchar;
@@ -46,7 +48,7 @@ BEGIN
         WHEN 17 THEN
             V_RETUR_DATE := to_char(trunc(add_months(V_DATE, -12), 'YEAR'), 'YYYYMMDD'); -- 上年初
         WHEN 18 THEN
-            V_RETUR_DATE := to_char(V_DATE - interval '30' day, 'YYYYMMDD'); -- 30天承接窗口开始日
+            V_RETUR_DATE := to_char(V_DATE - 30, 'YYYYMMDD'); -- 30天承接窗口开始日
         WHEN 19 THEN
             V_RETUR_DATE := to_char(add_months(V_DATE, -36), 'YYYYMMDD'); -- 三年历史清理边界
         WHEN 20 THEN
@@ -54,14 +56,21 @@ BEGIN
         WHEN 21 THEN
             V_RETUR_DATE := to_char(add_months(V_DATE, -6), 'YYYYMMDD'); -- 6月前
         WHEN 22 THEN
-            V_RETUR_DATE := to_char(V_DATE - interval '365' day, 'YYYYMMDD'); -- 365天动账窗口开始日
+            V_RETUR_DATE := to_char(last_day(V_DATE - interval '2' month), 'YYYYMMDD'); -- 近3个月前的月末 如输入20260601或/20260630 都输出 20260430
         WHEN 23 THEN
-            V_RETUR_DATE := to_char(V_DATE - interval '180' day, 'YYYYMMDD'); -- 180天新客窗口开始日
-
+            V_RETUR_DATE := to_char(last_day(V_DATE - interval '5' month), 'YYYYMMDD'); -- 近6个月前的月末
+        WHEN 24 THEN
+            V_RETUR_DATE := to_char(last_day(V_DATE - interval '8' month), 'YYYYMMDD'); -- 近9个月前的月末
+        WHEN 25 THEN
+            V_RETUR_DATE := to_char(last_day(V_DATE - interval '11' month), 'YYYYMMDD'); -- 近12个月前的月末
+        WHEN 26 THEN
+            V_RETUR_DATE := to_char(V_DATE - 365, 'YYYYMMDD'); -- 365天动账窗口开始日
+        WHEN 27 THEN
+            V_RETUR_DATE := to_char(V_DATE - 180, 'YYYYMMDD'); -- 180天新客窗口开始日
         ELSE
             V_RETUR_DATE := NULL;
     END CASE;
 
     RETURN V_RETUR_DATE;
-END;
+END
 ;

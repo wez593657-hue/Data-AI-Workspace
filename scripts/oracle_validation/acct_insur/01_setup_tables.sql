@@ -1,14 +1,15 @@
 -- ============================================================
 -- Insurance account (PRC_DWD_ACCT_INSUR) validation env (SCOTT)
--- NOTE: YBT_POLICY_FEE_LIST gets TX_DATE column (referenced by proc
--- but missing from workspace ODS DDL) to allow business validation;
--- this inconsistency is recorded as a finding.
+-- Uses the current workspace YBT source names and fields. The fee table
+-- intentionally has no test primary key so one policy can contain many orders.
 -- ============================================================
 BEGIN
   FOR t IN (SELECT table_name FROM user_tables
              WHERE table_name IN (
-               'YBT_POLICY_BASE_INFO','YBT_POLICY_FEE_LIST','IBP_IB_LIST_PLAT',
-               'YBT_POLICY_INSURANCE_INFO','YBT_PRODUCT_INFO',
+                'YBT_POLICY_BASE_INFO','YBT_POLICY_FEE_LIST','IBP_IB_LIST_PLAT',
+                'YBT_POLICY_INSURANCE_INFO','YBT_PRODUCT_INFO',
+                'YBT_YBT_POLICY_BASE_INFO','YBT_YBT_POLICY_FEE_LIST','YBT_IB_LIST_PLAT',
+                'YBT_YBT_POLICY_INSURANCE_INFO','YBT_YBT_PRODUCT_INFO',
                'TMP_DWD_ACCT_INSUR_SNAP','DWD_ACCT_INSUR')) LOOP
     EXECUTE IMMEDIATE 'DROP TABLE ' || t.table_name;
   END LOOP;
@@ -16,7 +17,7 @@ END;
 /
 
 -- ODS: policy base info (key columns + constraints)
-CREATE TABLE YBT_POLICY_BASE_INFO (
+CREATE TABLE YBT_YBT_POLICY_BASE_INFO (
     PLAT_POLICY_SERIAL VARCHAR2(200) NOT NULL,
     ITEM_ID            VARCHAR2(40) NOT NULL,
     CONT_NO            VARCHAR2(200),
@@ -33,22 +34,18 @@ CREATE TABLE YBT_POLICY_BASE_INFO (
     CONSTRAINT PK_YBT_POLICY_BASE PRIMARY KEY (PLAT_POLICY_SERIAL)
 );
 
--- ODS: policy fee list (TX_DATE added for proc validation; missing in workspace DDL)
-CREATE TABLE YBT_POLICY_FEE_LIST (
+-- ODS: policy fee list. No primary key: the source may carry multiple orders per policy.
+CREATE TABLE YBT_YBT_POLICY_FEE_LIST (
     PLAT_POLICY_SERIAL VARCHAR2(200) NOT NULL,
     ORD_AMT            NUMBER(17,2),
     ORD_PAY_SERIAL     VARCHAR2(200),
     ORD_CREATE_DATE    VARCHAR2(32),
     TRAN_TYPE          VARCHAR2(8),
-    TX_DATE            VARCHAR2(10),
-    -- NOTE: workspace DDL uses single-column PK (PLAT_POLICY_SERIAL) which
-    -- cannot hold multiple transactions per policy; proc aggregates many rows.
-    -- Test env uses composite PK to continue validation (finding recorded).
-    CONSTRAINT PK_YBT_POLICY_FEE PRIMARY KEY (PLAT_POLICY_SERIAL, ORD_PAY_SERIAL)
+    ORD_TRAN_STATUS    VARCHAR2(8)
 );
 
 -- ODS: ib list plat (key columns)
-CREATE TABLE IBP_IB_LIST_PLAT (
+CREATE TABLE YBT_IB_LIST_PLAT (
     PLAT_SERIAL       VARCHAR2(35) NOT NULL,
     PLAT_DATE         VARCHAR2(8) NOT NULL,
     PLAT_TRAD_STATUS  VARCHAR2(1) NOT NULL,
@@ -58,7 +55,7 @@ CREATE TABLE IBP_IB_LIST_PLAT (
 );
 
 -- ODS: policy insurance info (period/pay columns)
-CREATE TABLE YBT_POLICY_INSURANCE_INFO (
+CREATE TABLE YBT_YBT_POLICY_INSURANCE_INFO (
     PLAT_POLICY_SERIAL VARCHAR2(200) NOT NULL,
     PAY_TYPE           VARCHAR2(8) NOT NULL,
     PAY_FREQ           VARCHAR2(16),
@@ -70,7 +67,7 @@ CREATE TABLE YBT_POLICY_INSURANCE_INFO (
 );
 
 -- ODS: product info
-CREATE TABLE YBT_PRODUCT_INFO (
+CREATE TABLE YBT_YBT_PRODUCT_INFO (
     PRODUCT_ID        VARCHAR2(200) NOT NULL,
     PRODUCT_NAME      VARCHAR2(800) NOT NULL,
     PRODUCT_BIG_TYPE  VARCHAR2(40) NOT NULL,

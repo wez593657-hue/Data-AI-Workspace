@@ -6,6 +6,7 @@ allowed_changes:
   - path: data_assets/ddl/
   - path: data_assets/mapping/
   - path: data_assets/stored_procedure/
+  - path: data_assets/function/
   - path: docs/
   - path: requirements/
   - path: governance/

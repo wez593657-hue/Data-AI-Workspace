@@ -1,9 +1,10 @@
 /*
  * ADS_CUST_SLEEP_WAKE_STATIS
  * 中文名称: 睡眠户唤醒统计表
- * 版本: v2.10.0
+ * 版本: v2.12.1
  * 创建时间: 2026-07-30
  * 说明: 仅统计睡眠客户总数/接触/唤醒，不区分存量/新增类型。
+ *       v2.12.1 版本同步至存储过程v2.12.1
  */
 
 CREATE TABLE IF NOT EXISTS ADS_CUST_SLEEP_WAKE_STATIS (
