@@ -3,33 +3,38 @@
 ## 映射来源
 
 - Excel：`data_assets/mapping/ods_to_dwd/DWD明细层数据模型_CRM_ V1.0.xlsx`
-- Excel SHA-256：`03c3618e3cb3f14a5a7438f872bce48cf536b55fecc8163c3a488cdcfb768dba`
+- Excel SHA-256：`eab214604c0cd2e5b4d7129b1abca6920168bff13bfd4502aed9811fe3206d26`
 
 ## 映射概览
 
 | 目标表 | 字段数 |
 |--------|-------:|
+| DWD_CUST_INDV_INFO | 40 |
+| DWD_CUST_ENTER_RELA | 8 |
+| DWD_CUST_INDIV_MNER | 16 |
+| DWD_TX_ASET | 28 |
 | DWD_ACCT_DEPO | 22 |
+| DWD_ACCT_LOAN | 23 |
+| DWD_PRDKT_INFO | 12 |
 | DWD_ACCT_FIN | 20 |
 | DWD_ACCT_INSUR | 26 |
-| DWD_ACCT_LOAN | 23 |
-| DWD_CRM_SYS_XTHLCS | 5 |
-| DWD_CUST_CTRAKT_INFO | 19 |
-| DWD_CUST_DORMANT_ACCOUT | 3 |
-| DWD_CUST_INDIV_CRDT | 9 |
-| DWD_CUST_INDIV_RISK_INVST | 8 |
-| DWD_CUST_INDV_INFO | 39 |
-| DWD_CUST_INDV_KYC | 27 |
-| DWD_CUST_MAN | 9 |
 | DWD_CUST_SIGN_CTRAKT | 9 |
+| DWD_CUST_INDIV_CRDT | 9 |
+| DWD_CUST_CTRAKT_INFO | 19 |
+| DWD_CUST_INDIV_RISK_INVST | 8 |
+| DWD_SYS_ORG | 20 |
+| DWD_CRM_SYS_XTHLCS | 5 |
+| DWD_CUST_INDV_KYC | 27 |
+| DWD_CUST_DORMANT_ACCOUT | 3 |
+| DWD_CUST_MAN | 9 |
+| DWD_MKT_TSK_INFO | 16 |
 | DWD_MKT_ACT_INFO | 15 |
 | DWD_MKT_ACT_ORG_REL | 2 |
 | DWD_MKT_INDX_TSK | 22 |
-| DWD_MKT_TSK_INFO | 16 |
-| DWD_PRDKT_INFO | 12 |
-| DWD_SYS_ORG | 20 |
+| DWD_MKT_TSK_INDX_SUB | 12 |
 | DWD_SYS_POST | 21 |
-| DWD_TX_ASET | 23 |
+| DWD_MKT_ACT_TARGT | 5 |
+| DWD_PRDKT_INFO_DETAIL | 9 |
 
 ## 字段映射详情
 
@@ -43,6 +48,7 @@
 | CERT_ID | 证件号码 | VARCHAR2(32) | ECIF_T01_P_CUST_INFO | CERT_NO |  |
 | CERT_PRD_VLID | 证件有效期起 | VARCHAR2(10) | ECIF_T01_P_CUST_INFO | CERT_ISSUE_DATE |  |
 | CERT_PRD_VLID_END | 证件有效期止 | VARCHAR2(10) | ECIF_T01_P_CUST_INFO | CERT_DUE_DATE |  |
+| CERT_ISSUING | 签发机关 | VARCHAR2(100) |  |  |  |
 | CERT_ISSUING_AUTHORITY | 签发机关所在地 | VARCHAR2(100) | ECIF_T01_P_CUST_INFO | CERT_ORG_AREA |  |
 | CUST_TYP | 客户类型 | VARCHAR2(2) | ECIF_T01_P_CUST_INFO |  | 1' |
 | OPEN_DATE | 开户日期 | VARCHAR2(10) | ECIF_T01_P_CUST_INFO | OPEN_DATE |  |
@@ -77,12 +83,48 @@
 | COSPSR_ORG | 信贷机构 | VARCHAR2(7) |  |  |  |
 | COSPSR_ORG_PATH | 信贷机构路径 | VARCHAR2(50) |  |  |  |
 
+### DWD_CUST_ENTER_RELA
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| CUST_ID | 客户编号 | VARCHAR2(20) | ECIF_T01_P_CUST_INFO | ECIF_CUST_NO |  |
+| REL_TYP | 关系类型 | VARCHAR2(1) |  |  |  |
+| REL_CUST_ID | 关联人客户编号 | VARCHAR2(20) | ECIF_T01_P_CUST_INFO | ECIF_CUST_NO |  |
+| REL_CUST_NAME | 关联人客户名称 | VARCHAR2(100) | ECIF_T01_P_CUST_INFO | PARTY_NAME |  |
+| REL_VAL | 关联值 | NUMBER |  |  | ' |
+| BK_SELF_CUST_FLG | 是否我行客户 | VARCHAR2(1) |  |  | 是' |
+| REL_INF | 关系内容 | VARCHAR2(800) | ECIF_T02_P_PAR_TO_PAR_REL | OTHER_DESC |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  | 9999' |
+
+### DWD_CUST_INDIV_MNER
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| PK_ID | 主键 | VARCHAR2(40) |  |  |  |
+| CUST_ID | 客户编号 | VARCHAR2(20) | ECIF_T01_P_CUST_INFO | ECIF_CUST_NO |  |
+| MBER_NAME | 成员姓名 | VARCHAR2(200) | ECIF_T02_P_PAR_TO_PAR_REL | REL_NAME |  |
+| MBER_REL | 成员关系 | VARCHAR2(6) |  |  | (CASE<br> WHEN T2.RELATION_TYPE IN ('1110', '1111', '1112') THEN '02'<br> WHEN T2.RELATION_TYPE IN ('1120') THEN '01'<br> WHEN T2.RELATION_TYPE IN ('1130', '1131', '1132') THEN '03'<br> WHEN T2.RELATION_TYPE IN ('1210', '1211', '1212') THEN '04'<br> WHEN T2.RELATION_TYPE IN ('1220', '1221', '1222') THEN '05'<br> WHEN T2.RELATION_TYPE IN ('1100') THEN '06'<br> WHEN T2.RELATION_TYPE IN ('1200') THEN '07'<br> ELSE T2.RELATION_TYPE<br>END) MBER_REL |
+| GEND | 性别 | VARCHAR2(6) |  |  | (CASE<br> WHEN T3.GENDER IN ('0') THEN '9'<br> ELSE T3.GENDER<br>END) GEND |
+| TEL_NO | 联系电话 | VARCHAR2(32) | PHONE_N | PHONE_NO |  |
+| BK_SELF_CUST_FLG | 是否本行客户 | VARCHAR2(1) |  |  | 是' |
+| INNER_BK_CUST_ID | 行内客户编号 | VARCHAR2(20) | ECIF_T01_P_CUST_INFO | ECIF_CUST_NO |  |
+| BTH_DATE | 出生日期 | VARCHAR2(10) |  |  | TO_CHAR(T3.BIRTH_DATE, 'yyyy-mm-dd') |
+| MARI_DAY_MEM | 结婚纪念日 | VARCHAR2(10) |  |  | ' |
+| CERT_ID | 证件号码 | VARCHAR2(40) | ECIF_T01_P_CUST_INFO | CERT_NO |  |
+| CERT_TYP | 证件类型 | VARCHAR2(10) | ECIF_T01_P_CUST_INFO | CERT_TYPE |  |
+| SYS_SRC | 系统来源 | VARCHAR2(500) | ECIF_T02_P_PAR_TO_PAR_REL | INIT_SYSTEM_ID |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  | '9999' |
+| POST_ID | 维护人 | VARCHAR2(20) | ECIF_T02_P_PAR_TO_PAR_REL | LAST_UPDATED_TE |  |
+| REMARK | 备注 | VARCHAR2(200) |  |  |  |
+
 ### DWD_TX_ASET
 
 | 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
 |----------|----------------|--------------|------|--------|----------|
+| DATA_DATE | 数据日期 | VARCHAR2(8) |  |  |  |
 | SEQ_ID | 流水号 | VARCHAR2(40) |  |  | T1.ZHANGHAO + T1.MXIXUHAO |
 | CUST_ID | 客户编号 | VARCHAR2(21) | CBS_KDPA_ZHXINX | KEHUHAOO |  |
+| CUST_NAME | 客户名称 | VARCHAR2(100) |  |  |  |
 | CUST_TYP | 客户类型 | VARCHAR2(4) |  |  | 1' |
 | ACCT_ID | 账户 | VARCHAR2(40) | CBS_KDPL_ZHMINX | ZHANGHAO |  |
 | PRDKT_ID | 产品ID | VARCHAR2(40) | CBS_KDPL_ZHMINX | CHAPBHAO |  |
@@ -96,11 +138,14 @@
 | LOAN_FLG | 借贷标识 | VARCHAR2(3) | CBS_KDPL_ZHMINX | JIEDAIBZ |  |
 | ACCT_BAL | 账户余额 | NUMBER(18,4) | CBS_KDPL_ZHMINX | ZHANGHYE |  |
 | TX_DSC | 交易说明 | VARCHAR2(200) | CBS_KDPL_ZHMINX | BEIZHUUU |  |
-| JIOYCFFS | 主动动账标识 | VARCHAR2(1) | CBS_KDPL_ZHMINX | JIOYCFFS | 0=主动动账；其他值=非主动动账或未识别 |
 | OPNT_ACCT | 对方账户 | VARCHAR2(32) | CBS_KDPL_ZHMINX | DUIFKHZH |  |
 | OPNT_ACCT_NAME_FST | 对方户名 | VARCHAR2(200) | CBS_KDPL_ZHMINX | DUIFMINC |  |
 | OPNT_BK_KEEP | 对方行 | VARCHAR2(20) | CBS_KDPL_ZHMINX | DUIFJGDM |  |
 | OPNT_NAME_BK | 对方行名 | VARCHAR2(200) | CBS_KDPL_ZHMINX | DUIFJGMC |  |
+| JIOYCFFS | 交易触发方式(0-主动 1-被动) | VARCHAR2(1) |  |  |  |
+| XIANZZBZ | 现转标志(0-现金,1-转账) | VARCHAR2(1) |  |  |  |
+| DUIFKHLX | 对方客户类型(00-同业客户,01-对私客户,02-对公客户,03-内部客户) | VARCHAR2(2) |  |  |  |
+| CHONGZBZ | 冲正标志(0-无关,1-当日冲正,2-隔日冲正) | VARCHAR2(1) |  |  |  |
 | ACCT_BLNG_ORG | 账户归属机构 | VARCHAR2(20) | CBS_KDPL_ZHMINX | KAIHJIGO |  |
 | CARD_NO | 卡/折号 | VARCHAR2(30) | CBS_KDPL_ZHMINX | KEHUZHAO |  |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(30) |  |  | 9999' |
@@ -206,32 +251,32 @@
 
 | 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
 |----------|----------------|--------------|------|--------|----------|
-| CUST_ID | 客户编号 | VARCHAR2(20) | YBT_IB_LIST_PLAT | b.user_id |  |
+| CUST_ID | 客户编号 | VARCHAR2(20) | ib_list_plat | b.user_id |  |
 | CUST_TYP | 客户类型 | VARCHAR2(4) |  |  |  |
-| ACCT_ID | 账户 | VARCHAR2(40) | YBT_YBT_POLICY_BASE_INFO | c.ACC_NO |  |
-| PRDKT_ID | 产品ID | VARCHAR2(40) | YBT_YBT_PRODUCT_INFO | e.PRODUCT_ID |  |
-| PRDKT_NAME | 产品名称 | VARCHAR2(100) | YBT_YBT_PRODUCT_INFO | e.PRODUCT_NAME |  |
-| PRDKT_CATE_BIG | 产品大类 | VARCHAR2(64) | YBT_YBT_PRODUCT_INFO | e.PRODUCT_BIG_TYPE |  |
-| INSUR_BID_FORM_NO | 投保单号 | VARCHAR2(40) | YBT_YBT_POLICY_BASE_INFO | c.CONT_NO |  |
-| TX_DATE | 保险交易日期 | VARCHAR2(8) | YBT_YBT_POLICY_BASE_INFO | c.ACCEPT_DATE | 投保日期(YYYYMMDD)，同时作为趸交满一年起算基准 |
-| LAST_TX_DATE | 最近交易日期 | VARCHAR2(8) | YBT_YBT_POLICY_FEE_LIST | a.ORD_CREATE_DATE | `ORD_TRAN_STATUS='2'` 的最近订单创建日期；无缴费成功记录时回退 c.ACCEPT_DATE |
-| TX_ORG | 交易机构 | VARCHAR2(7) | YBT_YBT_POLICY_BASE_INFO | c.THROW_COM |  |
-| TX_CHNL | 交易渠道 | VARCHAR2(10) | YBT_YBT_POLICY_BASE_INFO | c.CONT_SOURCE |  |
-| MKT_ORG | 归属机构 | VARCHAR2(7) | YBT_YBT_POLICY_BASE_INFO | c.THROW_COM |  |
-| BGN_INSUR_DATE | 起保日期 | VARCHAR2(10) | YBT_YBT_POLICY_BASE_INFO | c.VALI_DATE | 源格式YYYYMMDD，目标格式YYYY-MM-DD |
-| CANCL_INSUR_DATE | 保险期间结束日期(推算值,仅参考) | VARCHAR2(10) |  |  | 不参与终止判定；终止判定用 ACTL_TERM_DATE |
-| ACTL_TERM_DATE | 实际终止日期 | VARCHAR2(8) | YBT_YBT_POLICY_FEE_LIST | a.ORD_CREATE_DATE | 状态交易(2/3/4/5/6/8)最新订单创建日期→CONT_STATUS终止变更日→CANCL_INSUR_DATE回退 |
+| ACCT_ID | 账户 | VARCHAR2(40) | YBT_POLICY_BASE_INFO | c.ACC_NO |  |
+| PRDKT_ID | 产品ID | VARCHAR2(40) | YBT_PRODUCT_INFO | e.PRODUCT_ID |  |
+| PRDKT_NAME | 产品名称 | VARCHAR2(100) | YBT_PRODUCT_INFO | e.PRODUCT_NAME |  |
+| PRDKT_CATE_BIG | 产品大类 | VARCHAR2(64) | YBT_PRODUCT_INFO | e.PRODUCT_BIG_TYPE |  |
+| INSUR_BID_FORM_NO | 投保单号 | VARCHAR2(40) | YBT_POLICY_BASE_INFO | c.CONT_NO |  |
+| TX_DATE | 首次交易日期 | VARCHAR2(8) | YBT_POLICY_BASE_INFO | c.ACCEPT_DATE |  |
+| TX_ORG | 交易机构 | VARCHAR2(7) | YBT_POLICY_BASE_INFO | c.THROW_COM |  |
+| TX_CHNL | 交易渠道 | VARCHAR2(10) | YBT_POLICY_BASE_INFO | c.CONT_SOURCE |  |
+| MKT_ORG | 归属机构 | VARCHAR2(7) | YBT_POLICY_BASE_INFO | c.THROW_COM |  |
+| BGN_INSUR_DATE | 起保日期 | VARCHAR2(10) | YBT_POLICY_BASE_INFO | c.VALI_DATE |  |
+| CANCL_INSUR_DATE | 保险期间结束日期(推算值,仅参考) | VARCHAR2(10) |  |  |  |
 | PAY_UPTO_DATE | 缴费截止日期 | VARCHAR2(8) |  |  |  |
-| INSUR_PERIOD_TYP | 保险期间类型 | VARCHAR2(2) | YBT_YBT_POLICY_INSURANCE_INFO | d.VALID_PER_UNIT | v2.3.1修正：原错误映射到d.PAY_PER_UNIT |
-| INSUR_PERIOD | 保险期间值 | VARCHAR2(6) | YBT_YBT_POLICY_INSURANCE_INFO | d.VALID_PER_NUM | v2.3.1修正：原错误映射到d.PAY_PER_NUM |
-| PAY_PERIOD_TYP | 缴费期间类型 | VARCHAR2(2) | YBT_YBT_POLICY_INSURANCE_INFO | d.PAY_PER_UNIT | v2.3.1修正：原错误映射到d.VALID_PER_UNIT |
-| PAY_PERIOD | 缴费期间值 | VARCHAR2(6) | YBT_YBT_POLICY_INSURANCE_INFO | d.PAY_PER_NUM | v2.3.1修正：原错误映射到d.VALID_PER_NUM |
-| PAY_PATRN | 缴费方式 | VARCHAR2(2) | YBT_YBT_POLICY_INSURANCE_INFO | d.PAY_TYPE |  |
-| INSUR_AMT | 当前保险金额 | NUMBER(20,2) | YBT_YBT_POLICY_FEE_LIST | a.ORD_AMT | = 新单保费+续期保费累计；终止/未生效/趸交满一年/期缴缴满/宽限期过60天未缴 均置0 |
-| NEW_INSUR_AMT | 首期保费(新单保费) | NUMBER(20,2) | YBT_YBT_POLICY_FEE_LIST | a.ORD_AMT | TRAN_TYPE='0' 时的 ORD_AMT；支持指标0061与ADS.INSUR_FRST_PREM_AMT |
-| POLICY_STATE | 保单状态 | VARCHAR2(8) NOT NULL | YBT_YBT_POLICY_BASE_INFO | c.CONT_STATUS | 0未生效/1正常/2失效；唯一状态判定源 |
-| TX_TYP | 交易类型 | VARCHAR2(1) |  |  | 统一置空(v2.0起全链路不消费) |
+| INSUR_PERIOD_TYP | 保险期间类型 | VARCHAR2(2) | YBT_POLICY_INSURANCE_INFO | d.PAY_PER_UNIT |  |
+| INSUR_PERIOD | 保险期间值 | VARCHAR2(6) | YBT_POLICY_INSURANCE_INFO | d.PAY_PER_NUM |  |
+| PAY_PERIOD_TYP | 缴费期间类型 | VARCHAR2(2) | YBT_POLICY_INSURANCE_INFO | d.VALID_PER_UNIT |  |
+| PAY_PERIOD | 缴费期间值 | VARCHAR2(6) | YBT_POLICY_INSURANCE_INFO | d.VALID_PER_NUM |  |
+| PAY_PATRN | 缴费方式 | VARCHAR2(2) | YBT_POLICY_INSURANCE_INFO | d.PAY_TYPE |  |
+| INSUR_AMT | 当前保险金额 | NUMBER(20,2) | YBT_POLICY_FEE_LIST | a.ORD_AMT | NEW_INSUR_AMT + 续期保费累计；终止/未生效/趴交满一年/期缴缴满/宽限期过60天未缴 均置0 |
+| POLICY_STATE | 保单状态 | VARCHAR2(8) | YBT_POLICY_BASE_INFO | c.CONT_STATUS |  |
+| TX_TYP | 交易类型 | VARCHAR2(1) | YBT_POLICY_FEE_LIST | a.TRAN_TYPE | 置空（v2.0 起全链路不消费） |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  |  |
+| LAST_TX_DATE | 最近交易日期 | VARCHAR2(8) | YBT_POLICY_FEE_LIST | a.TX_DATE | MAX(交易日期) |
+| ACTL_TERM_DATE | 实际终止日期 | VARCHAR2(8) | YBT_POLICY_FEE_LIST | 状态交易日期 | 状态交易(2/3/4/5/6/8)最新日期→CONT_STATUS终止变更日→CANCL_INSUR_DATE回退 |
+| NEW_INSUR_AMT | 首期保费(新单保费) | NUMBER(20,2) | YBT_POLICY_FEE_LIST | a.ORD_AMT | TRAN_TYPE='0' 时的 ORD_AMT |
 
 ### DWD_CUST_SIGN_CTRAKT
 
@@ -462,6 +507,23 @@
 | BIZ_LINE | 条线(公司/零售) | VARCHAR2 |  |  |  |
 | TSK_YEAR | 任务年份 | VARCHAR2 |  |  |  |
 
+### DWD_MKT_TSK_INDX_SUB
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| TSK_INDX_ID | 指标任务映射编号 | VARCHAR2(40) |  |  |  |
+| TSK_ID | 任务编号 | VARCHAR2(40) |  |  |  |
+| MAIN_TSK_ID | 主任务编号 | VARCHAR2(40) |  |  |  |
+| INDX_ID | 指标ID | VARCHAR2(40) |  |  |  |
+| TSK_DSC | 指标任务说明 | VARCHAR2(500) |  |  |  |
+| TSK_BGN_DATE | 任务开始时间 | VARCHAR2(10) |  |  |  |
+| TSK_END_DATE | 任务结束时间 | VARCHAR2(10) |  |  |  |
+| INDX_UNIT | 指标单位(万元/个数/百分比) | VARCHAR2(6) |  |  |  |
+| INDX_VAL | 指标额 | NUMBER(22) |  |  |  |
+| INDX_VAL_ADD | 指标加码 | NUMBER(22) |  |  |  |
+| BASE_VAL | 基准值 | NUMBER(22) |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(30) |  |  |  |
+
 ### DWD_SYS_POST
 
 | 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
@@ -487,6 +549,30 @@
 | UPD_TIME | 更新时间 | VARCHAR2 |  |  |  |
 | MAIN_POS_FLAG | 是否主职位 | VARCHAR2 |  |  |  |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+
+### DWD_MKT_ACT_TARGT
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| PK_ID | 主键 | VARCHAR2 |  |  |  |
+| MKT_ACT_ID | 营销活动编号 | VARCHAR2 |  |  |  |
+| PRTSPT_ORG | 参与机构 | VARCHAR2 |  |  |  |
+| INDX_ID | 指标ID | VARCHAR2 |  |  |  |
+| INDX_VAL | 指标值 | NUMBER |  |  |  |
+
+### DWD_PRDKT_INFO_DETAIL
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| PK_ID | 主键 | VARCHAR2 |  |  |  |
+| PRDKT_CATLOG_PATH | 产品目录 | VARCHAR2 |  |  |  |
+| COL_CODE | 属性ID | VARCHAR2 |  |  |  |
+| COL_NAME | 属性名称 | VARCHAR2 |  |  |  |
+| COL_VALUE | 属性值 | VARCHAR2 |  |  |  |
+| ORG_ID | 机构号 | VARCHAR2 |  |  |  |
+| JIGOUHAO | 机构号 | VARCHAR2 |  |  |  |
+| RN | 序号 | NUMBER |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR(4) |  |  |  |
 
 ---
 

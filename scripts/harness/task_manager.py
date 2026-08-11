@@ -119,7 +119,7 @@ def require_change_manifest(root: Path, directory: Path) -> None:
 
 
 def create_task(
-    root: Path, task_id: str, purpose: str, workflow_profile: str = "data_warehouse"
+    root: Path, task_id: str, purpose: str, workflow_profile: str = "standard"
 ) -> dict[str, Any]:
     require_master_branch(root)
     if workflow_profile not in WORKFLOW_STATES:

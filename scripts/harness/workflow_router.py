@@ -1,4 +1,10 @@
-"""Route user commands to the controlled CRM development workflow."""
+"""Route user commands to the controlled CRM development workflow.
+
+Tiered routing: detects change scope and routes to L1/L2/L3 automatically.
+  L1 (lightweight) – single-file, comment/format, bug fix
+  L2 (standard)    – single-SP add/refactor, calculation change
+  L3 (strict)      – cross-module, DDL, new table
+"""
 
 from __future__ import annotations
 
@@ -10,7 +16,8 @@ class WorkflowRoutingError(ValueError):
 
 
 REQUIREMENT_TERMS = (
-    "需求开发", "需求文档", "业务需求", "业务规则", "目标表", "生成存储过程", "修改存储过程",
+    "需求开发", "需求文档", "业务需求", "业务规则", "目标表", "存储过程",
+    "生成存储过程", "修改存储过程", "修复存储过程",
     "requirement", "stored procedure", "procedure",
 )
 SCHEMA_TERMS = (
@@ -20,6 +27,19 @@ SCHEMA_TERMS = (
 READ_ONLY_TERMS = ("分析", "扫描", "查看", "校验", "对比", "analyse", "analyze", "scan", "compare")
 WRITE_ACTION_TERMS = ("开发", "生成", "修改", "创建", "更新", "同步", "实现", "develop", "generate", "modify", "create", "update", "sync")
 PROCEDURE_ASSET_TERMS = ("存储过程", "procedure", "prc_")
+
+# L1 (lightweight) triggers – trivial changes that don't need deep analysis
+LIGHTWEIGHT_TERMS = (
+    "注释", "格式", "修复bug", "bug修复", "修复", "bug fix", "fix bug",
+    "格式化", "重命名", "rename", "调整注释", "格式调整",
+    "comment", "format", "fix", "typo", "拼写",
+)
+# L3 (strict) triggers – heavy changes requiring full process
+STRICT_TERMS = (
+    "跨模块", "新表", "ddl", "DDL", "数据字典", "新增表", "创建表",
+    "cross-module", "new table", "create table", "data dictionary",
+    "血缘", "lineage", "mapping变更", "mapping变更",
+)
 
 
 def _matches(command: str, terms: tuple[str, ...]) -> list[str]:
@@ -33,6 +53,19 @@ def _schema_required_skills(command: str) -> list[str]:
     if _matches(command, PROCEDURE_ASSET_TERMS):
         skills.extend(["prc-sql", "validate-procedure-date-parameters"])
     return skills
+
+
+def _resolve_requirement_tier(command: str) -> str:
+    """Determine L1/L2/L3 tier based on command semantics.
+
+    L3 (strict) takes priority over L1 — cross-module/DDL risk outweighs
+    trivial-fix convenience.
+    """
+    if _matches(command, STRICT_TERMS):
+        return "strict"
+    if _matches(command, LIGHTWEIGHT_TERMS):
+        return "lightweight"
+    return "standard"
 
 
 def route_command(command: str) -> dict[str, Any]:
@@ -53,8 +86,9 @@ def route_command(command: str) -> dict[str, Any]:
             "required_skills": [],
         }
     if requirement_matches and schema_matches:
+        tier = _resolve_requirement_tier(text)
         return {
-            "profile": "requirement_development",
+            "profile": tier,
             "skill": "crm-requirement-development",
             "reason": {"requirement": requirement_matches, "schema": schema_matches},
             "follow_up": "schema_change",
@@ -63,8 +97,9 @@ def route_command(command: str) -> dict[str, Any]:
             "follow_up_skills": _schema_required_skills(text),
         }
     if requirement_matches:
+        tier = _resolve_requirement_tier(text)
         return {
-            "profile": "requirement_development",
+            "profile": tier,
             "skill": "crm-requirement-development",
             "reason": {"requirement": requirement_matches},
             "follow_up": None,

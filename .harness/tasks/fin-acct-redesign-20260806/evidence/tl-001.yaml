@@ -1,0 +1,10 @@
+evidence_id: tl-001
+task_id: fin-acct-redesign-20260806
+phase: TABLE_LINEAGE_IDENTIFIED
+kind: gate
+purpose: table_lineage
+result: passed
+details: 'table_lineage: FMS_TD_CUST_VOL→DWD_ACCT_FIN(代销), FMS_T5_CUST_VOL→DWD_ACCT_FIN(自营),
+  下游DWS_CUST_ASSE_LIAB_CUMU等4SP读取DWD_ACCT_FIN'
+repository_revision: 3d7298985ff077a1660a3c7e79b33149d5e162ee
+created_at: '2026-08-06T08:03:11+00:00'

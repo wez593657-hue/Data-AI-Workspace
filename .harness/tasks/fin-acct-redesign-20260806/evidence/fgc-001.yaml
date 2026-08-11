@@ -1,0 +1,10 @@
+evidence_id: fgc-001
+task_id: fin-acct-redesign-20260806
+phase: FIELD_GAP_CONFIRMED
+kind: gate
+purpose: field_gap_confirmation
+result: passed
+details: 'field_gap_confirmation: DWD_ACCT_FIN缺CFM_AMT列已识别需补充DDL, fms_t5_prod_nav需补充LEFT
+  JOIN, RATE_INTRI TO_CHAR隐式转换需修复, V_SYSDAT参数增加非空+LENGTH=8校验'
+repository_revision: 3d7298985ff077a1660a3c7e79b33149d5e162ee
+created_at: '2026-08-06T08:04:11+00:00'

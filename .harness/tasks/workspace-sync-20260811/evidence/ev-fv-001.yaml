@@ -1,0 +1,9 @@
+evidence_id: ev-fv-001
+task_id: workspace-sync-20260811
+phase: full_validation
+kind: check
+purpose: full_validation
+result: passed
+details: 完整校验通过:workspace_validation.py full 各模块(文档变更审核/跨层一致性/日期参数/SQL/JSON/YAML)全部通过,临时诊断脚本已通过.gitignore排除
+repository_revision: 3d7298985ff077a1660a3c7e79b33149d5e162ee
+created_at: '2026-08-11T02:08:21+00:00'

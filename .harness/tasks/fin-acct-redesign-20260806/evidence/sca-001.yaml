@@ -1,0 +1,10 @@
+evidence_id: sca-001
+task_id: fin-acct-redesign-20260806
+phase: SOURCE_CAPABILITY_ANALYZED
+kind: gate
+purpose: source_capability
+result: passed
+details: 'source_capability: FMS_TD/T5源表字段核对完成, FMS_TD_CUST_VOL为实时快照无历史分区, TOTAL_VOL=0或删除=到期,
+  TRANS_STATUS=3为确认成功'
+repository_revision: 3d7298985ff077a1660a3c7e79b33149d5e162ee
+created_at: '2026-08-06T08:03:14+00:00'

@@ -1,5 +1,121 @@
-version: "0.2"
+version: "0.3"
 workflows:
+  # -----------------------------------------------------------------------
+  # L1 – lightweight: single-file fixes, comments/formatting, trivial bugs
+  # -----------------------------------------------------------------------
+  lightweight:
+    CREATED:
+      next: SCOPE_CONFIRMED
+      required_evidence: [workflow_routing]
+    SCOPE_CONFIRMED:
+      next: QUICK_VALIDATION_PASSED
+      required_evidence: [scope_confirmation]
+    QUICK_VALIDATION_PASSED:
+      next: USER_APPROVED
+      required_evidence: [quick_validation]
+    USER_APPROVED:
+      next: COMMIT_ALLOWED
+      required_evidence: [user_approval]
+    COMMIT_ALLOWED:
+      next: PUSH_ALLOWED
+      required_evidence: [commit_authorization]
+    PUSH_ALLOWED:
+      next: COMPLETED
+      required_evidence: [push_authorization]
+  # -----------------------------------------------------------------------
+  # L2 – standard: single-SP add/refactor, calculation/rule changes
+  # -----------------------------------------------------------------------
+  standard:
+    CREATED:
+      next: REQUIREMENT_ANALYZED
+      required_evidence: [workflow_routing]
+    REQUIREMENT_ANALYZED:
+      next: SCOPE_CONFIRMED
+      required_evidence: [requirement_analysis]
+    SCOPE_CONFIRMED:
+      next: PROCEDURE_IMPLEMENTED
+      required_evidence: [scope_confirmation]
+    PROCEDURE_IMPLEMENTED:
+      next: PROCEDURE_REVIEW_PASSED
+      required_evidence: [procedure_implementation]
+    PROCEDURE_REVIEW_PASSED:
+      allowed_next: [FULL_VALIDATION_PASSED, PROCEDURE_IMPLEMENTED]
+      required_evidence_by_target:
+        FULL_VALIDATION_PASSED: [procedure_review]
+        PROCEDURE_IMPLEMENTED: [procedure_review]
+    FULL_VALIDATION_PASSED:
+      next: USER_APPROVED
+      required_evidence: [full_validation]
+    USER_APPROVED:
+      next: COMMIT_ALLOWED
+      required_evidence: [user_approval]
+    COMMIT_ALLOWED:
+      next: PUSH_ALLOWED
+      required_evidence: [commit_authorization]
+    PUSH_ALLOWED:
+      next: COMPLETED
+      required_evidence: [push_authorization]
+  # -----------------------------------------------------------------------
+  # L3 – strict (was requirement_development): cross-module, DDL, new tables
+  # -----------------------------------------------------------------------
+  strict:
+    CREATED:
+      next: REQUIREMENT_ANALYZED
+      required_evidence: [workflow_routing]
+    REQUIREMENT_ANALYZED:
+      next: SCOPE_CONFIRMED
+      required_evidence: [requirement_analysis]
+    SCOPE_CONFIRMED:
+      next: PROJECT_SCANNED
+      required_evidence: [scope_confirmation]
+    PROJECT_SCANNED:
+      next: TABLE_LINEAGE_IDENTIFIED
+      required_evidence: [project_scan]
+    TABLE_LINEAGE_IDENTIFIED:
+      next: SOURCE_CAPABILITY_ANALYZED
+      required_evidence: [table_lineage]
+    SOURCE_CAPABILITY_ANALYZED:
+      next: FIELD_GAP_CONFIRMED
+      required_evidence: [source_capability]
+    FIELD_GAP_CONFIRMED:
+      allowed_next: [REQUIREMENT_REVIEW_PASSED, MATERIALS_SUPPLEMENTED]
+      required_evidence_by_target:
+        REQUIREMENT_REVIEW_PASSED: [field_gap_confirmation]
+        MATERIALS_SUPPLEMENTED: [field_gap_confirmation]
+    MATERIALS_SUPPLEMENTED:
+      next: SOURCE_CAPABILITY_ANALYZED
+      required_evidence: [materials_supplement]
+    REQUIREMENT_REVIEW_PASSED:
+      allowed_next: [MEMORY_CARD_UPDATED, MATERIALS_SUPPLEMENTED]
+      required_evidence_by_target:
+        MEMORY_CARD_UPDATED: [requirement_review]
+        MATERIALS_SUPPLEMENTED: [requirement_review]
+    MEMORY_CARD_UPDATED:
+      next: PROCEDURE_IMPLEMENTED
+      required_evidence: [memory_card_update]
+    PROCEDURE_IMPLEMENTED:
+      next: PROCEDURE_REVIEW_PASSED
+      required_evidence: [procedure_implementation]
+    PROCEDURE_REVIEW_PASSED:
+      allowed_next: [TMP_TABLES_GENERATED, PROCEDURE_IMPLEMENTED]
+      required_evidence_by_target:
+        TMP_TABLES_GENERATED: [procedure_review]
+        PROCEDURE_IMPLEMENTED: [procedure_review]
+    TMP_TABLES_GENERATED:
+      next: FULL_VALIDATION_PASSED
+      required_evidence: [temporary_table_generation]
+    FULL_VALIDATION_PASSED:
+      next: USER_APPROVED
+      required_evidence: [full_validation]
+    USER_APPROVED:
+      next: COMMIT_ALLOWED
+      required_evidence: [user_approval]
+    COMMIT_ALLOWED:
+      next: PUSH_ALLOWED
+      required_evidence: [commit_authorization]
+    PUSH_ALLOWED:
+      next: COMPLETED
+      required_evidence: [push_authorization]
   data_warehouse:
     CREATED:
       next: WORKSPACE_CHECKED
@@ -80,64 +196,6 @@ workflows:
     PUSH_ALLOWED:
       next: COMPLETED
       required_evidence: [completion_record]
-  requirement_development:
-    CREATED:
-      next: REQUIREMENT_ANALYZED
-      required_evidence: [workflow_routing]
-    REQUIREMENT_ANALYZED:
-      next: SCOPE_CONFIRMED
-      required_evidence: [requirement_analysis]
-    SCOPE_CONFIRMED:
-      next: PROJECT_SCANNED
-      required_evidence: [scope_confirmation]
-    PROJECT_SCANNED:
-      next: TABLE_LINEAGE_IDENTIFIED
-      required_evidence: [project_scan]
-    TABLE_LINEAGE_IDENTIFIED:
-      next: SOURCE_CAPABILITY_ANALYZED
-      required_evidence: [table_lineage]
-    SOURCE_CAPABILITY_ANALYZED:
-      next: FIELD_GAP_CONFIRMED
-      required_evidence: [source_capability]
-    FIELD_GAP_CONFIRMED:
-      allowed_next: [REQUIREMENT_REVIEW_PASSED, MATERIALS_SUPPLEMENTED]
-      required_evidence_by_target:
-        REQUIREMENT_REVIEW_PASSED: [field_gap_confirmation]
-        MATERIALS_SUPPLEMENTED: [field_gap_confirmation]
-    MATERIALS_SUPPLEMENTED:
-      next: SOURCE_CAPABILITY_ANALYZED
-      required_evidence: [materials_supplement]
-    REQUIREMENT_REVIEW_PASSED:
-      allowed_next: [MEMORY_CARD_UPDATED, MATERIALS_SUPPLEMENTED]
-      required_evidence_by_target:
-        MEMORY_CARD_UPDATED: [requirement_review]
-        MATERIALS_SUPPLEMENTED: [requirement_review]
-    MEMORY_CARD_UPDATED:
-      next: PROCEDURE_IMPLEMENTED
-      required_evidence: [memory_card_update]
-    PROCEDURE_IMPLEMENTED:
-      next: PROCEDURE_REVIEW_PASSED
-      required_evidence: [procedure_implementation]
-    PROCEDURE_REVIEW_PASSED:
-      allowed_next: [TMP_TABLES_GENERATED, PROCEDURE_IMPLEMENTED]
-      required_evidence_by_target:
-        TMP_TABLES_GENERATED: [procedure_review]
-        PROCEDURE_IMPLEMENTED: [procedure_review]
-    TMP_TABLES_GENERATED:
-      next: FULL_VALIDATION_PASSED
-      required_evidence: [temporary_table_generation]
-    FULL_VALIDATION_PASSED:
-      next: USER_APPROVED
-      required_evidence: [full_validation]
-    USER_APPROVED:
-      next: COMMIT_ALLOWED
-      required_evidence: [user_approval]
-    COMMIT_ALLOWED:
-      next: PUSH_ALLOWED
-      required_evidence: [commit_authorization]
-    PUSH_ALLOWED:
-      next: COMPLETED
-      required_evidence: [push_authorization]
   schema_change:
     CREATED:
       next: MAPPING_EXCEL_ANALYZED

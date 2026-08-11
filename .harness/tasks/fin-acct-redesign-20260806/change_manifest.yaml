@@ -1,0 +1,35 @@
+schema_version: '0.1'
+task_id: fin-acct-redesign-20260806
+description: 理财账户存储过程重构 v2.0.0
+change_summary: |
+  TRUNCATE+INSERT全量覆盖 → DELETE+INSERT保留到期数据；
+  新增TMP_DWD_ACCT_FIN_ACTIVE临时表；
+  DWD_ACCT_FIN DDL补充CFM_AMT列；
+  修复RATE_INTRI隐式类型转换；
+  增加到期标记步骤（FIN_AMT=0, ACCT_STATE='已到期'）。
+
+allowed_changes:
+  - data_assets/stored_procedure/ods_to_dwd/PRC_DWD_ACCT_FIN.sql
+  - data_assets/ddl/dwd/dwd_acct_fin.sql
+  - data_assets/ddl/tmp/tmp_pro_dwd_acct_fin.ddl
+  - requirements/理财账户规则记忆卡片.md
+
+read_only_inputs:
+  - data_assets/ddl/ods/fms/fms_td_cust_vol.sql
+  - data_assets/ddl/ods/fms/fms_t1_cust_fnc_acct.sql
+  - data_assets/ddl/ods/fms/fms_t1_cust_info.sql
+  - data_assets/ddl/ods/fms/fms_td_cust_trans_req_log.sql
+  - data_assets/ddl/ods/fms/fms_td_prod_info.sql
+  - data_assets/ddl/ods/fms/fms_td_prod_nav.sql
+  - data_assets/ddl/ods/fms/fms_t5_cust_vol.sql
+  - data_assets/ddl/ods/fms/fms_t5_cust_trans_log.sql
+  - data_assets/ddl/ods/fms/fms_t5_prod_info.sql
+  - data_assets/ddl/ods/fms/fms_t5_prod_period.sql
+  - data_assets/ddl/ods/fms/fms_t5_prod_nav.sql
+
+user_confirmation: confirmed
+verification_method: |
+  1. 对比新旧SP行数（旧310行→新约340行）
+  2. 验证DELETE+INSERT后同一三键行数一致
+  3. 验证到期标记UPDATE后不在TMP中的行FIN_AMT=0
+  4. 确认CFM_AMT列已加入DDL

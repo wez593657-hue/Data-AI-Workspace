@@ -1,0 +1,9 @@
+evidence_id: ev-ws-001
+task_id: workspace-sync-20260811
+phase: workspace_check
+kind: check
+purpose: workspace_status
+result: passed
+details: git status确认工作区变更:64个已跟踪文件修改/删除+24个未跟踪交付文件; workspace_validation.py full仅Git一致性检查因未暂存失败
+repository_revision: 3d7298985ff077a1660a3c7e79b33149d5e162ee
+created_at: '2026-08-11T02:08:01+00:00'

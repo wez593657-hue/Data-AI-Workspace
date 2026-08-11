@@ -1,0 +1,30 @@
+schema_version: '0.1'
+task_id: workspace-sync-20260811
+user_confirmation: confirmed
+objective: 工作区全量未提交变更同步提交（理财账户重构/ADS指标/DDL同步/冗余清理/三级流程系统）
+change_summary: |
+  1. 理财账户PRC_DWD_ACCT_FIN重构(DELETE+INSERT方案) + TMP表DDL + DWD_ACCT_FIN补CFM_AMT列
+  2. ADS指标PRC_ADS_STAT_INDX_DATA及基线表DDL、规格文档
+  3. DDL同步(dwd/dws/ods→tmp)与Mapping Excel/Markdown更新
+  4. 冗余文件清理(governance临时JSON/历史审查报告/需求模板)
+  5. Harness三级流程系统(L1/L2/L3)与process_compliance
+allowed_changes:
+  - path: data_assets/ddl/
+  - path: data_assets/mapping/
+  - path: data_assets/stored_procedure/
+  - path: data_assets/function/
+  - path: docs/
+  - path: requirements/
+  - path: governance/
+  - path: scripts/
+  - path: .harness/
+  - path: .gitignore
+  - path: AGENTS.md
+read_only_inputs:
+  - path: templates/procedure_template.sql
+  - path: templates/PRC_模板.sql
+  - path: docs/quality_rules.md
+  - path: docs/project_goals.md
+forbidden_changes:
+  - path: secrets/
+  - path: .env

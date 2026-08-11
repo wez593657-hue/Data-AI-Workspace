@@ -293,7 +293,13 @@ RAISE NOTICE '输出: code=%, msg=%', p_result_code, p_result_msg;
 
 ## 5.8 临时表使用
 
+### 5.8.1 命名与目录规范
+
 存储过程中使用的临时表统一采用 `TMP_` 前缀的物理表，命名格式为 `TMP_{结果表}_{用途}`。
+
+**临时表 DDL 必须同步生成为独立文件**，存放于 `data_assets/ddl/tmp/` 目录，每个存储过程对应一个 `.ddl` 文件，包含该过程使用的所有 TMP 表。文件命名格式为 `tmp_pro_{过程名小写}.ddl`。
+
+> 例如：存储过程 `PRC_DWD_ACCT_INSUR` 的临时表 DDL 文件为 `data_assets/ddl/tmp/tmp_pro_dwd_acct_insur.ddl`，包含该过程使用的全部 TMP 表（TMP_DWD_ACCT_INSUR_DETAIL、TMP_DWD_ACCT_INSUR_FEE_AGGR、TMP_DWD_ACCT_INSUR_SNAP）。
 
 ```sql
 CREATE OR REPLACE PROCEDURE proc_crm_order_sync()
@@ -342,6 +348,39 @@ BEGIN
     DROP TABLE IF EXISTS TMP_CRM_ORDER_PENDING;
 
 END $$;
+```
+
+### 5.8.2 冗余校验简化
+
+编写存储过程逻辑时，**只保留必要的业务逻辑，去除所有冗余校验和转换**：
+
+- ❌ 禁止对已是正确类型的字段做冗余类型转换（如对 NUMBER 字段调用 `TO_NUMBER`）
+- ❌ 禁止对源数据已保证格式的字段做重复格式校验
+- ❌ 禁止在注释中嵌入可被代码直接表达的逻辑说明
+- ✅ 参数校验仅保留 `IS NULL` + `LENGTH` 检查，不写正则
+- ✅ 日期转换直接使用 `TO_DATE`，不预校验格式
+
+### 5.8.3 行内注释规范
+
+所有行内字段注释必须予以保留，并遵循以下格式规范：
+
+1. **简单字段**（无函数调用、无复杂表达式）：注释放在字段之后，与字段在同一行内，使用 `--` 对齐。
+2. **复杂字段**（包含函数调用、CASE 表达式、条件判断）：注释另起一行书写，置于表达式之前，确保与对应字段在视觉上保持清晰的关联性。
+3. **CASE 各分支**：行内简短注释，标注分支含义。
+
+```sql
+-- 正确示例
+SELECT
+    D.cust_id,                                                        -- 客户编号
+    D.cust_typ,                                                       -- 客户类型
+    TO_CHAR(MIN(D.accept_date_parsed), 'YYYYMMDD'),                   -- 交易日期，取最小投保日期
+    -- 最近交易日期：COALESCE(最近缴费成功日期, 投保日期回退)
+    COALESCE(TO_CHAR(MAX(AG.last_success_tx_date), 'YYYYMMDD'),
+             TO_CHAR(MIN(D.accept_date_parsed), 'YYYYMMDD')),
+    CASE
+        WHEN MIN(D.valid_per_unit) = '-1' THEN '9999-12-31'           -- 永久有效
+        WHEN MIN(D.valid_per_unit) = '12' THEN TO_CHAR(...)           -- 年单位
+    END
 ```
 
 ## 5.9 存储过程命名规范

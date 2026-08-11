@@ -1,26 +1,20 @@
 /*
- * DWD层表
- * 表名: crmdm.dwd_crm_sys_xthlcs
- * 来源: TB.ddl
+ * DWD_CRM_SYS_XTHLCS
+ * 中文名称: 货币汇率表
+ * 来源: Mapping Excel 同步
  */
 
--- crmdm.dwd_crm_sys_xthlcs 定义
-
--- Drop table
-
--- DROP TABLE crmdm.dwd_crm_sys_xthlcs;
-
-CREATE TABLE crmdm.dwd_crm_sys_xthlcs (
-    huobdaih varchar(6) NOT NULL,
-    pjdanwei numeric(20,
-    7) NOT NULL,
-    huobfhao varchar(8) NULL,
-    zhngjjia numeric(20,
-    7) NULL,
-    hl numeric(20,
-    7) NULL
+CREATE TABLE IF NOT EXISTS DWD_CRM_SYS_XTHLCS (
+    HUOBDAIH VARCHAR NOT NULL, -- 货币代号
+    PJDANWEI NUMBER NOT NULL, -- 牌价单位
+    HUOBFHAO VARCHAR NULL, -- 货币符号
+    ZHNGJJIA NUMBER NULL, -- 中间价
+    HL NUMBER NULL -- 汇率
 );
 
-
-
-COMMENT ON TABLE DWD_CRM_SYS_XTHLCS IS '【待补充】';
+COMMENT ON TABLE DWD_CRM_SYS_XTHLCS IS '货币汇率表';
+COMMENT ON COLUMN DWD_CRM_SYS_XTHLCS.HUOBDAIH IS '货币代号';
+COMMENT ON COLUMN DWD_CRM_SYS_XTHLCS.PJDANWEI IS '牌价单位';
+COMMENT ON COLUMN DWD_CRM_SYS_XTHLCS.HUOBFHAO IS '货币符号';
+COMMENT ON COLUMN DWD_CRM_SYS_XTHLCS.ZHNGJJIA IS '中间价';
+COMMENT ON COLUMN DWD_CRM_SYS_XTHLCS.HL IS '汇率';

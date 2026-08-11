@@ -1,0 +1,10 @@
+evidence_id: pi-001
+task_id: fin-acct-redesign-20260806
+phase: MEMORY_CARD_UPDATED
+kind: gate
+purpose: procedure_implementation
+result: passed
+details: '即将实现: 1)TMP_DWD_ACCT_FIN_ACTIVE表DDL, 2)SP 4步骤重写(DELETE+INSERT+到期标记), 3)DWD_ACCT_FIN
+  DDL补充CFM_AMT列'
+repository_revision: 3d7298985ff077a1660a3c7e79b33149d5e162ee
+created_at: '2026-08-06T08:21:39+00:00'

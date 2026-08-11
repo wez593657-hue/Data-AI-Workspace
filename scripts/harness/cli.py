@@ -36,6 +36,7 @@ from .task_manager import (
 from .change_guard import ChangeGuardError, validate_manifest_changes
 from .evidence_store import git_revision, read_yaml
 from .state_machine import BLOCKED
+from .process_compliance import compliance_report, format_report
 
 
 def authorize_sync(root, task_id: str, required_paths: list[str]) -> tuple[dict, dict]:
@@ -65,15 +66,21 @@ def parser() -> argparse.ArgumentParser:
     create.add_argument("--purpose", required=True)
     create.add_argument(
         "--workflow-profile",
-        choices=["requirement_development", "schema_change", "data_warehouse", "harness"],
-        default="requirement_development",
+        choices=[
+            "lightweight", "standard", "strict",
+            "requirement_development", "schema_change", "data_warehouse", "harness",
+        ],
+        default="standard",
     )
 
     profile = subparsers.add_parser("set-profile", help="设置任务工作流类型")
     profile.add_argument("task_id")
     profile.add_argument(
         "workflow_profile",
-        choices=["requirement_development", "schema_change", "data_warehouse", "harness"],
+        choices=[
+            "lightweight", "standard", "strict",
+            "requirement_development", "schema_change", "data_warehouse", "harness",
+        ],
     )
 
     status = subparsers.add_parser("status", help="查看任务")
@@ -186,6 +193,9 @@ def parser() -> argparse.ArgumentParser:
     resume.add_argument("task_id")
     resume.add_argument("--user-decision", required=True)
     resume.add_argument("--recovery-evidence", required=True)
+
+    compliance = subparsers.add_parser("compliance-report", help="生成流程合规度报告")
+    compliance.add_argument("--format", choices=["json", "text"], default="text")
     return command
 
 
@@ -368,6 +378,13 @@ def main(argv: list[str] | None = None) -> int:
                 args.user_decision,
                 args.recovery_condition,
             )
+        elif args.command == "compliance-report":
+            report = compliance_report(root)
+            if args.format == "json":
+                print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+            else:
+                print(format_report(report))
+            return 0
         else:
             result = resume_task(
                 root, args.task_id, args.user_decision, args.recovery_evidence

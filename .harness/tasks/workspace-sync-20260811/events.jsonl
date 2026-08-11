@@ -1,0 +1,14 @@
+{"created_at": "2026-08-11T02:07:45+00:00", "event": "task_created", "task_id": "workspace-sync-20260811"}
+{"created_at": "2026-08-11T02:08:01+00:00", "event": "evidence_recorded", "evidence_id": "ev-ws-001"}
+{"created_at": "2026-08-11T02:08:01+00:00", "event": "state_transition", "from": "CREATED", "to": "WORKSPACE_CHECKED"}
+{"created_at": "2026-08-11T02:08:08+00:00", "event": "evidence_recorded", "evidence_id": "ev-scope-001"}
+{"created_at": "2026-08-11T02:08:08+00:00", "event": "state_transition", "from": "WORKSPACE_CHECKED", "to": "IMPLEMENTATION_READY"}
+{"created_at": "2026-08-11T02:08:15+00:00", "event": "evidence_recorded", "evidence_id": "ev-qv-001"}
+{"created_at": "2026-08-11T02:08:15+00:00", "event": "state_transition", "from": "IMPLEMENTATION_READY", "to": "QUICK_VALIDATION_PASSED"}
+{"created_at": "2026-08-11T02:08:21+00:00", "event": "evidence_recorded", "evidence_id": "ev-fv-001"}
+{"created_at": "2026-08-11T02:08:22+00:00", "event": "state_transition", "from": "QUICK_VALIDATION_PASSED", "to": "FULL_VALIDATION_PASSED"}
+{"created_at": "2026-08-11T02:08:30+00:00", "event": "evidence_recorded", "evidence_id": "ev-ua-001"}
+{"created_at": "2026-08-11T02:08:31+00:00", "event": "state_transition", "from": "FULL_VALIDATION_PASSED", "to": "USER_APPROVED"}
+{"created_at": "2026-08-11T02:08:31+00:00", "event": "state_transition", "from": "USER_APPROVED", "to": "COMMIT_ALLOWED"}
+{"created_at": "2026-08-11T02:08:31+00:00", "event": "evidence_recorded", "evidence_id": "ev-ca-001"}
+{"created_at": "2026-08-11T02:08:32+00:00", "event": "state_transition", "from": "COMMIT_ALLOWED", "to": "PUSH_ALLOWED"}

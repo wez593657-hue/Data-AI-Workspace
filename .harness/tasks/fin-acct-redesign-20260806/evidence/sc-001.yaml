@@ -1,0 +1,9 @@
+evidence_id: sc-001
+task_id: fin-acct-redesign-20260806
+phase: SCOPE_CONFIRMED
+kind: gate
+purpose: scope_confirmation
+result: passed
+details: 'scope_confirmation: 改动范围=4文件(SP+DDL+TMP_DDL+记忆卡), 下游4SP已评估, 无跨层依赖'
+repository_revision: 3d7298985ff077a1660a3c7e79b33149d5e162ee
+created_at: '2026-08-06T08:03:07+00:00'

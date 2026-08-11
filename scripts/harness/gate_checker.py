@@ -23,6 +23,11 @@ _REVIEW_STAGES = {
     "ASSETS_REVIEW_PASSED": "schema_consistency_review",
 }
 
+# Backward-compatible aliases: phase_gates.yaml only has canonical names
+_WORKFLOW_ALIASES = {
+    "requirement_development": "strict",
+}
+
 
 def _validate_review_gate(
     source: str, target: str, evidence: list[dict[str, Any]], required: list[str]
@@ -130,7 +135,8 @@ def check_gate(root: Path, task_id: str, target: str) -> dict[str, Any]:
     source = str(task.get("state", ""))
     workflow = task.get("workflow_profile", "data_warehouse")
     validate_transition(source, target, workflow)
-    policy = _policy(root).get("workflows", {}).get(workflow, {}).get(source, {})
+    policy_workflow = _WORKFLOW_ALIASES.get(workflow, workflow)
+    policy = _policy(root).get("workflows", {}).get(policy_workflow, {}).get(source, {})
     allowed_targets = set(policy.get("allowed_next", []))
     if allowed_targets and target not in allowed_targets:
         raise GateError(f"门禁策略不允许状态迁移: {source} -> {target}")

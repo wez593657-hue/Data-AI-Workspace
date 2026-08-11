@@ -72,5 +72,8 @@ temp_docx_full.txt
 _extract_*.py
 _v*_full_text.txt
 
-# Work-in-progress harness tasks (to be committed with their respective features)
-.harness/tasks/cust-lost-v241/
+# One-time diagnostic scripts (xlsx diff / probe / mapping sync)
+scripts/_*.py
+scripts/_*.txt
+
+

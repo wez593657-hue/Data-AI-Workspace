@@ -1,0 +1,9 @@
+evidence_id: ra-001
+task_id: fin-acct-redesign-20260806
+phase: REQUIREMENT_ANALYZED
+kind: gate
+purpose: requirement_analysis
+result: passed
+details: 需求分析完成：3条金融法规联网核查、FMS_TD_CUST_VOL到期删除机制确认、13张源表DDL字段逐项交叉比对、F-01~F-05五个问题清单、DELETE+INSERT方案复核报告R-01~R-12
+repository_revision: 3d7298985ff077a1660a3c7e79b33149d5e162ee
+created_at: '2026-08-06T08:02:45+00:00'

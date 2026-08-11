@@ -1,0 +1,9 @@
+evidence_id: ev-scope-001
+task_id: workspace-sync-20260811
+phase: scope_confirm
+kind: check
+purpose: implementation_scope
+result: passed
+details: 变更范围:理财账户重构(4文件)+ADS指标(SP/DDL/文档)+DDL同步(dwd/dws/ods/tmp)+Mapping(Excel/MD)+冗余清理(14删除)+Harness流程(phase_gates/cli/state_machine/workflow_router等)+docs/requirements更新
+repository_revision: 3d7298985ff077a1660a3c7e79b33149d5e162ee
+created_at: '2026-08-11T02:08:08+00:00'

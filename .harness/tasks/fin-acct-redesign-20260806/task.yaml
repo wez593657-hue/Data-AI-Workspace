@@ -1,0 +1,68 @@
+schema_version: '0.1'
+task_id: fin-acct-redesign-20260806
+purpose: 理财账户存储过程重构：TRUNCATE改为DELETE+INSERT方案，保留到期数据，修复CFM_AMT列缺失，新增TMP表DDL
+workflow_profile: strict
+state: PROCEDURE_IMPLEMENTED
+branch: master
+created_at: '2026-08-06T07:57:22+00:00'
+updated_at: '2026-08-06T08:21:46+00:00'
+evidence_ids:
+- workflow-routing-001
+- wr-001
+- ra-001
+- sc-001
+- prs-001
+- tl-001
+- sca-001
+- ms-001
+- fgc-001
+- mcu-001
+- rr-001
+- rr-002
+- rr-003
+- mcu-002
+- pi-001
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-08-06T07:57:22+00:00'
+- from: CREATED
+  to: REQUIREMENT_ANALYZED
+  reason: 已完成需求分析：联网核查3条金融法规+确认FMS_TD_CUST_VOL到期删除机制+13张源表DDL字段交叉比对+确认F-01~F-05五个问题
+  at: '2026-08-06T08:00:45+00:00'
+- from: REQUIREMENT_ANALYZED
+  to: SCOPE_CONFIRMED
+  reason: 范围确认：改动文件=SP+DDL+TMP DDL+记忆卡片，仅涉及ods_to_dwd单层，下游4个SP已评估影响
+  at: '2026-08-06T08:02:57+00:00'
+- from: SCOPE_CONFIRMED
+  to: PROJECT_SCANNED
+  reason: 项目扫描完成：ODS层11张FMS源表+1张TMP表+1张DWD目标表+1个SP
+  at: '2026-08-06T08:03:26+00:00'
+- from: PROJECT_SCANNED
+  to: TABLE_LINEAGE_IDENTIFIED
+  reason: 表血缘确认：FMS_TD_CUST_VOL→DWD_ACCT_FIN(代销), FMS_T5_CUST_VOL→DWD_ACCT_FIN(自营),
+    下游DWS_CUST_ASSE_LIAB_CUMU等4个SP
+  at: '2026-08-06T08:03:38+00:00'
+- from: TABLE_LINEAGE_IDENTIFIED
+  to: SOURCE_CAPABILITY_ANALYZED
+  reason: 源能力分析：FMS_TD_CUST_VOL实时快照无历史分区, TOTAL_VOL=0或行删除=到期, TRANS_STATUS=3-确认成功过滤正确
+  at: '2026-08-06T08:03:46+00:00'
+- from: SOURCE_CAPABILITY_ANALYZED
+  to: FIELD_GAP_CONFIRMED
+  reason: 字段缺口确认：DWD_ACCT_FIN DDL缺少CFM_AMT列需补充, RATE_INTRI隐式转换需修复, V_SYSDAT参数需校验
+  at: '2026-08-06T08:03:54+00:00'
+- from: FIELD_GAP_CONFIRMED
+  to: REQUIREMENT_REVIEW_PASSED
+  reason: 需求审查通过：DELETE+INSERT方案复核报告完成12项审查发现，方案优于原TRUNCATE和UPSERT，阻塞项已明确
+  at: '2026-08-06T08:04:22+00:00'
+- from: REQUIREMENT_REVIEW_PASSED
+  to: MEMORY_CARD_UPDATED
+  reason: '记忆卡片v2.0.0: 4步骤DELETE+INSERT方案, 到期标记FIN_AMT=0, 阻塞项已明确'
+  at: '2026-08-06T08:21:30+00:00'
+- from: MEMORY_CARD_UPDATED
+  to: PROCEDURE_IMPLEMENTED
+  reason: '开始代码实现: TMP表DDL+SP重写+DDL补列+记忆卡片更新, 遵循5.8节SP开发规范'
+  at: '2026-08-06T08:21:46+00:00'
+state_seal: 3223480952fa6559cf06f4ac97192b45f9ec4e8c92c7521ea0fc87b81a93b926

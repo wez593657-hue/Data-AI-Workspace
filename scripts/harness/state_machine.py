@@ -1,4 +1,10 @@
-"""Task state transitions and gate validation for the harness."""
+"""Task state transitions and gate validation for the harness.
+
+Tiered workflow system (L1/L2/L3) for differentiated process rigor:
+  L1 (lightweight)  – single-file fixes, comments, formatting, trivial bug fixes
+  L2 (standard)     – single-SP add/refactor, calculation/rule changes
+  L3 (strict)       – cross-module, DDL, new tables (was requirement_development)
+"""
 
 from __future__ import annotations
 
@@ -41,13 +47,37 @@ HARNESS_STATES = (
 )
 
 PUBLISH_STATES = (
-    "RELEASE_APPROVED",
     "COMMIT_ALLOWED",
     "PUSH_ALLOWED",
     "COMPLETED",
 )
 
-REQUIREMENT_DEVELOPMENT_STATES = (
+# ---------------------------------------------------------------------------
+# Tiered requirement-development workflows
+# ---------------------------------------------------------------------------
+# L1 – lightweight: single-file fixes, comments/formatting, trivial bugs
+LIGHTWEIGHT_STATES = (
+    "CREATED",
+    "SCOPE_CONFIRMED",
+    "QUICK_VALIDATION_PASSED",
+    "USER_APPROVED",
+    *PUBLISH_STATES,
+)
+
+# L2 – standard: single-SP add/refactor, calculation/rule changes
+STANDARD_STATES = (
+    "CREATED",
+    "REQUIREMENT_ANALYZED",
+    "SCOPE_CONFIRMED",
+    "PROCEDURE_IMPLEMENTED",
+    "PROCEDURE_REVIEW_PASSED",
+    "FULL_VALIDATION_PASSED",
+    "USER_APPROVED",
+    *PUBLISH_STATES,
+)
+
+# L3 – strict (was requirement_development): cross-module, DDL, new tables
+STRICT_STATES = (
     "CREATED",
     "REQUIREMENT_ANALYZED",
     "SCOPE_CONFIRMED",
@@ -66,6 +96,9 @@ REQUIREMENT_DEVELOPMENT_STATES = (
     *PUBLISH_STATES,
 )
 
+# Backward-compatible alias
+REQUIREMENT_DEVELOPMENT_STATES = STRICT_STATES
+
 SCHEMA_CHANGE_STATES = (
     "CREATED",
     "MAPPING_EXCEL_ANALYZED",
@@ -82,12 +115,29 @@ SCHEMA_CHANGE_STATES = (
 WORKFLOW_STATES = {
     "data_warehouse": DATA_WAREHOUSE_STATES,
     "harness": HARNESS_STATES,
-    "requirement_development": REQUIREMENT_DEVELOPMENT_STATES,
+    "lightweight": LIGHTWEIGHT_STATES,
+    "standard": STANDARD_STATES,
+    "strict": STRICT_STATES,
+    # Backward-compatible aliases
+    "requirement_development": STRICT_STATES,
     "schema_change": SCHEMA_CHANGE_STATES,
 }
 STATES = DATA_WAREHOUSE_STATES
 
 _EXPLICIT_NEXT = {
+    "lightweight": {
+        "SCOPE_CONFIRMED": {"QUICK_VALIDATION_PASSED"},
+    },
+    "standard": {
+        "PROCEDURE_REVIEW_PASSED": {"FULL_VALIDATION_PASSED", "PROCEDURE_IMPLEMENTED"},
+    },
+    "strict": {
+        "FIELD_GAP_CONFIRMED": {"REQUIREMENT_REVIEW_PASSED", "MATERIALS_SUPPLEMENTED"},
+        "REQUIREMENT_REVIEW_PASSED": {"MEMORY_CARD_UPDATED", "MATERIALS_SUPPLEMENTED"},
+        "PROCEDURE_REVIEW_PASSED": {"TMP_TABLES_GENERATED", "PROCEDURE_IMPLEMENTED"},
+        "MATERIALS_SUPPLEMENTED": {"SOURCE_CAPABILITY_ANALYZED"},
+    },
+    # Backward-compatible alias
     "requirement_development": {
         "FIELD_GAP_CONFIRMED": {"REQUIREMENT_REVIEW_PASSED", "MATERIALS_SUPPLEMENTED"},
         "REQUIREMENT_REVIEW_PASSED": {"MEMORY_CARD_UPDATED", "MATERIALS_SUPPLEMENTED"},

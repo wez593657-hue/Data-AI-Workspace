@@ -1,33 +1,30 @@
 /*
  * DWD_ACCT_FIN
  * 中文名称: 理财账户信息
- * 版本: v1.0.1
- * 创建时间: 2026-07-17
- * 变更记录:
- *   v1.0.0 2026-07-17 初始版本
- *   v1.0.1 2026-07-28 删除重复列及FIN_MTH_AVG/QRT_AVG/YR_AVG、补行内注释、修NUMBER格式
+ * 来源: Mapping Excel 同步
  */
 
 CREATE TABLE IF NOT EXISTS DWD_ACCT_FIN (
-    CUST_ID              VARCHAR(20)    NOT NULL,  -- 客户编号
-    CUST_TYP             VARCHAR(2)     NULL,      -- 客户类型
-    ACCT_ID              VARCHAR(40)    NULL,      -- 账户
-    CARD_NO              VARCHAR(30)    NULL,      -- 卡/折号
-    PRDKT_ID             VARCHAR(40)    NULL,      -- 产品ID
-    PRDKT_NAME           VARCHAR(100)   NULL,      -- 产品名称
-    PRDKT_CATE_BIG       VARCHAR(64)    NULL,      -- 产品大类
-    ESTAB_DATE           VARCHAR(10)    NULL,      -- 成立日期
-    FIN_AMT              NUMBER(20,2)   NULL,      -- 理财余额
-    RATE_INTRI           NUMBER(20,2)   NULL,      -- 收益率
-    ACCT_STATE           VARCHAR(10)    NULL,      -- 状态
-    INTRI_BGN_DATE       VARCHAR(10)    NULL,      -- 起息日期
-    EXPR_DATE            VARCHAR(10)    NULL,      -- 到期日期
-    OPRT_ORG             VARCHAR(7)     NULL,      -- 归属机构
-    CHNL_NO              VARCHAR(10)    NULL,      -- 办理渠道
-    PERSN_LEGAL_BK_CODE  VARCHAR(4)     NULL,      -- 法人行号
-    ISSU_ORG             VARCHAR(6)     NULL,      -- 发行机构
-    ISSU_DATE            VARCHAR(10)    NULL,      -- 办理日期
-    RISK_LVL             VARCHAR(2)     NULL       -- 风险等级
+    CUST_ID VARCHAR(20) NOT NULL, -- 客户编号
+    CUST_TYP VARCHAR(2) NOT NULL, -- 客户类型
+    ACCT_ID VARCHAR(40) NOT NULL, -- 账户
+    CARD_NO VARCHAR(30) NOT NULL, -- 卡/折号
+    PRDKT_ID VARCHAR(40) NOT NULL, -- 产品ID
+    PRDKT_NAME VARCHAR(100) NULL, -- 产品名称
+    PRDKT_CATE_BIG VARCHAR(64) NULL, -- 产品大类
+    ESTAB_DATE VARCHAR(10) NULL, -- 成立日期
+    FIN_AMT NUMBER(20,2) NULL, -- 理财余额
+    RATE_INTRI NUMBER(20,2) NULL, -- 收益率
+    ACCT_STATE VARCHAR(10) NULL, -- 状态
+    INTRI_BGN_DATE VARCHAR(10) NULL, -- 起息日期
+    EXPR_DATE VARCHAR(10) NULL, -- 到期日期
+    OPRT_ORG VARCHAR(7) NULL, -- 归属机构
+    CHNL_NO VARCHAR(10) NULL, -- 办理渠道
+    PERSN_LEGAL_BK_CODE VARCHAR(4) NULL, -- 法人行号
+    ISSU_ORG VARCHAR(6) NULL, -- 发行机构
+    ISSU_DATE VARCHAR(10) NULL, -- 办理日期
+    RISK_LVL VARCHAR(2) NULL, -- 风险等级
+    CFM_AMT NUMBER(20,2) NULL -- 确认金额
 );
 
 COMMENT ON TABLE DWD_ACCT_FIN IS '理财账户信息';
@@ -50,3 +47,4 @@ COMMENT ON COLUMN DWD_ACCT_FIN.PERSN_LEGAL_BK_CODE IS '法人行号';
 COMMENT ON COLUMN DWD_ACCT_FIN.ISSU_ORG IS '发行机构';
 COMMENT ON COLUMN DWD_ACCT_FIN.ISSU_DATE IS '办理日期';
 COMMENT ON COLUMN DWD_ACCT_FIN.RISK_LVL IS '风险等级';
+COMMENT ON COLUMN DWD_ACCT_FIN.CFM_AMT IS '确认金额';

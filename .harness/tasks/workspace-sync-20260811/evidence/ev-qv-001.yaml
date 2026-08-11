@@ -1,0 +1,9 @@
+evidence_id: ev-qv-001
+task_id: workspace-sync-20260811
+phase: quick_validation
+kind: check
+purpose: quick_validation
+result: passed
+details: workspace_validation.py full:文档审核/跨层一致性/SQL语法/JSON/YAML/日期参数规则全部通过,仅Git一致性检查因未暂存文件失败(暂存后通过)
+repository_revision: 3d7298985ff077a1660a3c7e79b33149d5e162ee
+created_at: '2026-08-11T02:08:15+00:00'

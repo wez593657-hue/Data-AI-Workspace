@@ -139,30 +139,32 @@ BEGIN
 
   -- 3.4 是否向他行同名户规律转出
   -- 口径：近半年每月至少向他行同名账户转账一笔
-  INSERT INTO TMP_ADS_CRM_CUST_LABLE_04 (
+
+ --入中间表  
+   SELECT a.CUST_ID,
+                a.PERSN_LEGAL_BK_CODE,
+                SUBSTR(a.TX_DATE, 1, 6) AS TX_MONTH
+           FROM DWD_TX_ASET a
+          WHERE a.TX_DATE = V_SYSDAT 
+            AND a.LOAN_FLG = '0' --0借 1贷
+            --交易对手行号不为本行机构号
+            AND A.CHONGZBZ = '0'
+            AND INSTR(a.OPNT_ACCT_NAME_FST, A.CUST_NAME) > 0
+            AND a.OPNT_BK_KEEP NOT IN (SELECT ORG_ID FROM DWD_SYS_ORG) --
+          GROUP BY a.CUST_ID, a.PERSN_LEGAL_BK_CODE, SUBSTR(a.TX_DATE, 1, 6)
+   
+   INSERT INTO TMP_ADS_CRM_CUST_LABLE_04 (
       PERSN_LEGAL_BK_CODE,
       CUST_ID,
       IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME
   )
   SELECT CUST_ID,
          PERSN_LEGAL_BK_CODE,
-         CASE WHEN COUNT(DISTINCT TX_MONTH) >= 6 THEN 'Y' ELSE 'N' END AS RGLAR_FLAG
-    FROM (
-         SELECT a.CUST_ID,
-                a.PERSN_LEGAL_BK_CODE,
-                SUBSTR(a.TX_DATE, 1, 6) AS TX_MONTH
-           FROM DWD_TX_ASET a
-           JOIN DWD_CUST_INDV_INFO c
-             ON c.CUST_ID             = a.CUST_ID
-            AND c.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
-          WHERE a.TX_DATE >= V_SIX_MONTH_AGO
-            AND a.LOAN_FLG = '贷方'
-            -- TODO[待确认]: 本行联行号标识，当前排除9999开头
-            AND a.OPNT_BK_KEEP NOT LIKE '9999%'
-            AND INSTR(a.OPNT_ACCT_NAME_FST, c.CUST_NAME) > 0
-          GROUP BY a.CUST_ID, a.PERSN_LEGAL_BK_CODE, SUBSTR(a.TX_DATE, 1, 6)
-    ) m
-   GROUP BY CUST_ID, PERSN_LEGAL_BK_CODE;
+         CASE WHEN COUNT(DISTINCT TX_MONTH) >= 6 THEN '1' ELSE '0' END AS RGLAR_FLAG
+    FROM 中间表 m where  V_SIX_MONTH_AGO
+   GROUP BY CUST_ID, PERSN_LEGAL_BK_CODE;  
+   
+   
 
   -- 3.5 当年校园缴费笔数（tran_type='1', tran_status='1',cust_status = '1'）
   INSERT INTO TMP_ADS_CRM_CUST_LABLE_05 (
@@ -170,8 +172,10 @@ BEGIN
       CUST_ID,
       YR_CAMPUS_PAY_CNT
   )
-  SELECT i.cust_core_no AS CUST_ID,
-         i.incorp_no    AS PERSN_LEGAL_BK_CODE,
+  SELECT i.cust_core_no          AS CUST_ID,
+         CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','1')
+              THEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2)||'00'
+              ELSE '9999' END    AS PERSN_LEGAL_BK_CODE,
          COUNT(*)        AS CAMPUS_CNT
     FROM crmdm.mbk_cust_log_fee f
     JOIN crmdm.mbk_cust_info    i
@@ -190,7 +194,9 @@ BEGIN
       MTH_UTIL_PAY_TRAN_CNT
   )
   SELECT i.cust_core_no             AS CUST_ID,
-         i.incorp_no                AS PERSN_LEGAL_BK_CODE,
+         CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','1')
+              THEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2)||'00'
+              ELSE '9999' END                AS PERSN_LEGAL_BK_CODE,
          SUM(TO_NUMBER(f.tran_amt)) AS UTIL_TRAN_AMT,
          COUNT(*)                   AS UTIL_TRAN_CNT
     FROM crmdm.mbk_cust_log_fee f
@@ -200,7 +206,10 @@ BEGIN
      AND f.tran_status = '1'
      AND I.cust_status = '1'
      AND f.tran_date  >= V_CURR_MONTH_BEGIN
-   GROUP BY i.cust_core_no, i.incorp_no;
+   GROUP BY i.cust_core_no, 
+   CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','1')
+              THEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2)||'00'
+              ELSE '9999' END;
 
   -- 3.7 收单商户上月交易（uepp_pay_order_info: status='02'，pay_time在上月范围内）
   -- isscode映射法人行号：前2位=12/15/18 → isscode||'00'，其余 → '9999'
@@ -211,21 +220,23 @@ BEGIN
       BILL_RSV_MKNT_AMT_MTH_LAST
   )
   SELECT CASE WHEN SUBSTR(isscode, 1, 2) IN ('12', '15', '18')
-              THEN isscode || '00'
+              THEN SUBSTR(isscode, 1, 2) || '00'
               ELSE '9999'
          END          AS PERSN_LEGAL_BK_CODE,
-         consumer_id  AS CUST_ID,
+         cust_no  AS CUST_ID,
          COUNT(*)     AS MKT_CNT,
          SUM(order_amt) AS MKT_AMT
-    FROM crmdm.uepp_pay_order_info
-   WHERE status   = '02'                            -- 交易成功
+    FROM crmdm.uepp_pay_order_info upo
+    inner join uepp_pay_mct_settle_account upm
+      on upm.mct_id = upo.mct_id
+   WHERE upo.status   = '02'                            -- 交易成功
      AND SUBSTR(pay_time, 1, 8) >= V_PREV_MONTH_BEGIN
      AND SUBSTR(pay_time, 1, 8) <= V_PREV_MONTH_END
    GROUP BY CASE WHEN SUBSTR(isscode, 1, 2) IN ('12', '15', '18')
-                 THEN isscode || '00'
+                 THEN SUBSTR(isscode, 1, 2) || '00'
                  ELSE '9999'
             END,
-            consumer_id;
+            cust_no;
 
   COMMIT;
 
@@ -268,7 +279,7 @@ BEGIN
          NVL(b.NEAR_MTH_TX_AMT, 0),
          NVL(c.NEAR_MTH_THIRD_PAY_OUT_CNT, 0),
          NVL(c.NEAR_MTH_THIRD_PAY_OUT_AMT, 0),
-         NVL(d.IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME, 'N'),
+         NVL(d.IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME, '0'),
          NVL(g.BILL_RSV_MKNT_CNT_MTH_LAST, 0),
          NVL(g.BILL_RSV_MKNT_AMT_MTH_LAST, 0),
          NVL(e.YR_CAMPUS_PAY_CNT, 0),

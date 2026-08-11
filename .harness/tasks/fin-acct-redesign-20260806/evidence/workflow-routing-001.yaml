@@ -1,0 +1,9 @@
+evidence_id: workflow-routing-001
+task_id: fin-acct-redesign-20260806
+phase: CREATED
+kind: gate
+purpose: '工作流路由: strict, 存储过程重构+DDL修改'
+result: passed
+details: '路由输出profile=strict, reason: requirement=存储过程, 需DDL修改和新增TMP表'
+repository_revision: 3d7298985ff077a1660a3c7e79b33149d5e162ee
+created_at: '2026-08-06T07:59:07+00:00'
