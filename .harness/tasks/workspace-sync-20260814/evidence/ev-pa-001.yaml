@@ -1,0 +1,9 @@
+evidence_id: ev-pa-001
+task_id: workspace-sync-20260814
+phase: push_authorization
+kind: check
+purpose: push_authorization
+result: passed
+details: 用户授权推送:提交后推送至master
+repository_revision: 2fbdd6b54cf5c23f9eb6156709d2c99a1b523a04
+created_at: '2026-08-13T17:43:07+00:00'

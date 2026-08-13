@@ -85,6 +85,8 @@ def validate_json():
     for root, dirs, files in os.walk(BASE_DIR):
         if '.git' in root:
             continue
+        if os.path.join(BASE_DIR, 'ABCD') in root:
+            continue
         for f in files:
             if f.endswith('.json'):
                 filepath = os.path.join(root, f)
@@ -115,6 +117,8 @@ def validate_yaml():
     
     for root, dirs, files in os.walk(BASE_DIR):
         if '.git' in root:
+            continue
+        if os.path.join(BASE_DIR, 'ABCD') in root:
             continue
         for f in files:
             if f.endswith('.yml') or f.endswith('.yaml'):

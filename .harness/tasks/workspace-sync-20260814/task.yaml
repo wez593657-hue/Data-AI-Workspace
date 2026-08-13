@@ -1,0 +1,51 @@
+schema_version: '0.1'
+task_id: workspace-sync-20260814
+purpose: ABCD规则精简落地（CORE三件套/阶段最小上下文/文档瘦身/过期测试同步）+ 工作区全量存量变更同步提交
+workflow_profile: harness
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-08-13T17:42:20+00:00'
+updated_at: '2026-08-13T17:43:07+00:00'
+evidence_ids:
+- ev-ws-001
+- ev-scope-001
+- ev-qv-001
+- ev-fv-001
+- ev-ua-001
+- ev-ca-001
+- ev-pa-001
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-08-13T17:42:20+00:00'
+- from: CREATED
+  to: WORKSPACE_CHECKED
+  reason: 工作区状态核查完成:变更清单与校验结果已记录,ABCD/已gitignore
+  at: '2026-08-13T17:42:49+00:00'
+- from: WORKSPACE_CHECKED
+  to: IMPLEMENTATION_READY
+  reason: 变更范围已确认,change_manifest.yaml已覆盖全部变更路径
+  at: '2026-08-13T17:42:50+00:00'
+- from: IMPLEMENTATION_READY
+  to: QUICK_VALIDATION_PASSED
+  reason: 快速校验通过:静态检查(文档/一致性/SQL/JSON/YAML/日期参数)无异常
+  at: '2026-08-13T17:42:57+00:00'
+- from: QUICK_VALIDATION_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: 完整校验通过:提交前所有静态检查无异常,变更文件均在change_manifest授权范围内
+  at: '2026-08-13T17:42:58+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户已确认执行提交与推送
+  at: '2026-08-13T17:43:06+00:00'
+- from: USER_APPROVED
+  to: COMMIT_ALLOWED
+  reason: 用户批准提交:授权将全部变更文件提交至master
+  at: '2026-08-13T17:43:06+00:00'
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: 用户授权推送:预推送校验已通过,任务状态推进至PUSH_ALLOWED
+  at: '2026-08-13T17:43:07+00:00'
+state_seal: 2a662d140ea765bae8f901550be7732dd7d1e447cb8eb2a146fb1fc0a6a4d438

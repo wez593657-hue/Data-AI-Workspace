@@ -1,0 +1,33 @@
+task: PRC_ADS_STAT_INDX_DATA local Oracle integration validation
+scope:
+  objective: Generate isolated SCOTT test data and validate all implemented indicator paths.
+  database_schema: SCOTT
+  database_service: local orcl
+  source_read_only:
+    - data_assets/stored_procedure/dws_to_ads/PRC_ADS_STAT_INDX_DATA.sql
+    - data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_product_baseline.sql
+    - data_assets/function/sys_fun_deal_date.sql
+allowed_test_artifacts:
+  - scripts/oracle_validation/indx_data/change_manifest.yaml
+  - scripts/oracle_validation/indx_data/01_setup_tables.sql
+  - scripts/oracle_validation/indx_data/02_convert_proc.ps1
+  - scripts/oracle_validation/indx_data/03_run_integration_test.sql
+  - scripts/oracle_validation/indx_data/oracle_PRC_ADS_STAT_INDX_DATA.sql
+  - scripts/oracle_validation/indx_data/04_run_full_matrix.sql
+  - scripts/oracle_validation/indx_data/05_assertions.sql
+  - scripts/oracle_validation/indx_data/DEFECTS.md
+  - scripts/oracle_validation/indx_data/12_product_sales_assert.sql
+  - docs/analysis/2026-08-12-prc-ads-stat-indx-data-oracle-validation.md
+test_objects:
+  - SCOTT source table copies used by the procedure
+  - SCOTT temporary and ADS output tables
+  - SCOTT.PRC_ADS_STAT_INDX_DATA
+  - SCOTT.SYS_FUN_DEAL_DATE
+test_data_rules:
+  - All rows use synthetic IDs and dates only.
+  - No formal schema object is modified.
+  - Credentials are supplied at runtime and never stored in files.
+acceptance:
+  - Procedure compiles without invalid objects.
+  - Normal, date-boundary, missing-source, duplicate-source, and A/B cases have assertions.
+  - Actual results and failures are captured in the validation report.

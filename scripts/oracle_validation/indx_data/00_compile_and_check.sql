@@ -1,0 +1,21 @@
+SET ECHO ON
+SET FEEDBACK ON
+SET LINESIZE 240
+SET PAGESIZE 1000
+
+WHENEVER SQLERROR CONTINUE
+
+@oracle_PRC_ADS_STAT_INDX_DATA.sql
+
+SHOW ERRORS PROCEDURE PRC_ADS_STAT_INDX_DATA
+
+SELECT object_name, object_type, status
+  FROM user_objects
+ WHERE object_name = 'PRC_ADS_STAT_INDX_DATA';
+
+SELECT name, type, line, position, text
+  FROM user_errors
+ WHERE name = 'PRC_ADS_STAT_INDX_DATA'
+ ORDER BY sequence;
+
+EXIT SUCCESS

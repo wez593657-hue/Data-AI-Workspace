@@ -67,6 +67,10 @@ BEGIN
             V_RETUR_DATE := to_char(V_DATE - 365, 'YYYYMMDD'); -- 365天动账窗口开始日
         WHEN 27 THEN
             V_RETUR_DATE := to_char(V_DATE - 180, 'YYYYMMDD'); -- 180天新客窗口开始日
+        WHEN 28 THEN
+            V_RETUR_DATE := to_char(V_DATE + interval '1' day, 'YYYYMMDD'); -- 次日
+        WHEN 30 THEN
+            V_RETUR_DATE := to_char(add_months(V_DATE, -6) - 1, 'YYYYMMDD'); -- 6月前的前一天（近6月窗口滚动清理边界）
         ELSE
             V_RETUR_DATE := NULL;
     END CASE;

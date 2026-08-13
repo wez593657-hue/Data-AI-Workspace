@@ -32,37 +32,35 @@
 
 ---
 
-## DEFECT-INSUR-002：大数据量下性能平方级恶化（部署阻断项）
+## DEFECT-INSUR-002：大数据量下性能非线性恶化
 
-- **状态**：待审核
-- **具体位置**：2.1 快照聚合（5 表 JOIN + DWD_CUST_INDV_INFO LEFT JOIN）、
-  2.2 NOT EXISTS、2.3 MERGE
+- **状态**：优化待实测
+- **具体位置**：v3.2.0 的物理明细、预聚合和快照临时表链路。
 - **影响范围**：1 万保单（2 万交易）21.2s；3 万保单 182.8s；5 万保单 >500s 超时；
   非线性增长，生产每日跑批不可接受
 - **复现证据**：本地 Oracle 实测（见报告）
-- **建议**：为关联列建索引（如 DWD_CUST_INDV_INFO(CUST_ID)、
-  YBT_POLICY_FEE_LIST(ORD_PAY_SERIAL) 等），并核查执行计划
-- **处理决策**：待用户确认
+- **处理结果**：v3.3.0 已将明细、日期预聚合和四键聚合收敛为单条 CTE
+  集合化写入，移除三张 TMP 表的清理、写入、回读及中间提交。需要在目标
+  Oracle/Kingbase 验证库执行 `06_perf_test.sql` 后，以相同数据规模记录新耗时。
 
 ---
 
-## DEFECT-INSUR-003：共享快照临时表导致并发跑批冲突（并发缺陷）
+## DEFECT-INSUR-003：并发全量刷新风险
 
-- **状态**：待审核
-- **具体位置**：`TMP_DWD_ACCT_INSUR_SNAP`（物理共享表，2.1 TRUNCATE+INSERT）
-- **影响范围**：两个会话同时执行本过程时，第二个会话报
-  ORA-00001（PK_TMP_SNAP violated），批处理失败；生产并发调度/重跑重叠风险
-- **复现证据**：双会话并发实测（见报告）
-- **建议**：批处理串行化（调度锁/单实例执行），或改用会话级临时表
+- **状态**：部分缓解，待审核
+- **具体位置**：`DWD_ACCT_INSUR` 全量 `DELETE` 后重建。
+- **影响范围**：v3.3.0 已消除共享快照表及其主键冲突；但两个会话并发执行时仍可能
+  相互覆盖目标表的刷新结果，生产调度仍应保证同一过程单实例运行。
+- **处理结果**：物理快照表已移除；保留 `07_concurrency.sql` 验证刷新模式风险。
 - **处理决策**：待用户确认
 
 ---
 
 ## 发现与观察项（非阻断）
 
-1. **代码 vs ODS DDL 不一致**：过程引用 `YBT_POLICY_FEE_LIST.TX_DATE`，
-   工作区该表 DDL 无 TX_DATE 列（测试补列验证）；实际交易日期字段
-   （ORD_CREATE_DATE 等）需确认。
+1. **已修复：代码 vs ODS DDL 不一致**：v3.3.0 使用
+   `YBT_YBT_POLICY_*`、`IBP_IB_LIST_PLAT` 与 `ORD_CREATE_DATE`，不再引用
+   不存在的 `TX_DATE` 字段。
 2. **字段语义错位**：DWD_ACCT_INSUR 的 INSUR_PERIOD_TYP/INSUR_PERIOD 填充自
    PAY_PER_UNIT/PAY_PER_NUM（缴费期间），PAY_PERIOD_TYP/PAY_PERIOD 填充自
    VALID_PER_UNIT/VALID_PER_NUM（保险期间）——字段名与内容语义相反，需业务确认。

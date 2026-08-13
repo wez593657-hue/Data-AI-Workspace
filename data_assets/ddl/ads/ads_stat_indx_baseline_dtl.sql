@@ -1,9 +1,9 @@
 /*
  * ADS_STAT_INDX_BASELINE_DTL
  * 中文名称: 指标活动任务客户基准明细
- * 用途: 冻结活动/任务开始日前的客户范围及客户状态基准。
- *       金额类指标仅以本表冻结客户成员，金额期初汇总另存ADS_STAT_INDX_BASELINE_SUM；
- *       不在本表存储客户级金额，0052~0054、0063才填充客户状态字段。
+ * 用途: 冻结活动/任务开始日前的客户状态基准。
+ *       仅用于0052~0054、0063；金额指标客户范围由ADS_STAT_INDX_BASELINE_MEMBER冻结，
+ *       金额期初汇总另存ADS_STAT_INDX_BASELINE_SUM。
  */
 
 CREATE TABLE IF NOT EXISTS ADS_STAT_INDX_BASELINE_DTL (

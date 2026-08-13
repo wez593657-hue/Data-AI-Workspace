@@ -120,7 +120,7 @@ def check_doc_consistency(filepath, added_sections, modified_sections, status):
         return issues
     
     doc_rules = {
-        '01_AI_SOP.md': ['流程步骤', '审批环节', '角色分工'],
+        '01_AI_SOP.md': ['DEPRECATED', '映射', '输出合同'],
         '02_SQL_Standard.md': ['命名规范', '数据类型', '索引规则'],
         '03_SQL_Performance.md': ['性能分析', '执行计划', '优化方法'],
         '04_Kingbase_Guide.md': ['数据库版本', '特有语法', '数据类型'],
@@ -131,7 +131,7 @@ def check_doc_consistency(filepath, added_sections, modified_sections, status):
         '09_CRM_Model.md': ['数据模型', '实体关系', '业务规则'],
         '10_Code_Review.md': ['审查标准', '审查流程', '审查清单'],
         '11_Project_SOP.md': ['项目主流程', '执行顺序', '约束'],
-        '12_AI_Prompts.md': ['提示词规范', '角色定义', '输出格式'],
+        '12_AI_Prompts.md': ['DEPRECATED', '提示词文件', 'prompts'],
         '13_Governance_Framework.md': ['五层约束', '技术约束', '流程约束'],
         '14_Role_Separation.md': ['角色定义', '权限划分', '协作机制'],
         '15_Approval_Process.md': ['审批流程', '审批节点', '权限控制'],
@@ -156,6 +156,11 @@ def check_doc_consistency(filepath, added_sections, modified_sections, status):
                     if '删除' in all_changes and section.lower() in all_changes:
                         # 二次确认：文件当前内容是否仍包含该章节关键词
                         section_keywords = {
+                            'DEPRECATED': ['deprecated'],
+                            '映射': ['映射', 'mapping'],
+                            '输出合同': ['output_contract'],
+                            '提示词文件': ['提示词', 'prompts'],
+                            'prompts': ['prompts'],
                             '映射概览': ['映射', 'overview'],
                             '字段映射': ['字段映射', 'field', 'mapping'],
                             '转换规则': ['转换', 'transform'],
@@ -198,6 +203,11 @@ def check_doc_consistency(filepath, added_sections, modified_sections, status):
                     for section in required_sections:
                         found = False
                         keywords = {
+                            'DEPRECATED': ['deprecated'],
+                            '映射': ['映射', 'mapping'],
+                            '输出合同': ['output_contract'],
+                            '提示词文件': ['提示词', 'prompt'],
+                            'prompts': ['prompts', 'prompt'],
                             '流程步骤': ['步骤', '工作流', 'workflow'],
                             '审批环节': ['审批', 'review', 'approve'],
                             '角色分工': ['角色', '分工', 'role', 'agent'],

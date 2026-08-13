@@ -5,7 +5,7 @@ description: Route CRM requests to the matching process-specific skill. Use when
 
 # CRM Development Router
 
-This skill only classifies the user's command and points to one process skill. It does not perform development, modify files, review artifacts, or commit code.
+Must load `docs/core/invariants.md`, `docs/core/output_contract.md`, and `docs/core/routing.md` first (I-01, I-12). This skill only classifies the user's command and points to one process skill. It does not perform development, modify files, review artifacts, or commit code (I-02).
 
 ## Routing
 
@@ -13,12 +13,12 @@ This skill only classifies the user's command and points to one process skill. I
 2. Determine whether the request is read-only, `requirement_development`, `schema_change`, or ambiguous.
 3. Report the matched terms, selected profile, target skill, and any follow-up workflow.
 4. For a write request, invoke the target process skill and create/load its matching Harness profile.
-5. Stop when no unique route exists and ask the user to clarify.
+5. Stop when no unique route exists and ask the user to clarify (I-11).
 
-If both process signals are present, route to `crm-requirement-development` first and record `crm-schema-change` as the follow-up skill. Do not execute both skills in one uncontrolled step.
+If both process signals are present, route to `crm-requirement-development` first and record `crm-schema-change` as the follow-up skill. Do not execute both skills in one uncontrolled step (I-11).
 
 ## Skill Registry Rule
 
 Every writable Harness profile must have exactly one process skill. Adding a new process requires adding a new skill directory, registering its trigger terms and profile in `references/route-rules.md`, and adding matching Harness states and phase gates before the process can be used.
 
-All process skills work on `master` only. The router never creates or switches Git branches.
+All process skills work on `master` only (I-10). The router never creates or switches Git branches.

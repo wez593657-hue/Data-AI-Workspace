@@ -1,0 +1,9 @@
+evidence_id: ev-scope-001
+task_id: workspace-sync-20260814
+phase: implementation_scope
+kind: check
+purpose: implementation_scope
+result: passed
+details: change_manifest.yaml已覆盖全部变更路径(.gitignore/.harness/AGENTS/README/analysis/data_assets/docs/governance/requirements/scripts/skill)
+repository_revision: 2fbdd6b54cf5c23f9eb6156709d2c99a1b523a04
+created_at: '2026-08-13T17:42:49+00:00'

@@ -139,6 +139,9 @@
 | ACCT_ID | 账号 | VARCHAR2(40) |  |  |  |
 | PRDKT_ID | 产品编号 | VARCHAR2(40) |  |  |  |
 | PRDKT_CATE_BIG | 产品大类 | VARCHAR2(40) |  |  |  |
+| CHNL_NO | 办理渠道 | VARCHAR2(10) | DWD_ACCT_FIN / DWD_ACCT_INSUR | CHNL_NO / TX_CHNL | 存款、贷款无来源时置空；理财取CHNL_NO；保险取TX_CHNL |
+| ISSU_DATE | 办理日期 | VARCHAR2(10) | DWD_ACCT_DEPO / DWD_ACCT_LOAN / DWD_ACCT_FIN / DWD_ACCT_INSUR | OPEN_DATE / LOAN_ISSU_DATE / ISSU_DATE / TX_DATE | 分别取各产品办理或开户日期；保险按保单首次交易日期取值 |
+| IOU_NO | 投保单号或者借据号 | VARCHAR2(100) | DWD_ACCT_LOAN / DWD_ACCT_INSUR | IOU_NO / INSUR_BID_FORM_NO | 贷款取借据号；保险取投保单号；存款、理财无来源时置空 |
 | PRDKT_TYP | 产品类型 | VARCHAR2(1) |  |  |  |
 | BAL | 日余额 | NUMBER(20,2) |  |  |  |
 | MTH_BAL | 月余额 | NUMBER(20,2) |  |  |  |

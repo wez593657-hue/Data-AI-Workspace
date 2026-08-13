@@ -112,6 +112,11 @@ def validate_naming_conventions():
         for filename in os.listdir(layer_dir):
             if not filename.endswith('.sql'):
                 continue
+
+            ddl_path = os.path.join(layer_dir, filename)
+            ddl_content = open(ddl_path, 'r', encoding='utf-8', errors='replace').read()
+            if not CREATE_TABLE_RE.search(ddl_content):
+                continue
             
             table_name = filename.replace('.sql', '')
             

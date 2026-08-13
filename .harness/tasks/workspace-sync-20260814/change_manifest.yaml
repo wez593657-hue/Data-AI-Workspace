@@ -1,0 +1,30 @@
+schema_version: '0.1'
+task_id: workspace-sync-20260814
+user_confirmation: confirmed
+objective: ABCD规则精简落地（CORE三件套/阶段最小上下文/文档瘦身/过期测试同步）+ 工作区全量存量变更同步提交
+change_summary: |
+  1. 新增 docs/core/（invariants I-01~I-12、output_contract、routing）与 docs/lessons/execution-error-cases.md
+  2. 改写 docs/01/11/12/16 为索引式（DEPRECATED/引用CORE），README 升级 v2.1
+  3. 三个 Skill Hard Constraints 改为引用 I-xx，route-rules 新增最小上下文映射表
+  4. 新增 .harness/config/phase_context.yaml；workspace_validation 跳过 ABCD/；.gitignore 排除 ABCD/
+  5. 存量同步修复：sys_fun_deal_date 补 code=30、对私客户标签表 v1.4.0、TMP DDL 补 TMP_04_01、过期测试断言同步
+  6. 工作区全量存量变更（data_assets/requirements/docs/analysis/governance/scripts）一并提交
+allowed_changes:
+  - path: .gitignore
+  - path: .harness/
+  - path: AGENTS.md
+  - path: README.md
+  - path: analysis/
+  - path: data_assets/
+  - path: docs/
+  - path: governance/
+  - path: requirements/
+  - path: scripts/
+  - path: skill/
+read_only_inputs:
+  - path: templates/procedure_template.sql
+  - path: templates/PRC_模板.sql
+  - path: ABCD/
+forbidden_changes:
+  - path: secrets/
+  - path: .env

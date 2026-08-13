@@ -17,6 +17,10 @@
 
 ## 5.2 存储过程统一流程
 
+开发或修改存储过程前，必须先检索 `data_assets/reference_logic/` 中的参考逻辑文件，并检查 `data_assets/stored_procedure/` 中已有的相似过程。详细规则见 `governance/stored_procedure_reference_logic_rules.md`。
+
+当使用 `data_assets/reference_logic/MTS_OBJECT.sql` 作为逻辑口径或筛选条件依据时，必须在 SQL 注释或配套需求文档中逐项标注来源文件、MTS 对象/字段、具体条件和定位依据；不得只标记“参考 MTS”。
+
 ```
 参数检查
     │
@@ -299,7 +303,7 @@ RAISE NOTICE '输出: code=%, msg=%', p_result_code, p_result_msg;
 
 **临时表 DDL 必须同步生成为独立文件**，存放于 `data_assets/ddl/tmp/` 目录，每个存储过程对应一个 `.ddl` 文件，包含该过程使用的所有 TMP 表。文件命名格式为 `tmp_pro_{过程名小写}.ddl`。
 
-> 例如：存储过程 `PRC_DWD_ACCT_INSUR` 的临时表 DDL 文件为 `data_assets/ddl/tmp/tmp_pro_dwd_acct_insur.ddl`，包含该过程使用的全部 TMP 表（TMP_DWD_ACCT_INSUR_DETAIL、TMP_DWD_ACCT_INSUR_FEE_AGGR、TMP_DWD_ACCT_INSUR_SNAP）。
+> 仅实际使用物理临时表的过程才需要对应的临时表 DDL。`PRC_DWD_ACCT_INSUR` 已改为使用 SQL CTE 完成中间计算，不再维护物理 TMP 表。
 
 ```sql
 CREATE OR REPLACE PROCEDURE proc_crm_order_sync()
@@ -382,6 +386,67 @@ SELECT
         WHEN MIN(D.valid_per_unit) = '12' THEN TO_CHAR(...)           -- 年单位
     END
 ```
+
+### 5.8.4 临时表字段命名规范
+
+临时表的**字段名称必须与源表或目标表保持严格一致**，禁止随意修改字段名称，以保证字段血缘可追溯、下游口径不漂移。
+
+**仅以下两种特殊情况允许使用新字段名**：
+
+| 特殊情况 | 说明 | 示例 |
+|----------|------|------|
+| a) 字段含义与源表/目标表存在显著差异 | 临时表字段承载的业务含义已与源字段不同，需新命名以表达真实语义 | 源表 `AMT`（发生额）在临时表中聚合为 `SUM_AMT`（累计金额） |
+| b) 该字段不存在于源表或目标表中 | 临时表为中间计算新增的字段（如处理标记、派生日期、序号），源表/目标表无对应字段 | `ROW_NO`、`PROC_FLAG`、`DATA_DATE` 快照列 |
+
+```sql
+-- 正确示例：与源表字段名严格一致
+INSERT INTO TMP_CRM_ORDER_PENDING
+    (cust_id, acct_no, insur_prdt_id, valid_per_unit)
+SELECT
+    cust_id, acct_no, insur_prdt_id, valid_per_unit   -- 字段名与源表一致
+FROM FMS_T1_CUST_FNC_ACCT;
+
+-- 反例：随意修改字段名，禁止
+INSERT INTO TMP_CRM_ORDER_PENDING
+    (cust_no, acct_code, prdt_id, valid_unit)         -- ✗ 字段名与源表不一致
+```
+
+### 5.8.5 代码注释要求
+
+存储过程的**每一段逻辑中**，所有**字段定义、条件判断及参数声明之后**必须添加清晰、准确的中文注释，说明其**用途、取值范围及业务逻辑依据**：
+
+1. **参数声明**：注释说明参数用途与合法取值（如 `-- 数据日期 (格式: YYYYMMDD)`）。
+2. **字段定义**：`SELECT` 列表与临时表字段定义之后逐列注释，说明业务含义；复杂表达式（函数调用、CASE、条件判断）注释另起一行置于表达式之前，保持视觉关联。
+3. **条件判断**：`WHERE`、`CASE WHEN`、`IF` 等条件之后注释说明筛选/分支的业务逻辑依据。
+4. **取值说明**：有取值范围或枚举含义的字段，注释中标注取值范围（如 `-- 状态: 0-未处理, 1-已处理`）。
+
+```sql
+-- 正确示例
+CREATE OR REPLACE PROCEDURE crmdm.proc_demo(
+  v_sysdat  VARCHAR,        -- 数据日期 (格式: YYYYMMDD)
+  outcde    OUT INTEGER     -- 执行结果状态码 (0: 成功, -1: 失败)
+)
+...
+SELECT
+    D.cust_id,                                                    -- 客户编号
+    D.acct_state,                                                 -- 账户状态 (1-正常, 2-冻结, 3-销户)
+    -- 最近交易日期：取投保日期与缴费成功日期中的较大值
+    COALESCE(MAX(D.accept_date), MAX(AG.last_success_tx_date))
+FROM DWD_ACCT_INSUR D
+WHERE D.acct_state IN ('1', '2')                                  -- 仅统计正常与冻结账户
+  AND D.data_date = v_sysdat                                      -- 仅取当日数据
+```
+
+### 5.8.6 字段映射一致性验证
+
+扫描存储过程时，必须**检查临时表与源表/目标表的字段映射关系**，确保**字段名称、数据类型及长度的一致性**：
+
+1. **字段名称**：临时表字段名与源表/目标表字段名严格一致（见 5.8.4 的两类例外）。
+2. **数据类型**：临时表字段类型与源表/目标表字段类型一致，禁止隐式类型转换（如源表 NUMBER 在临时表声明为 VARCHAR）。
+3. **长度**：临时表字段长度不得小于源表/目标表字段长度，防止截断。
+4. **修正要求**：对不符合规范的字段命名、类型或长度进行修正，并同步更新对应的 `data_assets/ddl/tmp/` 临时表 DDL 文件与存储过程 INSERT 语句。
+
+校验依据 `data_assets/ddl/tmp/tmp_pro_*.ddl` 与源表/目标表 DDL（`data_assets/ddl/ods/`、`data_assets/ddl/dwd/`、`data_assets/ddl/dws/`、`data_assets/ddl/ads/`）交叉比对。
 
 ## 5.9 存储过程命名规范
 

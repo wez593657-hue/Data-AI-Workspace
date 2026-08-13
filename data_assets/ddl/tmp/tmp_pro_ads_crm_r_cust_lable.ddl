@@ -1,7 +1,7 @@
 -- ============================================================
 -- 对私客户标签表存储过程临时表建表语句
--- 存储过程名称: PRC_ADS_CRM_R_CUST_LABLE
--- 需求版本: v1.3.1
+-- 存储过程名称: PRC_ADS_CRM_R_CUST_LABLE_TX_INFO
+-- 需求版本: v1.4.0
 -- 设计：各段独立建临时表，最终多表汇聚到目标表
 -- ============================================================
 
@@ -32,6 +32,13 @@ CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_04 (
     PERSN_LEGAL_BK_CODE               VARCHAR2(4),        -- 法人行号
     CUST_ID                           VARCHAR2(20),       -- 核心客户号
     IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME CHAR(1)          -- 是否向他行同名户规律转出
+);
+
+-- 04_01: 近6月滚动交易明细（按日增量维护，保留近6月窗口）
+CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_04_01 (
+    PERSN_LEGAL_BK_CODE               VARCHAR2(4),        -- 法人行号
+    CUST_ID                           VARCHAR2(20),       -- 核心客户号
+    TX_DATE                           VARCHAR2(8)         -- 交易日期YYYYMMDD
 );
 
 -- 05: 当年校园缴费笔数

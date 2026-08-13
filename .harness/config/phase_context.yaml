@@ -1,0 +1,84 @@
+# Phase → 最小上下文映射（Token 优化）
+# 执行器/Skill 应按此加载，禁止默认加载整个 docs/
+
+version: 1
+core_always:
+  - docs/core/invariants.md
+  - docs/core/output_contract.md
+
+profiles:
+  readonly:
+    phases:
+      ANALYZE:
+        load:
+          - docs/core/routing.md
+        max_output: short
+        allow_write: false
+
+  requirement_development:
+    skill: crm-requirement-development
+    phases:
+      ROUTE:
+        load: [docs/core/routing.md]
+        allow_write: false
+      REQUIREMENT_ANALYSIS:
+        load: []
+        hints: [requirements/, memory cards]
+        allow_write: false
+      SCOPE_CONFIRM:
+        load: []
+        require_user_confirm: true
+        allow_write: false
+      IMPLEMENT_PROCEDURE:
+        load:
+          - governance/stored_procedure_date_parameter_rules.md
+          - templates/procedure_template.sql
+        optional_domain:
+          - docs/02_SQL_Standard.md
+          - docs/05_Stored_Procedure.md
+        allow_write: true
+        require_manifest: true
+      REVIEW:
+        load:
+          - docs/quality_rules.md
+        allow_write: false
+      VALIDATE:
+        load: []
+        commands:
+          - python -m scripts.harness risk-check standard
+        allow_write: false
+      COMMIT:
+        require_user_confirm: true
+        commands:
+          - python -m scripts.harness risk-check strict
+        allow_write: false
+
+  schema_change:
+    skill: crm-schema-change
+    phases:
+      ROUTE:
+        load: [docs/core/routing.md]
+        allow_write: false
+      CHANGE_SCOPE:
+        load: []
+        require_user_confirm: true
+        allow_write: false
+      ASSETS_UPDATE:
+        load: []
+        require_manifest: true
+        allow_write: true
+      REVIEW:
+        load: [docs/quality_rules.md]
+        allow_write: false
+      VALIDATE:
+        commands:
+          - python -m scripts.harness risk-check standard
+        allow_write: false
+      COMMIT:
+        require_user_confirm: true
+        commands:
+          - python -m scripts.harness risk-check strict
+        allow_write: false
+
+lessons_default_load: false
+lessons_root: docs/lessons/

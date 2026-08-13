@@ -1,0 +1,2 @@
+# Local Oracle validation only. Avoid the host-wide NTS setting in sandboxed runs.
+SQLNET.AUTHENTICATION_SERVICES = (NONE)

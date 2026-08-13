@@ -2,7 +2,13 @@
 
 ## 11.1 概述
 
-本文件只保留项目主流程总纲。具体执行规则以 `docs/offline-first-development.md` 和对应专项规范为准。
+本文件只保留项目主流程总纲。
+
+- 不变量与输出合同：`docs/core/invariants.md`、`docs/core/output_contract.md`
+- 路由：`docs/core/routing.md`
+- 执行细则：`docs/16_Execution_Rules.md`
+- 离线优先：`docs/offline-first-development.md`
+- 可执行阶段：对应 Skill（`skill/crm-requirement-development`、`skill/crm-schema-change`）
 
 ## 11.2 项目主流程
 
@@ -13,35 +19,19 @@
 
 流程由用户命令语义自动路由。语义无法唯一判断时，必须停止修改并请求确认。
 
-## 11.3 执行顺序
+## 11.3 执行顺序（索引）
 
-需求开发主线为：
+需求开发与表结构变更的阶段顺序以 **Skill workflow** 为准，此处不重复维护长列表，避免双源。
 
-1. 需求分析与确认
-2. 数据分析
-3. 数据字典确认
-4. Mapping 设计
-5. SQL 设计
-6. 存储过程设计
-7. ETL 设计
-8. Explain 分析
-9. Code Review
-10. 测试
-11. 上线
+人类可读摘要：
 
-表结构变更主线为：
+**需求开发：** 需求分析与确认 → 数据分析 → 字典/Mapping 确认 → SQL/存储过程 → ETL（如需）→ 校验与 Review → 用户确认 → 上线相关授权
 
-1. Mapping Excel 最近变更分析
-2. 关联 MD/DD/数据字典扫描
-3. 修改范围用户确认
-4. 资产修改
-5. 一致性审核
-6. 完整校验
-7. 用户确认
+**表结构变更：** Mapping 变更分析 → 关联资产扫描 → 范围确认 → 资产修改 → 一致性审核 → 完整校验 → 用户确认
 
 ## 11.4 约束
 
-- 任何阶段都不能跳过。
-- 不确定内容必须标记为 `【待确认】` 或 `unresolved`。
-- 需求、字典、Mapping、SQL、存储过程之间必须保持可追溯一致。
-- 需要展开细则时，直接跳转专项文档，不在本文件重复维护。
+- 遵守 I-01～I-12（`docs/core/invariants.md`）
+- 任何阶段不能无门禁跳过
+- 不确定内容标记 `【待确认】` 或 `unresolved`
+- 需求、字典、Mapping、SQL、存储过程保持可追溯一致

@@ -2,7 +2,7 @@
 
 ## 目录概述
 
-本目录存放 CRM 数据仓库各层的实际数据资产，包括 DDL 脚本、数据字典、Mapping 文件和 ETL 脚本。
+本目录存放 CRM 数据仓库各层的实际数据资产，包括 DDL 脚本、Mapping 文件和 ETL 脚本。
 
 ## 目录结构
 
@@ -14,12 +14,6 @@ data_assets/
 │   ├── dws/               # DWS 层（汇总数据层）
 │   └── ads/               # ADS 层（应用数据层）
 │
-├── data_dictionary/       # 数据字典
-│   ├── source/            # 上游系统数据字典
-│   ├── ods/               # ODS 层数据字典
-│   ├── dwd/               # DWD 层数据字典
-│   ├── dws/               # DWS 层数据字典
-│   └── ads/               # ADS 层数据字典
 │
 ├── mapping/               # Mapping 文件
 │   ├── ods_to_dwd/        # ODS → DWD Mapping
@@ -55,17 +49,7 @@ data_assets/
 - `dws_crm_customer_daily.sql`
 - `ads_crm_customer_report.sql`
 
-### 数据字典文件
 
-```
-{层级前缀}_{业务域}_{表名}_dd.md
-```
-
-示例:
-- `ods_sap_customer_dd.md`
-- `dwd_crm_customer_dd.md`
-- `dws_crm_customer_daily_dd.md`
-- `ads_crm_customer_report_dd.md`
 
 ### Mapping 文件
 

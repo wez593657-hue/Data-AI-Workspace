@@ -1,0 +1,25 @@
+{
+  "table_name": "TMP_DWS_CUST_ASSE_LIAB_HIS_AGG",
+  "procedure": "PRC_DWS_CUST_ASSE_LIAB_CUMU.sql",
+  "purpose": "按完整明细维度保存上一数据日的月、季、年累计余额基数。",
+  "source_tables": ["DWS_CUST_ASSE_LIAB_CUMU_HIS"],
+  "columns": [
+    {"name": "PERSN_LEGAL_BK_CODE", "type": "VARCHAR(4)", "nullable": true},
+    {"name": "OPRT_ORG", "type": "VARCHAR(7)", "nullable": true},
+    {"name": "CUST_ID", "type": "VARCHAR(20)", "nullable": true},
+    {"name": "ACCT_ID", "type": "VARCHAR(40)", "nullable": true},
+    {"name": "PRDKT_ID", "type": "VARCHAR(40)", "nullable": true},
+    {"name": "PRDKT_CATE_BIG", "type": "VARCHAR(40)", "nullable": true},
+    {"name": "CHNL_NO", "type": "VARCHAR(10)", "nullable": true},
+    {"name": "ISSU_DATE", "type": "VARCHAR(10)", "nullable": true},
+    {"name": "IOU_NO", "type": "VARCHAR(100)", "nullable": true},
+    {"name": "PRDKT_TYP", "type": "VARCHAR(1)", "nullable": true},
+    {"name": "HIS_MTH_BAL", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "HIS_QRT_BAL", "type": "NUMBER(20,2)", "nullable": true},
+    {"name": "HIS_YAR_BAL", "type": "NUMBER(20,2)", "nullable": true}
+  ],
+  "indexes": ["CUST_ID, ACCT_ID, PRDKT_ID, CHNL_NO, ISSU_DATE, IOU_NO, PRDKT_TYP"],
+  "lifecycle": {"cleanup": "过程开始时清空，步骤2.14完成后仅在本次批处理中保留。", "concurrency": "共享临时表，过程按批次串行执行，禁止同一过程并发运行。"},
+  "approval_status": "approved",
+  "approved_by": "Codex"
+}

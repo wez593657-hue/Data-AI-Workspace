@@ -21,3 +21,22 @@ For every new process:
 2. Register one unique Harness `workflow_profile` and its trigger terms here.
 3. Add the complete state sequence, return edges, evidence purposes, and phase gates.
 4. Add routing and transition tests before enabling the process.
+
+## Phase → 必读文件映射（最小上下文）
+
+按 `.harness/config/phase_context.yaml` 加载，禁止默认加载整个 `docs/`。会话启动必载：`docs/core/invariants.md`、`docs/core/output_contract.md`、`docs/core/routing.md`。
+
+| Profile | Phase | 必读文件 / 加载项 |
+|---|---|---|
+| 所有 | 任意 | docs/core/invariants.md、docs/core/output_contract.md |
+| all | ROUTE | docs/core/routing.md |
+| requirement_development | REQUIREMENT_ANALYSIS | requirements/ 与记忆卡片（hints） |
+| requirement_development | SCOPE_CONFIRM | 无（要求用户确认） |
+| requirement_development | IMPLEMENT_PROCEDURE | governance/stored_procedure_date_parameter_rules.md、templates/procedure_template.sql；可选 docs/02_SQL_Standard.md、docs/05_Stored_Procedure.md |
+| requirement_development | REVIEW | docs/quality_rules.md（仅规则 ID） |
+| requirement_development | VALIDATE/COMMIT | 无（执行 `python -m scripts.harness risk-check standard/strict`） |
+| schema_change | CHANGE_SCOPE | 无（要求用户确认） |
+| schema_change | ASSETS_UPDATE | 无（require_manifest） |
+| schema_change | REVIEW | docs/quality_rules.md（仅规则 ID） |
+
+Review/校验阶段只输出失败相关规则 ID + 脚本摘要，不贴全文；`docs/lessons/`（L4）默认不加载。

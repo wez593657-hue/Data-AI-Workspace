@@ -7332,6 +7332,9 @@ CREATE TABLE crmdm.dws_cust_asse_liab_cumu (
 	acct_id varchar(40) NULL, -- 账号
 	prdkt_id varchar(40) NULL, -- 产品编号
 	prdkt_cate_big varchar(40) NULL, -- 产品大类
+	chnl_no varchar(10) NULL, -- 办理渠道
+	issu_date varchar(10) NULL, -- 办理日期
+	iou_no varchar(100) NULL, -- 投保单号或者借据号
 	prdkt_typ varchar(1) NULL, -- 产品类型
 	bal numeric(20, 2) NULL, -- 日余额
 	mth_bal numeric(20, 2) NULL, -- 月余额
@@ -7352,6 +7355,9 @@ COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu.cust_id IS '客户号';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu.acct_id IS '账号';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu.prdkt_id IS '产品编号';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu.prdkt_cate_big IS '产品大类';
+COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu.chnl_no IS '办理渠道';
+COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu.issu_date IS '办理日期';
+COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu.iou_no IS '投保单号或者借据号';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu.prdkt_typ IS '产品类型';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu.bal IS '日余额';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu.mth_bal IS '月余额';
@@ -7376,6 +7382,9 @@ CREATE TABLE crmdm.dws_cust_asse_liab_cumu_his (
 	acct_id varchar(40) NOT NULL, -- 账号
 	prdkt_id varchar(40) NOT NULL, -- 产品编号
 	prdkt_cate_big varchar(40) NULL, -- 产品大类
+	chnl_no varchar(10) NULL, -- 办理渠道
+	issu_date varchar(10) NULL, -- 办理日期
+	iou_no varchar(100) NULL, -- 投保单号或者借据号
 	prdkt_typ varchar(1) NULL, -- 产品类型
 	bal numeric(20, 2) NULL, -- 日余额
 	mth_bal numeric(20, 2) NULL, -- 月余额
@@ -7396,6 +7405,9 @@ COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu_his.cust_id IS '客户号';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu_his.acct_id IS '账号';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu_his.prdkt_id IS '产品编号';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu_his.prdkt_cate_big IS '产品大类';
+COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu_his.chnl_no IS '办理渠道';
+COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu_his.issu_date IS '办理日期';
+COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu_his.iou_no IS '投保单号或者借据号';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu_his.prdkt_typ IS '产品类型';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu_his.bal IS '日余额';
 COMMENT ON COLUMN crmdm.dws_cust_asse_liab_cumu_his.mth_bal IS '月余额';
@@ -12399,6 +12411,9 @@ CREATE TABLE crmdm.tmp_dws_cust_asse_liab_his_agg (
 	acct_id varchar(40) NULL,
 	prdkt_id varchar(40) NULL,
 	prdkt_cate_big varchar(40) NULL,
+	chnl_no varchar(10) NULL,
+	issu_date varchar(10) NULL,
+	iou_no varchar(100) NULL,
 	prdkt_typ varchar(1) NULL,
 	his_mth_bal numeric(20, 2) NULL,
 	his_qrt_bal numeric(20, 2) NULL,
@@ -12418,6 +12433,9 @@ CREATE TABLE crmdm.tmp_dws_cust_asse_liab_insur_bal (
 	acct_id varchar(40) NULL,
 	prdkt_id varchar(40) NULL,
 	prdkt_cate_big varchar(40) NULL,
+	chnl_no varchar(10) NULL,
+	issu_date varchar(10) NULL,
+	iou_no varchar(100) NULL,
 	bal numeric(20, 2) NULL,
 	persn_legal_bk_code varchar(4) NULL,
 	oprt_org varchar(7) NULL
@@ -12503,6 +12521,9 @@ CREATE TABLE crmdm.tmp_dws_cust_asse_liab_key_set (
 	acct_id varchar(40) NULL,
 	prdkt_id varchar(40) NULL,
 	prdkt_cate_big varchar(40) NULL,
+	chnl_no varchar(10) NULL,
+	issu_date varchar(10) NULL,
+	iou_no varchar(100) NULL,
 	prdkt_typ varchar(1) NULL
 );
 
@@ -12616,6 +12637,9 @@ CREATE TABLE crmdm.tmp_dws_cust_asse_liab_today_agg (
 	acct_id varchar(40) NULL,
 	prdkt_id varchar(40) NULL,
 	prdkt_cate_big varchar(40) NULL,
+	chnl_no varchar(10) NULL,
+	issu_date varchar(10) NULL,
+	iou_no varchar(100) NULL,
 	bal numeric(20, 2) NULL,
 	prdkt_typ varchar(1) NULL
 );
@@ -12635,6 +12659,9 @@ CREATE TABLE crmdm.tmp_dws_cust_asse_liab_today_bal (
 	acct_id varchar(40) NULL,
 	prdkt_id varchar(40) NULL,
 	prdkt_cate_big varchar(40) NULL,
+	chnl_no varchar(10) NULL,
+	issu_date varchar(10) NULL,
+	iou_no varchar(100) NULL,
 	bal numeric(20, 2) NULL,
 	prdkt_typ varchar(1) NULL
 );

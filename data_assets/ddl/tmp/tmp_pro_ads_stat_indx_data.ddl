@@ -1,16 +1,9 @@
 -- PRC_ADS_STAT_INDX_DATA 临时表：客户维度分层重构 v2.0
 -- 非客户指标只在源关联内使用客户号并立即聚合；仅客户状态指标保留短生命周期客户行。
 
-DROP TABLE IF EXISTS TMP_STAT_INDX_ACT_SRC;
-DROP TABLE IF EXISTS TMP_STAT_INDX_ACT_CUST;
-DROP TABLE IF EXISTS TMP_STAT_INDX_TSK_SRC;
-DROP TABLE IF EXISTS TMP_STAT_INDX_TSK_CUST;
-DROP TABLE IF EXISTS TMP_STAT_INDX_BASE_VAL_A;
-DROP TABLE IF EXISTS TMP_STAT_INDX_BASE_VAL_B;
-DROP TABLE IF EXISTS TMP_STAT_INDX_LVL_CHG_A;
-DROP TABLE IF EXISTS TMP_STAT_INDX_LVL_CHG_B;
-DROP TABLE IF EXISTS TMP_STAT_INDX_CRITICAL_A;
-DROP TABLE IF EXISTS TMP_STAT_INDX_CRITICAL_B;
+DROP TABLE IF EXISTS TMP_STAT_INDX_AGGR_A;
+DROP TABLE IF EXISTS TMP_STAT_INDX_AGGR_B;
+DROP TABLE IF EXISTS TMP_STAT_INDX_AGGR;
 
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_SCOPE (
     path_code VARCHAR(1) NOT NULL,
@@ -55,7 +48,8 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_CUST_STATE (
     PRIMARY KEY (path_code, statis_dim, indx_code, data_blng, cust_id, persn_legal_bk_code)
 );
 
-CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_A (
+CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR (
+    path_code VARCHAR(1) NOT NULL, -- 统计路径：A=营销活动，B=目标任务
     data_date VARCHAR(8) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,
@@ -64,17 +58,5 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_A (
     curnt_val NUMBER(20,2) NULL,
     term_last_val NUMBER(20,2) NULL,
     persn_legal_bk_code VARCHAR(30) NOT NULL,
-    PRIMARY KEY (data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
-);
-
-CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_B (
-    data_date VARCHAR(8) NOT NULL,
-    data_blng VARCHAR(100) NOT NULL,
-    statis_dim VARCHAR(100) NOT NULL,
-    statis_calib VARCHAR(100) NOT NULL,
-    indx_code VARCHAR(100) NOT NULL,
-    curnt_val NUMBER(20,2) NULL,
-    term_last_val NUMBER(20,2) NULL,
-    persn_legal_bk_code VARCHAR(30) NOT NULL,
-    PRIMARY KEY (data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
+    PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
 );

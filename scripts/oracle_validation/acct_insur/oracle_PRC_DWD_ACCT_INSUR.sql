@@ -4,352 +4,263 @@ CREATE OR REPLACE PROCEDURE prc_dwd_acct_insur(v_sysdat varchar, outcde OUT inte
 AS
   ------------------------------------------------------------------
   -- 报表名称: 保险账户处理
-  -- 报表编号：PRC_DWD_ACCT_INSUR
-  -- 处理周期：日
-  -- 过程描述：单过程分段执行保险账户数据加工：
-  --           2.1 生成保单级主档聚合快照（一次计算，供后续段落复用）
-  --           2.2 新增逻辑：快照主键(CUST_ID,ACCT_ID,PRDKT_ID,INSUR_BID_FORM_NO)
-  --               在目标表 DWD_ACCT_INSUR 中【不存在】时批量 INSERT
-  --           2.3 更新逻辑：主键【已存在】时批量 UPDATE（刷新状态/余额/日期/机构）
-  --           2.4 统一提交（新增+更新同一事务，失败整体回滚）
-  --           永不删除，终止保单保留。
-  -- 来源表：YBT_YBT_POLICY_BASE_INFO(保单信息表)、YBT_YBT_POLICY_FEE_LIST(保单交易明细表)、
-  --         YBT_IB_LIST_PLAT(交易流水表)、YBT_YBT_POLICY_INSURANCE_INFO(保单承保险种信息表)、
-  --         YBT_YBT_PRODUCT_INFO(保险产品信息表)、DWD_CUST_INDV_INFO(客户基本信息)
-  -- 目标表：DWD_ACCT_INSUR(保险账户信息-保单级主档)、TMP_DWD_ACCT_INSUR_SNAP(聚合快照)
-  -- 需求版本: v2.3.0
+  -- 报表编号: PRC_DWD_ACCT_INSUR
+  -- 处理周期: 日
+  -- 过程描述: 从 ODS 保险保单与交易数据生成 DWD 保险账户快照
+  -- 目标表: DWD_ACCT_INSUR
+  -- 需求版本: v3.3.0
   -- 变更记录:
-  --   v1.0.0 2026-06-30 初始版本
-  --   v1.0.1 2026-07-28 字段映射修正(TX_TYP取TRAN_TYPE)、删除未使用变量、INSERT列顺序与DDL对齐
-  --   v1.1.0 2026-08-03 新增NEW_INSUR_AMT、INSUR_AMT=新单+续期；TX_TYP置空；仅加载0/1交易(已被v2.0取代)
-  --   v2.0.0 2026-08-03 保单级主档重构：UPSERT永不删除；POLICY_STATE(0/1/2)唯一状态判定源；
-  --                    INSUR_AMT承担终止/缴费期满/60天宽限期清零；趸交满一年起算点=TX_DATE
-  --   v2.1.0 2026-08-03 新增/更新逻辑分离(独立过程INS/UPD，已按评审要求合并回单过程)
-  --   v2.2.0 2026-08-03 单过程分段执行新增与更新：快照一次计算 + 段落2.2新增 + 段落2.3更新，
-  --                    参数验证、统一事务、批量/索引优化、字段与参数注释完整
-  --   v2.3.0 2026-08-05 对齐YBT源表：TX_DATE取ACCEPT_DATE；LAST_TX_DATE取缴费成功
-  --                    (ORD_TRAN_STATUS=2)的最近ORD_CREATE_DATE，无成功缴费时回退ACCEPT_DATE；
-  --                    交易日期和终止日期改为预聚合，避免相关子查询重复扫描
-  -- 适配数据库：人大金仓 Oracle 兼容模式
+  --   v3.3.0 2026-08-13 单次集合化写入，移除过程内三张 TMP 表的
+  --                    清理、写入和回读；保留原明细、日期聚合和四键聚合口径
+  -- 适配数据库: 人大金仓 Oracle 兼容模式
   ------------------------------------------------------------------
-  --***************************************
-  --1.自定义参数区
-  --***************************************
-  V_PRC_DESC             VARCHAR(100) := '保险账户处理';
-  V_PRC_NAME             VARCHAR(32)  := 'PRC_DWD_ACCT_INSUR';
-  V_LOG_MSG              VARCHAR(4000);
-  V_START_DT             DATE;
-  V_LOG_FLG              INTEGER;
-  V_LOG_BUTTON           INTEGER := 1;
-  V_NO_ID                VARCHAR(10);
-  V_BGN_DATE             DATE;
-  V_END_DATE             DATE;
-  V_DURA_DATE            INTEGER;
-  V_DATA_DATE            DATE;        -- 加工日（由 V_SYSDAT 转换）
-  V_CNT_INS              INTEGER;     -- 段落2.2 新增行数
-  V_CNT_UPD              INTEGER;     -- 段落2.3 更新行数
-begin
-  --***************************************
-  -- 2. 业务逻辑区
-  --***************************************
-  V_START_DT := SYSDATE;
+  V_PRC_DESC     VARCHAR(100) := '保险账户处理';
+  V_PRC_NAME     VARCHAR(32)  := 'PRC_DWD_ACCT_INSUR';
+  V_LOG_MSG      VARCHAR(4000);
+  V_LOG_FLG      INTEGER;
+  V_LOG_BUTTON   INTEGER := 1;
+  V_NO_ID        VARCHAR(10);
+  V_BGN_DATE     DATE;
+  V_END_DATE     DATE;
+  V_DURA_DATE    INTEGER;
+  V_DATA_DATE    DATE;
+  V_CNT_INS      INTEGER;
+BEGIN
+  ------------------------------------------------------------------
+  -- 步骤1: 参数校验并清理目标表
+  ------------------------------------------------------------------
+  V_NO_ID := '1';
+  V_BGN_DATE := SYSDATE;
 
-  -- 2.0 参数验证：V_SYSDAT 必填且为 8 位日期(YYYYMMDD)
-  IF V_SYSDAT IS NULL OR NOT REGEXP_LIKE(V_SYSDAT, '^[0-9]{8}$') THEN
+  IF V_SYSDAT IS NULL OR LENGTH(V_SYSDAT) != 8 THEN
       OUTCDE := -1;
       RETURN;
   END IF;
   V_DATA_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
 
-  --***************************************
-  -- 2.1 生成保单级聚合快照（一次计算，供 2.2/2.3 段落复用）
-  -- 作用：将 ODS 保单/交易/流水/险种/产品/客户聚合为保单级一行，
-  --       避免新增与更新各自重复扫描 ODS。
-  --***************************************
-  V_NO_ID := '1';
+  DELETE FROM DWD_ACCT_INSUR;
+  COMMIT;
+
+  OUTCDE      := 0;
+  V_END_DATE  := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  V_LOG_MSG   := '1 完成: 参数校验+清理目标数据';
+  V_LOG_FLG   := OUTCDE;
+  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+      V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
+
+  ------------------------------------------------------------------
+  -- 步骤2: 明细、交易日期预聚合和四键快照在同一集合 SQL 内完成
+  ------------------------------------------------------------------
+  V_NO_ID := '2';
   V_BGN_DATE := SYSDATE;
 
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWD_ACCT_INSUR_SNAP';
-
-  INSERT INTO TMP_DWD_ACCT_INSUR_SNAP (
-      CUST_ID, CUST_TYP, ACCT_ID, PRDKT_ID, PRDKT_NAME, PRDKT_CATE_BIG, INSUR_BID_FORM_NO,
-      TX_DATE, LAST_TX_DATE, TX_ORG, TX_CHNL, MKT_ORG, BGN_INSUR_DATE, CANCL_INSUR_DATE,
-      ACTL_TERM_DATE, PAY_UPTO_DATE, INSUR_PERIOD_TYP, INSUR_PERIOD, PAY_PERIOD_TYP, PAY_PERIOD,
-      PAY_PATRN, NEW_INSUR_AMT, INSUR_AMT, POLICY_STATE, TX_TYP, PERSN_LEGAL_BK_CODE)
-  SELECT
-      P.CUST_ID                                                         AS CUST_ID,
-      P.CUST_TYP                                                        AS CUST_TYP,
-      P.ACCT_ID                                                         AS ACCT_ID,
-      P.PRDKT_ID                                                        AS PRDKT_ID,
-      P.PRDKT_NAME                                                      AS PRDKT_NAME,
-      P.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG,
-      P.INSUR_BID_FORM_NO                                               AS INSUR_BID_FORM_NO,
-      TO_CHAR(MIN(P.ACCEPT_DATE_PARSED), 'YYYYMMDD')                    AS TX_DATE,      -- 投保日期
-      COALESCE(
-          TO_CHAR(MAX(P.LAST_SUCCESS_TX_DATE), 'YYYYMMDD'),
-          TO_CHAR(MIN(P.ACCEPT_DATE_PARSED), 'YYYYMMDD')
-      )                                                                 AS LAST_TX_DATE, -- 最近成功缴费日期，无成功缴费回退投保日期
-      P.TX_ORG                                                          AS TX_ORG,
-      P.TX_CHNL                                                         AS TX_CHNL,
-      P.MKT_ORG                                                         AS MKT_ORG,
-      P.BGN_INSUR_DATE                                                  AS BGN_INSUR_DATE,
-      P.CANCL_INSUR_DATE                                                AS CANCL_INSUR_DATE,
-      -- 实际终止日期：状态交易最新日期 → 状态=2 时回退 CANCL_INSUR_DATE（排除9999）
-      COALESCE(
-          TO_CHAR(MAX(P.ACTL_TERM_DATE_PARSED), 'YYYYMMDD'),
-          CASE WHEN P.CONT_STATUS = '2'
-                AND P.CANCL_INSUR_DATE IS NOT NULL
-                AND P.CANCL_INSUR_DATE <> '9999-12-31'
-               THEN TO_CHAR(TO_DATE(SUBSTR(P.CANCL_INSUR_DATE,1,10), 'YYYY-MM-DD'), 'YYYYMMDD')
-          END)                                                          AS ACTL_TERM_DATE,
-      P.PAY_UPTO_DATE                                                   AS PAY_UPTO_DATE,
-      P.INSUR_PERIOD_TYP                                                AS INSUR_PERIOD_TYP,
-      P.INSUR_PERIOD                                                    AS INSUR_PERIOD,
-      P.PAY_PERIOD_TYP                                                  AS PAY_PERIOD_TYP,
-      P.PAY_PERIOD                                                      AS PAY_PERIOD,
-      P.PAY_PATRN                                                       AS PAY_PATRN,
-      MAX(CASE WHEN P.TRAN_TYPE = '0' THEN P.ORD_AMT END)               AS NEW_INSUR_AMT,
-      -- 当前保险金额：未生效/失效=0；趸交满一年(TX_DATE起算)=0；期缴缴满=0；宽限期过60天未缴=0；其余=新单+续期累计
-      CASE
-          WHEN P.CONT_STATUS IS NULL OR P.CONT_STATUS NOT IN ('0','1','2') THEN 0
-          WHEN P.CONT_STATUS = '0' THEN 0
-          WHEN P.CONT_STATUS = '2' THEN 0
-          WHEN P.PAY_PATRN = '0'
-           AND V_DATA_DATE >= ADD_MONTHS(MIN(P.ACCEPT_DATE_PARSED), 12) THEN 0
-          WHEN P.PAY_PATRN = '1'
-           AND P.PAY_PERIOD IS NOT NULL
-           AND REGEXP_LIKE(P.PAY_PERIOD, '^[0-9]+$')
-           AND P.PAY_PERIOD_TYP IN ('12','1','2')
-           AND V_DATA_DATE >= CASE P.PAY_PERIOD_TYP
-                                   WHEN '12' THEN ADD_MONTHS(MIN(P.ACCEPT_DATE_PARSED), TO_NUMBER(P.PAY_PERIOD) * 12)
-                                   WHEN '1'  THEN ADD_MONTHS(MIN(P.ACCEPT_DATE_PARSED), TO_NUMBER(P.PAY_PERIOD))
-                                   WHEN '2'  THEN MIN(P.ACCEPT_DATE_PARSED) + TO_NUMBER(P.PAY_PERIOD)
-                              END
-          THEN 0                                                        -- 期缴缴满(最后一期后再过一个缴费期间)
-          WHEN P.PAY_PATRN = '1'
-           AND P.PAY_PERIOD_TYP IN ('12','1','2')
-           AND V_DATA_DATE > CASE P.PAY_PERIOD_TYP
-                                  WHEN '12' THEN ADD_MONTHS(MIN(P.ACCEPT_DATE_PARSED),
-                                              (1 + COUNT(CASE WHEN P.TRAN_TYPE = '1' THEN 1 END)) * 12) + 60
-                                  WHEN '1'  THEN ADD_MONTHS(MIN(P.ACCEPT_DATE_PARSED),
-                                              (1 + COUNT(CASE WHEN P.TRAN_TYPE = '1' THEN 1 END))) + 60
-                                  WHEN '2'  THEN MIN(P.ACCEPT_DATE_PARSED)
-                                              + (1 + COUNT(CASE WHEN P.TRAN_TYPE = '1' THEN 1 END)) + 60
-                             END
-          THEN 0                                                        -- 60天宽限期已过且未缴
-          ELSE NVL(MAX(CASE WHEN P.TRAN_TYPE = '0' THEN P.ORD_AMT END), 0)
-             + NVL(SUM(CASE WHEN P.TRAN_TYPE = '1' THEN P.ORD_AMT END), 0)
-      END                                                               AS INSUR_AMT,
-      P.CONT_STATUS                                                     AS POLICY_STATE,
-      NULL                                                              AS TX_TYP,
-      P.PERSN_LEGAL_BK_CODE                                             AS PERSN_LEGAL_BK_CODE
-  FROM (
+  INSERT INTO DWD_ACCT_INSUR (
+      cust_id, cust_typ, acct_id, prdkt_id, prdkt_name, prdkt_cate_big,
+      insur_bid_form_no, tx_date, last_tx_date, tx_org, tx_chnl, mkt_org,
+      bgn_insur_date, cancl_insur_date, actl_term_date, pay_upto_date,
+      insur_period_typ, insur_period, pay_period_typ, pay_period, pay_patrn,
+      new_insur_amt, insur_amt, policy_state, tx_typ, persn_legal_bk_code
+  )
+  WITH detail AS (
       SELECT
-          b.user_id                                                       AS CUST_ID,
-          '1'                                                             AS CUST_TYP,
-          c.ACC_NO                                                        AS ACCT_ID,
-          e.PRODUCT_ID                                                    AS PRDKT_ID,
-          e.PRODUCT_NAME                                                  AS PRDKT_NAME,
-          e.PRODUCT_BIG_TYPE                                              AS PRDKT_CATE_BIG,
-          c.CONT_NO                                                       AS INSUR_BID_FORM_NO,
-          c.plat_policy_serial                                            AS plat_policy_serial,
-          c.CONT_STATUS                                                   AS CONT_STATUS,
-          TO_DATE(c.ACCEPT_DATE, 'YYYYMMDD')                              AS ACCEPT_DATE_PARSED,
-          FA.LAST_SUCCESS_TX_DATE                                         AS LAST_SUCCESS_TX_DATE,
-          FA.ACTL_TERM_DATE_PARSED                                        AS ACTL_TERM_DATE_PARSED,
-          a.TRAN_TYPE                                                     AS TRAN_TYPE,
-          a.ORD_AMT                                                       AS ORD_AMT,
-          TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYYMMDD'), 'YYYY-MM-DD')         AS BGN_INSUR_DATE,
-          -- 保险期间结束日期(推算,仅参考)
+          c.plat_policy_serial,
+          a.tran_type,
+          a.ord_amt,
+          a.ord_tran_status,
+          a.ord_create_date,
+          b.user_id AS cust_id,
+          '1' AS cust_typ,
+          c.acc_no AS acct_id,
+          e.product_id AS prdkt_id,
+          e.product_name AS prdkt_name,
+          e.product_big_type AS prdkt_cate_big,
+          c.cont_no AS insur_bid_form_no,
+          c.cont_status,
+          TO_DATE(c.accept_date, 'YYYYMMDD') AS accept_date_parsed,
+          TO_CHAR(TO_DATE(c.vali_date, 'YYYYMMDD'), 'YYYY-MM-DD') AS bgn_insur_date,
+          d.valid_per_unit,
+          d.valid_per_num,
+          d.pay_per_unit,
+          d.pay_per_num,
+          d.pay_type,
+          SUBSTR(c.throw_com, 1, 6) AS tx_org,
+          c.cont_source AS tx_chnl,
+          SUBSTR(c.throw_com, 1, 6) AS mkt_org,
           CASE
-              WHEN d.VALID_PER_UNIT = '-1' THEN '9999-12-31'
-              WHEN d.VALID_PER_UNIT = '0'
-               AND REGEXP_LIKE(f.CERT_ID, '^[0-9]{17}[0-9Xx]$')
-              THEN TO_CHAR(ADD_MONTHS(TO_DATE(SUBSTR(f.CERT_ID, 7, 8), 'YYYYMMDD'), 12 * d.VALID_PER_NUM), 'YYYY-MM-DD')
-              WHEN d.VALID_PER_UNIT = '0'
-               AND REGEXP_LIKE(f.CERT_ID, '^[0-9]{15}$')
-              THEN TO_CHAR(ADD_MONTHS(TO_DATE('19' || SUBSTR(f.CERT_ID, 7, 6), 'YYYYMMDD'), 12 * d.VALID_PER_NUM), 'YYYY-MM-DD')
-              WHEN d.VALID_PER_UNIT = '12' THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYYMMDD'), 12 * d.VALID_PER_NUM), 'YYYY-MM-DD')
-              WHEN d.VALID_PER_UNIT = '1'  THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYYMMDD'), d.VALID_PER_NUM), 'YYYY-MM-DD')
-              WHEN d.VALID_PER_UNIT = '2'  THEN TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYYMMDD') + d.VALID_PER_NUM, 'YYYY-MM-DD')
-              ELSE NULL
-          END                                                             AS CANCL_INSUR_DATE,
-          CASE
-              WHEN d.PAY_TYPE = '0' THEN TO_CHAR(TO_DATE(c.ACCEPT_DATE, 'YYYYMMDD'), 'YYYYMMDD')
-              WHEN d.PAY_PER_UNIT = '12' THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYYMMDD'), 12 * d.PAY_PER_NUM), 'YYYYMMDD')
-              WHEN d.PAY_PER_UNIT = '1'  THEN TO_CHAR(ADD_MONTHS(TO_DATE(c.VALI_DATE, 'YYYYMMDD'), d.PAY_PER_NUM), 'YYYYMMDD')
-              WHEN d.PAY_PER_UNIT = '2'  THEN TO_CHAR(TO_DATE(c.VALI_DATE, 'YYYYMMDD') + d.PAY_PER_NUM, 'YYYYMMDD')
-              WHEN d.PAY_PER_UNIT = '0'
-               AND REGEXP_LIKE(f.CERT_ID, '^[0-9]{17}[0-9Xx]$')
-              THEN TO_CHAR(ADD_MONTHS(TO_DATE(SUBSTR(f.CERT_ID, 7, 8), 'YYYYMMDD'), 12 * d.PAY_PER_NUM), 'YYYYMMDD')
-              WHEN d.PAY_PER_UNIT = '0'
-               AND REGEXP_LIKE(f.CERT_ID, '^[0-9]{15}$')
-              THEN TO_CHAR(ADD_MONTHS(TO_DATE('19' || SUBSTR(f.CERT_ID, 7, 6), 'YYYYMMDD'), 12 * d.PAY_PER_NUM), 'YYYYMMDD')
-              WHEN d.PAY_PER_UNIT = '-1' THEN NULL
-              ELSE NULL
-          END                                                             AS PAY_UPTO_DATE,
-          d.PAY_PER_UNIT    AS INSUR_PERIOD_TYP,
-          d.PAY_PER_NUM     AS INSUR_PERIOD,
-          d.VALID_PER_UNIT  AS PAY_PERIOD_TYP,
-          d.VALID_PER_NUM   AS PAY_PERIOD,
-          d.PAY_TYPE        AS PAY_PATRN,
-          SUBSTR(c.THROW_COM,1,6) AS TX_ORG,
-          c.CONT_SOURCE     AS TX_CHNL,
-          SUBSTR(c.THROW_COM,1,6) AS MKT_ORG,
-          CASE WHEN SUBSTR(c.THROW_COM,1,6) LIKE '15%' THEN '1500'
-               WHEN SUBSTR(c.THROW_COM,1,6) LIKE '12%' THEN '1200'
-               WHEN SUBSTR(c.THROW_COM,1,6) LIKE '18%' THEN '1800'
-               ELSE '9999' END                                           AS PERSN_LEGAL_BK_CODE
+              WHEN SUBSTR(c.throw_com, 1, 6) LIKE '15%' THEN '1500'
+              WHEN SUBSTR(c.throw_com, 1, 6) LIKE '12%' THEN '1200'
+              WHEN SUBSTR(c.throw_com, 1, 6) LIKE '18%' THEN '1800'
+              ELSE '9999'
+          END AS persn_legal_bk_code,
+          f.cert_id,
+          c.vali_date
       FROM YBT_YBT_POLICY_BASE_INFO c
       INNER JOIN YBT_YBT_POLICY_FEE_LIST a
         ON a.plat_policy_serial = c.plat_policy_serial
-      LEFT JOIN (
-          SELECT
-              F.PLAT_POLICY_SERIAL,
-              MAX(CASE
-                  WHEN F.ORD_TRAN_STATUS = '2'
-                   AND REGEXP_LIKE(TRIM(F.ORD_CREATE_DATE), '^[0-9]{8}$')
-                  THEN TO_DATE(TRIM(F.ORD_CREATE_DATE), 'YYYYMMDD')
-              END) AS LAST_SUCCESS_TX_DATE,
-              MAX(CASE
-                  WHEN F.TRAN_TYPE IN ('2','3','4','5','6','8')
-                   AND REGEXP_LIKE(TRIM(F.ORD_CREATE_DATE), '^[0-9]{8}$')
-                  THEN TO_DATE(TRIM(F.ORD_CREATE_DATE), 'YYYYMMDD')
-              END) AS ACTL_TERM_DATE_PARSED
-          FROM YBT_YBT_POLICY_FEE_LIST F
-          GROUP BY F.PLAT_POLICY_SERIAL
-      ) FA
-        ON FA.PLAT_POLICY_SERIAL = c.PLAT_POLICY_SERIAL
-      INNER JOIN YBT_IB_LIST_PLAT b
+       AND a.ord_tran_status = '2'
+      INNER JOIN IBP_IB_LIST_PLAT b
         ON a.ord_pay_serial = b.plat_serial
        AND b.plat_trad_status = '2'
       INNER JOIN YBT_YBT_POLICY_INSURANCE_INFO d
         ON c.plat_policy_serial = d.plat_policy_serial
       INNER JOIN YBT_YBT_PRODUCT_INFO e
         ON c.product_id = e.product_id
-      LEFT JOIN DWD_CUST_INDV_INFO f
+      LEFT JOIN (
+          SELECT DISTINCT cust_id, cert_id
+          FROM DWD_CUST_INDV_INFO
+      ) f
         ON b.user_id = f.cust_id
       WHERE b.user_id LIKE '1%'
-  ) P
-  GROUP BY
-      P.CUST_ID, P.CUST_TYP, P.ACCT_ID, P.PRDKT_ID, P.PRDKT_NAME, P.PRDKT_CATE_BIG,
-      P.INSUR_BID_FORM_NO, P.plat_policy_serial, P.CONT_STATUS,
-      P.BGN_INSUR_DATE, P.CANCL_INSUR_DATE, P.PAY_UPTO_DATE,
-      P.INSUR_PERIOD_TYP, P.INSUR_PERIOD, P.PAY_PERIOD_TYP, P.PAY_PERIOD, P.PAY_PATRN,
-      P.TX_ORG, P.TX_CHNL, P.MKT_ORG, P.PERSN_LEGAL_BK_CODE;
-
-  COMMIT;   -- 快照落临时表，供后续段落读取
-
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.1 生成保单级聚合快照';
-  V_LOG_FLG   := OUTCDE;
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  --***************************************
-  -- 2.2 新增逻辑
-  -- 触发条件：快照保单主键在 DWD_ACCT_INSUR 中不存在（NOT EXISTS 走目标表主键索引）
-  -- 批量 INSERT ... SELECT，整批集合操作
-  --***************************************
-  V_NO_ID := '2';
-  V_BGN_DATE := SYSDATE;
-
-  INSERT INTO DWD_ACCT_INSUR (
-      CUST_ID, CUST_TYP, ACCT_ID, PRDKT_ID, PRDKT_NAME, PRDKT_CATE_BIG, INSUR_BID_FORM_NO,
-      TX_DATE, LAST_TX_DATE, TX_ORG, TX_CHNL, MKT_ORG, BGN_INSUR_DATE, CANCL_INSUR_DATE,
-      ACTL_TERM_DATE, PAY_UPTO_DATE, INSUR_PERIOD_TYP, INSUR_PERIOD, PAY_PERIOD_TYP, PAY_PERIOD,
-      PAY_PATRN, NEW_INSUR_AMT, INSUR_AMT, POLICY_STATE, TX_TYP, PERSN_LEGAL_BK_CODE)
+        AND c.cont_no IS NOT NULL
+  ),
+  fee_aggr AS (
+      SELECT
+          d.plat_policy_serial,
+          MAX(TO_DATE(TRIM(d.ord_create_date), 'YYYYMMDD')) AS last_success_tx_date,
+          MAX(CASE
+                  WHEN d.tran_type IN ('2', '3', '4', '5', '6', '8')
+                  THEN TO_DATE(TRIM(d.ord_create_date), 'YYYYMMDD')
+              END) AS actl_term_date_parsed,
+          MAX(CASE
+                  WHEN d.tran_type = '1'
+                  THEN TO_DATE(TRIM(d.ord_create_date), 'YYYYMMDD')
+              END) AS last_renewal_date_parsed
+      FROM detail d
+      WHERE d.ord_tran_status = '2'
+      GROUP BY d.plat_policy_serial
+  )
   SELECT
-      S.CUST_ID, S.CUST_TYP, S.ACCT_ID, S.PRDKT_ID, S.PRDKT_NAME, S.PRDKT_CATE_BIG, S.INSUR_BID_FORM_NO,
-      S.TX_DATE, S.LAST_TX_DATE, S.TX_ORG, S.TX_CHNL, S.MKT_ORG, S.BGN_INSUR_DATE, S.CANCL_INSUR_DATE,
-      S.ACTL_TERM_DATE, S.PAY_UPTO_DATE, S.INSUR_PERIOD_TYP, S.INSUR_PERIOD, S.PAY_PERIOD_TYP, S.PAY_PERIOD,
-      S.PAY_PATRN, S.NEW_INSUR_AMT, S.INSUR_AMT, S.POLICY_STATE, S.TX_TYP, S.PERSN_LEGAL_BK_CODE
-  FROM TMP_DWD_ACCT_INSUR_SNAP S
-  WHERE NOT EXISTS (
-      SELECT 1
-        FROM DWD_ACCT_INSUR T
-       WHERE T.CUST_ID            = S.CUST_ID
-         AND T.ACCT_ID            = S.ACCT_ID
-         AND T.PRDKT_ID           = S.PRDKT_ID
-         AND T.INSUR_BID_FORM_NO  = S.INSUR_BID_FORM_NO
-  );
+      d.cust_id,
+      d.cust_typ,
+      d.acct_id,
+      d.prdkt_id,
+      d.prdkt_name,
+      d.prdkt_cate_big,
+      d.insur_bid_form_no,
+      TO_CHAR(MIN(d.accept_date_parsed), 'YYYYMMDD'),
+      COALESCE(
+          TO_CHAR(MAX(ag.last_success_tx_date), 'YYYYMMDD'),
+          TO_CHAR(MIN(d.accept_date_parsed), 'YYYYMMDD')
+      ),
+      d.tx_org,
+      d.tx_chnl,
+      d.mkt_org,
+      d.bgn_insur_date,
+      CASE
+          WHEN MIN(d.valid_per_unit) = '-1' THEN '9999-12-31'
+          WHEN MIN(d.valid_per_unit) = '0' AND LENGTH(MIN(d.cert_id)) = 18
+          THEN TO_CHAR(ADD_MONTHS(TO_DATE(SUBSTR(MIN(d.cert_id), 7, 8), 'YYYYMMDD'),
+                                  12 * MIN(d.valid_per_num)), 'YYYY-MM-DD')
+          WHEN MIN(d.valid_per_unit) = '0' AND LENGTH(MIN(d.cert_id)) = 15
+          THEN TO_CHAR(ADD_MONTHS(TO_DATE('19' || SUBSTR(MIN(d.cert_id), 7, 6), 'YYYYMMDD'),
+                                  12 * MIN(d.valid_per_num)), 'YYYY-MM-DD')
+          WHEN MIN(d.valid_per_unit) = '12'
+          THEN TO_CHAR(ADD_MONTHS(TO_DATE(MIN(d.vali_date), 'YYYYMMDD'),
+                                  12 * MIN(d.valid_per_num)), 'YYYY-MM-DD')
+          WHEN MIN(d.valid_per_unit) = '1'
+          THEN TO_CHAR(ADD_MONTHS(TO_DATE(MIN(d.vali_date), 'YYYYMMDD'),
+                                  MIN(d.valid_per_num)), 'YYYY-MM-DD')
+          WHEN MIN(d.valid_per_unit) = '2'
+          THEN TO_CHAR(TO_DATE(MIN(d.vali_date), 'YYYYMMDD') + MIN(d.valid_per_num),
+                       'YYYY-MM-DD')
+      END,
+      COALESCE(
+          TO_CHAR(MAX(ag.actl_term_date_parsed), 'YYYYMMDD'),
+          CASE
+              WHEN MIN(d.cont_status) = '2' AND MIN(d.vali_date) IS NOT NULL
+              THEN TO_CHAR(TO_DATE(MIN(d.vali_date), 'YYYYMMDD'), 'YYYYMMDD')
+          END
+      ),
+      CASE
+          WHEN MIN(d.pay_type) = '0'
+          THEN TO_CHAR(MIN(d.accept_date_parsed), 'YYYYMMDD')
+          WHEN MIN(d.pay_per_unit) = '12'
+          THEN TO_CHAR(ADD_MONTHS(TO_DATE(MIN(d.vali_date), 'YYYYMMDD'),
+                                  12 * MIN(d.pay_per_num)), 'YYYYMMDD')
+          WHEN MIN(d.pay_per_unit) = '1'
+          THEN TO_CHAR(ADD_MONTHS(TO_DATE(MIN(d.vali_date), 'YYYYMMDD'),
+                                  MIN(d.pay_per_num)), 'YYYYMMDD')
+          WHEN MIN(d.pay_per_unit) = '2'
+          THEN TO_CHAR(TO_DATE(MIN(d.vali_date), 'YYYYMMDD') + MIN(d.pay_per_num),
+                       'YYYYMMDD')
+          WHEN MIN(d.pay_per_unit) = '0' AND LENGTH(MIN(d.cert_id)) = 18
+          THEN TO_CHAR(ADD_MONTHS(TO_DATE(SUBSTR(MIN(d.cert_id), 7, 8), 'YYYYMMDD'),
+                                  12 * MIN(d.pay_per_num)), 'YYYYMMDD')
+          WHEN MIN(d.pay_per_unit) = '0' AND LENGTH(MIN(d.cert_id)) = 15
+          THEN TO_CHAR(ADD_MONTHS(TO_DATE('19' || SUBSTR(MIN(d.cert_id), 7, 6), 'YYYYMMDD'),
+                                  12 * MIN(d.pay_per_num)), 'YYYYMMDD')
+      END,
+      MIN(d.valid_per_unit),
+      MIN(d.valid_per_num),
+      MIN(d.pay_per_unit),
+      MIN(d.pay_per_num),
+      MIN(d.pay_type),
+      SUM(CASE WHEN d.tran_type = '0' THEN d.ord_amt ELSE 0 END),
+      CASE
+          WHEN MIN(d.cont_status) IS NULL
+            OR MIN(d.cont_status) NOT IN ('0', '1', '2') THEN 0
+          WHEN MIN(d.cont_status) = '0' THEN 0
+          WHEN MIN(d.cont_status) = '2' THEN 0
+          WHEN MIN(d.pay_type) = '0'
+           AND V_DATA_DATE >= ADD_MONTHS(MIN(d.accept_date_parsed), 12) THEN 0
+          WHEN MIN(d.pay_type) = '1'
+           AND MIN(d.pay_per_num) IS NOT NULL
+           AND MIN(d.pay_per_num) > 0
+           AND MIN(d.pay_per_unit) IN ('12', '1', '2')
+           AND V_DATA_DATE >= CASE MIN(d.pay_per_unit)
+                                   WHEN '12' THEN ADD_MONTHS(MIN(d.accept_date_parsed),
+                                                             MIN(d.pay_per_num) * 12)
+                                   WHEN '1' THEN ADD_MONTHS(MIN(d.accept_date_parsed),
+                                                            MIN(d.pay_per_num))
+                                   WHEN '2' THEN MIN(d.accept_date_parsed) + MIN(d.pay_per_num)
+                               END THEN 0
+          WHEN MIN(d.pay_type) = '1'
+           AND MAX(ag.last_renewal_date_parsed) IS NOT NULL
+           AND MIN(d.pay_per_unit) IN ('12', '1', '2')
+           AND V_DATA_DATE > CASE MIN(d.pay_per_unit)
+                                  WHEN '12' THEN ADD_MONTHS(MAX(ag.last_renewal_date_parsed), 12) + 60
+                                  WHEN '1' THEN ADD_MONTHS(MAX(ag.last_renewal_date_parsed), 1) + 60
+                                  WHEN '2' THEN MAX(ag.last_renewal_date_parsed) + 1 + 60
+                              END THEN 0
+          ELSE SUM(CASE WHEN d.tran_type = '0' THEN d.ord_amt ELSE 0 END)
+             + SUM(CASE WHEN d.tran_type = '1' THEN d.ord_amt ELSE 0 END)
+      END,
+      MIN(d.cont_status),
+      NULL,
+      MIN(d.persn_legal_bk_code)
+  FROM detail d
+  LEFT JOIN fee_aggr ag
+    ON ag.plat_policy_serial = d.plat_policy_serial
+  GROUP BY
+      d.cust_id, d.cust_typ, d.acct_id, d.prdkt_id, d.prdkt_name,
+      d.prdkt_cate_big, d.insur_bid_form_no, d.tx_org, d.tx_chnl,
+      d.mkt_org, d.bgn_insur_date;
+
   V_CNT_INS := SQL%ROWCOUNT;
-
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.2 新增保险保单行数: ' || TO_CHAR(V_CNT_INS);
-  V_LOG_FLG   := OUTCDE;
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  --***************************************
-  -- 2.3 更新逻辑
-  -- 触发条件：快照保单主键在 DWD_ACCT_INSUR 中已存在
-  -- 批量 MERGE 仅 WHEN MATCHED（新增由 2.2 段落负责），ON 走目标表主键索引
-  --***************************************
-  V_NO_ID := '3';
-  V_BGN_DATE := SYSDATE;
-
-  MERGE INTO DWD_ACCT_INSUR T
-  USING TMP_DWD_ACCT_INSUR_SNAP S
-  ON (T.CUST_ID = S.CUST_ID AND T.ACCT_ID = S.ACCT_ID
-      AND T.PRDKT_ID = S.PRDKT_ID AND T.INSUR_BID_FORM_NO = S.INSUR_BID_FORM_NO)
-  WHEN MATCHED THEN UPDATE SET
-      T.CUST_TYP          = S.CUST_TYP,
-      T.PRDKT_NAME        = S.PRDKT_NAME,
-      T.PRDKT_CATE_BIG    = S.PRDKT_CATE_BIG,
-      T.TX_DATE           = S.TX_DATE,
-      T.LAST_TX_DATE      = S.LAST_TX_DATE,
-      T.TX_ORG            = S.TX_ORG,
-      T.TX_CHNL           = S.TX_CHNL,
-      T.MKT_ORG           = S.MKT_ORG,
-      T.BGN_INSUR_DATE    = S.BGN_INSUR_DATE,
-      T.CANCL_INSUR_DATE  = S.CANCL_INSUR_DATE,
-      T.ACTL_TERM_DATE    = S.ACTL_TERM_DATE,
-      T.PAY_UPTO_DATE     = S.PAY_UPTO_DATE,
-      T.INSUR_PERIOD_TYP  = S.INSUR_PERIOD_TYP,
-      T.INSUR_PERIOD      = S.INSUR_PERIOD,
-      T.PAY_PERIOD_TYP    = S.PAY_PERIOD_TYP,
-      T.PAY_PERIOD        = S.PAY_PERIOD,
-      T.PAY_PATRN         = S.PAY_PATRN,
-      T.NEW_INSUR_AMT     = S.NEW_INSUR_AMT,
-      T.INSUR_AMT         = S.INSUR_AMT,
-      T.POLICY_STATE      = S.POLICY_STATE,
-      T.TX_TYP            = S.TX_TYP,
-      T.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE;
-  V_CNT_UPD := SQL%ROWCOUNT;
-
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.3 更新保险保单行数: ' || TO_CHAR(V_CNT_UPD);
-  V_LOG_FLG   := OUTCDE;
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  --***************************************
-  -- 2.4 统一提交（新增+更新同一事务；任一失败由异常区整体回滚）
-  --***************************************
   COMMIT;
-  OUTCDE := 0;
-  V_END_DATE := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG := '保险账户处理完成';
-  V_LOG_FLG := OUTCDE;
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
 
-    -- ***************************************
-    -- 3. 异常处理区(捕获错误码并记录详细日志，整体回滚)
-    -- ***************************************
+  OUTCDE      := 0;
+  V_END_DATE  := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  V_LOG_MSG   := '2 完成: 集合化写入 影响行=' || V_CNT_INS;
+  V_LOG_FLG   := OUTCDE;
+  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+      V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
+
 EXCEPTION
   WHEN OTHERS THEN
-    OUTCDE := -1;
+    OUTCDE := -3;
     ROLLBACK;
     V_END_DATE := SYSDATE;
-    V_DURA_DATE := CASE WHEN V_BGN_DATE IS NULL OR V_END_DATE IS NULL THEN NULL ELSE TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60) END;
+    V_DURA_DATE := CASE
+                       WHEN V_BGN_DATE IS NULL OR V_END_DATE IS NULL THEN NULL
+                       ELSE TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60)
+                   END;
     V_LOG_MSG := SUBSTR(SQLERRM, 1, 1000);
     V_LOG_FLG := OUTCDE;
-    SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
+    SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+        V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
     RAISE;
 END;
 /

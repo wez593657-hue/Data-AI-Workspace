@@ -76,4 +76,7 @@ _v*_full_text.txt
 scripts/_*.py
 scripts/_*.txt
 
+# External reference material (A.txt design draft, GBK-encoded, not a project deliverable)
+ABCD/
+
 

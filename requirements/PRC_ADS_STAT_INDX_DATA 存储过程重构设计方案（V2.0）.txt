@@ -1,0 +1,813 @@
+1. 设计背景
+1.1 当前业务模型
+
+根据现有业务规则：
+
+路径A：营销活动
+客户来源：已有客户群组
+活动客户范围固定
+活动期间需要保持客户口径一致
+指标计算基于活动客户群组
+路径B：目标任务
+客户来源：
+机构下全部客户
+客户经理名下全部客户
+不维护客户明细名单
+根据组织关系动态计算
+
+因此：
+
+本存储过程不采用：
+
+活动/任务
+    |
+客户明细
+    |
+指标计算
+
+避免产生：
+
+活动 × 客户 × 指标
+
+级别数据膨胀。
+
+采用：
+
+活动/任务
+       |
+客户范围定义
+       |
+客户范围聚合
+       |
+指标计算
+       |
+ADS结果
+2. 存储过程总体设计目标
+2.1 功能目标
+
+PRC_ADS_STAT_INDX_DATA
+
+负责：
+
+获取当前统计日期需要计算的活动及任务范围
+解析客户范围来源
+获取当前指标实时值
+获取冻结基准值
+根据指标规则计算结果
+输出ADS层指标数据
+2.2 设计原则
+原则1：范围与客户解耦
+
+不保存：
+
+活动客户明细
+任务客户明细
+
+仅保存：
+
+范围定义
+原则2：指标计算聚合化
+
+计算粒度：
+
+活动/任务
++
+机构
++
+客户经理
++
+指标
+
+不采用：
+
+客户
++
+指标
+原则3：基准结果冻结
+
+冻结：
+
+指标汇总值
+
+而不是：
+
+客户状态
+3. 存储过程定义
+3.1 名称
+PRC_ADS_STAT_INDX_DATA
+4. 输入参数设计
+输入参数
+参数	类型	说明
+P_STAT_DATE	VARCHAR2(8)	统计日期
+P_FORCE_FLAG	VARCHAR2(1)	是否强制重算
+P_BATCH_ID	VARCHAR2(32)	批次号
+
+示例：
+
+P_STAT_DATE='20260131'
+
+P_FORCE_FLAG='N'
+
+P_BATCH_ID='B20260131001'
+5. 输出结果
+
+目标表：
+
+ADS_STAT_INDX_DATA
+
+输出粒度：
+
+活动/任务
++
+统计维度
++
+指标编码
+
+字段：
+
+字段	说明
+STAT_DATE	统计日期
+PATH_CODE	路径A/B
+BUSINESS_ID	活动/任务编号
+STATIS_DIM	统计维度
+ORG_CODE	机构
+MGR_ID	客户经理
+INDX_CODE	指标编码
+CUR_VAL	当前值
+BASE_VAL	基准值
+CHANGE_VAL	变化值
+6. 数据处理总体流程
+START
+
+ |
+
+参数检查
+
+ |
+
+业务范围获取
+
+ |
+
+客户范围解析
+
+ |
+
+客户指标聚合
+
+ |
+
+基准值获取
+
+ |
+
+指标计算
+
+ |
+
+结果校验
+
+ |
+
+ADS写入
+
+ |
+
+COMMIT
+
+
+END
+
+7. 详细处理步骤设计
+Step1 参数校验
+处理目标
+
+保证批次运行参数有效。
+
+校验逻辑
+日期格式
+SELECT COUNT(1)
+FROM DUAL
+WHERE REGEXP_LIKE(
+ P_STAT_DATE,
+ '^[0-9]{8}$'
+);
+
+失败：
+
+记录错误。
+
+批次重复检查
+SELECT COUNT(*)
+FROM ADS_STAT_INDX_DATA
+WHERE STAT_DATE=P_STAT_DATE
+AND BATCH_ID=P_BATCH_ID;
+
+如果存在：
+
+FORCE_FLAG=N
+
+则退出
+Step2 获取待计算活动/任务范围
+
+创建临时表：
+
+TMP_STAT_INDX_SCOPE
+
+结构：
+
+字段	说明
+PATH_CODE	A/B
+BUSINESS_ID	活动/任务
+SCOPE_TYPE	范围类型
+GROUP_ID	客户群组
+ORG_CODE	机构
+MGR_ID	客户经理
+2.1 营销活动
+
+来源：
+
+营销活动表
+
+逻辑：
+
+INSERT INTO TMP_STAT_INDX_SCOPE
+(
+PATH_CODE,
+BUSINESS_ID,
+GROUP_ID,
+SCOPE_TYPE
+)
+
+SELECT
+'A',
+ACT_ID,
+GROUP_ID,
+'GROUP'
+FROM
+DWD_MARKET_ACTIVITY
+WHERE
+BEGIN_DATE<=P_STAT_DATE
+AND END_DATE>=P_STAT_DATE
+AND STATUS='1';
+
+2.2 目标任务
+
+机构任务：
+
+INSERT INTO TMP_STAT_INDX_SCOPE
+SELECT
+'B',
+TASK_ID,
+NULL,
+'ORG'
+FROM
+DWD_TARGET_TASK
+WHERE
+TASK_TYPE='ORG';
+
+
+客户经理任务：
+
+INSERT INTO TMP_STAT_INDX_SCOPE
+SELECT
+'B',
+TASK_ID,
+NULL,
+'MGR'
+FROM
+DWD_TARGET_TASK
+WHERE
+TASK_TYPE='MGR';
+
+Step3 客户范围解析
+
+注意：
+
+该步骤不落客户明细。
+
+生成：
+
+TMP_STAT_INDX_RANGE
+3.1 营销活动
+
+直接使用客户群组。
+
+关联：
+
+活动
+ |
+客户群组
+ |
+客户群组统计表
+
+SQL逻辑：
+
+SELECT
+A.BUSINESS_ID,
+B.GROUP_ID,
+B.CUST_CNT
+FROM
+TMP_STAT_INDX_SCOPE A
+JOIN
+DWS_CUST_GROUP_INFO B
+ON
+A.GROUP_ID=B.GROUP_ID;
+
+3.2 机构任务
+
+生成组织条件：
+
+SELECT
+
+TASK_ID,
+
+ORG_CODE,
+
+'ORG'
+
+FROM
+
+TMP_STAT_INDX_SCOPE
+
+WHERE
+
+SCOPE_TYPE='ORG';
+
+3.3 客户经理任务
+SELECT
+
+TASK_ID,
+
+MGR_ID,
+
+'MGR'
+
+FROM
+
+TMP_STAT_INDX_SCOPE
+
+WHERE
+
+SCOPE_TYPE='MGR';
+
+Step4 指标数据聚合
+
+核心计算层：
+
+TMP_STAT_INDX_CALC
+4.1 营销活动余额计算
+
+客户群组关联：
+
+GROUP_MEMBER
+
+        |
+
+CUSTOMER_BALANCE
+
+
+SQL：
+
+INSERT INTO TMP_STAT_INDX_CALC
+
+
+SELECT
+
+A.BUSINESS_ID,
+
+'ORG',
+
+SUM(B.AUM_BAL)
+
+FROM
+
+DWS_CUST_GROUP_MEMBER A
+
+JOIN
+
+DWS_CUST_BAL B
+
+ON
+
+A.CUST_ID=B.CUST_ID
+
+
+JOIN
+
+TMP_STAT_INDX_SCOPE C
+
+ON
+
+A.GROUP_ID=C.GROUP_ID
+
+
+GROUP BY
+
+A.BUSINESS_ID;
+
+4.2 机构任务计算
+SELECT
+
+TASK_ID,
+
+ORG_CODE,
+
+SUM(AUM_BAL)
+
+FROM
+
+DWS_CUST_BAL
+
+
+WHERE
+
+ORG_CODE IN
+
+(
+SELECT ORG_CODE
+FROM TMP_STAT_INDX_SCOPE
+WHERE SCOPE_TYPE='ORG'
+)
+
+
+GROUP BY
+
+TASK_ID,
+ORG_CODE;
+
+4.3 客户经理任务
+SELECT
+
+TASK_ID,
+
+MGR_ID,
+
+SUM(AUM_BAL)
+
+FROM
+
+DWS_CUST_BAL
+
+
+WHERE
+
+MGR_ID IN
+(
+SELECT MGR_ID
+FROM TMP_STAT_INDX_SCOPE
+WHERE SCOPE_TYPE='MGR'
+)
+
+GROUP BY
+
+TASK_ID,
+MGR_ID;
+
+Step5 获取冻结基准
+
+基准表：
+
+ADS_STAT_INDX_BASE_SUM
+
+关联：
+
+业务编号
+
++
+
+机构
+
++
+
+客户经理
+
++
+
+指标
+
+SQL：
+
+SELECT
+
+BUSINESS_ID,
+
+INDX_CODE,
+
+BASE_VAL
+
+FROM
+
+ADS_STAT_INDX_BASE_SUM
+
+WHERE
+
+STAT_DATE=P_STAT_DATE;
+
+Step6 指标计算
+
+生成：
+
+TMP_STAT_INDX_RESULT
+
+计算公式：
+
+增长指标
+
+例如：
+
+资产提升：
+
+CUR_VAL-BASE_VAL
+
+SQL：
+
+INSERT INTO TMP_STAT_INDX_RESULT
+
+
+SELECT
+
+A.BUSINESS_ID,
+
+B.INDX_CODE,
+
+A.CUR_VAL,
+
+B.BASE_VAL,
+
+
+A.CUR_VAL-B.BASE_VAL
+
+
+FROM
+
+TMP_STAT_INDX_CALC A
+
+
+JOIN
+
+CFG_STAT_INDX_RULE B
+
+ON
+
+A.TYPE=B.TYPE;
+
+Step7 数据质量校验
+校验1 空值
+SELECT COUNT(*)
+
+FROM TMP_STAT_INDX_RESULT
+
+WHERE BUSINESS_ID IS NULL;
+
+校验2 指标范围
+SELECT COUNT(*)
+
+FROM TMP_STAT_INDX_RESULT A
+
+LEFT JOIN CFG_STAT_INDX_RULE B
+
+ON A.INDX_CODE=B.INDX_CODE
+
+WHERE B.INDX_CODE IS NULL;
+
+校验3 重复
+SELECT
+
+BUSINESS_ID,
+
+INDX_CODE,
+
+COUNT(*)
+
+
+FROM TMP_STAT_INDX_RESULT
+
+
+GROUP BY
+
+BUSINESS_ID,
+
+INDX_CODE
+
+
+HAVING COUNT(*)>1;
+
+Step8 ADS入库
+删除旧数据
+
+非强制：
+
+增量。
+
+强制：
+
+DELETE FROM ADS_STAT_INDX_DATA
+WHERE STAT_DATE=P_STAT_DATE;
+
+插入
+INSERT INTO ADS_STAT_INDX_DATA
+(
+STAT_DATE,
+BUSINESS_ID,
+INDX_CODE,
+CUR_VAL,
+BASE_VAL,
+CHANGE_VAL,
+BATCH_ID
+)
+
+
+SELECT
+
+P_STAT_DATE,
+
+BUSINESS_ID,
+
+INDX_CODE,
+
+CUR_VAL,
+
+BASE_VAL,
+
+CHANGE_VAL,
+
+P_BATCH_ID
+
+
+FROM
+
+TMP_STAT_INDX_RESULT;
+
+9. 错误处理机制
+
+采用：
+
+EXCEPTION
+WHEN OTHERS THEN
+
+ROLLBACK;
+
+
+INSERT INTO SYS_BATCH_ERROR_LOG
+(
+PROC_NAME,
+ERROR_CODE,
+ERROR_MSG,
+CREATE_TIME
+)
+
+VALUES
+(
+'PRC_ADS_STAT_INDX_DATA',
+SQLCODE,
+SQLERRM,
+SYSDATE
+);
+
+
+COMMIT;
+
+
+RAISE;
+
+END;
+
+10. 事务控制策略
+推荐：
+
+一个批次一个事务。
+
+流程：
+
+BEGIN
+
+范围生成
+
+↓
+
+指标计算
+
+↓
+
+结果校验
+
+
+↓
+
+ADS写入
+
+
+COMMIT
+
+
+END
+
+
+异常：
+
+全部：
+
+ROLLBACK
+
+保证：
+
+ADS结果完整性。
+
+11. 性能优化设计
+11.1 避免客户明细展开
+
+收益：
+
+避免：
+
+亿级临时数据
+11.2 建议索引
+客户群组
+GROUP_ID
++
+CUST_ID
+客户余额
+CUST_ID
+
+ORG_CODE
+
+MGR_ID
+ADS结果
+STAT_DATE
+
+BUSINESS_ID
+
+INDX_CODE
+11.3 分区
+
+ADS：
+
+建议：
+
+PARTITION BY RANGE(STAT_DATE)
+11.4 并行计算
+
+活动量大：
+
+/*+ parallel(8) */
+12. 最终架构
+             活动/任务
+
+                  |
+
+        TMP_STAT_INDX_SCOPE
+
+
+                  |
+
+      -----------------------
+
+      |                     |
+
+  客户群组              机构/经理
+
+
+      |                     |
+
+ 聚合计算                聚合计算
+
+
+      -----------------------
+
+
+                  |
+
+       TMP_STAT_INDX_RESULT
+
+
+                  |
+
+          ADS_STAT_INDX_DATA
+
+13. 方案总结
+
+该方案相比现有 PRC_ADS_STAT_INDX_DATA：
+
+项目	优化前	优化后
+客户存储	活动客户明细	范围定义
+计算粒度	客户级	业务级
+数据量	亿级风险	百万级以内
+活动支持	有限	海量
+任务支持	需要名单	动态组织
+指标扩展	修改SQL	规则配置
+性能	依赖客户量	依赖聚合量
+
+该设计保持：
+
+ADS目标表不变
+营销活动业务口径不变
+目标任务业务口径不变
+冻结基准一致性不变
+
+同时解决：
+
+客户明细爆炸
+活动数量增长
+指标扩展困难
+存储过程维护复杂

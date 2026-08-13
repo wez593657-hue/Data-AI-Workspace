@@ -7,7 +7,8 @@ AS
   -- 报表名称：客户资产负债基数处理
   -- 报表编号：PRC_CUST_ASSE_LIAB_CUMU
   -- 处理周期：日
-  -- 过程描述：按客户 + 账户 + 产品 + 日期生成存款、贷款、理财、保险余额基数及月/季/年累计余额基数。
+  -- 过程描述：按客户、账户、产品、产品大类、办理渠道、办理日期、投保单号/借据号、机构及法人行号等明细维度，
+  --           生成存款、贷款、理财、保险余额基数及月/季/年累计余额基数。
   -- 来源表：DWD_ACCT_DEPO、DWD_ACCT_LOAN、DWD_ACCT_FIN、DWD_ACCT_INSUR(保单级主档)、DWS_CUST_ASSE_LIAB_CUMU_HIS
   -- 目标表：DWS_CUST_ASSE_LIAB_CUMU、DWS_CUST_ASSE_LIAB_CUMU_HIS
   -- 适配数据库：Oracle 兼容模式 / Kingbase Oracle 兼容模式
@@ -16,6 +17,8 @@ AS
   --   v3.0.0 2026-08-03 保单级主档重构：不再依赖HIS与交易类型；
   --                     状态判定完全基于DWD_ACCT_INSUR.POLICY_STATE(0/1/2)；
   --                     直接聚合INSUR_AMT生成保险余额，删除2.3-2.10中间段
+  --   v4.0.0 2026-08-13 统一四类产品明细维度；保险按客户、账户、产品、渠道、办理日期、投保单号、机构等维度贯通；
+  --                     新增CHNL_NO、ISSU_DATE、IOU_NO并纳入当日聚合、历史累计及当前/历史表写入键。
   ------------------------------------------------------------------
   ------------------------------------------------------------------
   --***************************************
@@ -100,6 +103,9 @@ BEGIN
       ACCT_ID,
       PRDKT_ID,
       PRDKT_CATE_BIG,
+      CHNL_NO,
+      ISSU_DATE,
+      IOU_NO,
       BAL,
       PERSN_LEGAL_BK_CODE,
       OPRT_ORG
@@ -110,16 +116,24 @@ BEGIN
       I.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       I.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       I.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG, -- 产品大类
+      I.TX_CHNL                                                         AS CHNL_NO,       -- 办理渠道
+      I.TX_DATE                                                         AS ISSU_DATE,     -- 办理日期
+      I.INSUR_BID_FORM_NO                                               AS IOU_NO,        -- 投保单号
       SUM(NVL(I.INSUR_AMT, 0))                                          AS BAL,            -- 保险当日余额(仅有效保单)
-      MAX(I.PERSN_LEGAL_BK_CODE)                                        AS PERSN_LEGAL_BK_CODE, -- 法人行号(组内取最大值)
-      MAX(I.MKT_ORG)                                                    AS OPRT_ORG        -- 归属机构(同上)
+      I.PERSN_LEGAL_BK_CODE                                             AS PERSN_LEGAL_BK_CODE, -- 法人行号
+      I.MKT_ORG                                                         AS OPRT_ORG        -- 归属机构
   FROM DWD_ACCT_INSUR I
   WHERE I.POLICY_STATE = '1'          -- 唯一状态判定源：仅正常保单参与(0/2余额已为0)
   GROUP BY
       I.CUST_ID,
       I.ACCT_ID,
       I.PRDKT_ID,
-      I.PRDKT_CATE_BIG;
+      I.PRDKT_CATE_BIG,
+      I.TX_CHNL,
+      I.TX_DATE,
+      I.INSUR_BID_FORM_NO,
+      I.PERSN_LEGAL_BK_CODE,
+      I.MKT_ORG;
 
   COMMIT;
 
@@ -133,7 +147,8 @@ BEGIN
 
   --***************************************
   -- 2.11 生成四类产品当日余额明细临时表
-  -- 作用：存款、贷款、理财优先从当前账户表取当日余额，保险取前序规则计算后的余额。
+  -- 作用：存款、贷款、理财优先从当前账户表取当日余额，保险取前序规则计算后的余额；
+  --       四类产品统一输出客户、账户、产品、产品大类、办理渠道、办理日期、投保单号/借据号、机构及法人行号等维度。
   --***************************************
 
   V_NO_ID := '11';
@@ -147,6 +162,9 @@ BEGIN
       ACCT_ID,
       PRDKT_ID,
       PRDKT_CATE_BIG,
+      CHNL_NO,
+      ISSU_DATE,
+      IOU_NO,
       BAL,
       PRDKT_TYP
   )
@@ -158,6 +176,9 @@ BEGIN
       D.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       D.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       COALESCE(D.PRDKT_CATE_BIG, 'DEP')                                 AS PRDKT_CATE_BIG, -- 产品大类
+      CAST(NULL AS VARCHAR(10))                                         AS CHNL_NO,       -- 存款暂无办理渠道字段
+      D.OPEN_DATE                                                        AS ISSU_DATE,     -- 存款开户日期
+      CAST(NULL AS VARCHAR(100))                                        AS IOU_NO,        -- 存款无投保单号或借据号
       NVL(D.BAL, 0)                                                     AS BAL,            -- 存款余额
       '1'                                                               AS PRDKT_TYP        -- 产品类型
   FROM DWD_ACCT_DEPO D
@@ -174,6 +195,9 @@ BEGIN
       L.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       L.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       COALESCE(L.PRDKT_CATE_BIG, 'LOAN')                                AS PRDKT_CATE_BIG, -- 产品大类
+      CAST(NULL AS VARCHAR(10))                                         AS CHNL_NO,       -- 贷款暂无办理渠道字段
+      L.LOAN_ISSU_DATE                                                   AS ISSU_DATE,     -- 贷款发放日期
+      L.IOU_NO                                                           AS IOU_NO,        -- 借据号
       NVL(L.BAL, 0)                                                     AS BAL,             -- 贷款余额
       '2'                                                               AS PRDKT_TYP        -- 产品类型
   FROM DWD_ACCT_LOAN L
@@ -190,6 +214,9 @@ BEGIN
       F.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       F.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       COALESCE(F.PRDKT_CATE_BIG, 'FIN')                                 AS PRDKT_CATE_BIG, -- 产品大类
+      F.CHNL_NO                                                          AS CHNL_NO,       -- 理财办理渠道
+      F.ISSU_DATE                                                        AS ISSU_DATE,     -- 理财办理日期
+      CAST(NULL AS VARCHAR(100))                                        AS IOU_NO,        -- 理财无投保单号或借据号
       NVL(F.FIN_AMT, 0)                                                 AS BAL,            -- 理财余额，已为份额乘净值后的结果值
       '3'                                                               AS PRDKT_TYP        -- 产品类型
   FROM DWD_ACCT_FIN F
@@ -205,6 +232,9 @@ BEGIN
       I.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       I.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       I.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG, -- 产品大类
+      I.CHNL_NO                                                          AS CHNL_NO,       -- 保险办理渠道
+      I.ISSU_DATE                                                        AS ISSU_DATE,     -- 保险办理日期
+      I.IOU_NO                                                           AS IOU_NO,        -- 投保单号
       I.BAL                                                             AS BAL,             -- 保险余额
       '4'                                                               AS PRDKT_TYP        -- 产品类型
   FROM TMP_DWS_CUST_ASSE_LIAB_INSUR_BAL I;
@@ -221,7 +251,7 @@ BEGIN
 
   --***************************************
   -- 2.12 生成当日余额聚合临时表
-  -- 作用：按客户 + 账户 + 产品 + 产品大类汇总同日余额，避免同一维度多笔明细重复输出。
+  -- 作用：按完整明细维度汇总同日余额；其中保险的渠道、办理日期和投保单号共同保持保单级行粒度，避免不同保单被合并。
   --***************************************
   V_NO_ID := '12';
   V_BGN_DATE := SYSDATE;
@@ -234,6 +264,9 @@ BEGIN
       ACCT_ID,
       PRDKT_ID,
       PRDKT_CATE_BIG,
+      CHNL_NO,
+      ISSU_DATE,
+      IOU_NO,
       BAL,
       PRDKT_TYP
   )
@@ -245,6 +278,9 @@ BEGIN
       T.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       T.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       T.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG, -- 产品大类
+      T.CHNL_NO                                                         AS CHNL_NO,
+      T.ISSU_DATE                                                       AS ISSU_DATE,
+      T.IOU_NO                                                          AS IOU_NO,
       SUM(NVL(T.BAL, 0))                                                AS BAL,            -- 聚合后当日余额
       PRDKT_TYP
   FROM TMP_DWS_CUST_ASSE_LIAB_TODAY_BAL T
@@ -256,6 +292,9 @@ BEGIN
       T.ACCT_ID,
       T.PRDKT_ID,
       T.PRDKT_CATE_BIG,
+      T.CHNL_NO,
+      T.ISSU_DATE,
+      T.IOU_NO,
       PRDKT_TYP;
 
   COMMIT;
@@ -270,7 +309,7 @@ BEGIN
 
   --***************************************
   -- 2.13 生成结果补零KEY临时表
-  -- 作用：合并当日有余额的KEY和年内历史存在的KEY，确保余额清零后的产品仍能输出0并参与累计。
+  -- 作用：按完整明细维度合并当日有余额的KEY和年内历史存在的KEY，确保余额清零后的产品仍能输出0并参与累计。
   --***************************************
   V_NO_ID := '13';
   V_BGN_DATE := SYSDATE;
@@ -282,6 +321,9 @@ BEGIN
       ACCT_ID,
       PRDKT_ID,
       PRDKT_CATE_BIG,
+      CHNL_NO,
+      ISSU_DATE,
+      IOU_NO,
       PRDKT_TYP
   )
   SELECT
@@ -291,6 +333,9 @@ BEGIN
       A.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       A.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       A.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG, -- 产品大类
+      A.CHNL_NO                                                          AS CHNL_NO,
+      A.ISSU_DATE                                                        AS ISSU_DATE,
+      A.IOU_NO                                                           AS IOU_NO,
       A.PRDKT_TYP                                                        AS PRDKT_TYP        -- 产品类型
   FROM TMP_DWS_CUST_ASSE_LIAB_TODAY_AGG A
   UNION
@@ -301,6 +346,9 @@ BEGIN
       H.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       H.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       H.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG,  -- 产品大类
+      H.CHNL_NO                                                          AS CHNL_NO,
+      H.ISSU_DATE                                                        AS ISSU_DATE,
+      H.IOU_NO                                                           AS IOU_NO,
       H.PRDKT_TYP                                                        AS PRDKT_TYP        -- 产品类型
   FROM DWS_CUST_ASSE_LIAB_CUMU_HIS H
   WHERE H.DATA_DATE >= V_YAR_BEGIN
@@ -318,7 +366,7 @@ BEGIN
 
   --***************************************
   -- 2.14 生成历史累计余额临时表
-  -- 作用：直接取上一数据日期的月累计、季累计、年累计余额基数，月初/季初/年初分别重置为0。
+  -- 作用：按完整明细维度直接取上一数据日期的月累计、季累计、年累计余额基数，月初/季初/年初分别重置为0。
   --***************************************
   V_NO_ID := '14';
   V_BGN_DATE := SYSDATE;
@@ -330,6 +378,9 @@ BEGIN
       ACCT_ID,
       PRDKT_ID,
       PRDKT_CATE_BIG,
+      CHNL_NO,
+      ISSU_DATE,
+      IOU_NO,
       PRDKT_TYP,
       HIS_MTH_BAL,
       HIS_QRT_BAL,
@@ -342,6 +393,9 @@ BEGIN
       H.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       H.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       H.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG, -- 产品大类
+      H.CHNL_NO                                                          AS CHNL_NO,
+      H.ISSU_DATE                                                        AS ISSU_DATE,
+      H.IOU_NO                                                           AS IOU_NO,
       H.PRDKT_TYP                                                        AS PRDKT_TYP,       -- 产品类型
       CASE WHEN V_DATA_DATE = V_MTH_BEGIN THEN 0 ELSE NVL(H.MTH_BAL, 0) END AS HIS_MTH_BAL, -- 上日月累计余额
       CASE WHEN V_DATA_DATE = V_QRT_BEGIN THEN 0 ELSE NVL(H.QRT_BAL, 0) END AS HIS_QRT_BAL, -- 上日季累计余额
@@ -361,7 +415,7 @@ BEGIN
 
   --***************************************
   -- 2.15 生成客户资产负债基数当前表
-  -- 作用：将当日余额与上一日累计余额合并，生成月/季/年累计余额基数。
+  -- 作用：按完整明细维度将当日余额与上一日累计余额合并，生成月/季/年累计余额基数。
   --***************************************
   V_NO_ID := '15';
   V_BGN_DATE := SYSDATE;
@@ -374,6 +428,9 @@ BEGIN
       ACCT_ID,
       PRDKT_ID,
       PRDKT_CATE_BIG,
+      CHNL_NO,
+      ISSU_DATE,
+      IOU_NO,
       PRDKT_TYP,
       BAL,
       MTH_BAL,
@@ -391,6 +448,9 @@ BEGIN
       K.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       K.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       K.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG, -- 产品大类
+      K.CHNL_NO                                                          AS CHNL_NO,
+      K.ISSU_DATE                                                        AS ISSU_DATE,
+      K.IOU_NO                                                           AS IOU_NO,
       K.PRDKT_TYP                                                        AS PRDKT_TYP,       -- 产品类型
       NVL(A.BAL, 0)                                                     AS BAL,            -- 当日余额
       NVL(H.HIS_MTH_BAL, 0) + NVL(A.BAL, 0)                             AS MTH_BAL,        -- 月累计余额
@@ -407,6 +467,9 @@ BEGIN
    AND K.ACCT_ID = A.ACCT_ID
    AND K.PRDKT_ID = A.PRDKT_ID
    AND K.PRDKT_CATE_BIG = A.PRDKT_CATE_BIG
+   AND ((K.CHNL_NO = A.CHNL_NO) OR (K.CHNL_NO IS NULL AND A.CHNL_NO IS NULL))
+   AND ((K.ISSU_DATE = A.ISSU_DATE) OR (K.ISSU_DATE IS NULL AND A.ISSU_DATE IS NULL))
+   AND ((K.IOU_NO = A.IOU_NO) OR (K.IOU_NO IS NULL AND A.IOU_NO IS NULL))
    AND K.PRDKT_TYP = A.PRDKT_TYP
   LEFT JOIN TMP_DWS_CUST_ASSE_LIAB_HIS_AGG H
     ON K.PERSN_LEGAL_BK_CODE = H.PERSN_LEGAL_BK_CODE
@@ -415,6 +478,9 @@ BEGIN
    AND K.ACCT_ID = H.ACCT_ID
    AND K.PRDKT_ID = H.PRDKT_ID
    AND K.PRDKT_CATE_BIG = H.PRDKT_CATE_BIG
+   AND ((K.CHNL_NO = H.CHNL_NO) OR (K.CHNL_NO IS NULL AND H.CHNL_NO IS NULL))
+   AND ((K.ISSU_DATE = H.ISSU_DATE) OR (K.ISSU_DATE IS NULL AND H.ISSU_DATE IS NULL))
+   AND ((K.IOU_NO = H.IOU_NO) OR (K.IOU_NO IS NULL AND H.IOU_NO IS NULL))
    AND K.PRDKT_TYP = H.PRDKT_TYP;
 
   COMMIT;
@@ -442,6 +508,9 @@ BEGIN
       ACCT_ID,
       PRDKT_ID,
       PRDKT_CATE_BIG,
+      CHNL_NO,
+      ISSU_DATE,
+      IOU_NO,
       PRDKT_TYP,
       BAL,
       MTH_BAL,
@@ -459,6 +528,9 @@ BEGIN
       C.ACCT_ID                                                         AS ACCT_ID,        -- 账号
       C.PRDKT_ID                                                        AS PRDKT_ID,       -- 产品编号
       C.PRDKT_CATE_BIG                                                  AS PRDKT_CATE_BIG, -- 产品大类
+      C.CHNL_NO                                                         AS CHNL_NO,        -- 办理渠道
+      C.ISSU_DATE                                                       AS ISSU_DATE,      -- 办理日期
+      C.IOU_NO                                                          AS IOU_NO,         -- 投保单号或者借据号
       C.PRDKT_TYP                                                        AS PRDKT_TYP,       -- 产品类型      
       C.BAL                                                             AS BAL,            -- 当日余额
       C.MTH_BAL                                                         AS MTH_BAL,        -- 月累计余额

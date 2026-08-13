@@ -1,0 +1,9 @@
+evidence_id: ev-ws-001
+task_id: workspace-sync-20260814
+phase: workspace_check
+kind: check
+purpose: workspace_status
+result: passed
+details: git status确认工作区全量变更129个文件已暂存; ABCD/参考目录已gitignore; 全量校验7项通过(Git一致性/YAML/JSON/SQL/日期参数/跨层/文档)
+repository_revision: 2fbdd6b54cf5c23f9eb6156709d2c99a1b523a04
+created_at: '2026-08-13T17:42:33+00:00'

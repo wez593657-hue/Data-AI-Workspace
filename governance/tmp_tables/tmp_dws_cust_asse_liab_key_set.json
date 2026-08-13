@@ -1,0 +1,22 @@
+{
+  "table_name": "TMP_DWS_CUST_ASSE_LIAB_KEY_SET",
+  "procedure": "PRC_DWS_CUST_ASSE_LIAB_CUMU.sql",
+  "purpose": "合并当日明细与年内历史明细的完整维度，保障余额清零产品仍可输出并累计。",
+  "source_tables": ["TMP_DWS_CUST_ASSE_LIAB_TODAY_AGG", "DWS_CUST_ASSE_LIAB_CUMU_HIS"],
+  "columns": [
+    {"name": "PERSN_LEGAL_BK_CODE", "type": "VARCHAR(4)", "nullable": true},
+    {"name": "OPRT_ORG", "type": "VARCHAR(7)", "nullable": true},
+    {"name": "CUST_ID", "type": "VARCHAR(20)", "nullable": true},
+    {"name": "ACCT_ID", "type": "VARCHAR(40)", "nullable": true},
+    {"name": "PRDKT_ID", "type": "VARCHAR(40)", "nullable": true},
+    {"name": "PRDKT_CATE_BIG", "type": "VARCHAR(40)", "nullable": true},
+    {"name": "CHNL_NO", "type": "VARCHAR(10)", "nullable": true},
+    {"name": "ISSU_DATE", "type": "VARCHAR(10)", "nullable": true},
+    {"name": "IOU_NO", "type": "VARCHAR(100)", "nullable": true},
+    {"name": "PRDKT_TYP", "type": "VARCHAR(1)", "nullable": true}
+  ],
+  "indexes": ["CUST_ID, ACCT_ID, PRDKT_ID, CHNL_NO, ISSU_DATE, IOU_NO, PRDKT_TYP"],
+  "lifecycle": {"cleanup": "过程开始时清空，步骤2.13完成后仅在本次批处理中保留。", "concurrency": "共享临时表，过程按批次串行执行，禁止同一过程并发运行。"},
+  "approval_status": "approved",
+  "approved_by": "Codex"
+}
