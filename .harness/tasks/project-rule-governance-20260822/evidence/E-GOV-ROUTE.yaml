@@ -1,0 +1,9 @@
+evidence_id: E-GOV-ROUTE
+task_id: project-rule-governance-20260822
+phase: ROUTE
+kind: routing
+purpose: workflow_routing
+result: passed
+details: 规则治理单一请求路由为 governance；规则治理与 Mapping/需求混合请求失败关闭。
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T15:12:56+00:00'

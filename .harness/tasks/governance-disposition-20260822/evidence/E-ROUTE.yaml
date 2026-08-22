@@ -1,0 +1,9 @@
+evidence_id: E-ROUTE
+task_id: governance-disposition-20260822
+phase: CREATED
+kind: governance
+purpose: workflow_routing
+result: passed
+details: 用户明确要求后续治理任务按顺序全部执行，路由为governance。
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T16:21:30+00:00'

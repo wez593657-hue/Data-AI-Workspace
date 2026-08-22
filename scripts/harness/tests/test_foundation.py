@@ -35,6 +35,27 @@ class StateMachineTests(unittest.TestCase):
         with self.assertRaises(StateTransitionError):
             validate_transition("CREATED", "DDL_READY")
 
+    def test_governance_workflow_requires_scope_and_review(self):
+        from scripts.harness.state_machine import GOVERNANCE_STATES
+
+        self.assertEqual(GOVERNANCE_STATES[0], "CREATED")
+        self.assertEqual(
+            validate_transition("CREATED", "SCOPE_CONFIRMED", "governance").target,
+            "SCOPE_CONFIRMED",
+        )
+        self.assertEqual(
+            validate_transition("SCOPE_CONFIRMED", "GOVERNANCE_IMPLEMENTED", "governance").target,
+            "GOVERNANCE_IMPLEMENTED",
+        )
+        self.assertEqual(
+            validate_transition("GOVERNANCE_IMPLEMENTED", "REVIEW_PASSED", "governance").target,
+            "REVIEW_PASSED",
+        )
+        with self.assertRaises(StateTransitionError):
+            validate_transition("CREATED", "GOVERNANCE_IMPLEMENTED", "governance")
+        with self.assertRaises(StateTransitionError):
+            validate_transition("REVIEW_PASSED", "USER_APPROVED", "governance")
+
     def test_harness_workflow_has_independent_transitions(self):
         self.assertEqual(
             validate_transition("CREATED", "WORKSPACE_CHECKED", "harness").target,
@@ -65,6 +86,15 @@ class StateMachineTests(unittest.TestCase):
         self.assertEqual(harness["COMMIT_ALLOWED"]["required_evidence"], ["commit_authorization"])
         self.assertNotIn("RELEASE_APPROVED", harness)
         self.assertNotIn("NEXT_PHASE_ALLOWED", harness)
+
+    def test_governance_policy_matches_state_machine(self):
+        root = Path(__file__).resolve().parents[3]
+        policy = yaml.safe_load((root / ".harness/policies/phase_gates.yaml").read_text(encoding="utf-8"))
+        governance = policy["workflows"]["governance"]
+        self.assertEqual(governance["CREATED"]["next"], "SCOPE_CONFIRMED")
+        self.assertEqual(governance["SCOPE_CONFIRMED"]["next"], "GOVERNANCE_IMPLEMENTED")
+        self.assertEqual(governance["REVIEW_PASSED"]["next"], "FULL_VALIDATION_PASSED")
+        self.assertEqual(governance["USER_APPROVED"]["next"], "COMMIT_ALLOWED")
 
     def test_gate_uses_latest_evidence_for_required_purpose(self):
         old = (Path("old.yaml"), {"purpose": "user_approval", "created_at": "2026-07-23T00:00:00+00:00"})

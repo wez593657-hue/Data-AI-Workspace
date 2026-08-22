@@ -1,0 +1,37 @@
+schema_version: '0.1'
+task_id: project-rule-governance-20260822
+purpose: 落实项目规则治理闭环：治理文档、Change ID、受控流程和Harness路由状态机
+workflow_profile: governance
+state: BLOCKED
+branch: master
+created_at: '2026-08-22T15:06:02+00:00'
+updated_at: '2026-08-22T15:13:51+00:00'
+evidence_ids:
+- E-GOV-ROUTE
+- E-GOV-SCOPE
+- E-GOV-IMPL
+- E-GOV-REVIEW
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-08-22T15:06:02+00:00'
+- from: CREATED
+  to: SCOPE_CONFIRMED
+  reason: 已完成方案、范围、风险说明并获得用户明确确认
+  at: '2026-08-22T15:13:31+00:00'
+- from: SCOPE_CONFIRMED
+  to: GOVERNANCE_IMPLEMENTED
+  reason: 治理文档、模板、路由、状态机、门禁、上下文和测试已按白名单实施
+  at: '2026-08-22T15:13:50+00:00'
+- from: GOVERNANCE_IMPLEMENTED
+  to: REVIEW_PASSED
+  reason: 治理控制面评审通过；定向测试36/36通过，混合请求失败关闭
+  at: '2026-08-22T15:13:50+00:00'
+- from: REVIEW_PASSED
+  to: BLOCKED
+  reason: 标准风险门禁及完整任务校验未通过，失败来自本次范围外既有睡眠户测试
+  at: '2026-08-22T15:13:51+00:00'
+state_seal: 27c4889cbe7cecb4b6c1367e9939f29a5cd58c1afb9fa8f08be9626dab984cb6
+blocked_from: REVIEW_PASSED

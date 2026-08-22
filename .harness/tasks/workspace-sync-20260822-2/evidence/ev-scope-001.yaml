@@ -1,0 +1,9 @@
+evidence_id: ev-scope-001
+task_id: workspace-sync-20260822-2
+phase: implementation_ready
+kind: check
+purpose: implementation_scope
+result: passed
+details: 用户确认提交并推送工作区最新变更；manifest覆盖.harness/.mnemon/docs/scripts/templates/validation及项目规则治理.txt
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T16:38:13+00:00'

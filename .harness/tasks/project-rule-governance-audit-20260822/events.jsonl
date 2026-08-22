@@ -1,0 +1,5 @@
+{"created_at": "2026-08-22T16:02:54+00:00", "event": "task_created", "task_id": "project-rule-governance-audit-20260822"}
+{"created_at": "2026-08-22T16:05:46+00:00", "event": "evidence_recorded", "evidence_id": "E-AUDIT-FACTS"}
+{"created_at": "2026-08-22T16:05:59+00:00", "event": "evidence_recorded", "evidence_id": "E-AUDIT-WS"}
+{"created_at": "2026-08-22T16:06:00+00:00", "event": "state_transition", "from": "CREATED", "to": "WORKSPACE_CHECKED"}
+{"category": "permission", "created_at": "2026-08-22T16:06:36+00:00", "event": "task_blocked", "from": "WORKSPACE_CHECKED"}

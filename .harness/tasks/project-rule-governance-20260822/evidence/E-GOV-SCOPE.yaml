@@ -1,0 +1,9 @@
+evidence_id: E-GOV-SCOPE
+task_id: project-rule-governance-20260822
+phase: SCOPE_CONFIRM
+kind: scope
+purpose: scope_confirmation
+result: passed
+details: CHG-20260822-001；范围为治理文档、模板、Harness控制面和测试；requirements/data_assets/.github/hooks/.git/secrets/.env禁止修改；用户已明确确认。
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T15:12:57+00:00'

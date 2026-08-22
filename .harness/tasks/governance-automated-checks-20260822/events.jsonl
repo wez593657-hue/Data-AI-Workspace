@@ -1,0 +1,11 @@
+{"created_at": "2026-08-22T16:10:32+00:00", "event": "task_created", "task_id": "governance-automated-checks-20260822"}
+{"created_at": "2026-08-22T16:21:27+00:00", "event": "evidence_recorded", "evidence_id": "E-ROUTE"}
+{"created_at": "2026-08-22T16:21:27+00:00", "event": "state_transition", "from": "CREATED", "to": "SCOPE_CONFIRMED"}
+{"created_at": "2026-08-22T16:21:27+00:00", "event": "evidence_recorded", "evidence_id": "E-SCOPE"}
+{"created_at": "2026-08-22T16:21:28+00:00", "event": "state_transition", "from": "SCOPE_CONFIRMED", "to": "GOVERNANCE_IMPLEMENTED"}
+{"created_at": "2026-08-22T16:21:28+00:00", "event": "evidence_recorded", "evidence_id": "E-IMPL"}
+{"created_at": "2026-08-22T16:21:28+00:00", "event": "state_transition", "from": "GOVERNANCE_IMPLEMENTED", "to": "REVIEW_PASSED"}
+{"created_at": "2026-08-22T16:21:28+00:00", "event": "evidence_recorded", "evidence_id": "E-REVIEW"}
+{"created_at": "2026-08-22T16:21:29+00:00", "event": "state_transition", "from": "REVIEW_PASSED", "to": "FULL_VALIDATION_PASSED"}
+{"created_at": "2026-08-22T16:21:29+00:00", "event": "evidence_recorded", "evidence_id": "E-VALIDATION"}
+{"created_at": "2026-08-22T16:21:29+00:00", "event": "state_transition", "from": "FULL_VALIDATION_PASSED", "to": "USER_APPROVED"}

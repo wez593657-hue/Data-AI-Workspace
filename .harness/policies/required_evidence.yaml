@@ -23,3 +23,8 @@ evidence:
   push_authorization: [explicit_push_command]
   pr_approval: [code_owner_approval, required_checks]
   release_record: [release_evidence]
+  workflow_routing: [routing_result, change_type]
+  scope_confirmation: [change_id, in_scope, out_of_scope, user_confirmation]
+  governance_implementation: [changed_files, control_surface]
+  governance_review: [review_findings, review_decision]
+  governance_check: [check_report, read_only_confirmation]

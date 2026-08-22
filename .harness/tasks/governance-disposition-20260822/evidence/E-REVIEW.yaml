@@ -1,0 +1,16 @@
+evidence_id: E-REVIEW
+task_id: governance-disposition-20260822
+phase: REVIEW_PASSED
+kind: review
+purpose: governance_review
+result: passed
+details: 已复核删除目标不存在、正式来源存在；其余3组候选重复保持unresolved且未处置。
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T16:21:31+00:00'
+review_type: governance
+return_to: GOVERNANCE_IMPLEMENTED
+checked_files:
+- docs/governance/source_of_truth.md
+rules_checked:
+- governance-rules
+issues: []

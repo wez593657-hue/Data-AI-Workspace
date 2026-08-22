@@ -1,0 +1,21 @@
+evidence_id: E-GOV-REVIEW
+task_id: project-rule-governance-20260822
+phase: REVIEW
+kind: review
+purpose: governance_review
+result: passed
+details: 治理控制面一致；混合治理与业务资产请求失败关闭；定向测试36/36通过。
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T15:13:17+00:00'
+review_type: control_surface
+return_to: ''
+checked_files:
+- docs/core/governance.md
+- docs/core/routing.md
+- scripts/harness/workflow_router.py
+- scripts/harness/state_machine.py
+rules_checked:
+- route_separation
+- scope_confirmation
+- state_transition
+issues: []

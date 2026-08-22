@@ -37,6 +37,7 @@ from .change_guard import ChangeGuardError, validate_manifest_changes
 from .evidence_store import git_revision, read_yaml
 from .state_machine import BLOCKED
 from .process_compliance import compliance_report, format_report
+from .governance_check import run_governance_check, write_report
 
 
 def authorize_sync(root, task_id: str, required_paths: list[str]) -> tuple[dict, dict]:
@@ -68,7 +69,7 @@ def parser() -> argparse.ArgumentParser:
         "--workflow-profile",
         choices=[
             "lightweight", "standard", "strict",
-            "requirement_development", "schema_change", "data_warehouse", "harness",
+            "requirement_development", "schema_change", "data_warehouse", "harness", "governance",
         ],
         default="standard",
     )
@@ -79,7 +80,7 @@ def parser() -> argparse.ArgumentParser:
         "workflow_profile",
         choices=[
             "lightweight", "standard", "strict",
-            "requirement_development", "schema_change", "data_warehouse", "harness",
+            "requirement_development", "schema_change", "data_warehouse", "harness", "governance",
         ],
     )
 
@@ -126,6 +127,10 @@ def parser() -> argparse.ArgumentParser:
     risk.add_argument("profile", choices=["fast", "standard", "strict"])
     risk.add_argument("--config", default="")
     risk.add_argument("--report", default="")
+
+    governance = subparsers.add_parser("governance-check", help="执行只读治理健康检查")
+    governance.add_argument("--policy", default="")
+    governance.add_argument("--report", default="")
 
     requirement = subparsers.add_parser("parse-requirement", help="解析需求版本和业务规则")
     requirement.add_argument("path")
@@ -294,6 +299,13 @@ def main(argv: list[str] | None = None) -> int:
                 )
             if result.get("result") != "passed":
                 raise RiskGateError(json.dumps(result, ensure_ascii=False))
+        elif args.command == "governance-check":
+            policy = root / args.policy if args.policy else None
+            result = run_governance_check(root, policy)
+            if args.report:
+                write_report(result, root / args.report)
+            if result.get("result") != "passed":
+                raise ValueError(json.dumps(result, ensure_ascii=False))
         elif args.command == "parse-requirement":
             result = parse_requirement(root / args.path)
         elif args.command == "check-memory-card":

@@ -1,0 +1,47 @@
+schema_version: '0.1'
+task_id: governance-automated-checks-20260822
+change_id: CHG-20260822-004
+user_confirmation: confirmed
+objective: 实现只读治理自动检查，覆盖文件编码分类、候选重复、仓库内Markdown链接、Source of Truth路径和治理文档生命周期。
+allowed_changes:
+  - path: validation/governance/
+    purpose: 治理检查基线规则和允许编码配置。
+  - path: scripts/harness/governance_check.py
+    purpose: 只读治理检查实现。
+  - path: scripts/harness/cli.py
+    purpose: 暴露 governance-check CLI 子命令。
+  - path: scripts/harness/tests/test_governance_check.py
+    purpose: 治理检查单元测试。
+  - path: docs/offline-validation.md
+    purpose: 记录治理检查的边界和命令。
+  - path: docs/governance/
+    purpose: 将检查规则与Source of Truth规则关联。
+  - path: .harness/policies/
+    purpose: 声明治理检查证据类型。
+  - path: .harness/tasks/governance-automated-checks-20260822/
+    purpose: 本次任务的状态、清单、证据和报告。
+read_only_inputs:
+  - .harness/tasks/project-rule-governance-audit-20260822/reports/governance-facts-audit.md
+  - docs/core/
+  - governance/
+  - requirements/
+  - data_assets/
+  - validation/
+  - .gitignore
+forbidden_changes:
+  - requirements/
+  - data_assets/
+  - governance/
+  - .github/
+  - hooks/
+  - .git/
+  - secrets/
+  - .env
+acceptance_commands:
+  - python -m unittest scripts.harness.tests.test_governance_check scripts.harness.tests.test_workflow_router scripts.harness.tests.test_foundation
+  - python -m scripts.harness governance-check
+  - git diff --check
+phase_rules:
+  - 检查只读，不得自动删除、恢复、移动、重命名、归档或转码。
+  - 候选重复、路径职责或编码分类不明确时输出 warning 或 unresolved，不得自动裁决。
+  - 二进制格式与允许的GBK SQL必须区别于要求UTF-8的治理文本。

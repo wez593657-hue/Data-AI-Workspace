@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1",
+  "result": "failed",
+  "profile": "standard",
+  "command_count": 6,
+  "completed_count": 1,
+  "checks": [
+    {
+      "command": "python -m unittest discover -s scripts/harness/tests -p 'test_*.py'",
+      "passed": false,
+      "returncode": 1,
+      "output": "                          -- 理财管户经理\\n         w.ORG_ID,                                                     -- 归属机构（资产快照，可为空）\\n         'M'                                                           -- 统计周期(M=月度)\\n    FROM TMP_ADS_SLEEP_WAKE_BASE b                                    -- 身份清单（仅客户号+法人行）\\n    LEFT JOIN DWD_CUST_INDV_INFO c\\n      ON c.CUST_ID = b.CUST_ID\\n     AND c.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE\\n    LEFT JOIN DWS_CUST_LVL_INFO l\\n      ON l.CUST_ID = b.CUST_ID\\n     AND l.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE\\n     AND l.DATA_DATE = V_DATA_DATE\\n    LEFT JOIN DWS_CUST_ASSE_LIAB w\\n      ON w.CUST_ID = b.CUST_ID\\n     AND w.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE\\n     AND w.DATA_DATE = V_DATA_DATE\\n     AND w.BAL_TYPE = '1'\\n    LEFT JOIN DWD_CUST_MAN m\\n      ON m.CUST_ID = b.CUST_ID\\n     AND m.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE\\n     AND m.MNG_TYP = '1'                                              -- 仅理财管户\\n     AND (m.ORG_ID = w.ORG_ID OR (m.ORG_ID IS NULL AND w.ORG_ID IS NULL));\\n  COMMIT;\\n\\n  V_END_DATE := SYSDATE;\\n  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);\\n  OUTCDE := 0;\\n  V_LOG_MSG := '第6段完成: 写入睡眠户唤醒明细(v2.16.2 属性计算式)';\\n  V_LOG_FLG := OUTCDE;\\n  SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,\\n      V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);\\n\\nEXCEPTION\\n  WHEN OTHERS THEN\\n    OUTCDE := -1;\\n    ROLLBACK;\\n    V_END_DATE := SYSDATE;\\n    V_DURA_DATE := CASE WHEN V_BGN_DATE IS NOT NULL AND V_END_DATE IS NOT NULL\\n                        THEN TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60) END;\\n    V_LOG_MSG := SUBSTR(SQLERRM, 1, 1000);\\n    V_LOG_FLG := OUTCDE;\\n    SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,\\n        V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);\\n    RAISE;\\nEND;\\n/\\n\"\n\n----------------------------------------------------------------------\nRan 107 tests in 0.264s\n\nFAILED (failures=7, errors=35)\n"
+    }
+  ]
+}

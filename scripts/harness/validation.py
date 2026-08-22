@@ -94,7 +94,7 @@ def _check_whitespace(root: Path) -> dict[str, Any]:
 def validate_task(root: Path, task_id: str) -> dict[str, Any]:
     _, task = load_task(root, task_id)
     profile = task.get("workflow_profile")
-    if profile not in {"harness", "requirement_development", "schema_change"}:
+    if profile not in {"harness", "requirement_development", "schema_change", "governance"}:
         raise ValidationError(f"当前 workflow_profile 不支持 Harness 完整校验: {profile}")
     checks = [
         _check_python_compile(root),

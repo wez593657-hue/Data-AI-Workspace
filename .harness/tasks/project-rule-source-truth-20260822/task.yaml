@@ -1,0 +1,42 @@
+schema_version: '0.1'
+task_id: project-rule-source-truth-20260822
+purpose: CHG-20260822-003 固化Source of Truth与目录职责规则，不迁移或删除资产
+workflow_profile: governance
+state: USER_APPROVED
+branch: master
+created_at: '2026-08-22T16:09:20+00:00'
+updated_at: '2026-08-22T16:21:26+00:00'
+evidence_ids:
+- E-ROUTE
+- E-SCOPE
+- E-IMPL
+- E-REVIEW
+- E-VALIDATION
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-08-22T16:09:20+00:00'
+- from: CREATED
+  to: SCOPE_CONFIRMED
+  reason: CHG-20260822-003：用户授权按顺序实施全部后续治理任务；Manifest白名单限定为治理规则和模板，不处理业务资产。
+  at: '2026-08-22T16:21:24+00:00'
+- from: SCOPE_CONFIRMED
+  to: GOVERNANCE_IMPLEMENTED
+  reason: 已更新Source of Truth矩阵、目录职责、L0总览、变更处置规则与Change Register模板。
+  at: '2026-08-22T16:21:25+00:00'
+- from: GOVERNANCE_IMPLEMENTED
+  to: REVIEW_PASSED
+  reason: 已审查Source of Truth、目录职责和现有路由；定向36项回归测试通过，git diff --check通过。
+  at: '2026-08-22T16:21:25+00:00'
+- from: REVIEW_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: python -m unittest scripts.harness.tests.test_workflow_router scripts.harness.tests.test_foundation
+    通过；git diff --check通过。
+  at: '2026-08-22T16:21:26+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户明确授权按顺序执行全部后续治理任务；不包含commit或push授权。
+  at: '2026-08-22T16:21:26+00:00'
+state_seal: dc9a0c6484b9af582f9a53b8548707575ea73385c276d894fd0539a9b3751a47

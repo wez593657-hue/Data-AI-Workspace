@@ -1,0 +1,47 @@
+schema_version: '0.1'
+task_id: governance-disposition-20260822
+purpose: CHG-20260822-005 按已确认逐文件清单删除未跟踪的Mapping重复副本和本地备份
+workflow_profile: governance
+state: BLOCKED
+branch: master
+created_at: '2026-08-22T16:16:55+00:00'
+updated_at: '2026-08-22T16:23:20+00:00'
+evidence_ids:
+- E-ROUTE
+- E-SCOPE
+- E-IMPL
+- E-REVIEW
+- E-VALIDATION
+- E-CORRECTION
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-08-22T16:16:55+00:00'
+- from: CREATED
+  to: SCOPE_CONFIRMED
+  reason: CHG-20260822-005：用户授权按顺序实施全部后续治理任务；Manifest逐项授权5个未跟踪副本/备份的删除。
+  at: '2026-08-22T16:21:30+00:00'
+- from: SCOPE_CONFIRMED
+  to: GOVERNANCE_IMPLEMENTED
+  reason: 已仅删除Manifest列出的5项；正式Mapping、需求主文件、正式工作流和正式SQL均保留。
+  at: '2026-08-22T16:21:31+00:00'
+- from: GOVERNANCE_IMPLEMENTED
+  to: REVIEW_PASSED
+  reason: 已复核删除目标不存在、正式来源存在；其余3组候选重复保持unresolved且未处置。
+  at: '2026-08-22T16:21:31+00:00'
+- from: REVIEW_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: python -m scripts.harness governance-check result=passed；git diff --check通过；无commit或push。
+  at: '2026-08-22T16:21:32+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户明确授权按顺序执行全部后续治理任务；不包含commit或push授权。
+  at: '2026-08-22T16:21:32+00:00'
+- from: USER_APPROVED
+  to: BLOCKED
+  reason: E-IMPL首次错误记录为删除5项；实际仅删除3项，两个Git已跟踪需求备份已恢复且必须通过独立Change处置。
+  at: '2026-08-22T16:23:20+00:00'
+state_seal: a5a9573119d093419aefdb35178b35fc6604eba87431f52838d6f54b978cda6e
+blocked_from: USER_APPROVED

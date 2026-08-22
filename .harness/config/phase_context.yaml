@@ -53,6 +53,29 @@ profiles:
           - python -m scripts.harness risk-check strict
         allow_write: false
 
+  governance:
+    phases:
+      ROUTE:
+        load: [docs/core/routing.md, docs/core/governance.md]
+        allow_write: false
+      SCOPE_CONFIRM:
+        load: [docs/core/governance.md, docs/governance/change_management.md]
+        require_user_confirm: true
+        allow_write: false
+      IMPLEMENT:
+        load: [docs/core/governance.md, docs/governance/approval.md, templates/change_register_template.yaml]
+        require_manifest: true
+        allow_write: true
+      REVIEW:
+        load: [docs/quality_rules.md, docs/core/governance.md]
+        allow_write: false
+      VALIDATE:
+        commands: [python -m scripts.harness risk-check standard]
+        allow_write: false
+      COMMIT:
+        require_user_confirm: true
+        commands: [python -m scripts.harness risk-check strict]
+        allow_write: false
   schema_change:
     skill: crm-schema-change
     phases:

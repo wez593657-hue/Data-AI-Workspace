@@ -1,0 +1,11 @@
+status: BLOCKED
+blocked_from: USER_APPROVED
+reason: E-IMPL首次错误记录为删除5项；实际仅删除3项，两个Git已跟踪需求备份已恢复且必须通过独立Change处置。
+category: evidence_correction
+evidence: E-CORRECTION；reports/disposition-report.md；git ls-files --stage
+impact: 该任务不得作为两份需求备份已删除的处置证据；3个实际删除对象和治理检查结果仍有效。
+recommendation: 后续如需删除两份已跟踪需求备份，创建独立Change并完成逐文件引用影响分析和明确授权。
+alternatives: 保留错误完成记录；将导致治理证据与Git实际状态不一致。
+user_decision: 本轮用户授权不覆盖已跟踪需求历史备份的删除，保留为unresolved。
+recovery_condition: 独立任务完成对两份已跟踪需求备份的范围、引用影响和处置授权。
+created_at: '2026-08-22T16:23:20+00:00'

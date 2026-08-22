@@ -196,6 +196,31 @@ workflows:
     PUSH_ALLOWED:
       next: COMPLETED
       required_evidence: [completion_record]
+  governance:
+    CREATED:
+      next: SCOPE_CONFIRMED
+      required_evidence: [workflow_routing]
+    SCOPE_CONFIRMED:
+      next: GOVERNANCE_IMPLEMENTED
+      required_evidence: [scope_confirmation]
+    GOVERNANCE_IMPLEMENTED:
+      next: REVIEW_PASSED
+      required_evidence: [governance_implementation]
+    REVIEW_PASSED:
+      next: FULL_VALIDATION_PASSED
+      required_evidence: [governance_review]
+    FULL_VALIDATION_PASSED:
+      next: USER_APPROVED
+      required_evidence: [full_validation]
+    USER_APPROVED:
+      next: COMMIT_ALLOWED
+      required_evidence: [user_approval]
+    COMMIT_ALLOWED:
+      next: PUSH_ALLOWED
+      required_evidence: [commit_authorization]
+    PUSH_ALLOWED:
+      next: COMPLETED
+      required_evidence: [push_authorization]
   schema_change:
     CREATED:
       next: MAPPING_EXCEL_ANALYZED

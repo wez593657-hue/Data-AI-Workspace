@@ -1,0 +1,12 @@
+status: BLOCKED
+blocked_from: REVIEW_PASSED
+reason: 标准风险门禁及完整任务校验未通过，失败来自本次范围外既有睡眠户测试
+category: validation_failed
+evidence: python -m scripts.harness risk-check standard：既有睡眠户测试7 failures/35 errors；宽权限重跑后为7
+  failures
+impact: 无法进入FULL_VALIDATION_PASSED、USER_APPROVED、COMMIT_ALLOWED或PUSH_ALLOWED；本次治理改动不受业务测试失败直接影响但不能宣称全量门禁通过
+recommendation: 由独立睡眠户任务修复或更新其既有测试契约后，重新执行标准门禁和本治理任务完整校验
+alternatives: 仅执行治理定向门禁并人工验收，但不能替代标准全量门禁，风险是仓库整体质量状态仍未闭合
+user_decision: 等待用户决定是否先处理既有睡眠户测试失败
+recovery_condition: 标准风险门禁和治理任务完整校验全部通过，且重新记录当前仓库 revision 的验证证据
+created_at: '2026-08-22T15:13:51+00:00'

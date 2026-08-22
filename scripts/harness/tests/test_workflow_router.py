@@ -4,6 +4,20 @@ from scripts.harness.workflow_router import WorkflowRoutingError, route_command
 
 
 class WorkflowRouterTests(unittest.TestCase):
+    def test_rule_governance_routes_to_governance_profile(self):
+        result = route_command("根据项目规则治理方案更新 Change ID、审批和发布治理")
+        self.assertEqual(result["profile"], "governance")
+        self.assertIsNone(result["skill"])
+        self.assertFalse(result["read_only"])
+
+    def test_governance_takes_priority_over_read_only_wording(self):
+        result = route_command("分析并执行规则治理流程")
+        self.assertEqual(result["profile"], "governance")
+
+    def test_mixed_governance_and_business_asset_change_blocks_routing(self):
+        with self.assertRaises(WorkflowRoutingError):
+            route_command("规则治理并修改 Mapping Excel")
+
     def test_requirement_command_routes_to_standard_profile(self):
         """Generic requirement commands default to standard (L2) tier."""
         result = route_command("根据需求文档开发目标表存储过程")

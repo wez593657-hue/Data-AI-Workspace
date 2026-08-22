@@ -1,0 +1,9 @@
+evidence_id: ev-ca-001
+task_id: workspace-sync-20260822-2
+phase: commit_allowed
+kind: approval
+purpose: commit_authorization
+result: passed
+details: 用户授权提交当前工作区全部最新变更
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T16:38:31+00:00'

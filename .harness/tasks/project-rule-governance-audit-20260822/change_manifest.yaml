@@ -1,0 +1,45 @@
+schema_version: '0.1'
+task_id: project-rule-governance-audit-20260822
+change_id: CHG-20260822-002
+user_confirmation: confirmed
+objective: 只读审计 Git 基线、文件路径和编码、重复资产、目录职责及 Source of Truth，为后续治理任务提供可复核证据。
+allowed_changes:
+  - path: .harness/tasks/project-rule-governance-audit-20260822/
+    purpose: 本次审计的 Manifest、执行清单、证据和报告。
+read_only_inputs:
+  - 项目规则治理.txt
+  - AGENTS.md
+  - CONTRIBUTING.md
+  - .gitignore
+  - .git/
+  - docs/core/
+  - docs/governance/
+  - governance/
+  - requirements/
+  - data_assets/mapping/
+  - data_assets/ddl/
+  - data_assets/stored_procedure/
+  - validation/
+  - scripts/harness/
+  - .harness/
+forbidden_changes:
+  - docs/
+  - governance/
+  - requirements/
+  - data_assets/
+  - validation/
+  - scripts/
+  - templates/
+  - .github/
+  - hooks/
+  - .git/
+  - secrets/
+  - .env
+acceptance_commands:
+  - git status --short
+  - git diff --name-status
+  - Git/路径/哈希/编码只读审计命令
+phase_rules:
+  - 仅允许写入本任务目录，不得修改现有治理规则、业务资产、测试或 Git 元数据。
+  - 不执行 git restore、git reset、git checkout、删除、迁移、重命名、归档或编码转换。
+  - 审计发现必须提供路径、哈希、引用或命令证据；无法确认的结论标记 unresolved。

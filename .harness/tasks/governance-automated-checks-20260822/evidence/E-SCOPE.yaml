@@ -1,0 +1,9 @@
+evidence_id: E-SCOPE
+task_id: governance-automated-checks-20260822
+phase: SCOPE_CONFIRMED
+kind: governance
+purpose: scope_confirmation
+result: passed
+details: CHG-20260822-004：用户授权按顺序实施全部后续治理任务；Manifest仅允许新增只读治理检查控制面。
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T16:21:27+00:00'

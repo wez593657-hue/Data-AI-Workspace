@@ -1,0 +1,11 @@
+status: BLOCKED
+blocked_from: WORKSPACE_CHECKED
+reason: 只读事实审计已完成；后续Source of Truth规则、自动检查、文件清理/恢复/迁移属于新的写任务，等待用户确认独立Change ID与白名单
+category: permission
+evidence: reports/governance-facts-audit.md；E-AUDIT-FACTS；E-AUDIT-WS
+impact: 不得继续修改治理规则、自动检查或任何业务/工作区资产
+recommendation: 先按报告创建CHG-20260822-003，仅更新Source of Truth与目录规则；之后再创建CHG-20260822-004实现自动治理检查
+alternatives: 直接执行文件恢复、删除、迁移或编码转换；风险是覆盖用户变更、破坏引用和违反逐项授权
+user_decision: 等待用户确认CHG-20260822-003的具体白名单
+recovery_condition: 用户确认下一独立Change ID及其change_manifest，且不扩大本只读审计任务范围
+created_at: '2026-08-22T16:06:36+00:00'

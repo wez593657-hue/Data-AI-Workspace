@@ -1,0 +1,72 @@
+# Change Register Template
+# Change ID 的业务状态只记录治理过程，不替代 Harness task.yaml 的技术状态。
+change_id: CHG-YYYYMMDD-XXX
+change_type: requirement | schema_change | bug_fix | rule_governance | documentation | configuration
+status: DRAFT
+
+title: ''
+requester: ''
+business_owner: ''
+summary: ''
+reason: ''
+
+scope:
+  in_scope: []
+  out_of_scope: []
+  affected_assets: []
+  read_only_inputs: []
+
+source_of_truth:
+  requirements: []
+  rule_cards: []
+  mapping: []
+  ddl: []
+  existing_implementation: []
+  validation: []
+  governance_rules: []
+  unresolved: []
+
+file_disposition:
+  restore_source: []
+  delete_authorization: []
+  archive_targets: []
+  rename_from: []
+  rename_to: []
+  reference_impact: []
+  encoding_classification: []
+
+business_rules:
+  confirmed: []
+  unresolved: []
+
+risk:
+  level: low | medium | high
+  rationale: ''
+  rollback_or_rework: ''
+
+verification:
+  qa: pending
+  qb: pending
+  qc: pending
+  commands: []
+  evidence: []
+
+approval:
+  scope_confirmed_by: ''
+  reviewer: ''
+  user_approval: ''
+  commit_authorization: ''
+  push_authorization: ''
+
+lifecycle:
+  state: DRAFT | APPROVED | ACTIVE | SUPERSEDED | ARCHIVED
+  active: true
+  supersedes: ''
+  superseded_by: ''
+  archive_reason: ''
+  owner: ''
+  review_date: ''
+
+version:
+  created_at: YYYY-MM-DD
+  updated_at: YYYY-MM-DD

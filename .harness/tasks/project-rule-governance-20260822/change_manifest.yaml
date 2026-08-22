@@ -1,0 +1,65 @@
+schema_version: '0.1'
+task_id: project-rule-governance-20260822
+change_id: CHG-20260822-001
+user_confirmation: confirmed
+objective: 落实项目规则治理闭环，建立治理文档、Change ID、受控流程和 Harness 路由状态机支持。
+allowed_changes:
+  - path: docs/core/governance.md
+    purpose: 项目治理总览、层级、状态和闭环定义。
+  - path: docs/governance/
+    purpose: RACI、变更管理、审批、生命周期和发布治理专项规则。
+  - path: docs/11_Project_SOP.md
+    purpose: 将规则治理纳入受控项目流程。
+  - path: docs/core/routing.md
+    purpose: 增加规则治理入口路由。
+  - path: templates/change_register_template.yaml
+    purpose: Change ID 变更登记模板。
+  - path: templates/task_execution_checklist.md
+    purpose: 补充规则治理任务的执行清单字段。
+  - path: scripts/harness/workflow_router.py
+    purpose: 将规则治理请求路由到治理流程。
+  - path: scripts/harness/state_machine.py
+    purpose: 增加治理流程状态机。
+  - path: scripts/harness/cli.py
+    purpose: 允许创建和设置治理流程任务。
+  - path: scripts/harness/tests/test_workflow_router.py
+    purpose: 路由单元测试。
+  - path: scripts/harness/tests/test_foundation.py
+    purpose: 状态机和阶段门禁一致性测试。
+  - path: scripts/harness/validation.py
+    purpose: 允许治理 profile 使用现有 Harness 完整校验。
+  - path: .harness/policies/phase_gates.yaml
+    purpose: 规则治理阶段门禁与证据要求。
+  - path: .harness/config/phase_context.yaml
+    purpose: 规则治理最小上下文定义。
+  - path: .harness/policies/required_evidence.yaml
+    purpose: 规则治理证据类型定义。
+  - path: .harness/tasks/project-rule-governance-20260822/
+    purpose: 本次任务的状态、执行清单、证据和验证报告。
+read_only_inputs:
+  - 项目规则治理.txt
+  - AGENTS.md
+  - CONTRIBUTING.md
+  - docs/core/invariants.md
+  - docs/core/output_contract.md
+  - docs/quality_rules.md
+  - docs/16_Execution_Rules.md
+  - docs/offline-first-development.md
+  - .harness/policies/allowed_paths.yaml
+  - scripts/harness/gate_checker.py
+forbidden_changes:
+  - requirements/
+  - data_assets/
+  - .github/
+  - hooks/
+  - secrets/
+  - .env
+  - .git/
+acceptance_commands:
+  - python -m unittest scripts.harness.tests.test_workflow_router scripts.harness.tests.test_foundation
+  - python -m scripts.harness risk-check standard
+  - python -m scripts.harness validate project-rule-governance-20260822
+phase_rules:
+  - 本次仅治理规则、模板和 Harness 控制面；不得修改业务数据资产。
+  - Change ID 的业务状态仅记录于变更登记，不替代 Harness 任务状态。
+  - 任何业务规则、Mapping、DDL 或正式发布仍由既有 requirement_development 和 schema_change 流程控制。

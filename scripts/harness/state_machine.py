@@ -112,6 +112,16 @@ SCHEMA_CHANGE_STATES = (
     *PUBLISH_STATES,
 )
 
+GOVERNANCE_STATES = (
+    "CREATED",
+    "SCOPE_CONFIRMED",
+    "GOVERNANCE_IMPLEMENTED",
+    "REVIEW_PASSED",
+    "FULL_VALIDATION_PASSED",
+    "USER_APPROVED",
+    *PUBLISH_STATES,
+)
+
 WORKFLOW_STATES = {
     "data_warehouse": DATA_WAREHOUSE_STATES,
     "harness": HARNESS_STATES,
@@ -121,6 +131,7 @@ WORKFLOW_STATES = {
     # Backward-compatible aliases
     "requirement_development": STRICT_STATES,
     "schema_change": SCHEMA_CHANGE_STATES,
+    "governance": GOVERNANCE_STATES,
 }
 STATES = DATA_WAREHOUSE_STATES
 

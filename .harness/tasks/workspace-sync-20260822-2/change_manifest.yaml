@@ -1,0 +1,20 @@
+schema_version: '0.1'
+task_id: workspace-sync-20260822-2
+purpose: harness
+description: 用户确认将当前工作区最新变更（项目规则治理框架+睡眠户唤醒测试契约同步v2.16.2）提交并推送到 origin/master；范围以 git status 实际结果为准
+user_confirmation: confirmed
+allowed_changes:
+  - path: .harness/
+  - path: .mnemon/
+  - path: docs/
+  - path: scripts/
+  - path: templates/
+  - path: validation/
+  - path: 项目规则治理.txt
+read_only_inputs:
+  - path: AGENTS.md
+  - path: CONTRIBUTING.md
+  - path: .github/
+forbidden_changes:
+  - path: secrets/
+  - path: .env

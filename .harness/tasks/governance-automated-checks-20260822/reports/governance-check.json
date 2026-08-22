@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "result": "passed",
+  "failed_checks": [],
+  "checks": {
+    "encoding": {
+      "status": "passed",
+      "failures": [],
+      "warnings": [
+        "项目规则治理.txt",
+        "scripts/_audit_sync.txt",
+        "data_assets/reference_logic/MTS_OBJECT.sql",
+        "data_assets/stored_procedure/ods_to_dwd/PRC_DWD_ACCT_INSUR.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_001.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_002.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_003.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_004.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_005.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_006.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_007.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_007.sql.bak",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_008.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_009.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_010.sql",
+        "data_assets/ddl/dwd/dwd_tmp_stat_indx_loan_base.sql",
+        "data_assets/ddl/ods/ecpp/ecpp_e_txn_sign.sql",
+        "data_assets/ddl/ods/fms/fms_t5_cust_vol_list.sql",
+        "data_assets/ddl/ods/fms/fms_td_cust_vol_detail.sql"
+      ]
+    },
+    "duplicate_assets": {
+      "status": "passed",
+      "warnings": [
+        [
+          ".harness/validation-report-final.txt",
+          ".harness/validation-report-local.txt",
+          ".harness/validation-report-release.txt",
+          ".harness/validation-report-review.txt"
+        ],
+        [
+          "requirements/crmdm表结构.xlsx",
+          "data_assets/mapping/crmdm表结构.xlsx"
+        ],
+        [
+          "scripts/_bak_ads.xlsx",
+          "backup/mapping_20260808/ADS应用层数据模型_CRM_ V1.0.xlsx"
+        ],
+        [
+          "scripts/oracle_validation/acct_insur/sqlnet.ora",
+          "scripts/oracle_validation/acct_insur/sqlnet_password_auth.ora"
+        ]
+      ],
+      "failures": []
+    },
+    "markdown_links": {
+      "status": "passed",
+      "failures": [],
+      "warnings": []
+    },
+    "source_of_truth": {
+      "status": "passed",
+      "failures": [],
+      "warnings": [
+        "mapping_duplicate_candidate:requirements/crmdm表结构.xlsx"
+      ]
+    },
+    "lifecycle": {
+      "status": "passed",
+      "failures": [],
+      "warnings": []
+    }
+  },
+  "read_only": true
+}

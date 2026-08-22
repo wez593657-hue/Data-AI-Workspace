@@ -24,6 +24,10 @@ SCHEMA_TERMS = (
     "表结构变更", "表结构修改", "mapping excel", "mapping", "同步excel", "同步 excel",
     "md/dd", "数据字典", "字段结构", "schema change", "data dictionary",
 )
+GOVERNANCE_TERMS = (
+    "规则治理", "项目治理", "治理流程", "治理规则", "change register", "change id",
+    "变更登记", "审批治理", "发布治理", "归档治理", "rule governance", "governance",
+)
 READ_ONLY_TERMS = ("分析", "扫描", "查看", "校验", "对比", "analyse", "analyze", "scan", "compare")
 WRITE_ACTION_TERMS = ("开发", "生成", "修改", "创建", "更新", "同步", "实现", "develop", "generate", "modify", "create", "update", "sync")
 PROCEDURE_ASSET_TERMS = ("存储过程", "procedure", "prc_")
@@ -74,8 +78,20 @@ def route_command(command: str) -> dict[str, Any]:
         raise WorkflowRoutingError("用户命令为空，无法选择开发流程")
     requirement_matches = _matches(text, REQUIREMENT_TERMS)
     schema_matches = _matches(text, SCHEMA_TERMS)
+    governance_matches = _matches(text, GOVERNANCE_TERMS)
     readonly_matches = _matches(text, READ_ONLY_TERMS)
     write_action = bool(_matches(text, WRITE_ACTION_TERMS))
+    if governance_matches and (requirement_matches or schema_matches):
+        raise WorkflowRoutingError("规则治理与业务资产变更必须拆分为独立受控任务")
+    if governance_matches:
+        return {
+            "profile": "governance",
+            "skill": None,
+            "reason": {"governance": governance_matches},
+            "follow_up": None,
+            "read_only": False,
+            "required_skills": [],
+        }
     if readonly_matches and not write_action:
         return {
             "profile": "read_only",

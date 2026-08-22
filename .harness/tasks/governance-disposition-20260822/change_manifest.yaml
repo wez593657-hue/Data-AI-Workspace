@@ -1,0 +1,76 @@
+schema_version: '0.1'
+task_id: governance-disposition-20260822
+change_id: CHG-20260822-005
+user_confirmation: confirmed
+objective: 删除已确认的未跟踪Mapping重复副本和本地备份；不处理其他候选重复组。
+allowed_changes:
+  - path: requirements/crmdm表结构.xlsx
+    purpose: 与正式 Mapping 文件字节完全相同的未跟踪副本；删除副本，保留正式路径。
+    disposition: delete
+    restore_source: data_assets/mapping/crmdm表结构.xlsx
+    delete_authorization: 用户已授权按顺序执行全部治理任务；该文件为已确认重复副本
+    rename_from: ''
+    rename_to: ''
+    reference_impact: 未发现精确路径引用；正式 Mapping 路径保留
+  # 以下两份需求备份经 Git stage 复核为已跟踪文件，不属于本任务允许删除对象。
+  # 先前误删后已用 git restore 原样恢复；保留以等待独立的用户确认处置任务。
+  - path: requirements/指标业务理解与技术口径.xlsx.bak_20260819_0070_customer
+    purpose: Git已跟踪需求备份，不在本次删除范围内。
+    disposition: retain_unresolved
+    restore_source: Git index blob ade879029cc2b6cb1a4e05be4dc2101964c763dc
+    delete_authorization: ''
+    rename_from: ''
+    rename_to: ''
+    reference_impact: 需求历史备份；必须独立确认后才能删除
+  - path: requirements/指标业务理解与技术口径.xlsx.bak_20260819_pre_recent
+    purpose: Git已跟踪需求备份，不在本次删除范围内。
+    disposition: retain_unresolved
+    restore_source: Git index blob 0e0cde52eb47d56b3de4e633743d300e9751718b
+    delete_authorization: ''
+    rename_from: ''
+    rename_to: ''
+    reference_impact: 需求历史备份；必须独立确认后才能删除
+  - path: .github/workflows/ai-connectivity-check.yml.bak
+    purpose: 未跟踪且已被忽略的工作流本地备份。
+    disposition: delete
+    restore_source: .github/workflows/ai-connectivity-check.yml
+    delete_authorization: 用户已授权按顺序执行全部治理任务；文件为明确.bak备份
+    rename_from: ''
+    rename_to: ''
+    reference_impact: 无仓库引用发现；正式工作流不删除
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_007.sql.bak
+    purpose: 未跟踪且已被忽略的存储过程本地备份。
+    disposition: delete
+    restore_source: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_007.sql
+    delete_authorization: 用户已授权按顺序执行全部治理任务；文件为明确.bak备份
+    rename_from: ''
+    rename_to: ''
+    reference_impact: 无仓库引用发现；正式SQL不删除
+read_only_inputs:
+  - .harness/tasks/governance-automated-checks-20260822/reports/governance-check.json
+  - docs/governance/source_of_truth.md
+  - docs/governance/document_lifecycle.md
+  - requirements/指标业务理解与技术口径.xlsx
+  - data_assets/mapping/crmdm表结构.xlsx
+  - .github/workflows/ai-connectivity-check.yml
+  - data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_007.sql
+forbidden_changes:
+  - backup/
+  - scripts/
+  - data_assets/mapping/
+  - data_assets/stored_procedure/
+  - requirements/指标业务理解与技术口径.xlsx
+  - .github/workflows/ai-connectivity-check.yml
+  - .git/
+acceptance_commands:
+  - Test-Path requirements/crmdm表结构.xlsx
+  - Test-Path requirements/指标业务理解与技术口径.xlsx.bak_20260819_0070_customer
+  - Test-Path requirements/指标业务理解与技术口径.xlsx.bak_20260819_pre_recent
+  - Test-Path .github/workflows/ai-connectivity-check.yml.bak
+  - Test-Path data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_007.sql.bak
+  - python -m scripts.harness governance-check
+  - git diff --check
+phase_rules:
+  - 仅删除本Manifest逐项列出的5个未跟踪文件。
+  - 不删除任何Git已跟踪文件，不处理其他候选重复组，不提交或推送。
+  - 删除后必须确认正式来源仍存在且哈希/引用状态可复核。

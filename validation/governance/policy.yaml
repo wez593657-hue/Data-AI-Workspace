@@ -1,0 +1,43 @@
+version: '1.0'
+text_extensions:
+  - .md
+  - .yaml
+  - .yml
+  - .json
+  - .py
+  - .txt
+  - .sql
+binary_extensions:
+  - .xlsx
+  - .xls
+  - .docx
+  - .doc
+  - .pyc
+  - .png
+  - .jpg
+  - .jpeg
+  - .gif
+  - .zip
+allowed_gbk_paths:
+  - data_assets/ddl/
+  - data_assets/reference_logic/
+  - data_assets/stored_procedure/
+  - 项目规则治理.txt
+  - scripts/_audit_sync.txt
+required_metadata:
+  - docs/core/governance.md
+  - docs/governance/source_of_truth.md
+  - docs/governance/directory_structure.md
+required_metadata_fields:
+  - 层级：
+  - 版本：
+  - 状态：
+source_of_truth_paths:
+  core: docs/core/
+  governance: docs/governance/
+  requirements: requirements/
+  mapping: data_assets/mapping/
+  ddl: data_assets/ddl/
+  stored_procedure: data_assets/stored_procedure/
+  validation: validation/
+  technical_governance: governance/

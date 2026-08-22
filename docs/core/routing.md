@@ -11,9 +11,10 @@
 | 只读分析/问答 | 分析、扫描、查看、校验、对比且未要求修改 | `read_only`，不创建写任务 |
 | 需求开发 | 需求开发、业务需求、需求文档、业务规则、目标表开发、生成/修改存储过程 | `requirement_development` |
 | 表结构变更 | 表结构变更、Mapping Excel 变更、同步 Excel、MD/DD/数据字典对齐、字段结构同步 | `schema_change` |
+| 规则治理 | CORE、流程、门禁、模板、审批、发布或生命周期规则变更 | `governance` |
 | 歧义/无法唯一判断 | 以上信号同时出现或语义不清 | 停止并请求澄清（I-11） |
 
-路由优先级：两流程信号并存 → 先 `requirement_development`，`schema_change` 作为后续任务；单一信号 → 对应流程；仅只读信号 → `read_only`。
+路由优先级：两项业务流程信号并存 → 先 `requirement_development`，`schema_change` 作为后续任务；规则治理与任一业务资产流程信号并存 → 必须拆分为独立任务；单一信号 → 对应流程；仅只读信号 → `read_only`。
 
 ## 2. 流程 profile 与阶段序列
 

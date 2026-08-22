@@ -1,0 +1,10 @@
+evidence_id: E-CORRECTION
+task_id: governance-disposition-20260822
+phase: USER_APPROVED
+kind: audit
+purpose: correction
+result: passed
+details: 更正E-IMPL：仅删除3个未跟踪Manifest对象。两份requirements/*.xlsx.bak_*经git ls-files --stage确认已跟踪，已git
+  restore原样恢复并保留为unresolved；见reports/disposition-report.md。
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T16:23:20+00:00'

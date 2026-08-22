@@ -1,0 +1,48 @@
+schema_version: '0.1'
+task_id: project-rule-source-truth-20260822
+change_id: CHG-20260822-003
+user_confirmation: confirmed
+objective: 固化项目 Source of Truth、目录职责和文件分类规则，不迁移、删除、重命名或归档现有资产。
+allowed_changes:
+  - path: docs/core/governance.md
+    purpose: 将实际权威来源层级和专项规则职责纳入 L0 总览。
+  - path: docs/governance/change_management.md
+    purpose: 定义权威来源冲突和范围扩大处理。
+  - path: docs/governance/source_of_truth.md
+    purpose: 定义各资产的唯一权威位置、冲突处理和未决分类。
+  - path: docs/governance/directory_structure.md
+    purpose: 定义实际目录职责与禁止的自动迁移。
+  - path: templates/change_register_template.yaml
+    purpose: 增加权威来源、文件处置和编码分类登记字段。
+  - path: .harness/tasks/project-rule-source-truth-20260822/
+    purpose: 本次任务的状态、清单、证据和报告。
+read_only_inputs:
+  - .harness/tasks/project-rule-governance-audit-20260822/reports/governance-facts-audit.md
+  - AGENTS.md
+  - docs/08_Mapping.md
+  - docs/07_Data_Dictionary.md
+  - docs/core/invariants.md
+  - docs/core/routing.md
+  - docs/governance/
+  - governance/
+  - requirements/
+  - data_assets/
+  - validation/
+forbidden_changes:
+  - requirements/
+  - data_assets/
+  - governance/
+  - validation/
+  - scripts/
+  - .github/
+  - hooks/
+  - .git/
+  - secrets/
+  - .env
+acceptance_commands:
+  - python -m unittest scripts.harness.tests.test_workflow_router scripts.harness.tests.test_foundation
+  - git diff --check
+phase_rules:
+  - 不移动、删除、重命名、归档或转码任何现有资产。
+  - 不以目录名推断业务事实；未决文件分类必须保留 unresolved。
+  - 根目录 governance/ 为 L3 专项技术规则，不能与 docs/governance/ 自动合并。

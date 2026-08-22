@@ -1,0 +1,9 @@
+evidence_id: E-IMPL
+task_id: governance-automated-checks-20260822
+phase: GOVERNANCE_IMPLEMENTED
+kind: governance
+purpose: governance_implementation
+result: passed
+details: 已新增governance-check CLI、只读检查模块、检查策略、单元测试、离线验证说明和治理证据策略。
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T16:21:28+00:00'

@@ -1,0 +1,11 @@
+evidence_id: E-AUDIT-FACTS
+task_id: project-rule-governance-audit-20260822
+phase: AUDIT
+kind: audit
+purpose: audit_report
+result: passed
+details: CHG-20260822-002只读审计完成：HEAD fb7f402，master，1032 tracked，0 deleted，13 modified，6
+  untracked；无乱码Git路径；pyc未跟踪且被.gitignore忽略；根governance为专项技术规则；两个crmdm工作簿SHA256相同且均未跟踪；Source
+  of Truth与后续CHG-003/004设计已写入reports/governance-facts-audit.md
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T16:05:46+00:00'

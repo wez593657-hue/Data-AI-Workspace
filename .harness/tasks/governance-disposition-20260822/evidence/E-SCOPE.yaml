@@ -1,0 +1,9 @@
+evidence_id: E-SCOPE
+task_id: governance-disposition-20260822
+phase: SCOPE_CONFIRMED
+kind: governance
+purpose: scope_confirmation
+result: passed
+details: CHG-20260822-005：用户授权按顺序实施全部后续治理任务；Manifest逐项授权5个未跟踪副本/备份的删除。
+repository_revision: fb7f402dceb15ff849d9b73c4d76eac296b16cc8
+created_at: '2026-08-22T16:21:30+00:00'
