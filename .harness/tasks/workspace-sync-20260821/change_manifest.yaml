@@ -1,0 +1,21 @@
+schema_version: '0.1'
+task_id: workspace-sync-20260821
+purpose: requirement_development
+description: 用户确认：将当前工作区全部未提交变更统一提交并推送到 origin/master
+user_confirmation: confirmed
+allowed_changes:
+  - path: .mnemon/documents/
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_ACCT_INSUR.sql
+  - path: requirements/指标业务理解与技术口径.xlsx
+  - path: requirements/指标业务理解与技术口径.xlsx.bak_20260819_0070_customer
+  - path: requirements/指标业务理解与技术口径.xlsx.bak_20260819_pre_recent
+  - path: requirements/指标数据统计_记忆卡片.md
+  - path: requirements/指标逻辑修复设计文档.md
+  - path: requirements/指标需求_从v2.0.3提取.md
+  - path: .harness/tasks/workspace-sync-20260821/
+read_only_inputs:
+  - path: .harness/config.yaml
+  - path: .harness/policies/
+  - path: scripts/harness/
+  - path: scripts/pre_commit_hook.py

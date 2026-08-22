@@ -1,0 +1,47 @@
+schema_version: '0.1'
+task_id: workspace-sync-20260822
+purpose: 将当前工作区全部文件提交并推送到origin/master
+workflow_profile: harness
+state: COMMIT_ALLOWED
+branch: master
+created_at: '2026-08-22T13:37:09+00:00'
+updated_at: '2026-08-22T13:42:34+00:00'
+evidence_ids:
+- ev-ws-001
+- ev-scope-001
+- ev-qv-001
+- ev-fv-001
+- ev-ua-001
+- ev-ca-001
+- ev-push-001
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-08-22T13:37:09+00:00'
+- from: CREATED
+  to: WORKSPACE_CHECKED
+  reason: 工作区状态和全量提交范围已确认
+  at: '2026-08-22T13:37:31+00:00'
+- from: WORKSPACE_CHECKED
+  to: IMPLEMENTATION_READY
+  reason: 全量变更授权清单已建立
+  at: '2026-08-22T13:37:31+00:00'
+- from: IMPLEMENTATION_READY
+  to: QUICK_VALIDATION_PASSED
+  reason: 暂存区与授权范围核对通过
+  at: '2026-08-22T13:37:45+00:00'
+- from: QUICK_VALIDATION_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: 完整工作区校验通过
+  at: '2026-08-22T13:40:44+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户已确认提交并推送
+  at: '2026-08-22T13:40:44+00:00'
+- from: USER_APPROVED
+  to: COMMIT_ALLOWED
+  reason: 用户授权提交全部工作区变更
+  at: '2026-08-22T13:40:45+00:00'
+state_seal: 322ef0155da09688c21991c47c82e30a879ddc8cbf42886c59d1b371775a3bbd

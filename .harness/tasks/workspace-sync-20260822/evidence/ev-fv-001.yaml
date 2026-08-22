@@ -1,0 +1,9 @@
+evidence_id: ev-fv-001
+task_id: workspace-sync-20260822
+phase: full_validation_passed
+kind: check
+purpose: full_validation
+result: passed
+details: scripts/workspace_validation.py full 全部校验通过
+repository_revision: c2d4f5e8fe80a36bea57b9c4440c7ed205468c68
+created_at: '2026-08-22T13:40:43+00:00'

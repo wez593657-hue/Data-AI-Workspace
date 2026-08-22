@@ -7,8 +7,8 @@ AS
   -- 存储过程：睡眠户唤醒统计
   -- 处理周期: 日
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.12.1
-  -- 关联需求: REQ-CUST-008(睡眠户唤醒), REQ-CUST-020(精简重构)
+  -- 需求版本: v2.16.2
+  -- 关联需求: REQ-CUST-008(睡眠户唤醒), REQ-CUST-028(最新唤醒口径确认)
   -- 变更记录:
   --   v2.1.0-v2.8.0: 见前续版本
   --   v2.10.0(2026-07-31): 月首先由明细过程完成上月末复核及当日合并；
@@ -20,6 +20,16 @@ AS
   --   v2.12.1(2026-08-04): 模板规范化
   --        F-6: 步骤编号规范化: TMP1→'1'(清理), TMP2→'TMP1'(层级+维度展开),
   --              '3'→'2'(目标表写入)，同步日志消息
+  --   v2.15.0(2026-08-05): 与明细过程同步采用本月新增持有产品唤醒口径；
+  --          统计仅汇总当日月度明细，机构向上汇总和客户经理维度保持不变。
+  --   v2.16.0(2026-08-17): 睡眠户清单来源切换至DWS_CUST_DORMANT_ACCOUT
+  --          （明细过程v2.16.0）；本过程统计逻辑不变，仅版本同步。
+  --          注: ORG_ID可能为空(不兜底)，机构维度不包含ORG为空的客户，
+  --          建议在统计前输出ORG空值占比预警。
+  --   v2.16.1(2026-08-17): 明细过程重构为先身份后属性（[D1]属性补全），
+  --          本过程统计逻辑仍不变，仅版本同步。
+  --   v2.16.2(2026-08-17): 明细过程改为属性计算式（[D1]/[D2]下线，属性与
+  --          接触/唤醒状态在第4段直接计算），本过程统计逻辑仍不变，仅版本同步。
   ------------------------------------------------------------------
   -- === 输入参数 ===
   -- V_SYSDAT: 系统跑批日期 VARCHAR(8)，取值YYYYMMDD，非NULL且必须为有效日期格式；
@@ -84,7 +94,7 @@ BEGIN
   --   [O-04] 预物化CONNECT BY机构递归 → TMP_ADS_SLEEP_ORG_HIER
   --   展开: 机构维度(JOIN预物化表) + 客户经理维度(UNION ALL)
   ------------------------------------------------------------------
-  V_NO_ID := 'TMP1';
+  V_NO_ID := '1';
   V_BGN_DATE := SYSDATE;
 
   -- ================================================================
@@ -137,7 +147,7 @@ BEGIN
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP1 完成: 机构递归+客户经理维度展开';
+  V_LOG_MSG := '1 完成: 机构递归+客户经理维度展开';
   V_LOG_FLG := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
       V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
@@ -173,7 +183,7 @@ BEGIN
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := '第2段完成: 写入睡眠户唤醒统计(v2.12.1 步骤编号规范化)';
+  V_LOG_MSG := '第2段完成: 写入睡眠户唤醒统计(v2.16.2 来源DORMANT口径)';
   V_LOG_FLG := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
       V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);

@@ -2,10 +2,10 @@ schema_version: '0.1'
 task_id: workspace-sync-20260814
 purpose: ABCD规则精简落地（CORE三件套/阶段最小上下文/文档瘦身/过期测试同步）+ 工作区全量存量变更同步提交
 workflow_profile: harness
-state: PUSH_ALLOWED
+state: COMPLETED
 branch: master
 created_at: '2026-08-13T17:42:20+00:00'
-updated_at: '2026-08-13T17:43:07+00:00'
+updated_at: '2026-08-13T17:46:50+00:00'
 evidence_ids:
 - ev-ws-001
 - ev-scope-001
@@ -14,6 +14,7 @@ evidence_ids:
 - ev-ua-001
 - ev-ca-001
 - ev-pa-001
+- ev-done-001
 allowed_paths: []
 forbidden_paths: []
 history:
@@ -48,4 +49,8 @@ history:
   to: PUSH_ALLOWED
   reason: 用户授权推送:预推送校验已通过,任务状态推进至PUSH_ALLOWED
   at: '2026-08-13T17:43:07+00:00'
-state_seal: 2a662d140ea765bae8f901550be7732dd7d1e447cb8eb2a146fb1fc0a6a4d438
+- from: PUSH_ALLOWED
+  to: COMPLETED
+  reason: 已推送至 origin/master (7dfcabe), 全量校验通过, completion_record 证据已记录
+  at: '2026-08-13T17:46:50+00:00'
+state_seal: 5e20e80745f85ac3347a0c04bce29ac7ca50ca7f356f98a3f5a10b36dbe0ffc6

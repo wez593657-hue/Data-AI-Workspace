@@ -1,0 +1,9 @@
+evidence_id: ev-ws-001
+task_id: workspace-sync-20260815
+phase: workspace_check
+kind: check
+purpose: workspace_status
+result: passed
+details: git status确认工作区变更:11个数据资产/需求/脚本文件+旧任务收尾记录; workspace_validation full 全项通过
+repository_revision: 7dfcabec1bc60c3b77d7d71439842454ea0c1b77
+created_at: '2026-08-14T16:24:27+00:00'

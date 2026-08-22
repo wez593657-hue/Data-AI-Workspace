@@ -7,7 +7,7 @@ AS
   -- 存储过程：潜力提升客户明细处理
   -- 处理周期: 日
   -- 过程描述: 按临界等级、月日均资产和T-1时点资产计算达标、接触及统计指标
-  -- 来源表: DWS_CUST_ASSE_LIAB, DWD_CUST_INDV_INFO, DWD_CUST_MAN, DWS_CUST_LVL_INFO, ADS_MKT_REC_INFO
+  -- 来源表: DWS_CUST_ASSE_LIAB(当月)、DWS_CUST_ASSE_LIAB_HIS(上月末), DWD_CUST_INDV_INFO, DWD_CUST_MAN, DWS_CUST_LVL_INFO, ADS_MKT_REC_INFO
   -- 目标表: ADS_CUST_POTN_UPGRADE_CUST_DTL
   -- 适配数据库: Kingbase Oracle 兼容模式
   -- 需求版本: v3.1.2
@@ -27,6 +27,7 @@ AS
   --   v3.2.0 2026-08-04 F-01:接触EXISTS补PERSN_LEGAL_BK_CODE+MKT_PERSN关联(防跨法人行误匹配)；
   --                       F-02:LVL_CRIT先INSERT后DELETE改为WHERE条件直接过滤；
   --                       F-04:新增V_RUN_DATE_DT变量专用于业务逻辑，V_END_DATE仅用于日志
+   --   v3.2.1 2026-08-06【待确认】 上月末月日均查询(p)改用DWS_CUST_ASSE_LIAB_HIS(与当期表同构)
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '潜力提升客户明细处理';                  -- 过程描述
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL';  -- 过程名称
@@ -153,7 +154,7 @@ BEGIN
          END,
          cm.MNGR_POST_ID,                                       -- 管户经理岗位ID
          p.ORG_ID                                               -- 归属机构ID
-    FROM DWS_CUST_ASSE_LIAB p                                   -- p：上月末月日均资产，用于筛选临界客户（DATA_DATE=V_PREV_MONTH_END, BAL_TYPE='2'）
+    FROM DWS_CUST_ASSE_LIAB_HIS p                               -- p：上月末月日均资产（HIS），用于筛选临界客户（DATA_DATE=V_PREV_MONTH_END, BAL_TYPE='2'）
     JOIN DWD_CUST_INDV_INFO c                                   -- c：客户基本信息（客户姓名）
       ON c.CUST_ID = p.CUST_ID
      AND c.PERSN_LEGAL_BK_CODE = p.PERSN_LEGAL_BK_CODE         -- 双键关联：客户号+法人行号

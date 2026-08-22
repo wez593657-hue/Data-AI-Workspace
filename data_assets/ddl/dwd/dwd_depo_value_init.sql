@@ -1,0 +1,18 @@
+/*
+ * DWD_DEPO_VALUE_INIT
+ * 中文名称: 机构储蓄存款基数表
+ * 用途: INDX_0047 储蓄存款余额较基数（仅机构维度）
+ * 来源: 已确认需求——按机构号、机构名称、储蓄存款基数维护
+ */
+
+CREATE TABLE IF NOT EXISTS DWD_DEPO_VALUE_INIT (
+    ORG_ID      VARCHAR(64)  NOT NULL, -- 机构号
+    ORG_NAME    VARCHAR(200) NULL,     -- 机构名称
+    VALUE_INIT  NUMBER(20,2) NULL,     -- 储蓄存款基数
+    PRIMARY KEY (ORG_ID)
+);
+
+COMMENT ON TABLE DWD_DEPO_VALUE_INIT IS '机构储蓄存款基数表';
+COMMENT ON COLUMN DWD_DEPO_VALUE_INIT.ORG_ID IS '机构号';
+COMMENT ON COLUMN DWD_DEPO_VALUE_INIT.ORG_NAME IS '机构名称';
+COMMENT ON COLUMN DWD_DEPO_VALUE_INIT.VALUE_INIT IS '储蓄存款基数';

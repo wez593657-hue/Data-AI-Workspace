@@ -64,15 +64,18 @@ BEGIN
       bc.businesssum     AS CRDT_TTL_LMT,        -- 授信额度；单笔授信额度
       bc.putoutdate      AS BGN_DATE,            -- 开始日期；授信起始日期
       bc.maturity        AS EXPR_DATE,           -- 到期日期；映射字段 MaturityDate 在 new 5 中对应 maturity
-      bc.status          AS CRDT_STATUS,         -- 授信状态；映射表未提供可确认来源
-      CASE WHEN bc.manageorgid LIKE '15%' THEN '1500' 
-      	   WHEN bc.manageorgid LIKE '12%' THEN '1200'
-      	   WHEN bc.manageorgid LIKE '18%' THEN '1800'
+      bc.status          AS CRDT_STATUS,         -- 合同状态；映射表未提供可确认来源
+      CASE WHEN TT.MAINFRAMEORGID LIKE '15%' THEN '1500' 
+      	   WHEN TT.MAINFRAMEORGID LIKE '12%' THEN '1200'
+      	   WHEN TT.MAINFRAMEORGID LIKE '18%' THEN '1800'
       	   ELSE '9999' END    AS PERSN_LEGAL_BK_CODE  -- 法人行号；映射表未提供可确认来源
     FROM CMS_CUSTOMER_INFO c                          -- 客户信息表
    INNER JOIN CMS_BUSINESS_CONTRACT bc                -- 合同业务表
       ON bc.customerid = c.customerid
-   where c.mfcustomerid is not null;
+   LEFT JOIN CMS_ORG_INFO tt
+    ON bc.OPERATEORGID = tt.ORGID
+   where c.OPERATEORGID is not null
+   AND c.mfcustomerid LIKE '1%';
 
   COMMIT;
 

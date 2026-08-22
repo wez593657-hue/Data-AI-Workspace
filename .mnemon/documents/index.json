@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "documents": [
+    {
+      "id": "bc39f71a-8817-435a-bf70-d74a96ef6baf",
+      "title": "睡眠户唤醒存储过程 v2.16.1 改造设计",
+      "description": "记录以 DWS_CUST_DORMANT_ACCOUNT 当日快照为睡眠户权威来源、采用先身份后属性模式的 v2.16.1 实施设计与验证边界。",
+      "status": "active",
+      "filename": "v2-15-0-bc39f71a.md",
+      "relativePath": "documents/active/v2-15-0-bc39f71a.md",
+      "sourcePaths": [
+        "requirements/睡眠户唤醒规则记忆卡片.md",
+        "requirements/睡眠户唤醒存储过程逻辑修改设计文档.md",
+        "data_assets/ddl/dws/dws_cust_dormant_account.sql",
+        "data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_SLEEP_WAKE_DTL.sql",
+        "data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_SLEEP_WAKE_STATIS.sql",
+        "data_assets/ddl/tmp/tmp_pro_ads_cust_sleep_wake_dtl.ddl"
+      ],
+      "sessionIds": [
+        "d4595799-45d9-43fc-a8ee-feaed97eeb5c",
+        "e23e8625-62bb-495f-8513-647ab9318182",
+        "762591c9-de1b-4aff-a82c-4cb17cfac440",
+        "0177d91b-be97-47a2-b7e3-d47859595b98"
+      ],
+      "createdAt": "2026-08-17T01:39:00.678Z",
+      "updatedAt": "2026-08-17T09:20:53.408Z",
+      "lastAccessedAt": "2026-08-21T06:51:07.620Z",
+      "revision": 4,
+      "contentHash": "22e4d961acc87c6950d587edcf38b87132417b08e6b1116a6b46d839b2146e4a",
+      "sizeBytes": 5042,
+      "memoryBodyIds": []
+    },
+    {
+      "id": "42425226-34c0-4076-ad9c-9196008177a3",
+      "title": "指标存储过程核对结论与口径 v1.8 实施交接（INDX 0046~0083）",
+      "description": "校正指标存储过程交接文档：补充0070客户数口径和0083 CBS发卡日期口径，并标明Excel更新仍受文件占用影响。",
+      "status": "active",
+      "filename": "indx-0046-0083-42425226.md",
+      "relativePath": "documents/active/indx-0046-0083-42425226.md",
+      "sourcePaths": [
+        "requirements/指标数据统计_记忆卡片.md",
+        "requirements/指标业务理解与技术口径.xlsx",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_006.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_010.sql",
+        "data_assets/ddl/tmp/tmp_pro_ads_stat_indx_data.ddl",
+        "data_assets/ddl/dwd/dwd_depo_value_init.sql",
+        "data_assets/ddl/ods/ecpp/ecpp_e_txn_sign.sql"
+      ],
+      "sessionIds": [
+        "c6158e2e-734e-48db-a82c-f028a61b821a",
+        "9a4f7d92-aa8a-41f5-8247-7bf5f80cb709",
+        "a74f3f16-f734-48df-8643-e2d66f29989f",
+        "1975b974-914f-4394-b3b3-c16309153f87",
+        "4cc2e9b4-3501-4433-8786-5a9d077e99ee",
+        "32598f4b-ff1d-492f-8034-75253d51ae3f",
+        "session-339796ac-3707-438b-9c8c-3845b6c9adab",
+        "d7ef1708-7fd4-4d42-b455-ac809c4cfa0d",
+        "7244e83c-1f0e-4942-95ec-c68c0f9dce45",
+        "2b8b4a0a-f772-4321-a090-7a2104d60b1a",
+        "7dcf8039-7d96-421e-9d75-dd58dd08a3ad",
+        "edd25e9d-f32f-442f-8959-d5a1520dd7f3",
+        "f62a64ca-76c0-4cbe-89bc-0081bb6ed38b",
+        "47c18278-ecfc-4162-9bf3-194aed52be83",
+        "621b2011-a6c6-4253-a61a-6cd0d1dededa"
+      ],
+      "createdAt": "2026-08-18T02:17:39.240Z",
+      "updatedAt": "2026-08-21T06:51:51.370Z",
+      "lastAccessedAt": "2026-08-21T06:51:51.370Z",
+      "revision": 16,
+      "contentHash": "cb13eb3ff6a49c45f3b22498f35c97b08c61aaa70b522cea8074ad85ab389e0b",
+      "sizeBytes": 5802,
+      "memoryBodyIds": []
+    },
+    {
+      "id": "57517d09-253f-4229-94e0-ba0a7e90ba85",
+      "title": "PRC_DWD_ACCT_FIN 份额表替换改造设计（FMS_TD_CUST_VOL_DETAIL / FMS_T5_CUST_VOL_LIST）",
+      "description": "PRC_DWD_ACCT_FIN 由汇总份额表切换到两张明细份额表的设计方案（评审修正版），含置0规则待确认项。",
+      "status": "active",
+      "filename": "prc-dwd-acct-fin-fms-td-cust-vol-detail-fms-t5-c-57517d09.md",
+      "relativePath": "documents/active/prc-dwd-acct-fin-fms-td-cust-vol-detail-fms-t5-c-57517d09.md",
+      "sourcePaths": [
+        "data_assets/ddl/ods/fms/fms_td_cust_vol_detail.sql",
+        "data_assets/ddl/ods/fms/fms_t5_cust_vol_list.sql",
+        "data_assets/stored_procedure/ods_to_dwd/PRC_DWD_ACCT_FIN.sql",
+        "data_assets/ddl/ods/fms/detail"
+      ],
+      "sessionIds": [
+        "94d2dbdd-a77d-4185-8558-de1ecdec88ba"
+      ],
+      "createdAt": "2026-08-18T09:34:13.603Z",
+      "updatedAt": "2026-08-18T09:34:13.603Z",
+      "lastAccessedAt": "2026-08-22T13:39:55.645Z",
+      "revision": 1,
+      "contentHash": "f73db996a186942c58e19e881df055b3533dc5d04392ae035973ed05f8c342e7",
+      "sizeBytes": 6996,
+      "memoryBodyIds": []
+    },
+    {
+      "id": "ef6c5dc4-5b0f-43c2-923a-5105b62851b0",
+      "title": "存储过程时间窗口与 ODS 数据保留期分析（离线审核）",
+      "description": "31 个存储过程对上游源表（追至 ODS）的时间过滤窗口与最短数据保留期结论，含对父会话错误结论的勘误。",
+      "status": "active",
+      "filename": "ods-ef6c5dc4.md",
+      "relativePath": "documents/active/ods-ef6c5dc4.md",
+      "sourcePaths": [],
+      "sessionIds": [
+        "d9cb4a40-9ee6-420d-a269-44dfcb8d0ce6"
+      ],
+      "createdAt": "2026-08-18T12:39:30.132Z",
+      "updatedAt": "2026-08-18T12:39:30.132Z",
+      "lastAccessedAt": "2026-08-22T13:39:55.645Z",
+      "revision": 1,
+      "contentHash": "0550178c70f09065d860166e5ac09b47835762c33051615e0960695ef43200da",
+      "sizeBytes": 7130,
+      "memoryBodyIds": []
+    },
+    {
+      "id": "d3e5cab1-b93d-4a5a-92d5-7f60038b9427",
+      "title": "INDX_0073~0079 综合报表 zhbb.sql 表替换与过程归属（考核期累计已落地）",
+      "description": "zhbb 表替换对照 + 用户确认方案A落地：0073→new_cust_rule，0076/0077→event_count，0074/0075/0078/0079→prc_ads_stat_indx_trans_count（plan 6C3）；0074/0075 仅 4 类已确认交易。",
+      "status": "active",
+      "filename": "indx-0073-0079-zhbb-sql-d3e5cab1.md",
+      "relativePath": "documents/active/indx-0073-0079-zhbb-sql-d3e5cab1.md",
+      "sourcePaths": [
+        "data_assets/reference_logic/zhbb.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_event_count.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_new_cust_rule.sql",
+        "data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_trans_count.sql",
+        "data_assets/ddl/ods/mbk/mbk_cust_info.sql",
+        "data_assets/ddl/ods/uepp/uepp_pay_mct_info.sql",
+        "data_assets/ddl/ods/uepp/uepp_pay_order_info.sql"
+      ],
+      "sessionIds": [
+        "101eb7aa-4c78-4b7c-ab5c-63e941fdd1af",
+        "a20d375d-90da-4967-9ec4-a00c53e4c403",
+        "d47e3b97-1c5f-48e6-8bf2-81f59cccff72",
+        "29041262-b4e8-4814-b6a8-f10a42b2b6d2"
+      ],
+      "createdAt": "2026-08-18T15:08:51.587Z",
+      "updatedAt": "2026-08-18T16:13:43.830Z",
+      "lastAccessedAt": "2026-08-21T06:51:07.620Z",
+      "revision": 4,
+      "contentHash": "3fd457fe622ffdfd4d421b86c06b79e37aa76cf2f671c07f9457883b1677cf6b",
+      "sizeBytes": 5773,
+      "memoryBodyIds": []
+    }
+  ]
+}

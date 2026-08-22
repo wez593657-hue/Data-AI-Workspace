@@ -1,0 +1,9 @@
+evidence_id: ev-ca-001
+task_id: workspace-sync-20260815
+phase: commit_authorization
+kind: check
+purpose: commit_authorization
+result: passed
+details: '用户指示提交并推送全部未提交文件,提交信息携带Task-ID: workspace-sync-20260815'
+repository_revision: 7dfcabec1bc60c3b77d7d71439842454ea0c1b77
+created_at: '2026-08-14T16:24:58+00:00'

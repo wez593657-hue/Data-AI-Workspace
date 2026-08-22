@@ -1,0 +1,21 @@
+schema_version: '0.1'
+task_id: workspace-sync-20260822
+purpose: harness
+description: 用户确认将当前工作区全部文件提交并推送到 origin/master；范围以 git status 和 git add -A 的实际结果为准
+user_confirmation: confirmed
+allowed_changes:
+  - path: .harness/
+  - path: .mnemon/
+  - path: data_assets/
+  - path: requirements/
+  - path: scripts/
+  - path: .tmp_ecpp_ddl.txt
+  - path: .tmp_口径xlsx/
+read_only_inputs:
+  - path: .harness/config.yaml
+  - path: .harness/policies/
+  - path: scripts/harness/
+  - path: scripts/pre_commit_hook.py
+forbidden_changes:
+  - path: secrets/
+  - path: .env

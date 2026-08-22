@@ -7,7 +7,7 @@ AS
   -- 存储过程：客户流失清单处理
   -- 处理周期: 日
   -- 过程描述: 按轻度、重度流失规则，计算接触、挽回和挽回金融资产
-  -- 来源表: DWS_CUST_ASSE_LIAB, DWD_CUST_INDV_INFO, DWS_CUST_LVL_INFO, ADS_MKT_REC_INFO
+  -- 来源表: DWS_CUST_ASSE_LIAB(当月)、DWS_CUST_ASSE_LIAB_HIS(历史月末), DWD_CUST_INDV_INFO, DWS_CUST_LVL_INFO, ADS_MKT_REC_INFO
   -- 目标表: ADS_CUST_LOST_DTL
   -- 适配数据库: Kingbase Oracle 兼容模式
   -- 需求版本: v2.5.0
@@ -23,6 +23,7 @@ AS
   --                       F-03:新增V_RUN_DATE_DT变量分离业务/日志用途；
   --                       F-05:阈值CASE封装为TMP_ADS_LOST_THRESH查找表(消除6处重复)；
   --                       F-06:子查询过滤NULL LVL_CHURN(消除先INSERT后DELETE)
+   --   v2.6.0 2026-08-06【待确认】 历史日期查询(上月末/上上月末AUM)改用DWS_CUST_ASSE_LIAB_HIS(与当期表同构)
   ------------------------------------------------------------------
   V_PRC_DESC             VARCHAR(100) := '客户流失清单处理';                     -- 过程描述
   V_PRC_NAME             VARCHAR(64)  := 'PRC_ADS_CUST_LOST_DTL';              -- 过程名称
@@ -67,7 +68,7 @@ BEGIN
   ------------------------------------------------------------------
   -- 2. TMP1：清理当前数据日明细、三年历史数据和物理临时表，保证可重跑
   ------------------------------------------------------------------
-  V_NO_ID := 'TMP1';
+  V_NO_ID := '1';
   V_BGN_DATE := SYSDATE;
 
   DELETE FROM ADS_CUST_LOST_DTL D                                           -- 清理当天数据（支持重跑）
@@ -78,12 +79,14 @@ BEGIN
 
   TRUNC_TMP('TMP_ADS_LOST_BASE');                                           -- 清空物理临时表
   TRUNC_TMP('TMP_ADS_LOST_THRESH');                             -- 清空阈值查找表
+  TRUNC_TMP('TMP_ADS_LOST_BASE_MONTH');
+  TRUNC_TMP('TMP_ADS_LOST_BASE_MONTH_T');
   COMMIT;
 
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP1 完成：清理当前数据日明细、三年前历史数据和物理临时表';
+  V_LOG_MSG := '1 完成：清理当前数据日明细、三年前历史数据和物理临时表';
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(
@@ -125,7 +128,76 @@ BEGIN
   SELECT '10', 3000000 FROM DUAL;                              -- 私行3：300万
   COMMIT;
 
-  V_NO_ID := 'TMP2';
+  V_NO_ID := '2';
+  V_BGN_DATE := SYSDATE;
+
+ -- p：上月月日均AUM + 上月客户等级
+ INSERT INTO TMP_ADS_LOST_BASE_MONTH
+                 SELECT a.CUST_ID, a.ORG_ID, a.PERSN_LEGAL_BK_CODE, a.AUM_BAL, l.CUST_LVL LVL
+                   FROM DWS_CUST_ASSE_LIAB_HIS a
+                   JOIN DWS_CUST_LVL_INFO_HIS l
+                     ON l.CUST_ID = a.CUST_ID
+                    AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
+                    AND l.DATA_DATE = a.DATA_DATE
+                  WHERE a.DATA_DATE = V_PREV_MONTH_END
+                    AND a.BAL_TYPE = '2';
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '2 完成：生成轻度流失客户基础数据';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT,
+      V_PRC_NAME,
+      V_PRC_DESC,
+      V_NO_ID,
+      V_BGN_DATE,
+      V_END_DATE,
+      V_DURA_DATE,
+      V_LOG_MSG,
+      V_LOG_FLG,
+      V_LOG_BUTTON
+  );
+
+  V_NO_ID := '3';
+  V_BGN_DATE := SYSDATE;
+
+  -- pp：上上月月日均AUM + 上上月客户等级
+   INSERT INTO TMP_ADS_LOST_BASE_MONTH_T
+                 SELECT a.CUST_ID, a.ORG_ID, a.PERSN_LEGAL_BK_CODE, a.AUM_BAL, l.CUST_LVL LVL
+                   FROM DWS_CUST_ASSE_LIAB_HIS a
+                   JOIN DWS_CUST_LVL_INFO_HIS l
+                     ON l.CUST_ID = a.CUST_ID
+                    AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
+                    AND l.DATA_DATE = a.DATA_DATE
+                  WHERE a.DATA_DATE = V_PREV_PREV_MONTH_END
+                    AND a.BAL_TYPE = '2';
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '3 完成：生成重度流失客户基础数据';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT,
+      V_PRC_NAME,
+      V_PRC_DESC,
+      V_NO_ID,
+      V_BGN_DATE,
+      V_END_DATE,
+      V_DURA_DATE,
+      V_LOG_MSG,
+      V_LOG_FLG,
+      V_LOG_BUTTON
+  );
+
+
+  V_NO_ID := '4';
   V_BGN_DATE := SYSDATE;
 
   -- F-05/F-06: 阈值通过TMP_ADS_LOST_THRESH查找；子查询过滤NULL LVL_CHURN
@@ -165,15 +237,15 @@ BEGIN
                 c.CUST_NAME,
                 cur_l.CUST_LVL,
                 CASE                                                     -- 流失等级判定（F-05: 阈值来自TMP_ADS_LOST_THRESH）
-                  -- 轻度流失(1)：上月月日均达标 AND 上月末时点不达标
-                  WHEN p.AUM_BAL >= NVL(pt.THRESHOLD, 0)
-                   AND NVL(e.AUM_BAL, 0) < NVL(pt.THRESHOLD, 0)
-                  THEN '1'
                   -- 重度流失(2)：上上月月日均达标 AND 上月月日均不达标 AND 上月末时点不达标
                   WHEN pp.AUM_BAL >= NVL(ppt.THRESHOLD, 0)
                    AND NVL(p.AUM_BAL, 0) < NVL(ppt.THRESHOLD, 0)
                    AND NVL(e.AUM_BAL, 0) < NVL(ppt.THRESHOLD, 0)
                   THEN '2'
+                  -- 轻度流失(1)：上月月日均达标 AND 上月末时点不达标
+                  WHEN p.AUM_BAL >= NVL(pt.THRESHOLD, 0)
+                   AND NVL(e.AUM_BAL, 0) < NVL(pt.THRESHOLD, 0)
+                  THEN '1'
                 END AS LVL_CHURN,
                 NVL(b.DEPO_CURNT_DEPO_BAL, 0) AS DEPO_CURNT_DEPO_BAL,
                 NVL(b.FIXD_DEPO_BAL, 0) AS FIXD_DEPO_BAL,
@@ -201,29 +273,9 @@ BEGIN
                 NVL(e.AUM_BAL, 0) AS LAST_MONTH_END_AUM_BAL,
                 m.MNGR_POST_ID AS POST_ID,                               -- F-02: 改用DWD_CUST_MAN的理财管户经理
                 COALESCE(p.ORG_ID, pp.ORG_ID) AS ORG_ID
-           FROM (
-                 -- p：上月月日均AUM + 上月客户等级
-                 SELECT a.CUST_ID, a.ORG_ID, a.PERSN_LEGAL_BK_CODE, a.AUM_BAL, l.CUST_LVL LVL
-                   FROM DWS_CUST_ASSE_LIAB a
-                   JOIN DWS_CUST_LVL_INFO l
-                     ON l.CUST_ID = a.CUST_ID
-                    AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
-                    AND l.DATA_DATE = a.DATA_DATE
-                  WHERE a.DATA_DATE = V_PREV_MONTH_END
-                    AND a.BAL_TYPE = '2'
-                ) p
+           FROM TMP_ADS_LOST_BASE_MONTH p -- p：上月月日均AUM + 上月客户等级  
            LEFT JOIN TMP_ADS_LOST_THRESH pt ON pt.LVL_CODE = p.LVL      -- F-05: p对应达标阈值
-           FULL JOIN (                                                  -- FULL JOIN确保上月无但上上月有的客户
-                 -- pp：上上月月日均AUM + 上上月客户等级
-                 SELECT a.CUST_ID, a.ORG_ID, a.PERSN_LEGAL_BK_CODE, a.AUM_BAL, l.CUST_LVL LVL
-                   FROM DWS_CUST_ASSE_LIAB a
-                   JOIN DWS_CUST_LVL_INFO l
-                     ON l.CUST_ID = a.CUST_ID
-                    AND l.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
-                    AND l.DATA_DATE = a.DATA_DATE
-                  WHERE a.DATA_DATE = V_PREV_PREV_MONTH_END
-                    AND a.BAL_TYPE = '2'
-                ) pp
+           FULL JOIN TMP_ADS_LOST_BASE_MONTH_T  pp -- pp：上上月月日均AUM + 上上月客户等级
              ON pp.CUST_ID = p.CUST_ID
             AND pp.PERSN_LEGAL_BK_CODE = p.PERSN_LEGAL_BK_CODE
            LEFT JOIN TMP_ADS_LOST_THRESH ppt ON ppt.LVL_CODE = pp.LVL   -- F-05: pp对应达标阈值
@@ -238,7 +290,7 @@ BEGIN
              ON cur_l.CUST_ID = c.CUST_ID
             AND cur_l.PERSN_LEGAL_BK_CODE = c.PERSN_LEGAL_BK_CODE
             AND cur_l.DATA_DATE = V_DATA_DATE
-           LEFT JOIN DWS_CUST_ASSE_LIAB e                               -- e：上月末时点AUM
+           LEFT JOIN DWS_CUST_ASSE_LIAB_HIS e                           -- e：上月末时点AUM（HIS）
              ON e.CUST_ID = c.CUST_ID
             AND e.PERSN_LEGAL_BK_CODE = COALESCE(p.PERSN_LEGAL_BK_CODE, pp.PERSN_LEGAL_BK_CODE)
             AND e.DATA_DATE = V_PREV_MONTH_END
@@ -256,7 +308,7 @@ BEGIN
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP2 完成：生成轻度和重度流失客户基础数据';
+  V_LOG_MSG := '4 完成：生成轻度和重度流失客户基础数据';
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(

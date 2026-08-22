@@ -100,7 +100,7 @@ BEGIN
       pi.PROD_NAME,                                                          -- 理财产品名称
       CASE WHEN pi.PROD_TYPE IN ('2','3') THEN '1' ELSE '2' END,             -- 产品大类：1=代销开放/2=代销封闭
       pi.ESTABLISH_DATE,                                                     -- 成立日期
-      ROUND(NVL(pn.NAV, 0) * NVL(cv.TOTAL_VOL, 0), 2),                       -- 理财余额=ROUND(净值×份额,2)
+      ROUND(NVL(pn.NAV, 0) * NVL(cv.REMAIN_VOL, 0), 2),                       -- 理财余额=ROUND(净值×份额,2)
       ROUND(NVL(pn.TONOWCLIENTRATIO, 0), 2),                                 -- 收益率=成立以来参考年化收益率
       fa.ACCT_STATUS,                                                        -- 理财账户状态
       pi.VALUE_DATE,                                                         -- 起息日期
@@ -116,7 +116,7 @@ BEGIN
       fa.CRT_DATE,                                                           -- 办理日期
       pi.PROD_RISK_LEVEL,                                                    -- 风险等级
       ctl.cfm_amt                                                            -- 交易确认金额（认购+申购合计）
-    FROM FMS_TD_CUST_VOL cv                                         -- 理财客户份额表（驱动表）
+    FROM FMS_TD_CUST_VOL_DETAIL cv                                         -- 理财客户份额表（驱动表）
     INNER JOIN FMS_T1_CUST_FNC_ACCT fa                              -- 客户理财交易账号表
       ON fa.CUST_NO           = cv.CUST_NO
      AND fa.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
@@ -156,8 +156,7 @@ BEGIN
      AND cv.PROD_CODE             = pn.PROD_CODE
      AND NVL(cv.SHARE_CLASS, '~') = NVL(pn.SHARE_CLASS, '~')
      AND pn.RN = 1
-   WHERE NVL(cv.TOTAL_VOL, 0) <> 0                                  -- 份额为0不入库
-     AND SUBSTR(ci.HOST_CUST_NO, 1, 1) = '1'                        -- 仅个人客户
+   WHERE SUBSTR(ci.HOST_CUST_NO, 1, 1) = '1'                        -- 仅个人客户
 
   UNION ALL
 
@@ -171,7 +170,7 @@ BEGIN
       pi.PROD_NAME,                                                          -- 理财产品名称
       CASE WHEN pi.PERIOD_TYPE = '0' THEN '3' ELSE '4' END,                  -- 产品大类：3=自营开放/4=自营封闭
       pp.ESTABLISH_DATE,                                                     -- 成立日期
-      ROUND(NVL(pn.NAV, 0) * NVL(cv.TOTAL_VOL, 0), 2),                       -- 理财余额=ROUND(净值×份额,2)
+      ROUND(NVL(pn.NAV, 0) * NVL(cv.REMAIN_VOL, 0), 2),                       -- 理财余额=ROUND(净值×份额,2)
       ROUND(NVL(pn.SEVEN_DAYS_INCOME, 0), 2),                                -- 收益率=7日年化收益率
       fa.ACCT_STATUS,                                                        -- 理财账户状态
       pp.VALUE_DATE,                                                         -- 起息日期
@@ -187,7 +186,7 @@ BEGIN
       fa.CRT_DATE,                                                           -- 办理日期
       pi.PROD_RISK_LEVEL,                                                    -- 风险等级
       ctl.ack_amt                                                            -- 交易确认金额（认购+申购合计）
-    FROM FMS_T5_CUST_VOL cv                                         -- 客户份额汇总表（驱动表）
+    FROM FMS_T5_CUST_VOL_LIST cv                                         -- 客户份额汇总表（驱动表）
     INNER JOIN FMS_T1_CUST_FNC_ACCT fa                              -- 客户理财交易账号表
       ON fa.CUST_NO           = cv.CUST_NO
      AND fa.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
@@ -250,8 +249,7 @@ BEGIN
     ) pn
       ON pi.PROD_CODE = pn.PROD_CODE
      AND pn.RN = 1
-   WHERE NVL(cv.TOTAL_VOL, 0) <> 0                                  -- 份额为0不入库
-     AND SUBSTR(ci.HOST_CUST_NO, 1, 1) = '1';                       -- 仅个人客户
+   WHERE SUBSTR(ci.HOST_CUST_NO, 1, 1) = '1';                       -- 仅个人客户
 
   COMMIT;
 
@@ -333,6 +331,35 @@ BEGIN
       V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
 
   ------------------------------------------------------------------
+  V_NO_ID := '4';
+  V_BGN_DATE := SYSDATE;
+  
+ -- 【新增：份额表检查逻辑】
+   -- 如果明细表中无对应记录，则FIN_AMT置0
+   UPDATE DWD_ACCT_FIN af
+      SET FIN_AMT = CASE 
+                        WHEN EXISTS (SELECT 1 FROM FMS_TD_CUST_VOL_DETAIL cv 
+                                     WHERE cv.CUST_NO = af.CUST_ID 
+                                       AND cv.FNC_TRANS_ACCT_NO = af.ACCT_ID 
+                                       AND cv.TA_CFM_SERNO = af.PRDKT_ID) 
+                                  OR EXISTS (SELECT 1 FROM FMS_T5_CUST_VOL_LIST cv 
+                                             WHERE cv.CUST_NO = af.CUST_ID 
+                                               AND cv.FNC_TRANS_ACCT_NO = af.ACCT_ID 
+                                               AND cv.TRANS_SERNO = af.PRDKT_ID)
+                                  THEN af.FIN_AMT 
+                                  ELSE 0 
+                    END
+    WHERE (af.CUST_ID, af.ACCT_ID, af.PRDKT_ID) IN (SELECT cust_id, acct_id, prdkt_id FROM TMP_DWD_ACCT_FIN_ACTIVE);
+
+   COMMIT;  
+  OUTCDE      := 0;
+  V_END_DATE  := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  V_LOG_MSG   := '4 完成: [写入] 不在份额表中余额置为0';
+  V_LOG_FLG   := OUTCDE;
+  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+      V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
+
   -- ***************************************
   -- 异常处理区：捕获错误，整体回滚，记录日志，向上传播
   -- ***************************************

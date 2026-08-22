@@ -1,0 +1,9 @@
+evidence_id: ev-push-001
+task_id: workspace-sync-20260821
+phase: push_allowed
+kind: check
+purpose: push_authorization
+result: passed
+details: 提交已生成，准备执行 origin/master 预推送门禁
+repository_revision: bfe63dbccb2ec708a94b7687a95bdd02c787d605
+created_at: '2026-08-22T12:58:14+00:00'

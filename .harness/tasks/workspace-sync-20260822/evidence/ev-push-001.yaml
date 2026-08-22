@@ -1,0 +1,9 @@
+evidence_id: ev-push-001
+task_id: workspace-sync-20260822
+phase: push_allowed
+kind: approval
+purpose: push_authorization
+result: passed
+details: 用户明确授权将提交c644420推送到origin/master
+repository_revision: c644420904282484931270abec55dc96fa788bcd
+created_at: '2026-08-22T13:42:34+00:00'

@@ -60,3 +60,30 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR (
     persn_legal_bk_code VARCHAR(30) NOT NULL,
     PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
 );
+/*
+ * 0066 个贷新形成不良贷款率期初基准
+ * 来源: prc_ads_stat_indx_plan_002.sql 3.4段
+ * 说明: 活动开始前一天建立，活动结束后保留；不纳入上方临时表清空逻辑
+ */
+CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_LOAN_BASE (
+    path_code            VARCHAR(1)   NOT NULL,
+    statis_dim           VARCHAR(64)  NOT NULL,
+    data_blng            VARCHAR(64)  NOT NULL,
+    persn_legal_bk_code  VARCHAR(4)   NOT NULL,
+    cust_id              VARCHAR(20)  NOT NULL,
+    acct_id              VARCHAR(40)  NOT NULL,
+    loan_bal             NUMBER(20,2) NULL,
+    cate_5lvl            VARCHAR(2)   NULL,
+    base_date            VARCHAR(8)   NULL
+);
+
+COMMENT ON TABLE TMP_STAT_INDX_LOAN_BASE IS '个贷新形成不良贷款率-期初基准(正常/关注账户快照)';
+COMMENT ON COLUMN TMP_STAT_INDX_LOAN_BASE.PATH_CODE IS '统计路径: A营销活动/B目标任务';
+COMMENT ON COLUMN TMP_STAT_INDX_LOAN_BASE.STATIS_DIM IS '活动ID或任务ID';
+COMMENT ON COLUMN TMP_STAT_INDX_LOAN_BASE.DATA_BLNG IS '数据归属: ORG_机构/MGR_客户经理';
+COMMENT ON COLUMN TMP_STAT_INDX_LOAN_BASE.PERSN_LEGAL_BK_CODE IS '法人行号';
+COMMENT ON COLUMN TMP_STAT_INDX_LOAN_BASE.CUST_ID IS '客户号';
+COMMENT ON COLUMN TMP_STAT_INDX_LOAN_BASE.ACCT_ID IS '贷款账户';
+COMMENT ON COLUMN TMP_STAT_INDX_LOAN_BASE.LOAN_BAL IS '期初贷款余额(DWD_ACCT_LOAN.BAL)';
+COMMENT ON COLUMN TMP_STAT_INDX_LOAN_BASE.CATE_5LVL IS '期初五级分类(1正常/2关注)';
+COMMENT ON COLUMN TMP_STAT_INDX_LOAN_BASE.BASE_DATE IS '基准建立日期(跑批日)';

@@ -1,0 +1,50 @@
+schema_version: '0.1'
+task_id: workspace-sync-20260815
+purpose: 工作区变更同步提交:签约类型拆分(DDL+PRC_DWD_CUST_SIGN_CTRAKT)/历史AUM改取DWS_CUST_ASSE_LIAB_HIS(4过程)/法人行号映射修正/需求设计文档删除/测试断言同步
+workflow_profile: harness
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-08-14T16:24:00+00:00'
+updated_at: '2026-08-14T16:24:59+00:00'
+evidence_ids:
+- ev-ws-001
+- ev-scope-001
+- ev-qv-001
+- ev-fv-001
+- ev-ua-001
+- ev-ca-001
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-08-14T16:24:00+00:00'
+- from: CREATED
+  to: WORKSPACE_CHECKED
+  reason: 工作区状态核查完成:变更清单与full校验结果已记录
+  at: '2026-08-14T16:24:28+00:00'
+- from: WORKSPACE_CHECKED
+  to: IMPLEMENTATION_READY
+  reason: 变更范围已确认,change_manifest已覆盖全部变更路径
+  at: '2026-08-14T16:24:33+00:00'
+- from: IMPLEMENTATION_READY
+  to: QUICK_VALIDATION_PASSED
+  reason: 快速校验通过:workspace_validation full 全项无异常
+  at: '2026-08-14T16:24:40+00:00'
+- from: QUICK_VALIDATION_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: 完整校验通过:提交前所有静态检查无异常
+  at: '2026-08-14T16:24:46+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户已确认执行提交与推送
+  at: '2026-08-14T16:24:52+00:00'
+- from: USER_APPROVED
+  to: COMMIT_ALLOWED
+  reason: 用户批准提交:授权将全部变更文件提交至master
+  at: '2026-08-14T16:24:58+00:00'
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: 用户授权推送:预推送校验已通过,任务状态推进至PUSH_ALLOWED
+  at: '2026-08-14T16:24:59+00:00'
+state_seal: 2308d4ee681fc7f0fa2ba2aafe0c38a4c1550eabe0adaa2c93ee10114ec23167

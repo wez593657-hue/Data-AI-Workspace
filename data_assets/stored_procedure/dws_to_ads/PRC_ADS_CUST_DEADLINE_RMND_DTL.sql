@@ -12,7 +12,7 @@ AS
   -- 过程描述: 分段生成到期承接明细,物理中间表仅做 TRUNCATE/INSERT,便于排查
   -- 来源表: DWD_CUST_INDV_INFO(客户基本信息), DWD_ACCT_DEPO(存款账户),
   --         DWD_ACCT_FIN(理财账户), DWD_ACCT_INSUR(保险账户),
-  --         DWS_CUST_ASSE_LIAB(客户资产负债表),
+  --         DWS_CUST_ASSE_LIAB(客户资产负债表)、DWS_CUST_ASSE_LIAB_HIS(历史日期),
   --         ADS_MKT_REC_INFO(营销记录表)
   -- 目标表: ADS_CUST_DEADLINE_RMND_DTL(到期承接明细表)
   -- author :
@@ -23,6 +23,7 @@ AS
   -- 变更记录:
   --   v3.1.1: DUE_WIN生成优化：两条INSERT合并为一条（统一窗口子查询w × 按类型金额子查询a），
   --           三个日期字段统一来自w，金额按类型独立来自a，逻辑更清晰
+   --   v3.2.0【待确认】: 段8 AUM基准查询(DATA_DATE=本期第一笔到期日前一日)改用DWS_CUST_ASSE_LIAB_HIS(与当期表同构)
   --   v3.1.0: 1.F-01修复：30天到期窗口仅按STATIS_TYP=0统一计算（口径40），STATIS_TYP=1/2
   --             JOIN复用统一窗口日期(FIRST_EXPR_DT/LAST_EXPR_DT/TAKE_END_DT_30D)，
   --             金额按类型独立汇总；消除存款/理财页签窗口被缩短导致承接金额遗漏
@@ -665,7 +666,7 @@ BEGIN
   --***************************************
   -- 2.7 -- 第8段处理开始：生成AUM中间表
   -- 业务含义：生成"本期第一笔到期日前一日"的AUM基准(PREV)，作为资产留存率分母
-  -- 数据来源：TMP_CDR_DTL_DUE_WIN × DWS_CUST_ASSE_LIAB(DATA_DATE=FIRST_EXPR_DT-1，BAL_TYPE='1'，客户+法人行关联)
+  -- 数据来源：TMP_CDR_DTL_DUE_WIN × DWS_CUST_ASSE_LIAB_HIS(DATA_DATE=FIRST_EXPR_DT-1，BAL_TYPE='1'，客户+法人行关联)
   -- 处理逻辑：LEFT JOIN缺失快照按0处理(口径24)
   --***************************************
   V_NO_ID := '8';
@@ -688,7 +689,7 @@ BEGIN
          SUM(NVL(h.AUM_BAL, 0))                              AS AUM_BAL,    -- AUM余额
          w.PERSN_LEGAL_BK_CODE                               AS PERSN_LEGAL_BK_CODE
     FROM TMP_CDR_DTL_DUE_WIN w
-    LEFT JOIN DWS_CUST_ASSE_LIAB h                           -- 客户资产负债表
+    LEFT JOIN DWS_CUST_ASSE_LIAB_HIS h                           -- 客户资产负债表（HIS，DATA_DATE=第一笔到期日前一日）
       ON h.CUST_ID = w.CUST_ID
       and H.PERSN_LEGAL_BK_CODE = W.PERSN_LEGAL_BK_CODE
      AND h.DATA_DATE = TO_CHAR(w.FIRST_EXPR_DT - 1, 'yyyymmdd')

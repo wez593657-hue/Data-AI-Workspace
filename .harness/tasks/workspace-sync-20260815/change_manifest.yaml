@@ -1,0 +1,23 @@
+schema_version: '0.1'
+task_id: workspace-sync-20260815
+user_confirmation: confirmed
+objective: 工作区变更同步提交（签约类型拆分 / 历史AUM改取HIS表 / 法人行号映射修正 / 需求设计文档删除 / 测试断言同步 / 旧任务收尾记录并入）
+change_summary: |
+  1. DWD_CUST_SIGN_CTRAKT DDL 新增 SIGN_TYPE（签约类型），CTRAKT_TYP 语义改为签约分类
+  2. PRC_DWD_CUST_SIGN_CTRAKT 拆分 SIGN_TYPE/CTRAKT_TYP 映射并新增签约类型过滤、日期格式化为 YYYYMMDD
+  3. 历史日期AUM取数切换：PRC_ADS_CUST_DEADLINE_RMND_DTL/PRC_ADS_CUST_LOST_DTL/PRC_ADS_CUST_POTN_UPGRADE_CUST_DTL/prc_ads_stat_indx_aum_balance
+     由 DWS_CUST_ASSE_LIAB 改用 DWS_CUST_ASSE_LIAB_HIS（前3处标注【待确认】）
+  4. PRC_DWD_CUST_INDIV_RISK_INVST 法人行号按 sub_branch_code 前缀映射，PRC_DWD_CUST_INDIV_CRDT 注释修正
+  5. 删除 requirements/PRC_ADS_STAT_INDX_DATA 存储过程重构设计方案（V2.0/V2.1）.txt
+  6. test_foundation.py 断言同步；旧任务 workspace-sync-20260814 收尾记录（ev-done-001/events/task.yaml）并入
+allowed_changes:
+  - path: .harness/
+  - path: data_assets/
+  - path: requirements/
+  - path: scripts/
+read_only_inputs:
+  - path: templates/
+  - path: ABCD/
+forbidden_changes:
+  - path: secrets/
+  - path: .env

@@ -60,13 +60,16 @@ BEGIN
   )
   SELECT
       host_cust_no	  AS CUST_ID,   --主机客户号
-      NULL            AS INVEST_TYP,--投资类型
+      '1'             AS INVEST_TYP,--投资类型
       NULL	          AS ESTIM_RSLT,--评估结果
       NULL	          AS SCORE,     --分数
       CUST_RISK_LEVEL	AS RISK_LVL,  --风险承受等级
       ASSESS_DATE	    AS ESTIM_DATE,--评估日期
       INVALID_DATE	  AS EXPR_DATE, --失效日期
-      '9999'          AS PERSN_LEGAL_BK_CODE --法人行号
+      CASE WHEN sub_branch_code LIKE '15%' THEN '1500' 
+      	   WHEN sub_branch_code LIKE '12%' THEN '1200'
+      	   WHEN sub_branch_code LIKE '18%' THEN '1800'
+      	   ELSE '9999' END          AS PERSN_LEGAL_BK_CODE --法人行号
     FROM FMS_T4_CUST_RISK_ASSESS_INFO	-- 客户风险承受能力评估信息表
 where host_cust_no is not NULL;
   COMMIT;

@@ -7,8 +7,8 @@ AS
   -- 存储过程：睡眠户唤醒明细
   -- 处理周期: 日
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.14.0
-  -- 关联需求: REQ-CUST-008(睡眠户唤醒), REQ-CUST-023(月首复核)
+  -- 需求版本: v2.16.2
+  -- 关联需求: REQ-CUST-008(睡眠户唤醒), REQ-CUST-028(最新唤醒口径确认)
   -- 变更记录:
   --   v2.1.0-v2.11.0: 见前续版本
   --   v2.12.0(2026-08-04):
@@ -27,6 +27,31 @@ AS
   --          符合模板规则#3/#4/#5
   --     F-5: 日志消息修正: 版本号v2.11.0→v2.14.0，移除废弃[C]引用，
   --          移除多余括号
+  --   v2.15.0(2026-08-05): 唤醒按当月新增持有产品业务日期判定，
+  --          不再要求历史余额为0或当日余额大于0；同一法人+客户仅对应一个机构。
+  --   v2.16.0(2026-08-17): 睡眠户来源切换
+  --     S-1: 睡眠户身份唯一来源改为DWS_CUST_DORMANT_ACCOUT(当日快照)，
+  --          过程内禁止按资产/交易重算睡眠户；
+  --     S-2: 月初取当日快照全量作为当月清单基数，月内取「当日快照存在且
+  --          NOT EXISTS当月BASE」的新产生睡眠户追加，清单只增不减；
+  --     S-3: 只做个人客户(INNER JOIN DWD_CUST_INDV_INFO)；
+  --     S-4: ORG_ID仅由资产快照解析，缺失置空并预警，不兜底；
+  --     S-5: TMP3(TMP_ADS_SLEEP_ACTIVE_TXN)下线；
+  --     S-6: TMP4新增DORMANT客户UNION补齐分支(F-16-1)；
+  --     S-7: [D1] ORG空值安全匹配(F-16-2)。
+  --   v2.16.1(2026-08-17): 重构为先身份后属性（R-1）
+  --     R-1: 先确定当日全部睡眠户（[A]/[B]仅构建身份+状态），
+  --          再按清单客户补余额/等级/名称/管户经理/机构（[D1]属性补全）；
+  --     R-2: TMP4(TMP_ADS_SLEEP_DWS_WAKE)下线，消除DWS_CUST_ASSE_LIAB
+  --          全表扫描分支；[D1]仅按BASE客户键联查；
+  --     R-3: 唤醒判定(WAKE_STATE)由TMP_ADS_SLEEP_WAKE_PROD独立全量更新，
+  --          不依赖资产快照匹配，覆盖所有BASE客户且月内不可逆。
+  --   v2.16.2(2026-08-17): 属性计算式重构（R-4）
+  --     R-4a: TMP_ADS_SLEEP_WAKE_BASE瘦身为仅存身份(法人行+客户号)；
+  --     R-4b: 删除[D1]/[D2]的UPDATE，余额/名称/等级/管户经理在第4段
+  --          写入目标表时以LEFT JOIN直接计算；
+  --     R-4c: 接触状态直接按当月(月初~跑批日)有效接触EXISTS判定；
+  --     R-4d: 唤醒状态直接按当月(月初~跑批日)产品新增EXISTS判定。
   ------------------------------------------------------------------
   -- === 输入参数 ===
   -- V_SYSDAT: 系统跑批日期 VARCHAR(8)，取值YYYYMMDD，非NULL且必须为有效日期格式。
@@ -45,9 +70,9 @@ AS
   V_DATA_DATE            VARCHAR2(8);                                 -- 数据日期，YYYYMMDD，等于V_SYSDAT。
   V_PREV_DAY             VARCHAR2(8);                                 -- 上一日，YYYYMMDD，由sys_fun_deal_date(V_SYSDAT,1)生成。
   V_CURR_MONTH_BEGIN     VARCHAR2(8);                                 -- 当月首日，YYYYMMDD，由sys_fun_deal_date(V_SYSDAT,9)生成。
-  V_IS_MONTH_BEGIN       CHAR(1);                                     -- 月首标志，仅允许Y/N；Y时复核上月末清单并重置月度状态。
+  V_IS_MONTH_BEGIN       CHAR(1);                                     -- 月首标志，仅允许Y/N；Y时月初重置月度清单。
   V_HISTORY_CUTOFF_DATE  VARCHAR2(8);                                 -- 三年历史清理边界（参数19）
-  V_365D_WINDOW_BEGIN    VARCHAR2(8);                                 -- 365天动账窗口开始日（参数26）
+  V_SNAP_CNT             INTEGER;                                      -- DORMANT当日快照记录数（v2.16.0前置校验）
   -- 截断指定临时表
   PROCEDURE TRUNC_TMP(P_TABLE_NAME VARCHAR2) IS
   BEGIN
@@ -58,7 +83,7 @@ BEGIN
   ------------------------------------------------------------------
   -- 步骤1: 参数校验与日期变量初始化
   ------------------------------------------------------------------
-  V_NO_ID := 'TMP1';
+  V_NO_ID := '1';
   V_BGN_DATE := SYSDATE;
 
   -- 参数校验：V_SYSDAT必须为8位数字
@@ -70,7 +95,6 @@ BEGIN
   V_PREV_DAY        := sys_fun_deal_date(V_SYSDAT, 1);             -- T-1日（参数1）
   V_CURR_MONTH_BEGIN:= sys_fun_deal_date(V_SYSDAT, 9);             -- 当月首日（参数9）
   V_HISTORY_CUTOFF_DATE := sys_fun_deal_date(V_SYSDAT, 19);        -- 三年历史清理边界（参数19）
-  V_365D_WINDOW_BEGIN   := sys_fun_deal_date(V_SYSDAT, 26);        -- 365天动账窗口开始日（参数26）
   -- 判断月首日：
   --   月首日：[A]读昨日DTL作为上月末基石
   --   非月首：[A]读昨日DTL继续累积
@@ -78,6 +102,15 @@ BEGIN
     V_IS_MONTH_BEGIN := 'Y';
   ELSE
     V_IS_MONTH_BEGIN := 'N';
+  END IF;
+
+  -- v2.16.0 S-1前置校验: DORMANT当日快照必须就绪，未就绪直接终止（不回退T-1）
+  SELECT COUNT(*)
+    INTO V_SNAP_CNT
+    FROM DWS_CUST_DORMANT_ACCOUT
+   WHERE DATA_DATE = V_DATA_DATE;
+  IF V_SNAP_CNT = 0 THEN
+    RAISE_APPLICATION_ERROR(-20003, 'DWS_CUST_DORMANT_ACCOUT当日快照未就绪: ' || V_DATA_DATE);
   END IF;
 
   ------------------------------------------------------------------
@@ -90,32 +123,30 @@ BEGIN
    WHERE D.DATA_DATE < V_HISTORY_CUTOFF_DATE;
 
   TRUNC_TMP('TMP_ADS_SLEEP_WAKE_BASE');
-  TRUNC_TMP('TMP_ADS_SLEEP_DWS_WAKE');
+  TRUNC_TMP('TMP_ADS_SLEEP_DWS_WAKE');                              -- v2.16.1已下线，保留清理用于对账
   TRUNC_TMP('TMP_ADS_SLEEP_CNTCT');
   TRUNC_TMP('TMP_ADS_SLEEP_WAKE_PROD');
-  TRUNC_TMP('TMP_ADS_SLEEP_ACTIVE_TXN');                              -- v2.13.0 O-01预聚合主动动账
+  TRUNC_TMP('TMP_ADS_SLEEP_ACTIVE_TXN');                              -- v2.16.0已下线，保留清理用于对账
   COMMIT;
 
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP1 完成: 清理目标数据+TMP表; 月首=' || V_IS_MONTH_BEGIN;
+  V_LOG_MSG := '1 完成: 清理目标数据+TMP表; 月首=' || V_IS_MONTH_BEGIN;
   V_LOG_FLG := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
       V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
 
   ------------------------------------------------------------------
-  -- 步骤3: TMP2 — 预聚合 + 三步流水生成今日睡眠客户清单
-  --   [A0a] 预聚合当月产品新增客户 → TMP_ADS_SLEEP_WAKE_PROD
-  --   [A0b] 预聚合近365天主动动账客户 → TMP_ADS_SLEEP_ACTIVE_TXN (v2.13.0 O-01)
-  --   [A0]  预聚合当日DWS快照+IS_WAKE → TMP_ADS_SLEEP_DWS_WAKE
-  --   [A1]  预计算当月已接触客户 → TMP_ADS_SLEEP_CNTCT
-  --   [A]   昨日DTL写入TMP_BASE（月首复核引用[A0]判断睡眠/唤醒）
-  --   [B]   当日睡眠候选直接写入TMP_BASE（v2.13.0 O-02合并原B+C）
-  --   [D1]  更新余额+唤醒状态（v2.13.0 O-03拆分）
-  --   [D2]  更新接触状态
+  -- 步骤3: 预聚合 + 身份清单 + 目标表写入 (v2.16.2)
+  --   '2'  预聚合当月产品新增客户 → TMP_ADS_SLEEP_WAKE_PROD（唤醒源）
+  --   '3'  预计算当月已接触客户 → TMP_ADS_SLEEP_CNTCT（接触判定源）
+  --   '4'  身份清单基底: 月初=DORMANT当日全量，月内=昨日DTL继承（仅客户号+法人行）
+  --   '5'  当日新产生睡眠户追加（DORMANT当日增量，仅客户号+法人行）
+  --   '6'  目标表写入: 属性LEFT JOIN计算 + 接触/唤醒当月窗口EXISTS判定
+  --   （TMP3/TMP4/TMP8等下线步骤占位已移除，详见变更记录）
   ------------------------------------------------------------------
-  V_NO_ID := 'TMP2';
+  V_NO_ID := '2';
   V_BGN_DATE := SYSDATE;
 
   -- ================================================================
@@ -144,74 +175,7 @@ BEGIN
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP2 完成: 预聚合当月产品新增客户(定期+理财+保险)';
-  V_LOG_FLG := OUTCDE;
-  SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
-      V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
-
-  -- ================================================================
-  -- [A0b] 预聚合近365天主动动账客户 → TMP_ADS_SLEEP_ACTIVE_TXN
-  --      v2.13.0 O-01: 一次扫描DWD_TX_ASET，供[A][B]步骤共用，
-  --      消除DWD_TX_ASET重复扫描。
-  --      v2.14.0 F-2: TX_DATE字符串范围比较利用索引。
-  -- ================================================================
-  V_NO_ID := 'TMP3';
-  V_BGN_DATE := SYSDATE;
-  INSERT INTO TMP_ADS_SLEEP_ACTIVE_TXN (PERSN_LEGAL_BK_CODE, CUST_ID)
-  SELECT DISTINCT t.PERSN_LEGAL_BK_CODE, t.CUST_ID
-    FROM DWD_TX_ASET t
-   WHERE t.JIOYCFFS = '0'                                                -- 主动动账
-     AND t.TX_DATE >= SUBSTR(V_365D_WINDOW_BEGIN,1,4) || '-' ||
-                       SUBSTR(V_365D_WINDOW_BEGIN,5,2) || '-' ||
-                       SUBSTR(V_365D_WINDOW_BEGIN,7,2)                     -- v2.14.0 F-2: 字符串范围比较利用索引
-     AND t.TX_DATE <= SUBSTR(V_DATA_DATE,1,4) || '-' ||
-                       SUBSTR(V_DATA_DATE,5,2) || '-' ||
-                       SUBSTR(V_DATA_DATE,7,2);
-  COMMIT;
-
-  V_END_DATE := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  OUTCDE := 0;
-  V_LOG_MSG := 'TMP3 完成: 预聚合近365天主动动账客户';
-  V_LOG_FLG := OUTCDE;
-  SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
-      V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
-
-  -- ================================================================
-  -- [A0] 预聚合当日DWS快照 + IS_WAKE → TMP_ADS_SLEEP_DWS_WAKE
-  --     供[A]月首复核和[D1]余额唤醒更新共用。
-  --     v2.12.0: IS_WAKE改账户表日期驱动；v2.13.0: 注释更新。
-  -- ================================================================
-  V_NO_ID := 'TMP4';
-  V_BGN_DATE := SYSDATE;
-  INSERT INTO TMP_ADS_SLEEP_DWS_WAKE (
-        PERSN_LEGAL_BK_CODE, CUST_ID, ORG_ID, AUM_BAL,
-        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_BAL, INSUR_BAL, IS_WAKE
-    )
-    SELECT a2.PERSN_LEGAL_BK_CODE,                                     -- 法人行号
-           a2.CUST_ID,                                                  -- 客户号
-           a2.ORG_ID,                                                   -- 归属机构
-           a2.AUM_BAL,                                                  -- 当日AUM余额
-           a2.DEPO_CURNT_DEPO_BAL,                                      -- 活期余额
-           a2.FIXD_DEPO_BAL,                                            -- 定期余额
-           a2.FIN_BAL,                                                  -- 理财余额
-           a2.INSUR_BAL,                                                -- 保险余额
-           CASE WHEN EXISTS (                                           -- v2.12.0: JOIN [A0a]预聚合表
-                    SELECT 1 FROM TMP_ADS_SLEEP_WAKE_PROD p
-                     WHERE p.CUST_ID = a2.CUST_ID
-                       AND p.PERSN_LEGAL_BK_CODE = a2.PERSN_LEGAL_BK_CODE
-                 )
-                THEN 1 ELSE 0
-           END AS IS_WAKE                                               -- 唤醒标志: v2.12.0账户表日期驱动(通过TMP预聚合)
-      FROM DWS_CUST_ASSE_LIAB a2                                        -- 当日快照
-     WHERE a2.DATA_DATE = V_DATA_DATE
-       AND a2.BAL_TYPE = '1';
-  COMMIT;
-
-  V_END_DATE := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  OUTCDE := 0;
-  V_LOG_MSG := 'TMP4 完成: 预聚合当日DWS快照+IS_WAKE';
+  V_LOG_MSG := '2 完成: 预聚合当月产品新增客户(定期+理财+保险)';
   V_LOG_FLG := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
       V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
@@ -222,7 +186,7 @@ BEGIN
   --     的客户-管户经理组合，供[D]步骤LEFT JOIN判断接触状态(F-05)。
   --     v2.14.0 F-2: MKT_TIME字符串范围比较利用索引。
   -- ================================================================
-  V_NO_ID := 'TMP5';
+  V_NO_ID := '3';
   V_BGN_DATE := SYSDATE;
   INSERT INTO TMP_ADS_SLEEP_CNTCT (
       PERSN_LEGAL_BK_CODE, CUST_ID, MKT_PERSN
@@ -244,195 +208,80 @@ BEGIN
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP5 完成: 预聚合当月已接触客户';
+  V_LOG_MSG := '3 完成: 预聚合当月已接触客户';
   V_LOG_FLG := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
       V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
 
   -- ================================================================
-  -- [A] 昨日DTL清单写入TMP_BASE（每天执行，含月首日）
-  --     月首日：上月末DTL按当日条件复核后作为当月清单基数；
-  --             复核条件 = 仍满足睡眠(AUM<100 AND 无主动动账)
-  --                         OR 被唤醒(基线产品=0 AND 当日>0，IS_WAKE=1)
-  --                         (F-10: 被唤醒客户即使AUM≥100也保留以统计唤醒指标)
-  --     非月首：昨日DTL = 当日基底，逐步累积
+  -- [A] 当日身份清单基底构建 (v2.16.2)
+  --     仅获取睡眠户身份(客户号+法人行号)；属性(余额/名称/等级/管户经理)
+  --     与状态(接触/唤醒)均在步骤'6'写入目标表时直接计算，不使用UPDATE。
+  --     月初：DORMANT当日快照全量作为当月清单基数；
+  --     月内：昨日DTL身份继承（清单只增不减）。
+  --     所有睡眠户一律出自DORMANT表，过程内不再按资产/交易重算。
   -- ================================================================
-  V_NO_ID := 'TMP6';
-  V_BGN_DATE := SYSDATE;
-  INSERT INTO TMP_ADS_SLEEP_WAKE_BASE (
-        PERSN_LEGAL_BK_CODE, CUST_ID, CUST_NAME, CUST_LVL,
-        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, INSUR_AMT,
-        CNTCT_STATE, WAKE_STATE, POST_ID, ORG_ID
-    )
-    SELECT y.PERSN_LEGAL_BK_CODE,                                     -- 法人行号
-           y.CUST_ID,                                                  -- 客户号
-           y.CUST_NAME,                                                -- 客户名称
-           y.CUST_LVL,                                                 -- 客户等级
-           y.DEPO_CURNT_DEPO_BAL,                                      -- 活期余额
-           y.FIXD_DEPO_BAL,                                            -- 定期余额
-           y.FIN_AMT,                                                  -- 理财余额
-           y.INSUR_AMT,                                                -- 保险余额
-           CASE WHEN V_IS_MONTH_BEGIN = 'Y' THEN '0' ELSE y.CNTCT_STATE END,
-                                                                        -- 接触状态：月首重置，月内继承。
-           CASE WHEN V_IS_MONTH_BEGIN = 'Y' THEN '0' ELSE y.WAKE_STATE END,
-                                                                        -- 唤醒状态：按月统计，月首重置。
-           y.POST_ID,                                                  -- 管户经理
-           y.ORG_ID                                                    -- 归属机构
-      FROM ADS_CUST_SLEEP_WAKE_DTL y                                   -- 昨日目标表
-      LEFT JOIN TMP_ADS_SLEEP_DWS_WAKE w                               -- F-04: 预聚合DWS快照
-        ON w.CUST_ID = y.CUST_ID
-       AND w.PERSN_LEGAL_BK_CODE = y.PERSN_LEGAL_BK_CODE
-       AND w.ORG_ID = y.ORG_ID
-     WHERE y.DATA_DATE = V_PREV_DAY                                    -- 昨日数据，YYYYMMDD。
-       AND y.STATIS_CYCLE = 'M'                                        -- 仅处理月度周期。
-       AND (
-             V_IS_MONTH_BEGIN = 'N'                                     -- 非月首: 全部保留
-             OR (
-                  -- 月首复核: 有当日快照 AND (仍满足睡眠条件 OR 被唤醒)
-                  w.CUST_ID IS NOT NULL
-                  AND (
-                       -- 条件1: 仍满足睡眠(AUM<100 AND 近365天无主动动账)
-                       ( NVL(w.AUM_BAL, 0) < 100
-                         AND NOT EXISTS (
-                             SELECT 1
-                               FROM TMP_ADS_SLEEP_ACTIVE_TXN t0      -- v2.13.0 O-01: 预聚合表替代DWD_TX_ASET
-                              WHERE t0.CUST_ID = y.CUST_ID
-                                AND t0.PERSN_LEGAL_BK_CODE = y.PERSN_LEGAL_BK_CODE
-                         )
-                       )
-                       -- 条件2: 被唤醒(F-10: 基线产品=0且当日>0，即使AUM≥100也保留)
-                       OR NVL(w.IS_WAKE, 0) = 1
-                  )
-             )
-       );
-  COMMIT;
-
-  V_END_DATE := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  OUTCDE := 0;
-  V_LOG_MSG := 'TMP6 完成: 昨日DTL清单转入BASE(含月首复核); 月首=' || V_IS_MONTH_BEGIN;
-  V_LOG_FLG := OUTCDE;
-  SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
-      V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
-
-  -- ================================================================
-  -- [B] 当日睡眠候选直接写入TMP_BASE (v2.13.0 O-02: 合并原[B][C])
-  --     睡眠条件: AUM日余额<100 + 近365天无主动动账
-  --     排除已在BASE中的客户（昨日清单+已有积累，防止重复）
-  --     新入客户默认CNTCT='0', WAKE='0'（原[C]逻辑）
-  --     v2.13.0 O-01: NOT EXISTS改引TMP_ADS_SLEEP_ACTIVE_TXN
-  --     v2.14.0 F-1: DWS_CUST_ASSE_LIAB改为TMP_ADS_SLEEP_DWS_WAKE
-  -- ================================================================
-  V_NO_ID := 'TMP7';
-  V_BGN_DATE := SYSDATE;
-  INSERT INTO TMP_ADS_SLEEP_WAKE_BASE (
-      PERSN_LEGAL_BK_CODE, CUST_ID, CUST_NAME, CUST_LVL,
-      DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, INSUR_AMT,
-      CNTCT_STATE, WAKE_STATE, POST_ID, ORG_ID
-  )
-  SELECT w.PERSN_LEGAL_BK_CODE,                                       -- 法人行号
-         c.CUST_ID,                                                    -- 客户号
-         c.CUST_NAME,                                                  -- 客户名称
-         l.CUST_LVL,                                                   -- 客户等级
-         NVL(w.DEPO_CURNT_DEPO_BAL, 0),                                -- 活期余额
-         NVL(w.FIXD_DEPO_BAL, 0),                                      -- 定期余额
-         NVL(w.FIN_BAL, 0),                                            -- 理财余额
-         NVL(w.INSUR_BAL, 0),                                          -- 保险余额
-         '0',                                                           -- CNTCT_STATE: 新入默认未接触
-         '0',                                                           -- WAKE_STATE:  新入默认未唤醒
-         m.MNGR_POST_ID,                                               -- 理财管户经理
-         w.ORG_ID                                                       -- 归属机构，以资产快照为准
-    FROM DWD_CUST_INDV_INFO c                                          -- 客户基本信息(驱动)
-    JOIN TMP_ADS_SLEEP_DWS_WAKE w                                      -- v2.14.0 F-1: 改为TMP消除DWS重复扫描
-      ON w.CUST_ID = c.CUST_ID
-     AND w.PERSN_LEGAL_BK_CODE = c.PERSN_LEGAL_BK_CODE
-    LEFT JOIN DWD_CUST_MAN m                                           -- 管户关系
-      ON m.CUST_ID = c.CUST_ID
-     AND m.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
-     AND m.ORG_ID = w.ORG_ID
-     AND m.MNG_TYP = '1'                                               -- 仅理财管户
-    LEFT JOIN DWS_CUST_LVL_INFO l                                      -- 客户等级
-      ON l.CUST_ID = c.CUST_ID
-     AND l.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
-     AND l.DATA_DATE = V_DATA_DATE
-   WHERE NVL(w.AUM_BAL, 0) < 100                                       -- 条件1: AUM<100
-     AND NOT EXISTS (                                                  -- 条件2: 近365天无主动动账(v2.13.0 O-01)
-           SELECT 1 FROM TMP_ADS_SLEEP_ACTIVE_TXN t
-            WHERE t.CUST_ID = c.CUST_ID
-              AND t.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
-         )
-     AND NOT EXISTS (                                                -- 条件3: 排除已在BASE中
-           SELECT 1 FROM TMP_ADS_SLEEP_WAKE_BASE b
-            WHERE b.CUST_ID = c.CUST_ID
-              AND b.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
-         );
-  COMMIT;
-
-  V_END_DATE := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  OUTCDE := 0;
-  V_LOG_MSG := 'TMP7 完成: 当日睡眠候选客户写入BASE';
-  V_LOG_FLG := OUTCDE;
-  SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
-      V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
-
-  -- ================================================================
-  -- [D1] 更新余额+唤醒状态 (v2.13.0 O-03: 从[D]拆出)
-  --       JOIN TMP_ADS_SLEEP_DWS_WAKE取当日余额和IS_WAKE
-  -- [D2] 更新接触状态 (v2.13.0 O-03: 从[D]拆出)
-  --      独立UPDATE，消除原嵌套LEFT JOIN
-  -- ================================================================
-  V_NO_ID := 'TMP8';
-  V_BGN_DATE := SYSDATE;
-  UPDATE TMP_ADS_SLEEP_WAKE_BASE b
-     SET (b.DEPO_CURNT_DEPO_BAL, b.FIXD_DEPO_BAL, b.FIN_AMT, b.INSUR_AMT,
-          b.WAKE_STATE) =
-         (SELECT NVL(w.DEPO_CURNT_DEPO_BAL, b.DEPO_CURNT_DEPO_BAL),
-                 NVL(w.FIXD_DEPO_BAL, b.FIXD_DEPO_BAL),
-                 NVL(w.FIN_BAL, b.FIN_AMT),
-                 NVL(w.INSUR_BAL, b.INSUR_AMT),
-                 CASE WHEN b.WAKE_STATE = '1' THEN '1'                 -- 已唤醒保持
-                      WHEN NVL(w.IS_WAKE, 0) = 1 THEN '1'              -- 新增持有→已唤醒
-                      ELSE '0'
-                 END
-            FROM TMP_ADS_SLEEP_DWS_WAKE w
-           WHERE w.CUST_ID = b.CUST_ID
-             AND w.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE
-             AND w.ORG_ID = b.ORG_ID
-         )
-   WHERE EXISTS (
-         SELECT 1
-           FROM TMP_ADS_SLEEP_DWS_WAKE w2
-          WHERE w2.CUST_ID = b.CUST_ID
-            AND w2.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE
-            AND w2.ORG_ID = b.ORG_ID
-       );
-  COMMIT;
-
-  -- [D2] 更新接触状态 (v2.13.0 O-03: 从[D]拆出)
-  UPDATE TMP_ADS_SLEEP_WAKE_BASE b
-     SET b.CNTCT_STATE = '1'
-   WHERE b.CNTCT_STATE = '0'
-     AND EXISTS (
-         SELECT 1 FROM TMP_ADS_SLEEP_CNTCT ct
-          WHERE ct.CUST_ID = b.CUST_ID
-            AND ct.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE
-            AND ct.MKT_PERSN = b.POST_ID
-     );
-  COMMIT;
-
-  V_END_DATE := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  OUTCDE := 0;
-  V_LOG_MSG := 'TMP8 完成: 更新余额+唤醒状态+接触状态';
-  V_LOG_FLG := OUTCDE;
-  SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
-      V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
-
-  ------------------------------------------------------------------
-  -- 步骤4: 目标表写入 — TMP_BASE → ADS_CUST_SLEEP_WAKE_DTL（仅M月度周期）
-  ------------------------------------------------------------------
   V_NO_ID := '4';
+  V_BGN_DATE := SYSDATE;
+
+  IF V_IS_MONTH_BEGIN = 'Y' THEN
+    -- 月初: DORMANT当日快照全量，仅身份
+    INSERT INTO TMP_ADS_SLEEP_WAKE_BASE (PERSN_LEGAL_BK_CODE, CUST_ID)
+    SELECT d.PERSN_LEGAL_BK_CODE, d.CUST_ID
+      FROM DWS_CUST_DORMANT_ACCOUT d
+     WHERE d.DATA_DATE = V_DATA_DATE;
+  ELSE
+    -- 月内: 昨日DTL身份继承（清单只增不减）
+    INSERT INTO TMP_ADS_SLEEP_WAKE_BASE (PERSN_LEGAL_BK_CODE, CUST_ID)
+    SELECT y.PERSN_LEGAL_BK_CODE, y.CUST_ID
+      FROM ADS_CUST_SLEEP_WAKE_DTL y
+     WHERE y.DATA_DATE = V_PREV_DAY
+       AND y.STATIS_CYCLE = 'M';
+  END IF;
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '4 完成: 身份清单基底构建(客户号+法人行); 月首=' || V_IS_MONTH_BEGIN;
+  V_LOG_FLG := OUTCDE;
+  SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
+      V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
+
+  -- ================================================================
+  -- [B] 当日新产生睡眠户追加 (v2.16.2)
+  --     仅身份(客户号+法人行号)；增量=当日快照存在且NOT EXISTS当月BASE
+  -- ================================================================
+  V_NO_ID := '5';
+  V_BGN_DATE := SYSDATE;
+  INSERT INTO TMP_ADS_SLEEP_WAKE_BASE (PERSN_LEGAL_BK_CODE, CUST_ID)
+  SELECT d.PERSN_LEGAL_BK_CODE, d.CUST_ID
+    FROM DWS_CUST_DORMANT_ACCOUT d
+   WHERE d.DATA_DATE = V_DATA_DATE                                   -- 当日快照
+     AND NOT EXISTS (                                                -- 增量: 不在当月清单
+           SELECT 1 FROM TMP_ADS_SLEEP_WAKE_BASE b
+            WHERE b.CUST_ID = d.CUST_ID
+              AND b.PERSN_LEGAL_BK_CODE = d.PERSN_LEGAL_BK_CODE
+        );
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '5 完成: 当日新产生睡眠户身份追加';
+  V_LOG_FLG := OUTCDE;
+  SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
+      V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);
+
+  -- ================================================================
+  ------------------------------------------------------------------
+  -- 步骤6: 目标表写入 — 身份BASE + 属性联查 + 接触/唤醒直接判定
+  --   v2.16.2 R-4b/R-4c/R-4d: 不使用UPDATE；
+  --   余额/名称/等级/管户经理/ORG 以LEFT JOIN直接计算（缺失按0/空）；
+  --   接触 = 当月(月初~跑批日)有效接触EXISTS（TMP5预聚合）；
+  --   唤醒 = 当月(月初~跑批日)产品新增EXISTS（TMP2预聚合）。
+  ------------------------------------------------------------------
+  V_NO_ID := '6';
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO ADS_CUST_SLEEP_WAKE_DTL (
@@ -443,24 +292,50 @@ BEGIN
   SELECT b.PERSN_LEGAL_BK_CODE,                                       -- 法人行号
          V_DATA_DATE,                                                  -- 数据日期
          b.CUST_ID,                                                    -- 客户号
-         b.CUST_NAME,                                                  -- 客户名称
-         b.CUST_LVL,                                                   -- 客户等级
-         b.DEPO_CURNT_DEPO_BAL,                                        -- 活期余额
-         b.FIXD_DEPO_BAL,                                              -- 定期余额
-         b.FIN_AMT,                                                    -- 理财余额
-         b.INSUR_AMT,                                                  -- 保险余额
-         b.CNTCT_STATE,                                                -- 接触状态
-         b.WAKE_STATE,                                                 -- 唤醒状态
-         b.POST_ID,                                                    -- 管户经理
-         b.ORG_ID,                                                     -- 归属机构
+         NVL(c.CUST_NAME, ''),                                         -- 客户名称（客户信息表）
+         l.CUST_LVL,                                                   -- 客户等级（等级快照）
+         NVL(w.DEPO_CURNT_DEPO_BAL, 0),                                -- 活期余额（资产快照，缺失按0）
+         NVL(w.FIXD_DEPO_BAL, 0),                                      -- 定期余额
+         NVL(w.FIN_BAL, 0),                                            -- 理财余额
+         NVL(w.INSUR_BAL, 0),                                          -- 保险余额
+         CASE WHEN EXISTS (                                            -- 接触: 当月窗口直接判定
+                 SELECT 1 FROM TMP_ADS_SLEEP_CNTCT ct
+                  WHERE ct.CUST_ID = b.CUST_ID
+                    AND ct.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE
+                    AND ct.MKT_PERSN = m.MNGR_POST_ID
+              ) THEN '1' ELSE '0' END AS CNTCT_STATE,
+         CASE WHEN EXISTS (                                            -- 唤醒: 当月窗口直接判定
+                 SELECT 1 FROM TMP_ADS_SLEEP_WAKE_PROD p
+                  WHERE p.CUST_ID = b.CUST_ID
+                    AND p.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE
+              ) THEN '1' ELSE '0' END AS WAKE_STATE,
+         m.MNGR_POST_ID,                                               -- 理财管户经理
+         w.ORG_ID,                                                     -- 归属机构（资产快照，可为空）
          'M'                                                           -- 统计周期(M=月度)
-    FROM TMP_ADS_SLEEP_WAKE_BASE b;
+    FROM TMP_ADS_SLEEP_WAKE_BASE b                                    -- 身份清单（仅客户号+法人行）
+    LEFT JOIN DWD_CUST_INDV_INFO c
+      ON c.CUST_ID = b.CUST_ID
+     AND c.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE
+    LEFT JOIN DWS_CUST_LVL_INFO l
+      ON l.CUST_ID = b.CUST_ID
+     AND l.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE
+     AND l.DATA_DATE = V_DATA_DATE
+    LEFT JOIN DWS_CUST_ASSE_LIAB w
+      ON w.CUST_ID = b.CUST_ID
+     AND w.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE
+     AND w.DATA_DATE = V_DATA_DATE
+     AND w.BAL_TYPE = '1'
+    LEFT JOIN DWD_CUST_MAN m
+      ON m.CUST_ID = b.CUST_ID
+     AND m.PERSN_LEGAL_BK_CODE = b.PERSN_LEGAL_BK_CODE
+     AND m.MNG_TYP = '1'                                              -- 仅理财管户
+     AND (m.ORG_ID = w.ORG_ID OR (m.ORG_ID IS NULL AND w.ORG_ID IS NULL));
   COMMIT;
 
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := '第4段完成: 写入睡眠户唤醒明细(v2.14.0 模板规范化+性能优化)';
+  V_LOG_MSG := '第6段完成: 写入睡眠户唤醒明细(v2.16.2 属性计算式)';
   V_LOG_FLG := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT,V_PRC_NAME,V_PRC_DESC,V_NO_ID,
       V_BGN_DATE,V_END_DATE,V_DURA_DATE,V_LOG_MSG,V_LOG_FLG,V_LOG_BUTTON);

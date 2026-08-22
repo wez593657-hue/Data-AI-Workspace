@@ -1,0 +1,9 @@
+evidence_id: ev-done-001
+task_id: workspace-sync-20260814
+phase: completion
+kind: record
+purpose: completion_record
+result: passed
+details: 已提交并推送至 origin/master (7dfcabe, 139 files), 全量校验通过; A.txt 规则精简方案核心清单落地完成
+repository_revision: 7dfcabec1bc60c3b77d7d71439842454ea0c1b77
+created_at: '2026-08-13T17:46:45+00:00'
