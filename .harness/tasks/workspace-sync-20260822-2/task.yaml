@@ -2,10 +2,10 @@ schema_version: '0.1'
 task_id: workspace-sync-20260822-2
 purpose: 将当前工作区治理框架与测试契约同步变更提交并推送到origin/master
 workflow_profile: harness
-state: COMMIT_ALLOWED
+state: PUSH_ALLOWED
 branch: master
 created_at: '2026-08-22T16:36:54+00:00'
-updated_at: '2026-08-22T16:38:32+00:00'
+updated_at: '2026-08-22T16:39:25+00:00'
 evidence_ids:
 - ev-ws-001
 - ev-scope-001
@@ -13,6 +13,7 @@ evidence_ids:
 - ev-fv-001
 - ev-ua-001
 - ev-ca-001
+- ev-ca-002
 allowed_paths: []
 forbidden_paths: []
 history:
@@ -43,4 +44,8 @@ history:
   to: COMMIT_ALLOWED
   reason: 用户授权提交全部工作区变更
   at: '2026-08-22T16:38:32+00:00'
-state_seal: 1275c4b06d7cc636885b842f3f2747b858b791a12b5d6448ef75ec9ab568b42f
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: 全量提交已创建，用户授权推送到origin/master
+  at: '2026-08-22T16:39:25+00:00'
+state_seal: eeddb593f265d5326586b65aabf8547b3049f02a4dea3adde4d3c9bca12c6639

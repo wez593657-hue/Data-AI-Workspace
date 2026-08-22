@@ -1,0 +1,9 @@
+evidence_id: ev-ca-002
+task_id: workspace-sync-20260822-2
+phase: commit_allowed
+kind: approval
+purpose: commit_authorization
+result: passed
+details: 用户已授权；全量提交 8757b30f1d9c4464154539074aa657563a82a750 已创建，允许继续发布
+repository_revision: 8757b30f1d9c4464154539074aa657563a82a750
+created_at: '2026-08-22T16:39:25+00:00'
