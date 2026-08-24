@@ -130,8 +130,9 @@ BEGIN
 			SELECT MCT_ID,
 							SUM(NVL(ORDER_AMT, 0)) AS ANNUAL_TX_AMT
 				FROM UEPP_PAY_ORDER_INFO
-			 WHERE ORDER_TYPE = '00'
-				 AND STATUS = '02'
+			 WHERE --ORDER_TYPE = '00'  --订单类型 00-支付交易  01-退款交易
+				 --AND
+				 STATUS = '02'      --订单状态  00：待付款  01：处理中 02：交易成功 03：交易失败  04：已关闭  05：已撤销  90:超时 91:异常  98：预下单  99：日终失效
 				 AND PAY_TIME >= V_YAR_BEGIN
 				 AND PAY_TIME <= V_DAY_END
 			 GROUP BY MCT_ID),

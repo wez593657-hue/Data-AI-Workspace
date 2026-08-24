@@ -1,3 +1,9 @@
+-------------------------------------------------------------------------
+-- 需求版本: v4.6 (2026-08-22)
+-- 变更记录:
+--   v4.6 0050/0051纳入基数冻结范围；新增存量活动0050/0051基准补跑分支(3.3b)；
+--        汇总表新增BASE_YR_AVG_DEPO/BASE_MTH_AVG_DEPO两列；强校验覆盖0050/0051
+-------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_002(
     v_sysdat  IN  VARCHAR2,   -- 跑批业务日期
     outcde OUT INTEGER     -- 处理行数
@@ -46,7 +52,7 @@ BEGIN
            AND ((s.blng_type = 'O' AND ti.mkt_persn_org = s.blng_id)
              OR (s.blng_type = 'M' AND ti.mkt_persn     = s.blng_id))
          WHERE s.term_begin_date = V_NEXT_DAY
-           AND s.indx_code IN ('INDX_0052','INDX_0053','INDX_0054','INDX_0055',
+           AND s.indx_code IN ('INDX_0050','INDX_0051','INDX_0052','INDX_0053','INDX_0054','INDX_0055',
                                'INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062','INDX_0063')
 
         UNION
@@ -62,7 +68,7 @@ BEGIN
            AND lv.persn_legal_bk_code  = s.persn_legal_bk_code
            AND lv.data_date            = v_sysdat
          WHERE s.term_begin_date = V_NEXT_DAY
-           AND s.indx_code IN ('INDX_0052','INDX_0053','INDX_0054','INDX_0055',
+           AND s.indx_code IN ('INDX_0050','INDX_0051','INDX_0052','INDX_0053','INDX_0054','INDX_0055',
                                'INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062','INDX_0063')
 
         UNION
@@ -78,7 +84,7 @@ BEGIN
            AND cm.mng_typ              = '1'
            AND cm.persn_legal_bk_code  = s.persn_legal_bk_code
          WHERE s.term_begin_date = V_NEXT_DAY
-           AND s.indx_code IN ('INDX_0052','INDX_0053','INDX_0054','INDX_0055',
+           AND s.indx_code IN ('INDX_0050','INDX_0051','INDX_0052','INDX_0053','INDX_0054','INDX_0055',
                                'INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062','INDX_0063')
     )
     SELECT DISTINCT
@@ -157,7 +163,8 @@ BEGIN
         statis_calib, statis_dim, indx_code, data_blng, persn_legal_bk_code,
         base_data_date, base_run_date, base_loan_bal, base_yr_avg_fin,
         base_mth_avg_fin, base_yr_avg_agen_fin, base_mth_avg_agen_fin,
-        base_fin_bal, base_agen_fin_bal
+        base_fin_bal, base_agen_fin_bal,
+        base_yr_avg_depo, base_mth_avg_depo
     )
     SELECT CASE WHEN s.path_code = 'A' THEN '营销活动' ELSE '目标任务' END,
            s.statis_dim,
@@ -172,7 +179,9 @@ BEGIN
            SUM(CASE WHEN b.bal_type = '4' THEN NVL(b.close_agen_fin_bal, 0) + NVL(b.open_agen_fin_bal, 0) ELSE 0 END),
            SUM(CASE WHEN b.bal_type = '2' THEN NVL(b.close_agen_fin_bal, 0) + NVL(b.open_agen_fin_bal, 0) ELSE 0 END),
            SUM(CASE WHEN b.bal_type = '1' THEN NVL(b.fin_bal, 0) ELSE 0 END),
-           SUM(CASE WHEN b.bal_type = '1' THEN NVL(b.close_agen_fin_bal, 0) + NVL(b.open_agen_fin_bal, 0) ELSE 0 END)
+           SUM(CASE WHEN b.bal_type = '1' THEN NVL(b.close_agen_fin_bal, 0) + NVL(b.open_agen_fin_bal, 0) ELSE 0 END),
+           SUM(CASE WHEN b.bal_type = '4' THEN NVL(b.depo_bal, 0) ELSE 0 END),
+           SUM(CASE WHEN b.bal_type = '2' THEN NVL(b.depo_bal, 0) ELSE 0 END)
       FROM TMP_STAT_INDX_SCOPE s
      INNER JOIN ADS_STAT_INDX_BASELINE_MEMBER m
         ON m.statis_calib        = CASE WHEN s.path_code = 'A' THEN '营销活动' ELSE '目标任务' END
@@ -184,7 +193,7 @@ BEGIN
        AND b.persn_legal_bk_code = m.persn_legal_bk_code
        AND b.data_date           = m.base_data_date
      WHERE s.term_begin_date = V_NEXT_DAY
-       AND s.indx_code IN ('INDX_0055','INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062')
+       AND s.indx_code IN ('INDX_0050','INDX_0051','INDX_0055','INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062')
        AND NOT EXISTS (
            SELECT 1
              FROM ADS_STAT_INDX_BASELINE_SUM x
@@ -195,6 +204,86 @@ BEGIN
               AND x.persn_legal_bk_code = s.persn_legal_bk_code
        )
      GROUP BY s.path_code, s.statis_dim, s.indx_code, s.data_blng, s.persn_legal_bk_code;
+
+
+
+    -------------------------------------------------------------------------
+    -- 3.3b 存量活动0050/0051基准补跑（v4.6）
+    --     活动已开始但缺少0050/0051冻结基准时，按当日最新快照补建基准
+    -------------------------------------------------------------------------
+    INSERT INTO ADS_STAT_INDX_BASELINE_SUM (
+        statis_calib, statis_dim, indx_code, data_blng, persn_legal_bk_code,
+        base_data_date, base_run_date, base_yr_avg_depo, base_mth_avg_depo
+    )
+    WITH scope_member AS (
+        -- A路径：营销活动成员
+        SELECT s.path_code, s.statis_dim, s.indx_code, s.data_blng,
+               s.term_begin_date, ti.cust_id, s.persn_legal_bk_code
+          FROM TMP_STAT_INDX_SCOPE s
+         INNER JOIN DWD_MKT_TSK_INFO ti
+            ON s.path_code             = 'A'
+           AND ti.mkt_act_id           = s.statis_dim
+           AND ti.persn_legal_bk_code  = s.persn_legal_bk_code
+           AND ti.data_date            = v_sysdat
+           AND ((s.blng_type = 'O' AND ti.mkt_persn_org = s.blng_id)
+             OR (s.blng_type = 'M' AND ti.mkt_persn     = s.blng_id))
+         WHERE s.term_begin_date < v_sysdat
+           AND s.indx_code IN ('INDX_0050','INDX_0051')
+
+        UNION
+
+        -- B路径-机构归属成员
+        SELECT s.path_code, s.statis_dim, s.indx_code, s.data_blng,
+               s.term_begin_date, lv.cust_id, s.persn_legal_bk_code
+          FROM TMP_STAT_INDX_SCOPE s
+         INNER JOIN DWS_CUST_LVL_INFO lv
+            ON s.path_code             = 'B'
+           AND s.blng_type             = 'O'
+           AND lv.org_id               = s.blng_id
+           AND lv.persn_legal_bk_code  = s.persn_legal_bk_code
+           AND lv.data_date            = v_sysdat
+         WHERE s.term_begin_date < v_sysdat
+           AND s.indx_code IN ('INDX_0050','INDX_0051')
+
+        UNION
+
+        -- B路径-客户经理归属成员
+        SELECT s.path_code, s.statis_dim, s.indx_code, s.data_blng,
+               s.term_begin_date, cm.cust_id, s.persn_legal_bk_code
+          FROM TMP_STAT_INDX_SCOPE s
+         INNER JOIN DWD_CUST_MAN cm
+            ON s.path_code             = 'B'
+           AND s.blng_type             = 'M'
+           AND cm.mngr_post_id         = s.blng_id
+           AND cm.mng_typ              = '1'
+           AND cm.persn_legal_bk_code  = s.persn_legal_bk_code
+         WHERE s.term_begin_date < v_sysdat
+           AND s.indx_code IN ('INDX_0050','INDX_0051')
+    )
+    SELECT CASE WHEN sm.path_code = 'A' THEN '营销活动' ELSE '目标任务' END,
+           sm.statis_dim,
+           sm.indx_code,
+           sm.data_blng,
+           sm.persn_legal_bk_code,
+           v_sysdat,
+           v_sysdat,
+           SUM(CASE WHEN b.bal_type = '4' THEN NVL(b.depo_bal, 0) ELSE 0 END),
+           SUM(CASE WHEN b.bal_type = '2' THEN NVL(b.depo_bal, 0) ELSE 0 END)
+      FROM scope_member sm
+     INNER JOIN DWS_CUST_ASSE_LIAB b
+        ON b.cust_id             = sm.cust_id
+       AND b.persn_legal_bk_code = sm.persn_legal_bk_code
+       AND b.data_date           = v_sysdat
+     WHERE NOT EXISTS (
+         SELECT 1
+           FROM ADS_STAT_INDX_BASELINE_SUM x
+          WHERE x.statis_calib        = CASE WHEN sm.path_code = 'A' THEN '营销活动' ELSE '目标任务' END
+            AND x.statis_dim          = sm.statis_dim
+            AND x.indx_code           = sm.indx_code
+            AND x.data_blng           = sm.data_blng
+            AND x.persn_legal_bk_code = sm.persn_legal_bk_code
+     )
+     GROUP BY sm.path_code, sm.statis_dim, sm.indx_code, sm.data_blng, sm.persn_legal_bk_code;
 
 
     -------------------------------------------------------------------------
@@ -267,7 +356,7 @@ BEGIN
     -------------------------------------------------------------------------
     SELECT COUNT(*) INTO V_MISSING_CNT
       FROM TMP_STAT_INDX_SCOPE s
-     WHERE s.indx_code IN ('INDX_0052','INDX_0053','INDX_0054','INDX_0055',
+     WHERE s.indx_code IN ('INDX_0050','INDX_0051','INDX_0052','INDX_0053','INDX_0054','INDX_0055',
                            'INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062','INDX_0063')
        AND (
            (s.indx_code IN ('INDX_0052','INDX_0053','INDX_0054','INDX_0063')
@@ -280,7 +369,7 @@ BEGIN
                    AND d.persn_legal_bk_code = s.persn_legal_bk_code
             ))
            OR
-           (s.indx_code IN ('INDX_0055','INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062')
+           (s.indx_code IN ('INDX_0050','INDX_0051','INDX_0055','INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062')
             AND NOT EXISTS (
                 SELECT 1 FROM ADS_STAT_INDX_BASELINE_SUM b
                  WHERE b.statis_calib        = CASE WHEN s.path_code = 'A' THEN '营销活动' ELSE '目标任务' END

@@ -1,3 +1,10 @@
+-------------------------------------------------------------------------
+-- 需求版本: v4.6 (2026-08-22)
+-- 变更记录:
+--   v4.6 0047基数缺失时增量与期初值置NULL；0050/0051基准改为基数表
+--        ADS_STAT_INDX_BASELINE_SUM（活动前一日冻结/存量补跑）；
+--        删除HIS直取的prev_yr_avg_aum/prev_mth_avg_aum及V_YAR_PREV_END
+-------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_003(
     v_sysdat  IN  VARCHAR2,   -- 跑批业务日期 YYYYMMDD
     outcde OUT INTEGER     -- 处理行数
@@ -15,7 +22,6 @@ CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_003(
     V_MTH_END      VARCHAR2(8);   -- 上月月末
     V_QRT_END      VARCHAR2(8);   -- 上季末
     V_YAR_BEGIN    VARCHAR2(8);   -- 当年初
-    V_YAR_PREV_END VARCHAR2(8);   -- 上年末
 BEGIN
     -------------------------------------------------------------------------
     -- 标准模板：参数校验与开始日志状态
@@ -32,7 +38,6 @@ BEGIN
     V_MTH_END      := sys_fun_deal_date(v_sysdat, 2);
     V_QRT_END      := sys_fun_deal_date(v_sysdat, 3);
     V_YAR_BEGIN    := sys_fun_deal_date(v_sysdat, 13);
-    V_YAR_PREV_END := sys_fun_deal_date(v_sysdat, 4);
 
     -------------------------------------------------------------------------
     -- 4.1 余额预聚合到 TMP_STAT_INDX_BAL_AGGR
@@ -40,7 +45,7 @@ BEGIN
     INSERT INTO TMP_STAT_INDX_BAL_AGGR (
         path_code, statis_dim, data_blng, persn_legal_bk_code,
         curnt_aum, yr_begin_aum, mth_end_aum, qrt_end_aum,
-        curnt_yr_avg_aum, prev_yr_avg_aum, curnt_mth_avg_aum, prev_mth_avg_aum
+        curnt_yr_avg_aum, curnt_mth_avg_aum
     )
     WITH base_scope AS (
         SELECT DISTINCT path_code, statis_dim, data_blng,
@@ -98,9 +103,7 @@ BEGIN
            SUM(NVL(hb.mth_end_aum, 0)) AS mth_end_aum,
            SUM(NVL(hb.qrt_end_aum, 0)) AS qrt_end_aum,
            SUM(NVL(b.curnt_yr_avg_aum, 0)) AS curnt_yr_avg_aum,
-           SUM(NVL(hb.prev_yr_avg_aum, 0)) AS prev_yr_avg_aum,
-           SUM(NVL(b.curnt_mth_avg_aum, 0)) AS curnt_mth_avg_aum,
-           SUM(NVL(hb.prev_mth_avg_aum, 0)) AS prev_mth_avg_aum
+           SUM(NVL(b.curnt_mth_avg_aum, 0)) AS curnt_mth_avg_aum
       FROM scope_member sm
       LEFT JOIN (
           SELECT cust_id,
@@ -123,13 +126,9 @@ BEGIN
                  SUM(CASE WHEN data_date = V_MTH_END
                             AND bal_type = '1' THEN NVL(depo_bal, 0) ELSE 0 END) AS mth_end_aum,
                  SUM(CASE WHEN data_date = V_QRT_END
-                            AND bal_type = '1' THEN NVL(depo_bal, 0) ELSE 0 END) AS qrt_end_aum,
-                 SUM(CASE WHEN data_date = V_YAR_PREV_END
-                            AND bal_type = '4' THEN NVL(depo_bal, 0) ELSE 0 END) AS prev_yr_avg_aum,
-                 SUM(CASE WHEN data_date = V_MTH_END
-                            AND bal_type = '2' THEN NVL(depo_bal, 0) ELSE 0 END) AS prev_mth_avg_aum
+                            AND bal_type = '1' THEN NVL(depo_bal, 0) ELSE 0 END) AS qrt_end_aum
             FROM DWS_CUST_ASSE_LIAB_HIS
-           WHERE data_date IN (V_YAR_BEGIN, V_MTH_END, V_QRT_END, V_YAR_PREV_END)
+           WHERE data_date IN (V_YAR_BEGIN, V_MTH_END, V_QRT_END)
              AND EXISTS (SELECT 1 FROM scope_member sm2 WHERE sm2.cust_id = DWS_CUST_ASSE_LIAB_HIS.cust_id AND sm2.persn_legal_bk_code = DWS_CUST_ASSE_LIAB_HIS.persn_legal_bk_code)
            GROUP BY cust_id, persn_legal_bk_code
       ) hb
@@ -149,15 +148,15 @@ BEGIN
                WHEN 'INDX_0046' THEN b.curnt_aum - b.yr_begin_aum
                WHEN 'INDX_0048' THEN b.curnt_aum - b.mth_end_aum
                WHEN 'INDX_0049' THEN b.curnt_aum - b.qrt_end_aum
-               WHEN 'INDX_0050' THEN b.curnt_yr_avg_aum - b.prev_yr_avg_aum
-               WHEN 'INDX_0051' THEN b.curnt_mth_avg_aum - b.prev_mth_avg_aum
+               WHEN 'INDX_0050' THEN b.curnt_yr_avg_aum - bs.base_yr_avg_depo
+               WHEN 'INDX_0051' THEN b.curnt_mth_avg_aum - bs.base_mth_avg_depo
            END,
            CASE s.indx_code
                WHEN 'INDX_0046' THEN b.yr_begin_aum
                WHEN 'INDX_0048' THEN b.mth_end_aum
                WHEN 'INDX_0049' THEN b.qrt_end_aum
-               WHEN 'INDX_0050' THEN b.prev_yr_avg_aum
-               WHEN 'INDX_0051' THEN b.prev_mth_avg_aum
+               WHEN 'INDX_0050' THEN bs.base_yr_avg_depo
+               WHEN 'INDX_0051' THEN bs.base_mth_avg_depo
            END,
            s.persn_legal_bk_code
       FROM TMP_STAT_INDX_SCOPE s
@@ -166,6 +165,12 @@ BEGIN
        AND b.statis_dim          = s.statis_dim
        AND b.data_blng           = s.data_blng
        AND b.persn_legal_bk_code = s.persn_legal_bk_code
+      LEFT JOIN ADS_STAT_INDX_BASELINE_SUM bs
+        ON bs.statis_calib        = '营销活动'
+       AND bs.statis_dim          = s.statis_dim
+       AND bs.indx_code           = s.indx_code
+       AND bs.data_blng           = s.data_blng
+       AND bs.persn_legal_bk_code = s.persn_legal_bk_code
      WHERE s.path_code = 'A'
        AND s.indx_code IN ('INDX_0046','INDX_0048','INDX_0049','INDX_0050','INDX_0051');
 
@@ -181,15 +186,15 @@ BEGIN
                WHEN 'INDX_0046' THEN b.curnt_aum - b.yr_begin_aum
                WHEN 'INDX_0048' THEN b.curnt_aum - b.mth_end_aum
                WHEN 'INDX_0049' THEN b.curnt_aum - b.qrt_end_aum
-               WHEN 'INDX_0050' THEN b.curnt_yr_avg_aum - b.prev_yr_avg_aum
-               WHEN 'INDX_0051' THEN b.curnt_mth_avg_aum - b.prev_mth_avg_aum
+               WHEN 'INDX_0050' THEN b.curnt_yr_avg_aum - bs.base_yr_avg_depo
+               WHEN 'INDX_0051' THEN b.curnt_mth_avg_aum - bs.base_mth_avg_depo
            END,
            CASE s.indx_code
                WHEN 'INDX_0046' THEN b.yr_begin_aum
                WHEN 'INDX_0048' THEN b.mth_end_aum
                WHEN 'INDX_0049' THEN b.qrt_end_aum
-               WHEN 'INDX_0050' THEN b.prev_yr_avg_aum
-               WHEN 'INDX_0051' THEN b.prev_mth_avg_aum
+               WHEN 'INDX_0050' THEN bs.base_yr_avg_depo
+               WHEN 'INDX_0051' THEN bs.base_mth_avg_depo
            END,
            s.persn_legal_bk_code
       FROM TMP_STAT_INDX_SCOPE s
@@ -198,6 +203,12 @@ BEGIN
        AND b.statis_dim          = s.statis_dim
        AND b.data_blng           = s.data_blng
        AND b.persn_legal_bk_code = s.persn_legal_bk_code
+      LEFT JOIN ADS_STAT_INDX_BASELINE_SUM bs
+        ON bs.statis_calib        = '目标任务'
+       AND bs.statis_dim          = s.statis_dim
+       AND bs.indx_code           = s.indx_code
+       AND bs.data_blng           = s.data_blng
+       AND bs.persn_legal_bk_code = s.persn_legal_bk_code
      WHERE s.path_code = 'B'
        AND s.indx_code IN ('INDX_0046','INDX_0048','INDX_0049','INDX_0050','INDX_0051');
 
@@ -209,8 +220,9 @@ BEGIN
         indx_code, curnt_val, term_last_val, persn_legal_bk_code
     )
     SELECT 'A', v_sysdat, s.data_blng, s.statis_dim, '营销活动', 'INDX_0047',
-           b.curnt_aum - SUM(NVL(v.value_init, 0)),
-           SUM(NVL(v.value_init, 0)),
+           CASE WHEN SUM(v.value_init) IS NULL THEN NULL
+                ELSE b.curnt_aum - SUM(NVL(v.value_init, 0)) END,
+           SUM(v.value_init),
            s.persn_legal_bk_code
       FROM TMP_STAT_INDX_SCOPE s
      INNER JOIN TMP_STAT_INDX_BAL_AGGR b
@@ -233,8 +245,9 @@ BEGIN
         indx_code, curnt_val, term_last_val, persn_legal_bk_code
     )
     SELECT 'B', v_sysdat, s.data_blng, s.statis_dim, '目标任务', 'INDX_0047',
-           b.curnt_aum - SUM(NVL(v.value_init, 0)),
-           SUM(NVL(v.value_init, 0)),
+           CASE WHEN SUM(v.value_init) IS NULL THEN NULL
+                ELSE b.curnt_aum - SUM(NVL(v.value_init, 0)) END,
+           SUM(v.value_init),
            s.persn_legal_bk_code
       FROM TMP_STAT_INDX_SCOPE s
      INNER JOIN TMP_STAT_INDX_BAL_AGGR b

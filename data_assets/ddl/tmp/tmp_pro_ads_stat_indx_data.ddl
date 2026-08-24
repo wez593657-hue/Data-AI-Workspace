@@ -27,9 +27,7 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_BAL_AGGR (
     mth_end_aum NUMBER(20,2) NULL,
     qrt_end_aum NUMBER(20,2) NULL,
     curnt_yr_avg_aum NUMBER(20,2) NULL,
-    prev_yr_avg_aum NUMBER(20,2) NULL,
     curnt_mth_avg_aum NUMBER(20,2) NULL,
-    prev_mth_avg_aum NUMBER(20,2) NULL,
     PRIMARY KEY (path_code, statis_dim, data_blng, persn_legal_bk_code)
 );
 

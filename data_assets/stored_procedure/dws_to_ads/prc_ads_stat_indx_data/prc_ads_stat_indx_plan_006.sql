@@ -1,3 +1,8 @@
+-------------------------------------------------------------------------
+-- 需求版本: v4.6 (2026-08-22)
+-- 变更记录:
+--   v4.6 0071年龄边界修正：70岁以下改为AGE<70（原<=70）
+-------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE CRMDM.PRC_ADS_STAT_INDX_PLAN_006
 (
 	V_SYSDAT IN VARCHAR2,
@@ -693,7 +698,7 @@ BEGIN
 			 INNER JOIN DWD_CUST_INDV_INFO I ON I.CUST_ID = N.CUST_ID
 																			AND I.PERSN_LEGAL_BK_CODE =
 																					N.PERSN_LEGAL_BK_CODE
-																			AND I.AGE <= 70),
+																			AND I.AGE < 70),
 		CUST_FLAG AS
 		 (SELECT E.PATH_CODE,
 						 E.STATIS_CALIB,
@@ -827,6 +832,106 @@ BEGIN
 																 V_SYSDAT
 														 AND T.JIOYCFFS = '0'
 														 AND T.CHONGZBZ = '0'
+		 GROUP BY X.PATH_CODE,
+							X.DATA_BLNG,
+							X.STATIS_DIM,
+							X.STATIS_CALIB,
+							X.PERSN_LEGAL_BK_CODE;
+
+-------------------------------------------------------------------------
+	-- 7.17/7.18 代发薪客户净增 INDX_0064（合并 A/B）
+	-- 口径：参考 ECIF 签约关系 + CBS 账户明细/客户账号（SIGN_TYPE 321/322 且摘要含工资）
+	-- 客户：CBS_KCDA_PZJCXX.KEHUHAOO（收款方代发薪客户号）
+	-- 时间：[活动/任务开始日, 跑批日] 内签约(SIGN_DATE 签约生效日期)
+	-------------------------------------------------------------------------
+	INSERT INTO TMP_STAT_INDX_AGGR
+		(PATH_CODE,
+		 DATA_DATE,
+		 DATA_BLNG,
+		 STATIS_DIM,
+		 STATIS_CALIB,
+		 INDX_CODE,
+		 CURNT_VAL,
+		 TERM_LAST_VAL,
+		 PERSN_LEGAL_BK_CODE)
+		WITH SCOPE_ALL AS
+		 (SELECT 'A' AS PATH_CODE,
+						 '营销活动' AS STATIS_CALIB,
+						 S.STATIS_DIM,
+						 S.DATA_BLNG,
+						 S.TERM_BEGIN_DATE,
+						 TI.CUST_ID,
+						 S.PERSN_LEGAL_BK_CODE
+				FROM TMP_STAT_INDX_SCOPE S
+			 INNER JOIN DWD_MKT_TSK_INFO TI ON TI.MKT_ACT_ID = S.STATIS_DIM
+																		 AND TI.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+																		 AND TI.DATA_DATE = V_SYSDAT
+																		 AND ((S.BLNG_TYPE = 'O' AND TI.MKT_PERSN_ORG = S.BLNG_ID) OR
+																				 (S.BLNG_TYPE = 'M' AND TI.MKT_PERSN = S.BLNG_ID))
+			 WHERE S.PATH_CODE = 'A'
+				 AND S.INDX_CODE = 'INDX_0064'
+			UNION ALL
+			SELECT 'B',
+						 '目标任务',
+						 S.STATIS_DIM,
+						 S.DATA_BLNG,
+						 S.TERM_BEGIN_DATE,
+						 LV.CUST_ID,
+						 S.PERSN_LEGAL_BK_CODE
+				FROM TMP_STAT_INDX_SCOPE S
+			 INNER JOIN DWS_CUST_LVL_INFO LV ON S.BLNG_TYPE = 'O'
+																			AND LV.ORG_ID = S.BLNG_ID
+																			AND LV.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+																			AND LV.DATA_DATE = V_SYSDAT
+			 WHERE S.PATH_CODE = 'B'
+				 AND S.INDX_CODE = 'INDX_0064'
+			UNION ALL
+			SELECT 'B',
+						 '目标任务',
+						 S.STATIS_DIM,
+						 S.DATA_BLNG,
+						 S.TERM_BEGIN_DATE,
+						 CM.CUST_ID,
+						 S.PERSN_LEGAL_BK_CODE
+				FROM TMP_STAT_INDX_SCOPE S
+			 INNER JOIN DWD_CUST_MAN CM ON S.BLNG_TYPE = 'M'
+																 AND CM.MNGR_POST_ID = S.BLNG_ID
+																 AND CM.MNG_TYP = '1'
+																 AND CM.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+			 WHERE S.PATH_CODE = 'B'
+				 AND S.INDX_CODE = 'INDX_0064'),
+		SALARY_SIGN AS
+		 (SELECT DISTINCT CD.KEHUHAOO            AS CUST_ID,
+											 CASE
+												 WHEN CD.FAKAJIGO LIKE '12%' THEN
+													'1200'
+												 WHEN CD.FAKAJIGO LIKE '15%' THEN
+													'1500'
+												 WHEN CD.FAKAJIGO LIKE '18%' THEN
+													'1800'
+												 ELSE
+													'9999'
+											 END                     AS PERSN_LEGAL_BK_CODE,
+											 TO_CHAR(T2.SIGN_DATE, 'YYYYMMDD') AS CTRAKT_DATE
+				FROM ECIF_T02_A_CUST_SIGN_REL T1
+			 INNER JOIN CBS_KDPL_ZHMINX KZ ON KZ.KEHUZHAO = T1.SIGN_ACC_NO
+			 INNER JOIN CBS_KCDA_PZJCXX CD ON KZ.DUIFKHZH = CD.KAHAOOOO
+			 LEFT JOIN ECIF_T05_A_ACC_SIGN T2 ON T1.ACC_SIGN_ID = T2.ACC_SIGN_ID
+			 WHERE T1.SIGN_TYPE IN ('321', '322')
+				 AND KZ.ZHAIYOMS LIKE '%工资%'
+				 AND T2.CTRAKT_DATE BETWEEN X.TERM_BEGIN_DATE AND V_SYSDAT)
+		SELECT X.PATH_CODE,
+					 V_SYSDAT,
+					 X.DATA_BLNG,
+					 X.STATIS_DIM,
+					 X.STATIS_CALIB,
+					 'INDX_0064',
+					 COUNT(DISTINCT X.CUST_ID),
+					 0,
+					 X.PERSN_LEGAL_BK_CODE
+			FROM SCOPE_ALL X
+		 INNER JOIN SALARY_SIGN SS ON SS.CUST_ID = X.CUST_ID
+																AND SS.PERSN_LEGAL_BK_CODE = X.PERSN_LEGAL_BK_CODE
 		 GROUP BY X.PATH_CODE,
 							X.DATA_BLNG,
 							X.STATIS_DIM,

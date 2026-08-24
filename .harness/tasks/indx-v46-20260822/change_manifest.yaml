@@ -1,0 +1,26 @@
+schema_version: '0.1'
+task_id: indx-v46-20260822
+purpose: harness
+description: 指标口径v4.6+v1.8合并落地。v4.6：Excel升版19项口径确认；DDL baseline_sum扩2列；plan_002冻结扩展+存量补跑；plan_003（0047置空/0050、0051基数表化）；plan_006（0071边界<70）。v1.8（用户已实现）：0064代发薪ECIF/CBS口径（plan_006 7.17/7.18）；plan_008 0078/0079不区分订单类型；PRC_DWD_CUST_SIGN_CTRAKT过滤条件；记忆卡片/问题清单/设计文档同步。
+user_confirmation: confirmed
+allowed_changes:
+  - path: requirements/指标业务理解与技术口径.xlsx
+  - path: requirements/指标开发待确认问题清单.md
+  - path: requirements/指标数据统计_记忆卡片.md
+  - path: requirements/指标逻辑修复设计文档.md
+  - path: data_assets/ddl/ads/ads_stat_indx_baseline_sum.sql
+  - path: data_assets/ddl/tmp/tmp_pro_ads_stat_indx_data.ddl
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_002.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_003.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_006.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_008.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_CUST_SIGN_CTRAKT.sql
+  - path: data_assets/mapping/ods_to_dwd/
+  - path: harness/tasks/indx-v46-20260822/
+read_only_inputs:
+  - path: AGENTS.md
+  - path: docs/
+  - path: templates/
+forbidden_changes:
+  - path: secrets/
+  - path: .env

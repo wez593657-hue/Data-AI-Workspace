@@ -1,0 +1,9 @@
+evidence_id: ev-ua-001
+task_id: indx-v46-20260822
+phase: user_approved
+kind: approval
+purpose: user_approval
+result: passed
+details: 用户确认方案实施并批准全部变更合并提交
+repository_revision: 91339c1e40b6f391f41dd4500f4f2afcc5a1f219
+created_at: '2026-08-24T12:34:26+00:00'
