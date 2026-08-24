@@ -1,0 +1,9 @@
+evidence_id: ev-ca-001
+task_id: cleanup-redunant-20260822
+phase: commit_allowed
+kind: approval
+purpose: commit_authorization
+result: passed
+details: 清理变更就绪，授权提交并推送到origin/master
+repository_revision: 95298a14f613fca1b816578534b3118cd695258e
+created_at: '2026-08-24T01:29:23+00:00'

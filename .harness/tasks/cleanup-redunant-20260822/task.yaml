@@ -1,0 +1,46 @@
+schema_version: '0.1'
+task_id: cleanup-redunant-20260822
+purpose: 清理无效冗余文件：Git追踪的临时/备份/一次性脚本 + 本地磁盘残留 + 修订过时README
+workflow_profile: harness
+state: COMMIT_ALLOWED
+branch: master
+created_at: '2026-08-24T01:25:58+00:00'
+updated_at: '2026-08-24T01:29:24+00:00'
+evidence_ids:
+- ev-ws-001
+- ev-scope-001
+- ev-qv-001
+- ev-fv-001
+- ev-ua-001
+- ev-ca-001
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-08-24T01:25:58+00:00'
+- from: CREATED
+  to: WORKSPACE_CHECKED
+  reason: 工作区与变更范围已确认
+  at: '2026-08-24T01:28:04+00:00'
+- from: WORKSPACE_CHECKED
+  to: IMPLEMENTATION_READY
+  reason: 实现范围已确认
+  at: '2026-08-24T01:28:12+00:00'
+- from: IMPLEMENTATION_READY
+  to: QUICK_VALIDATION_PASSED
+  reason: 快速校验通过
+  at: '2026-08-24T01:28:13+00:00'
+- from: QUICK_VALIDATION_PASSED
+  to: FULL_VALIDATION_PASSED
+  reason: 完整工作区校验通过
+  at: '2026-08-24T01:29:22+00:00'
+- from: FULL_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户已确认清理并授权提交推送
+  at: '2026-08-24T01:29:23+00:00'
+- from: USER_APPROVED
+  to: COMMIT_ALLOWED
+  reason: 用户授权提交清理变更
+  at: '2026-08-24T01:29:24+00:00'
+state_seal: af46e0c7dc7bba71ba6e5c7593443ff1a93654ee7a03d5836f54b491c68e85ea

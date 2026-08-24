@@ -48,6 +48,7 @@ tmp/
 !data_assets/ddl/tmp/*.sql
 *.tmp
 *.bak
+*.bak*
 
 # Excel files
 *.xlsx

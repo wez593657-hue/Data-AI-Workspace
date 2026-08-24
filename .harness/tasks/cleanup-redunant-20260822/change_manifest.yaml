@@ -1,0 +1,27 @@
+schema_version: '0.1'
+task_id: cleanup-redunant-20260822
+purpose: harness
+description: 用户确认清理无效冗余文件：Git追踪的临时/备份/一次性脚本 + 本地磁盘残留 + 修订过时 data_assets/README.md
+user_confirmation: confirmed
+allowed_changes:
+  - path: tmp_口径xlsx/
+  - path: requirements/
+  - path: harness/tasks/maturity-takeover-real-run-v1/full-validation-report.txt
+  - path: data_assets/README.md
+  - path: tmp_ecpp_ddl.txt
+  - path: 项目规则治理.txt
+  - path: backup/
+  - path: _extract_indicator.py
+  - path: _extract_tables.py
+  - path: gitignore
+  - path: harness/tasks/cleanup-redunant-20260822/
+read_only_inputs:
+  - path: AGENTS.md
+  - path: CONTRIBUTING.md
+  - path: github/
+forbidden_changes:
+  - path: data_assets/ddl/
+  - path: data_assets/mapping/
+  - path: data_assets/stored_procedure/
+  - path: secrets/
+  - path: .env

@@ -1,0 +1,9 @@
+evidence_id: ev-ws-001
+task_id: cleanup-redunant-20260822
+phase: workspace_checked
+kind: check
+purpose: workspace_status
+result: passed
+details: 清理方案已确认：Git追踪冗余7文件删除 + 磁盘残留清理 + .gitignore补.bak*规则 + README去数据字典过时节
+repository_revision: 95298a14f613fca1b816578534b3118cd695258e
+created_at: '2026-08-24T01:28:04+00:00'

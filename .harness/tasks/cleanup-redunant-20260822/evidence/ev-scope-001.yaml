@@ -1,0 +1,9 @@
+evidence_id: ev-scope-001
+task_id: cleanup-redunant-20260822
+phase: implementation_ready
+kind: check
+purpose: implementation_scope
+result: passed
+details: 清单确认：删除7个Git追踪冗余文件+清理backup/、work_v42.xlsx、_extract_*.py本地残留+修订README+补.gitignore规则
+repository_revision: 95298a14f613fca1b816578534b3118cd695258e
+created_at: '2026-08-24T01:28:12+00:00'
