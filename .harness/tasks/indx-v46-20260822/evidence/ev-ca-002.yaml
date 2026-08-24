@@ -1,0 +1,9 @@
+evidence_id: ev-ca-002
+task_id: indx-v46-20260822
+phase: commit_allowed
+kind: approval
+purpose: commit_authorization
+result: passed
+details: 本地提交bd1551d已完成（指标口径v4.6与0064代发薪v1.8），用户确认推送授权
+repository_revision: bd1551dc9b58420027224f3d17088950130b3b61
+created_at: '2026-08-24T12:38:29+00:00'

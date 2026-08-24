@@ -2,10 +2,10 @@ schema_version: '0.1'
 task_id: indx-v46-20260822
 purpose: 指标口径v4.6落地：19项口径确认（Excel升版）+存储过程3文件修改（0047置空/0050/0051基数表化/0071边界）+DDL扩列
 workflow_profile: harness
-state: COMMIT_ALLOWED
+state: PUSH_ALLOWED
 branch: master
 created_at: '2026-08-24T12:19:18+00:00'
-updated_at: '2026-08-24T12:34:27+00:00'
+updated_at: '2026-08-24T12:38:35+00:00'
 evidence_ids:
 - ev-ws-001
 - ev-impl-001
@@ -13,6 +13,7 @@ evidence_ids:
 - ev-fv-001
 - ev-ua-001
 - ev-ca-001
+- ev-ca-002
 allowed_paths: []
 forbidden_paths: []
 history:
@@ -43,4 +44,8 @@ history:
   to: COMMIT_ALLOWED
   reason: 授权提交
   at: '2026-08-24T12:34:27+00:00'
-state_seal: 2cbff894be0f77364b130d947054804bd8a2750c90a58948729f0dea3008eb63
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: 本地提交bd1551d已完成，strict门禁与workspace_validation均通过，用户确认推送
+  at: '2026-08-24T12:38:35+00:00'
+state_seal: 8d375008ed42dec076799824d22661e4a6b893f2d7a16136b3f859f83ae70705
