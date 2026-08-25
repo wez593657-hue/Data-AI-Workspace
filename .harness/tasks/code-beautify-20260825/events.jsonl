@@ -16,3 +16,5 @@
 {"created_at": "2026-08-25T11:32:34+00:00", "event": "state_transition", "from": "USER_APPROVED", "to": "COMMIT_ALLOWED"}
 {"created_at": "2026-08-25T11:33:17+00:00", "event": "evidence_recorded", "evidence_id": "ev-ca-001"}
 {"created_at": "2026-08-25T11:33:18+00:00", "event": "state_transition", "from": "COMMIT_ALLOWED", "to": "PUSH_ALLOWED"}
+{"created_at": "2026-08-25T11:35:27+00:00", "event": "evidence_recorded", "evidence_id": "ev-push-001"}
+{"created_at": "2026-08-25T11:35:28+00:00", "event": "state_transition", "from": "PUSH_ALLOWED", "to": "COMPLETED"}

@@ -1,0 +1,9 @@
+evidence_id: ev-push-001
+task_id: code-beautify-20260825
+phase: PUSH_ALLOWED
+kind: push_authorization
+purpose: push_authorization
+result: passed
+details: 已推送be22768..24b1e4a至origin/master,门禁通过
+repository_revision: 24b1e4a2f4b618ebbe60cccf86050f0fbf19ef37
+created_at: '2026-08-25T11:35:27+00:00'

@@ -1,0 +1,29 @@
+schema_version: '0.1'
+task_id: code-beautify-inline-20260825
+purpose: 指标存储过程plan_001~010行内注释补全：字段/参数/条件/函数后均补业务含义注释，逻辑零改动
+description: 对PRC_ADS_STAT_INDX_PLAN_001~010十个存储过程补齐行内中文业务注释（INSERT/SELECT字段、JOIN/WHERE条件、函数、参数各取业务含义），经词序列剥离比对确认业务逻辑零改动。同时按用户确认纳入提交先前遗留的3个存储过程业务改动（PRC_DWD_ACCT_FIN改为TRUNCATE清理、PRC_ADS_CRM_R_CUST_LABLE_TX_INFO增加XIANZZBZ过滤/修正机构前缀、PRC_DWD_ACCT_INSUR）及harness任务遗留文件。
+user_confirmation: confirmed
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_001.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_002.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_003.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_004.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_005.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_006.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_007.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_008.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_009.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_010.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CRM_R_CUST_LABLE_TX_INFO.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_ACCT_FIN.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_ACCT_INSUR.sql
+  - path: .harness/tasks/code-beautify-inline-20260825/
+  - path: .harness/tasks/code-beautify-20260825/
+read_only_inputs:
+  - path: AGENTS.md
+  - path: docs/
+  - path: templates/
+  - path: .tmp_beautify/
+forbidden_changes:
+  - path: secrets/
+  - path: .env

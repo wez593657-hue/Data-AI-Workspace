@@ -1,0 +1,9 @@
+evidence_id: ev-ua
+task_id: code-beautify-inline-20260825
+phase: USER_APPROVED
+kind: user_approval
+purpose: user_approval
+result: passed
+details: 用户确认提交并推送;范围含10个plan过程行内注释及纳入的3个业务改动与harness遗留
+repository_revision: 24b1e4a2f4b618ebbe60cccf86050f0fbf19ef37
+created_at: '2026-08-25T12:59:11+00:00'

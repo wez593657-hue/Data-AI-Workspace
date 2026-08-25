@@ -2,10 +2,10 @@ schema_version: '0.1'
 task_id: code-beautify-20260825
 purpose: 指标存储过程(plan_001~010)代码美化：统一缩进/关键字大小写/AS别名对齐,补全文件头与段落/行内注释,业务逻辑零改动
 workflow_profile: standard
-state: PUSH_ALLOWED
+state: COMPLETED
 branch: master
 created_at: '2026-08-25T11:26:36+00:00'
-updated_at: '2026-08-25T11:33:18+00:00'
+updated_at: '2026-08-25T11:35:28+00:00'
 evidence_ids:
 - ev-route-001
 - ev-req-001
@@ -16,6 +16,7 @@ evidence_ids:
 - ev-rev-002
 - ev-ua-001
 - ev-ca-001
+- ev-push-001
 allowed_paths: []
 forbidden_paths: []
 history:
@@ -54,4 +55,8 @@ history:
   to: PUSH_ALLOWED
   reason: 本地提交a0e2942完成,严格门禁通过,用户批准推送
   at: '2026-08-25T11:33:18+00:00'
-state_seal: 121dfccbd76172fa7e70967b11c215e13d55a81c1d4e0c4af780f8f55e23c616
+- from: PUSH_ALLOWED
+  to: COMPLETED
+  reason: 推送完成
+  at: '2026-08-25T11:35:28+00:00'
+state_seal: 509791c0a759f481b193752763fc10c6d89a1df4ad690faca8abff34027f4842

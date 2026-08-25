@@ -49,7 +49,7 @@ BEGIN
       RETURN;
   END IF;
 
-  DELETE FROM TMP_DWD_ACCT_FIN_ACTIVE;                         -- 清空活跃快照表
+    EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_DWD_ACCT_FIN_ACTIVE'; -- 清空活跃快照表
   COMMIT;
 
   OUTCDE      := 0;

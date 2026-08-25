@@ -1,0 +1,9 @@
+evidence_id: ev-route
+task_id: code-beautify-inline-20260825
+phase: CREATED
+kind: workflow_routing
+purpose: 路由判定为lightweight注释类改动,选定crm-requirement-development
+result: passed
+details: ''
+repository_revision: 24b1e4a2f4b618ebbe60cccf86050f0fbf19ef37
+created_at: '2026-08-25T12:56:59+00:00'

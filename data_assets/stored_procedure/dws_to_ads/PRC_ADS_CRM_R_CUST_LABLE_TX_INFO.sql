@@ -167,9 +167,10 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
             AND a.LOAN_FLG = '0' --0借 1贷
             --交易对手行号不为本行机构号
             AND A.CHONGZBZ = '0'
+            AND A.XIANZZBZ = '1'		--现转标志(0-现金,1-转账)
             AND INSTR(a.OPNT_ACCT_NAME_FST, A.CUST_NAME) > 0
             AND a.OPNT_BK_KEEP NOT IN (SELECT ORG_ID FROM DWD_SYS_ORG) --
-          GROUP BY a.CUST_ID, a.PERSN_LEGAL_BK_CODE, a.TX_DATE
+          GROUP BY a.CUST_ID, a.PERSN_LEGAL_BK_CODE, a.TX_DATE;
 
 --从中间表取近半年每月至少向他行同名账户转账一笔
    INSERT INTO TMP_ADS_CRM_CUST_LABLE_04 (
@@ -192,7 +193,7 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
       YR_CAMPUS_PAY_CNT
   )
   SELECT i.cust_core_no          AS CUST_ID,
-         CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','1')
+         CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','18')
               THEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2)||'00'
               ELSE '9999' END    AS PERSN_LEGAL_BK_CODE,
          COUNT(*)        AS CAMPUS_CNT
@@ -252,8 +253,8 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
     inner join crmdm.uepp_pay_mct_settle_account upm
       on upm.mct_id = upo.mct_id
    WHERE upo.status   = '02'                            -- 交易成功
-     AND replace(SUBSTR(pay_time, 1, 10)) >= V_PREV_MONTH_BEGIN
-     AND replace(SUBSTR(pay_time, 1, 10)) <= V_PREV_MONTH_END
+     AND replace(SUBSTR(pay_time, 1, 10),'-','') >= V_PREV_MONTH_BEGIN
+     AND replace(SUBSTR(pay_time, 1, 10),'-','') <= V_PREV_MONTH_END
    GROUP BY CASE WHEN SUBSTR(isscode, 1, 2) IN ('12', '15', '18')
                  THEN SUBSTR(isscode, 1, 2) || '00'
                  ELSE '9999'

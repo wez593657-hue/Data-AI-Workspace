@@ -1,0 +1,9 @@
+evidence_id: ev-scope
+task_id: code-beautify-inline-20260825
+phase: SCOPE_CONFIRMED
+kind: scope_confirmation
+purpose: scope_confirmation
+result: passed
+details: 目标:10个plan过程补齐行内注释;并纳入PRC_DWD_ACCT_FIN/INSUR/TX_INFO及harness遗留,已确认
+repository_revision: 24b1e4a2f4b618ebbe60cccf86050f0fbf19ef37
+created_at: '2026-08-25T12:58:46+00:00'

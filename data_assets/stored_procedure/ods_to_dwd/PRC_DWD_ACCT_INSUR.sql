@@ -6,7 +6,7 @@ AS
   -- 报表名称: 保险账户处理
   -- 变更记录:
   --   v3.3.4 2026-08-21 性能优化：交易聚合、保险信息聚合、客户年龄去重，
-  --                    消除最外层大分组，执行效率提升 5~10 �?  -- 其余说明�?  ------------------------------------------------------------------
+  --                    消除最外层大分组，执行效率提升 5~10 便  -- 其余说明瓿  ------------------------------------------------------------------
   V_PRC_DESC     VARCHAR(100) := '保险账户处理';
   V_PRC_NAME     VARCHAR(32)  := 'PRC_DWD_ACCT_INSUR';
   V_LOG_MSG      VARCHAR(4000);
@@ -19,7 +19,7 @@ AS
   V_DATA_DATE    DATE;`r`n  V_INSUR_CALC_DATE DATE;
   V_CNT_INS      INTEGER;
 BEGIN
-  -- 步骤1: 参数校验和清理（同原逻辑�?  V_NO_ID := '1';
+  -- 步骤1: 参数校验和清理（同原逻辑ﺿ  V_NO_ID := '1';
   V_BGN_DATE := SYSDATE;
   IF V_SYSDAT IS NULL OR LENGTH(V_SYSDAT) != 8 THEN
       OUTCDE := -1;
@@ -31,7 +31,7 @@ BEGIN
   COMMIT;
   -- 日志记录（略，同原代码）
 
-  -- 步骤2: 优化后的集合化写�?  V_NO_ID := '2';
+  -- 步骤2: 优化后的集合化写僿  V_NO_ID := '2';
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO DWD_ACCT_INSUR (
@@ -58,7 +58,8 @@ BEGIN
           ON a.ord_pay_serial = b.plat_serial
          AND b.plat_trad_status = '2'
       WHERE a.ord_tran_status = '2'
-        AND b.user_id LIKE '1%'          -- 原条件前�?      GROUP BY a.plat_policy_serial,
+        AND b.user_id LIKE '1%'          -- 原条件前祿      
+        GROUP BY a.plat_policy_serial,
       b.user_id,
       TO_DATE(TRIM(a.ord_create_date), 'YYYYMMDD'),
       CASE WHEN a.tran_type IN ('2','3','4','5','6','8')
@@ -136,7 +137,7 @@ BEGIN
       d.pay_per_num    AS pay_period,
       d.pay_type       AS pay_patrn,
       tx.sum_tran_0 AS new_insur_amt,
-      -- 保险金额（逻辑完全等价于原CASE�?      CASE
+      -- 保险金额（逻辑完全等价于原CASEﺿ      CASE
           WHEN c.cont_status IS NULL OR c.cont_status NOT IN ('0','1','2') THEN 0
           WHEN c.cont_status = '0' THEN 0
           WHEN c.cont_status = '2' THEN 0
@@ -182,4 +183,4 @@ BEGIN
 
   V_CNT_INS := SQL%ROWCOUNT;
   COMMIT;
-  -- 后续日志及异常处理同原逻辑（略�?END;
+  -- 后续日志及异常处理同原逻辑（略ﺿEND;
