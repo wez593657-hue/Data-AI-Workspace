@@ -1,0 +1,9 @@
+evidence_id: ev-ca
+task_id: code-beautify-inline-20260825
+phase: COMMIT_ALLOWED
+kind: commit_authorization
+purpose: commit_authorization
+result: passed
+details: 本地提交f9d4fc2完成,严格门禁通过,用户已批准提交
+repository_revision: f9d4fc27de9155e781791b79e741e87651bfe5bb
+created_at: '2026-08-25T14:22:49+00:00'

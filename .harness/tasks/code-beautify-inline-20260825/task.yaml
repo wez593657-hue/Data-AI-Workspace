@@ -2,16 +2,17 @@ schema_version: '0.1'
 task_id: code-beautify-inline-20260825
 purpose: 指标存储过程plan_001~010行内注释补全:字段/参数/条件/函数后均补业务含义注释,逻辑零改动
 workflow_profile: lightweight
-state: COMMIT_ALLOWED
+state: PUSH_ALLOWED
 branch: master
 created_at: '2026-08-25T12:56:02+00:00'
-updated_at: '2026-08-25T12:59:11+00:00'
+updated_at: '2026-08-25T14:22:49+00:00'
 evidence_ids:
 - ev-route
 - ev-route2
 - ev-scope
 - ev-quick
 - ev-ua
+- ev-ca
 allowed_paths: []
 forbidden_paths: []
 history:
@@ -34,4 +35,8 @@ history:
   to: COMMIT_ALLOWED
   reason: 用户已批准提交
   at: '2026-08-25T12:59:11+00:00'
-state_seal: c54b298fbe2b2c4771fb9bd38ce7c7125f0368c71c238d5710e560ded29fcb53
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: 本地提交f9d4fc2完成,严格门禁通过
+  at: '2026-08-25T14:22:49+00:00'
+state_seal: ad62be41e1bb120ff6b829aa9667f928b8343a67969461226a65cb01293335e1
