@@ -1,0 +1,9 @@
+evidence_id: ev-scope
+task_id: format-beautify-tooling-20260825
+phase: SCOPE_CONFIRMED
+kind: scope_confirmation
+purpose: scope_confirmation
+result: passed
+details: 变更范围:quality_rules+SKILL+proc_beautify.py+模板+10个plan过程;已确认
+repository_revision: a69d86ca1510262e42a0bef258faf234ebe4ad42
+created_at: '2026-08-25T15:40:55+00:00'

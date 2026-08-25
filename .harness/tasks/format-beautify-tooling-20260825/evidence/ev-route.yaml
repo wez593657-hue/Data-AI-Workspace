@@ -1,0 +1,9 @@
+evidence_id: ev-route
+task_id: format-beautify-tooling-20260825
+phase: CREATED
+kind: workflow_routing
+purpose: workflow_routing
+result: passed
+details: 规范固化+工具落地,纯注释/格式与文档类,选lightweight
+repository_revision: a69d86ca1510262e42a0bef258faf234ebe4ad42
+created_at: '2026-08-25T15:40:55+00:00'

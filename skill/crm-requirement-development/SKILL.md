@@ -22,12 +22,27 @@ Read `references/workflow.md` before starting. Create or load the matching Harne
 7. Process supplementary material repeatedly until source capability is sufficient or unresolved fields are explicitly accepted.
 8. Run the requirement review role. A failed review returns to the material-supplement stage.
 9. Create or update the versioned requirement memory card and change history.
-10. Develop the target-table stored procedure from the applicable template in `templates/`.
-11. Run the procedure/template review role. A failed review returns to procedure implementation.
+10. Develop the target-table stored procedure from the applicable template in `templates/`. Apply the format/comment/alignment rules below while writing, and run the alignment+verification tool before marking this stage complete.
+11. Run the procedure/template review role. Review MUST check the format/comment/alignment rules (QA-14～QA-17) and confirm the tool's verification output. A failed review returns to procedure implementation.
 12. Generate temporary-table structures used by the procedure.
 13. Run full validation, obtain user approval, then enter commit and push authorization stages.
 
 For every new or modified stored procedure, read `governance/stored_procedure_date_parameter_rules.md` during stages 1, 10, and 11 (I-06).
+
+## Mandatory Format / Comment / Alignment Rules
+
+Every new or modified stored procedure MUST satisfy the rules below while writing (steps 10 and 11 are gated on them), and MUST run the provided tool at step 10:
+
+```text
+python scripts/proc_beautify.py verify <file.sql>   # 校验：逻辑零改动 + 对齐/格式达标
+python scripts/proc_beautify.py align  <file.sql>   # 自动对齐：行内注释段内对齐（可选辅助）
+```
+
+1. **Format** (QA-14): SQL/PL-SQL keywords uppercase; 4-space indentation per level; blank line between logical blocks.
+2. **Header comment** (QA-15): file header MUST contain procedure name, purpose, parameter description, requirement version, and change history. Use `【待确认】` for versions that cannot be confirmed — never invent them.
+3. **Inline comments** (QA-16): every SELECT column, WHERE/JOIN condition, function call, and parameter must carry a `--` business-meaning comment.
+4. **Alignment** (QA-17): column aliases must use uppercase `AS` and be aligned; inline comments within the same code block must be aligned to the same column (long unbreakable lines may remain in place as an exception).
+5. Do not modify calculation logic, table structure, or field names — comment/format changes only.
 
 ## Evidence Requirements
 

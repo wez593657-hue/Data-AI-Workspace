@@ -1,0 +1,9 @@
+evidence_id: ev-ua
+task_id: format-beautify-tooling-20260825
+phase: USER_APPROVED
+kind: user_approval
+purpose: user_approval
+result: passed
+details: 用户确认执行并提交推送
+repository_revision: a69d86ca1510262e42a0bef258faf234ebe4ad42
+created_at: '2026-08-25T15:41:40+00:00'
