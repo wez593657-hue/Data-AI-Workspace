@@ -1,7 +1,10 @@
 -------------------------------------------------------------------------
--- 需求版本: v4.6 (2026-08-22)
+-- 需求版本: v4.9 (2026-08-24)
 -- 变更记录:
 --   v4.6 0071年龄边界修正：70岁以下改为AGE<70（原<=70）
+--   v4.7 0064改标签表口径：基数表ADS_CRM_R_SALRY_PAYROL_BASE按活动/任务隔离取新增
+--   v4.8 0065代销业务收入（暂不含贵金属）：理财FIN_AMT+保险INSUR_AMT合并，期间[开始日,跑批日]
+--   v4.9 修复0071/0072未声明变量V_YEAR_BEGIN/V_180_DAY_BEGIN；补全代发薪客户净增INDX_0064汇总段(7.17/7.18)
 -------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE CRMDM.PRC_ADS_STAT_INDX_PLAN_006
 (
@@ -17,6 +20,8 @@ CREATE OR REPLACE PROCEDURE CRMDM.PRC_ADS_STAT_INDX_PLAN_006
 	V_BGN_DATE   DATE;
 	V_END_DATE   DATE;
 	V_DURA_DATE  INTEGER;
+	V_YEAR_BEGIN    VARCHAR2(8) := SYS_FUN_DEAL_DATE(V_SYSDAT, 13);
+	V_180_DAY_BEGIN VARCHAR2(8) := SYS_FUN_DEAL_DATE(V_SYSDAT, 27);
 BEGIN
 	V_NO_ID    := '0';
 	V_BGN_DATE := SYSDATE;
@@ -26,6 +31,76 @@ BEGIN
 		RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
 	END IF;
 	V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
+   -------------------------------------------------------------------------
+   -- 7.0 代发薪客户基数表刷新（INDX_0064）
+   -- 每日跑批：范围内客户标签 IS_NOT_SALRY_PAYROL_BK='1' 入基数表
+   --   新活动/任务首次出现：FRST_MARK_DATE='19000101'（活动前基数，不计新增）
+   --   活动期间新增标记：FRST_MARK_DATE=跑批日
+   -------------------------------------------------------------------------
+   INSERT INTO ADS_CRM_R_SALRY_PAYROL_BASE
+          (PATH_CODE, STATIS_DIM, PERSN_LEGAL_BK_CODE, CUST_ID, FRST_MARK_DATE)
+          WITH SCOPE_BASE AS
+           (SELECT 'A' AS PATH_CODE,
+                           S.STATIS_DIM,
+                           TI.CUST_ID,
+                           S.PERSN_LEGAL_BK_CODE
+                          FROM TMP_STAT_INDX_SCOPE S
+                   INNER JOIN DWD_MKT_TSK_INFO TI ON TI.MKT_ACT_ID = S.STATIS_DIM
+                                                   AND TI.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+                                                   AND TI.DATA_DATE = V_SYSDAT
+                                                   AND ((S.BLNG_TYPE = 'O' AND TI.MKT_PERSN_ORG = S.BLNG_ID) OR
+                                                        (S.BLNG_TYPE = 'M' AND TI.MKT_PERSN = S.BLNG_ID))
+                   WHERE S.PATH_CODE = 'A'
+                     AND S.INDX_CODE = 'INDX_0064'
+            UNION ALL
+            SELECT 'B',
+                          S.STATIS_DIM,
+                          LV.CUST_ID,
+                          S.PERSN_LEGAL_BK_CODE
+                          FROM TMP_STAT_INDX_SCOPE S
+                   INNER JOIN DWS_CUST_LVL_INFO LV ON S.BLNG_TYPE = 'O'
+                                                    AND LV.ORG_ID = S.BLNG_ID
+                                                    AND LV.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+                                                    AND LV.DATA_DATE = V_SYSDAT
+                   WHERE S.PATH_CODE = 'B'
+                     AND S.INDX_CODE = 'INDX_0064'
+            UNION ALL
+            SELECT 'B',
+                          S.STATIS_DIM,
+                          CM.CUST_ID,
+                          S.PERSN_LEGAL_BK_CODE
+                          FROM TMP_STAT_INDX_SCOPE S
+                   INNER JOIN DWD_CUST_MAN CM ON S.BLNG_TYPE = 'M'
+                                              AND CM.MNGR_POST_ID = S.BLNG_ID
+                                              AND CM.MNG_TYP = '1'
+                                              AND CM.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+                   WHERE S.PATH_CODE = 'B'
+                     AND S.INDX_CODE = 'INDX_0064')
+          SELECT DISTINCT
+                 SB.PATH_CODE,
+                 SB.STATIS_DIM,
+                 SB.PERSN_LEGAL_BK_CODE,
+                 SB.CUST_ID,
+                 CASE
+                     WHEN EXISTS (SELECT 1
+                                    FROM ADS_CRM_R_SALRY_PAYROL_BASE EB
+                                   WHERE EB.PATH_CODE = SB.PATH_CODE
+                                     AND EB.STATIS_DIM = SB.STATIS_DIM) THEN
+                         V_SYSDAT
+                     ELSE
+                         '19000101'
+                 END AS FRST_MARK_DATE
+            FROM SCOPE_BASE SB
+           INNER JOIN ADS_CRM_R_CUST_LABLE L
+               ON L.CUST_ID = SB.CUST_ID
+              AND L.PERSN_LEGAL_BK_CODE = SB.PERSN_LEGAL_BK_CODE
+           WHERE L.IS_NOT_SALRY_PAYROL_BK = '1'
+             AND NOT EXISTS (SELECT 1
+                               FROM ADS_CRM_R_SALRY_PAYROL_BASE NB
+                              WHERE NB.PATH_CODE = SB.PATH_CODE
+                                AND NB.STATIS_DIM = SB.STATIS_DIM
+                                AND NB.CUST_ID = SB.CUST_ID
+                                AND NB.PERSN_LEGAL_BK_CODE = SB.PERSN_LEGAL_BK_CODE);
 	-------------------------------------------------------------------------
 	-- 7.1/7.2 保险新保保费 INDX_0061 (合并 A/B)
 	-------------------------------------------------------------------------
@@ -839,107 +914,195 @@ BEGIN
 							X.PERSN_LEGAL_BK_CODE;
 
 -------------------------------------------------------------------------
-	-- 7.17/7.18 代发薪客户净增 INDX_0064（合并 A/B）
-	-- 口径：参考 ECIF 签约关系 + CBS 账户明细/客户账号（SIGN_TYPE 321/322 且摘要含工资）
-	-- 客户：CBS_KCDA_PZJCXX.KEHUHAOO（收款方代发薪客户号）
-	-- 时间：[活动/任务开始日, 跑批日] 内签约(SIGN_DATE 签约生效日期)
-	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
-		(PATH_CODE,
-		 DATA_DATE,
-		 DATA_BLNG,
-		 STATIS_DIM,
-		 STATIS_CALIB,
-		 INDX_CODE,
-		 CURNT_VAL,
-		 TERM_LAST_VAL,
-		 PERSN_LEGAL_BK_CODE)
-		WITH SCOPE_ALL AS
-		 (SELECT 'A' AS PATH_CODE,
-						 '营销活动' AS STATIS_CALIB,
-						 S.STATIS_DIM,
-						 S.DATA_BLNG,
-						 S.TERM_BEGIN_DATE,
-						 TI.CUST_ID,
-						 S.PERSN_LEGAL_BK_CODE
-				FROM TMP_STAT_INDX_SCOPE S
-			 INNER JOIN DWD_MKT_TSK_INFO TI ON TI.MKT_ACT_ID = S.STATIS_DIM
-																		 AND TI.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
-																		 AND TI.DATA_DATE = V_SYSDAT
-																		 AND ((S.BLNG_TYPE = 'O' AND TI.MKT_PERSN_ORG = S.BLNG_ID) OR
-																				 (S.BLNG_TYPE = 'M' AND TI.MKT_PERSN = S.BLNG_ID))
-			 WHERE S.PATH_CODE = 'A'
-				 AND S.INDX_CODE = 'INDX_0064'
-			UNION ALL
-			SELECT 'B',
-						 '目标任务',
-						 S.STATIS_DIM,
-						 S.DATA_BLNG,
-						 S.TERM_BEGIN_DATE,
-						 LV.CUST_ID,
-						 S.PERSN_LEGAL_BK_CODE
-				FROM TMP_STAT_INDX_SCOPE S
-			 INNER JOIN DWS_CUST_LVL_INFO LV ON S.BLNG_TYPE = 'O'
-																			AND LV.ORG_ID = S.BLNG_ID
-																			AND LV.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
-																			AND LV.DATA_DATE = V_SYSDAT
-			 WHERE S.PATH_CODE = 'B'
-				 AND S.INDX_CODE = 'INDX_0064'
-			UNION ALL
-			SELECT 'B',
-						 '目标任务',
-						 S.STATIS_DIM,
-						 S.DATA_BLNG,
-						 S.TERM_BEGIN_DATE,
-						 CM.CUST_ID,
-						 S.PERSN_LEGAL_BK_CODE
-				FROM TMP_STAT_INDX_SCOPE S
-			 INNER JOIN DWD_CUST_MAN CM ON S.BLNG_TYPE = 'M'
-																 AND CM.MNGR_POST_ID = S.BLNG_ID
-																 AND CM.MNG_TYP = '1'
-																 AND CM.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
-			 WHERE S.PATH_CODE = 'B'
-				 AND S.INDX_CODE = 'INDX_0064'),
-		SALARY_SIGN AS
-		 (SELECT DISTINCT CD.KEHUHAOO            AS CUST_ID,
-											 CASE
-												 WHEN CD.FAKAJIGO LIKE '12%' THEN
-													'1200'
-												 WHEN CD.FAKAJIGO LIKE '15%' THEN
-													'1500'
-												 WHEN CD.FAKAJIGO LIKE '18%' THEN
-													'1800'
-												 ELSE
-													'9999'
-											 END                     AS PERSN_LEGAL_BK_CODE,
-											 TO_CHAR(T2.SIGN_DATE, 'YYYYMMDD') AS CTRAKT_DATE
-				FROM ECIF_T02_A_CUST_SIGN_REL T1
-			 INNER JOIN CBS_KDPL_ZHMINX KZ ON KZ.KEHUZHAO = T1.SIGN_ACC_NO
-			 INNER JOIN CBS_KCDA_PZJCXX CD ON KZ.DUIFKHZH = CD.KAHAOOOO
-			 LEFT JOIN ECIF_T05_A_ACC_SIGN T2 ON T1.ACC_SIGN_ID = T2.ACC_SIGN_ID
-			 WHERE T1.SIGN_TYPE IN ('321', '322')
-				 AND KZ.ZHAIYOMS LIKE '%工资%'
-				 AND T2.CTRAKT_DATE BETWEEN X.TERM_BEGIN_DATE AND V_SYSDAT)
-		SELECT X.PATH_CODE,
-					 V_SYSDAT,
-					 X.DATA_BLNG,
-					 X.STATIS_DIM,
-					 X.STATIS_CALIB,
-					 'INDX_0064',
-					 COUNT(DISTINCT X.CUST_ID),
-					 0,
-					 X.PERSN_LEGAL_BK_CODE
-			FROM SCOPE_ALL X
-		 INNER JOIN SALARY_SIGN SS ON SS.CUST_ID = X.CUST_ID
-																AND SS.PERSN_LEGAL_BK_CODE = X.PERSN_LEGAL_BK_CODE
-		 GROUP BY X.PATH_CODE,
-							X.DATA_BLNG,
-							X.STATIS_DIM,
-							X.STATIS_CALIB,
-							X.PERSN_LEGAL_BK_CODE;
-
-	OUTCDE := SQL%ROWCOUNT;
-	COMMIT;
+   -------------------------------------------------------------------------
+   -------------------------------------------------------------------------
+   -------------------------------------------------------------------------
+   -- 7.17/7.18 代发薪客户净增 INDX_0064（合并 A/B，标签表+基数表）
+   -- 范围客户 ∩ 基数表：FRST_MARK_DATE∈[活动开始日,跑批日]即活动期间新增标记，COUNT(DISTINCT CUST_ID)
+   -- 基数客户首现记'19000101'自动巌除；按活动/任务编号(STATIS_DIM)隔离防多活动重复
+   -------------------------------------------------------------------------
+   INSERT INTO TMP_STAT_INDX_AGGR
+          (PATH_CODE,
+           DATA_DATE,
+           DATA_BLNG,
+           STATIS_DIM,
+           STATIS_CALIB,
+           INDX_CODE,
+           CURNT_VAL,
+           TERM_LAST_VAL,
+           PERSN_LEGAL_BK_CODE)
+          WITH SCOPE_ALL AS
+           (SELECT 'A' AS PATH_CODE,
+                                           '营销活动' AS STATIS_CALIB,
+                                           S.STATIS_DIM,
+                                           S.DATA_BLNG,
+                                           S.TERM_BEGIN_DATE,
+                                           TI.CUST_ID,
+                                           S.PERSN_LEGAL_BK_CODE
+                          FROM TMP_STAT_INDX_SCOPE S
+                   INNER JOIN DWD_MKT_TSK_INFO TI ON TI.MKT_ACT_ID = S.STATIS_DIM
+                                                   AND TI.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+                                                   AND TI.DATA_DATE = V_SYSDAT
+                                                   AND ((S.BLNG_TYPE = 'O' AND TI.MKT_PERSN_ORG = S.BLNG_ID) OR
+                                                        (S.BLNG_TYPE = 'M' AND TI.MKT_PERSN = S.BLNG_ID))
+                   WHERE S.PATH_CODE = 'A'
+                     AND S.INDX_CODE = 'INDX_0064'
+          UNION ALL
+          SELECT 'B',
+                                         '目标任务',
+                                         S.STATIS_DIM,
+                                         S.DATA_BLNG,
+                                         S.TERM_BEGIN_DATE,
+                                         LV.CUST_ID,
+                                         S.PERSN_LEGAL_BK_CODE
+                          FROM TMP_STAT_INDX_SCOPE S
+                   INNER JOIN DWS_CUST_LVL_INFO LV ON S.BLNG_TYPE = 'O'
+                                                    AND LV.ORG_ID = S.BLNG_ID
+                                                    AND LV.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+                                                    AND LV.DATA_DATE = V_SYSDAT
+                   WHERE S.PATH_CODE = 'B'
+                     AND S.INDX_CODE = 'INDX_0064'
+          UNION ALL
+          SELECT 'B',
+                                         '目标任务',
+                                         S.STATIS_DIM,
+                                         S.DATA_BLNG,
+                                         S.TERM_BEGIN_DATE,
+                                         CM.CUST_ID,
+                                         S.PERSN_LEGAL_BK_CODE
+                          FROM TMP_STAT_INDX_SCOPE S
+                   INNER JOIN DWD_CUST_MAN CM ON S.BLNG_TYPE = 'M'
+                                              AND CM.MNGR_POST_ID = S.BLNG_ID
+                                              AND CM.MNG_TYP = '1'
+                                              AND CM.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+                   WHERE S.PATH_CODE = 'B'
+                     AND S.INDX_CODE = 'INDX_0064')
+          SELECT PATH_CODE,
+                 V_SYSDAT,
+                 DATA_BLNG,
+                 STATIS_DIM,
+                 STATIS_CALIB,
+                 'INDX_0064',
+                 COUNT(DISTINCT CUST_ID),
+                 0,
+                 PERSN_LEGAL_BK_CODE
+            FROM (SELECT DISTINCT SM.PATH_CODE,
+                                  SM.STATIS_CALIB,
+                                  SM.STATIS_DIM,
+                                  SM.DATA_BLNG,
+                                  SM.TERM_BEGIN_DATE,
+                                  SM.CUST_ID,
+                                  SM.PERSN_LEGAL_BK_CODE
+                    FROM SCOPE_ALL) SM
+           INNER JOIN ADS_CRM_R_SALRY_PAYROL_BASE B ON B.CUST_ID = SM.CUST_ID
+                                                   AND B.PERSN_LEGAL_BK_CODE = SM.PERSN_LEGAL_BK_CODE
+                                                   AND B.STATIS_DIM = SM.STATIS_DIM
+                                                   AND B.PATH_CODE = SM.PATH_CODE
+                                                   AND B.FRST_MARK_DATE BETWEEN SM.TERM_BEGIN_DATE AND V_SYSDAT
+            GROUP BY PATH_CODE,
+                     DATA_BLNG,
+                     STATIS_DIM,
+                     STATIS_CALIB,
+                     PERSN_LEGAL_BK_CODE;
+   -- 7.19/7.20 代销业务收入 INDX_0065（合并 A/B，暂不含贵金属）
+   -- 理财：DWD_ACCT_FIN.PRDKT_CATE_BIG IN('1','2')，ISSU_DATE∈[开始日,跑批日]，SUM(FIN_AMT)
+   -- 保险：DWD_ACCT_INSUR.POLICY_STATE='1'，TX_DATE∈[开始日,跑批日]，SUM(INSUR_AMT)
+   -- 本期值 = 理财合计 + 保险合计（UNION ALL 后统一 SUM，一个活动/任务一条记录）
+   -------------------------------------------------------------------------
+   INSERT INTO TMP_STAT_INDX_AGGR
+           (PATH_CODE,
+            DATA_DATE,
+            DATA_BLNG,
+            STATIS_DIM,
+            STATIS_CALIB,
+            INDX_CODE,
+            CURNT_VAL,
+            TERM_LAST_VAL,
+            PERSN_LEGAL_BK_CODE)
+           WITH SCOPE_ALL AS
+            (SELECT 'A' AS PATH_CODE,
+                                            '营销活动' AS STATIS_CALIB,
+                                            S.STATIS_DIM,
+                                            S.DATA_BLNG,
+                                            S.TERM_BEGIN_DATE,
+                                            TI.CUST_ID,
+                                            S.PERSN_LEGAL_BK_CODE
+                           FROM TMP_STAT_INDX_SCOPE S
+                    INNER JOIN DWD_MKT_TSK_INFO TI ON TI.MKT_ACT_ID = S.STATIS_DIM
+                                                                                                                                            AND TI.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+                                                                                                                                            AND TI.DATA_DATE = V_SYSDAT
+                                                                                                                                            AND ((S.BLNG_TYPE = 'O' AND TI.MKT_PERSN_ORG = S.BLNG_ID) OR
+                                                                                                                                                            (S.BLNG_TYPE = 'M' AND TI.MKT_PERSN = S.BLNG_ID))
+                    WHERE S.PATH_CODE = 'A'
+                            AND S.INDX_CODE = 'INDX_0065'
+                   UNION ALL
+                   SELECT 'B',
+                                            '目标任务',
+                                            S.STATIS_DIM,
+                                            S.DATA_BLNG,
+                                            S.TERM_BEGIN_DATE,
+                                            LV.CUST_ID,
+                                            S.PERSN_LEGAL_BK_CODE
+                           FROM TMP_STAT_INDX_SCOPE S
+                    INNER JOIN DWS_CUST_LVL_INFO LV ON S.BLNG_TYPE = 'O'
+                                                                                                                                                   AND LV.ORG_ID = S.BLNG_ID
+                                                                                                                                                   AND LV.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+                                                                                                                                                   AND LV.DATA_DATE = V_SYSDAT
+                    WHERE S.PATH_CODE = 'B'
+                            AND S.INDX_CODE = 'INDX_0065'
+                   UNION ALL
+                   SELECT 'B',
+                                            '目标任务',
+                                            S.STATIS_DIM,
+                                            S.DATA_BLNG,
+                                            S.TERM_BEGIN_DATE,
+                                            CM.CUST_ID,
+                                            S.PERSN_LEGAL_BK_CODE
+                           FROM TMP_STAT_INDX_SCOPE S
+                    INNER JOIN DWD_CUST_MAN CM ON S.BLNG_TYPE = 'M'
+                                                                                                                            AND CM.MNGR_POST_ID = S.BLNG_ID
+                                                                                                                            AND CM.MNG_TYP = '1'
+                                                                                                                            AND CM.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE
+                    WHERE S.PATH_CODE = 'B'
+                            AND S.INDX_CODE = 'INDX_0065')
+           SELECT PATH_CODE,
+                  V_SYSDAT,
+                  DATA_BLNG,
+                  STATIS_DIM,
+                  STATIS_CALIB,
+                  'INDX_0065',
+                  SUM(AMT),
+                  0,
+                  PERSN_LEGAL_BK_CODE
+             FROM (SELECT DISTINCT SM.PATH_CODE,
+                                   SM.STATIS_CALIB,
+                                   SM.STATIS_DIM,
+                                   SM.DATA_BLNG,
+                                   SM.TERM_BEGIN_DATE,
+                                   SM.CUST_ID,
+                                   SM.PERSN_LEGAL_BK_CODE
+                           FROM SCOPE_ALL) SM
+            INNER JOIN (SELECT F.CUST_ID,
+                               F.PERSN_LEGAL_BK_CODE,
+                               NVL(F.FIN_AMT, 0) AS AMT,
+                               F.ISSU_DATE AS TX_DATE
+                          FROM DWD_ACCT_FIN F
+                         WHERE F.PRDKT_CATE_BIG IN ('1', '2')
+                         UNION ALL
+                          SELECT I.CUST_ID,
+                                I.PERSN_LEGAL_BK_CODE,
+                               NVL(I.INSUR_AMT, 0) AS AMT,
+                               I.TX_DATE AS TX_DATE
+                          FROM DWD_ACCT_INSUR I
+                         WHERE I.POLICY_STATE = '1') D
+                ON D.CUST_ID = SM.CUST_ID
+               AND D.PERSN_LEGAL_BK_CODE = SM.PERSN_LEGAL_BK_CODE
+               AND D.TX_DATE BETWEEN SM.TERM_BEGIN_DATE AND V_SYSDAT
+            GROUP BY PATH_CODE,
+                     DATA_BLNG,
+                     STATIS_DIM,
+                     STATIS_CALIB,
+                     PERSN_LEGAL_BK_CODE;
 	OUTCDE := SQL%ROWCOUNT;
 	COMMIT;
 	V_END_DATE  := SYSDATE;

@@ -13,6 +13,8 @@ allowed_changes:
   - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_002.sql
   - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_003.sql
   - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_006.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_007.sql
+  - path: data_assets/ddl/ads/ads_crm_r_salry_payrol_base.sql
   - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_008.sql
   - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_CUST_SIGN_CTRAKT.sql
   - path: data_assets/mapping/ods_to_dwd/

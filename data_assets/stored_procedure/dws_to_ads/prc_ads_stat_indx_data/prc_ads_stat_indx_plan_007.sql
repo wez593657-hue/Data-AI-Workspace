@@ -440,7 +440,7 @@ BEGIN
                                             END = SM.PERSN_LEGAL_BK_CODE
                                         AND C.FAKARIQI BETWEEN SM.TERM_BEGIN_DATE AND V_SYSDAT
                                         AND C.PZSYZTAI IN ('0','1','3','4','5','6','D','E','F','K','N','M','j','m','n','h','y') 
-          INNER JOIN CBS_KDPA_KEHUZH K ON K.KEHUZHAO = T7.KAHAOOOO AND K.ZHHUFENL IN ('1','2') -- 一类户 二类户
+          INNER JOIN CBS_KDPA_KEHUZH K ON K.KEHUZHAO = C.KAHAOOOO AND K.ZHHUFENL IN ('1','2') -- 一类户 二类户
 		 GROUP BY SM.PATH_CODE,
 							SM.DATA_BLNG,
 							SM.STATIS_DIM,
