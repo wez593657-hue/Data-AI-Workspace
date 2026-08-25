@@ -1,0 +1,9 @@
+evidence_id: ev-ca
+task_id: format-beautify-tooling-20260825
+phase: COMMIT_ALLOWED
+kind: commit_authorization
+purpose: commit_authorization
+result: passed
+details: 本地提交808ed7d完成,严格门禁通过,用户已批准
+repository_revision: 808ed7db22328495a29e45c933914a132c25cd81
+created_at: '2026-08-25T15:42:48+00:00'

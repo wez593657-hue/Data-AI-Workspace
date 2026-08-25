@@ -2,15 +2,16 @@ schema_version: '0.1'
 task_id: format-beautify-tooling-20260825
 purpose: 固化存储过程格式/注释/对齐规范(QA-14~17)+新增scripts/proc_beautify.py对齐校验工具+skill与模板同步
 workflow_profile: lightweight
-state: COMMIT_ALLOWED
+state: PUSH_ALLOWED
 branch: master
 created_at: '2026-08-25T15:40:22+00:00'
-updated_at: '2026-08-25T15:41:41+00:00'
+updated_at: '2026-08-25T15:42:49+00:00'
 evidence_ids:
 - ev-route
 - ev-scope
 - ev-quick
 - ev-ua
+- ev-ca
 allowed_paths: []
 forbidden_paths: []
 history:
@@ -33,4 +34,8 @@ history:
   to: COMMIT_ALLOWED
   reason: 用户批准提交
   at: '2026-08-25T15:41:41+00:00'
-state_seal: 652e1c87cd08de521277a0ee46cbd646d67888b2995ad5cd4515e609ff62b891
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: 本地提交808ed7d,严格门禁通过
+  at: '2026-08-25T15:42:49+00:00'
+state_seal: 6d9cf6bfae8c1421325c0147b8cfeedd813ad9d29d6870578832df5be97cb336
