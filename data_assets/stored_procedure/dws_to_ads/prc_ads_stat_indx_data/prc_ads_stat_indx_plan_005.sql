@@ -1,3 +1,10 @@
+------------------------------------------------------------------------
+-- 存储过程: CRMDM.PRC_ADS_STAT_INDX_PLAN_005
+-- 功能说明: 指标数据统计——步骤5（提取符合提升条件的客户明细并汇总A/B路径指标）
+-- 参数说明:
+--   V_SYSDAT IN  VARCHAR2   跑批业务日期 YYYYMMDD
+--   OUTCDE   OUT INTEGER     输出（处理行数）
+------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_005(
     v_sysdat  IN  VARCHAR2,   -- 跑批业务日期
     outcde OUT INTEGER     -- 处理行数
@@ -21,8 +28,9 @@ BEGIN
     -- 段首自清：本过程专属汇总临时表，防止重跑/并行残留
     DELETE FROM TMP_STAT_INDX_AGGR_005;
     V_END_DATE := TO_DATE(v_sysdat, 'YYYYMMDD');
+
     -------------------------------------------------------------------------
-    -- 6.1 提取符合提升条件的客户明细
+    -- 段落: 6.1 提取符合提升条件的客户明细
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_CUST_STATE (
         path_code, statis_dim, indx_code, data_blng, cust_id,
@@ -80,7 +88,7 @@ BEGIN
        );
 
     -------------------------------------------------------------------------
-    -- 6.2 汇总写入 AGGR（A路径）
+    -- 段落: 6.2 汇总写入 AGGR（A路径：营销活动）
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_005 (
         path_code, data_date, data_blng, statis_dim, statis_calib,
@@ -127,7 +135,7 @@ BEGIN
      GROUP BY s.data_blng, s.statis_dim, s.indx_code, s.persn_legal_bk_code;
 
     -------------------------------------------------------------------------
-    -- 6.3 汇总写入 AGGR（B路径）
+    -- 段落: 6.3 汇总写入 AGGR（B路径：目标任务）
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_005 (
         path_code, data_date, data_blng, statis_dim, statis_calib,
@@ -173,7 +181,10 @@ BEGIN
        AND c.persn_legal_bk_code = s.persn_legal_bk_code
      GROUP BY s.data_blng, s.statis_dim, s.indx_code, s.persn_legal_bk_code;
 
-        outcde := SQL%ROWCOUNT;
+    -------------------------------------------------------------------------
+    -- 段落: 结果行数回写与日志记录
+    -------------------------------------------------------------------------
+    outcde := SQL%ROWCOUNT;
     COMMIT;
     V_END_DATE := SYSDATE;
     V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 86400);
@@ -182,6 +193,9 @@ BEGIN
     SYS_PRC_STEP_LOGS(v_sysdat, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
 EXCEPTION
     WHEN OTHERS THEN
+    -------------------------------------------------------------------------
+    -- 段落: 异常处理——回滚并记录错误日志后重抛
+    -------------------------------------------------------------------------
         ROLLBACK;
         outcde := -1;
         V_END_DATE := SYSDATE;

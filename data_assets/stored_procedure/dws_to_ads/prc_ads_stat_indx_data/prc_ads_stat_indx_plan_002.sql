@@ -1,9 +1,14 @@
--------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- 存储过程: CRMDM.PRC_ADS_STAT_INDX_PLAN_002
+-- 功能说明: 指标数据统计——指标基数据冻结处理（冻结成员/明细/汇总及个贷期初基准）
+-- 参数说明:
+--   V_SYSDAT IN  VARCHAR2   跑批业务日期 YYYYMMDD
+--   OUTCDE   OUT INTEGER    输出（处理行数/结果标志）
 -- 需求版本: v4.6 (2026-08-22)
 -- 变更记录:
 --   v4.6 0050/0051纳入基数冻结范围；新增存量活动0050/0051基准补跑分支(3.3b)；
 --        汇总表新增BASE_YR_AVG_DEPO/BASE_MTH_AVG_DEPO两列；强校验覆盖0050/0051
--------------------------------------------------------------------------
+------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_002(
     v_sysdat  IN  VARCHAR2,   -- 跑批业务日期
     outcde OUT INTEGER     -- 处理行数
@@ -16,7 +21,8 @@ CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_002(
     V_NO_ID      VARCHAR2(10);
     V_BGN_DATE   DATE;
     V_END_DATE   DATE;
-    V_DURA_DATE  INTEGER;    V_NEXT_DAY    VARCHAR2(8);
+    V_DURA_DATE  INTEGER;
+    V_NEXT_DAY   VARCHAR2(8);
     V_MISSING_CNT INTEGER;
 BEGIN
     -------------------------------------------------------------------------
@@ -27,7 +33,9 @@ BEGIN
     IF v_sysdat IS NULL OR NOT REGEXP_LIKE(v_sysdat, '^[0-9]{8}$') THEN
         RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
     END IF;
-    V_END_DATE := TO_DATE(v_sysdat, 'YYYYMMDD');    -------------------------------------------------------------------------
+    V_END_DATE := TO_DATE(v_sysdat, 'YYYYMMDD');
+
+    -------------------------------------------------------------------------
     -- 初始化日期边界
     -------------------------------------------------------------------------
     V_NEXT_DAY := sys_fun_deal_date(v_sysdat, 31);
@@ -346,7 +354,7 @@ BEGIN
      );
 
     -------------------------------------------------------------------------
-    -- 清理仅用于冻结的范围数据    -------------------------------------------------------------------------
+    -- 清理仅用于冻结的范围数据
     -- 清理仅用于冻结的范围数据
     -------------------------------------------------------------------------
     DELETE FROM TMP_STAT_INDX_SCOPE WHERE term_begin_date = V_NEXT_DAY;
@@ -384,7 +392,7 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20002,
             '已开始活动/任务缺少开始前一天冻结的基准数据，严禁在活动期间补建基准');
     END IF;
-        outcde := SQL%ROWCOUNT;
+    outcde := SQL%ROWCOUNT;
     COMMIT;
     V_END_DATE := SYSDATE;
     V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 86400);

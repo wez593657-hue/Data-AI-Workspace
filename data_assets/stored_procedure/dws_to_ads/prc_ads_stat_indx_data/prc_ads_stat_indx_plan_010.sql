@@ -1,14 +1,19 @@
 -------------------------------------------------------------------------
+-- 存储过程: CRMDM.PRC_ADS_STAT_INDX_PLAN_010
+-- 功能说明: 指标数据统计，步骤10——合并各过程专属AGGR汇总表、强校验后机构树上卷并原子发布到结果表
+-- 参数说明:
+--   V_SYSDAT IN  VARCHAR2  跑批业务日期 YYYYMMDD
+--   OUTCDE   OUT INTEGER   输出（处理行数）
 -- 需求版本: v1.0 (2026-08-25)
 -- 变更记录:
 --   v1.0 AGGR汇总表拆分配套：合并各过程专属表_003~_009至_010后统一强校验+落库
 -------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_010(
     v_sysdat  IN  VARCHAR2,   -- 跑批业务日期
-    outcde OUT INTEGER     -- 处理行数
+    outcde    OUT INTEGER     -- 处理行数
 ) AS
     V_PRC_DESC VARCHAR2(100) := '指标数据统计步骤1010处理完成 10';
-    V_PRC_NAME VARCHAR2(32) := 'prc_ads_stat_indx_plan_010';
+    V_PRC_NAME VARCHAR2(32)  := 'prc_ads_stat_indx_plan_010';
     V_LOG_MSG VARCHAR2(4000);
     V_LOG_FLG INTEGER;
     V_LOG_BUTTON INTEGER := 1;
@@ -16,9 +21,12 @@ CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_010(
     V_BGN_DATE DATE;
     V_END_DATE DATE;
     V_DURA_DATE INTEGER;
-    V_INVALID_CNT   INTEGER;
-    V_DUPLICATE_CNT INTEGER;
+    V_INVALID_CNT   INTEGER;     -- 空值非法行数统计
+    V_DUPLICATE_CNT INTEGER;     -- 重复主键组数统计
 BEGIN
+    -------------------------------------------------------------------------
+    -- 初始化运行参数并校验跑批业务日期
+    -------------------------------------------------------------------------
     V_NO_ID := '0';
     V_BGN_DATE := SYSDATE;
     IF v_sysdat IS NULL OR NOT REGEXP_LIKE(v_sysdat, '^[0-9]{8}$') THEN
@@ -33,9 +41,15 @@ BEGIN
     DELETE FROM TMP_STAT_INDX_AGGR_010;
 
     INSERT INTO TMP_STAT_INDX_AGGR_010 (
-        path_code, data_date, data_blng, statis_dim,
-        statis_calib, indx_code, curnt_val, term_last_val,
-        persn_legal_bk_code
+        path_code,           -- 路径编码
+        data_date,           -- 数据日期
+        data_blng,           -- 归属机构
+        statis_dim,          -- 统计维度
+        statis_calib,        -- 统计口径
+        indx_code,           -- 指标编码
+        curnt_val,           -- 当期值
+        term_last_val,       -- 上期值
+        persn_legal_bk_code  -- 客户编码(个人/法人)
     )
     SELECT path_code, data_date, data_blng, statis_dim,
            statis_calib, indx_code, curnt_val, term_last_val,
@@ -119,8 +133,8 @@ BEGIN
           FROM TMP_STAT_INDX_AGGR_010
     ),
     org_closure AS (
-        SELECT org_id                 AS ancestor_org_id,
-               CONNECT_BY_ROOT org_id AS descendant_org_id
+        SELECT org_id                 AS ancestor_org_id,   -- 祖先机构
+               CONNECT_BY_ROOT org_id AS descendant_org_id  -- 根(子孙)机构
           FROM DWD_SYS_ORG
          START WITH org_id IN (
              SELECT DISTINCT SUBSTR(r.data_blng, 5)
@@ -153,14 +167,20 @@ BEGIN
            curnt_val, term_last_val, data_date, persn_legal_bk_code
       FROM org_rolled_up;
 
-        outcde := SQL%ROWCOUNT;
+    outcde := SQL%ROWCOUNT;
     COMMIT;
+    -------------------------------------------------------------------------
+    -- 记录过程执行日志
+    -------------------------------------------------------------------------
     V_END_DATE := SYSDATE;
     V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 86400);
     V_LOG_MSG := '步骤10处理完成，行数=' || NVL(outcde, 0);
     V_LOG_FLG := 0;
     SYS_PRC_STEP_LOGS(v_sysdat, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
 EXCEPTION
+    -------------------------------------------------------------------------
+    -- 异常处理：回滚事务并记录错误日志后重新抛出
+    -------------------------------------------------------------------------
     WHEN OTHERS THEN
         ROLLBACK;
         outcde := -1;

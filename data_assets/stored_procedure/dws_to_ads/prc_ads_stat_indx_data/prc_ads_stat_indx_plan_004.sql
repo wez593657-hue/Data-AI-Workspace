@@ -1,3 +1,12 @@
+------------------------------------------------------------------------
+-- 存储过程: CRMDM.PRC_ADS_STAT_INDX_PLAN_004
+-- 功能说明: 指标数据统计——步骤4（营销活动/目标任务两路径的指标汇总写入临时汇总表）
+-- 参数说明:
+--   V_SYSDAT IN  VARCHAR2   跑批业务日期 YYYYMMDD
+--   OUTCDE   OUT INTEGER     输出（处理行数/结果标志）
+-- 需求版本: 【待确认】原文件中无需求版本/变更记录信息，需向需求方确认
+-- 变更记录: 无根目录变更记录可继承，本次为文件头规范化
+------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_004(
     v_sysdat  IN  VARCHAR2,   -- 跑批业务日期
     outcde OUT INTEGER     -- 处理行数
@@ -14,6 +23,9 @@ CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_004(
 BEGIN
     V_NO_ID := '0';
     V_BGN_DATE := SYSDATE;
+    -------------------------------------------------------------------------
+    -- 参数校验：跑批业务日期格式校验（必须为 8 位数字 YYYYMMDD）
+    -------------------------------------------------------------------------
     IF v_sysdat IS NULL OR NOT REGEXP_LIKE(v_sysdat, '^[0-9]{8}$') THEN
         RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
     END IF;
@@ -125,7 +137,10 @@ BEGIN
        AND s.indx_code IN ('INDX_0055','INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062')
      GROUP BY s.data_blng, s.statis_dim, s.indx_code, s.persn_legal_bk_code;
 
-        outcde := SQL%ROWCOUNT;
+    outcde := SQL%ROWCOUNT;
+    -------------------------------------------------------------------------
+    -- 提交事务并记录成功日志
+    -------------------------------------------------------------------------
     COMMIT;
     V_END_DATE := SYSDATE;
     V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 86400);
@@ -133,6 +148,9 @@ BEGIN
     V_LOG_FLG := 0;
     SYS_PRC_STEP_LOGS(v_sysdat, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
 EXCEPTION
+    -------------------------------------------------------------------------
+    -- 异常处理：回滚事务、记录失败日志后向上抛出
+    -------------------------------------------------------------------------
     WHEN OTHERS THEN
         ROLLBACK;
         outcde := -1;

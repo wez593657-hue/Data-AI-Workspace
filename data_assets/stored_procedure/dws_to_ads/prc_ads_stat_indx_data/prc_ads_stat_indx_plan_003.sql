@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------
+-- 存储过程: CRMDM.PRC_ADS_STAT_INDX_PLAN_003
+-- 功能说明: 指标数据统计——步骤3（余额预聚合与各指标增量写入汇总表）
+-- 参数说明:
+--   V_SYSDAT IN  VARCHAR2   跑批业务日期 YYYYMMDD
+--   OUTCDE   OUT INTEGER    处理行数
 -- 需求版本: v4.7 (2026-08-25)
 -- 变更记录:
 --   v4.7 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_003，段首自清（并行跑批隔离）
@@ -18,7 +23,7 @@ CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_003(
     V_NO_ID      VARCHAR2(10);
     V_BGN_DATE   DATE;
     V_END_DATE   DATE;
-    V_DURA_DATE  INTEGER;    
+    V_DURA_DATE  INTEGER;
     V_MTH_BEGIN    VARCHAR2(8);   -- 当月月初
     V_MTH_END      VARCHAR2(8);   -- 上月月末
     V_QRT_END      VARCHAR2(8);   -- 上季末
@@ -35,7 +40,10 @@ BEGIN
 
     -- 段首自清：本过程专属汇总临时表，防止重跑/并行残留
     DELETE FROM TMP_STAT_INDX_AGGR_003;
-    V_END_DATE := TO_DATE(v_sysdat, 'YYYYMMDD');    -------------------------------------------------------------------------
+
+    V_END_DATE := TO_DATE(v_sysdat, 'YYYYMMDD');
+
+    -------------------------------------------------------------------------
     -- 初始化日期边界
     -------------------------------------------------------------------------
     V_MTH_BEGIN    := sys_fun_deal_date(v_sysdat, 9);
@@ -57,7 +65,7 @@ BEGIN
           FROM TMP_STAT_INDX_SCOPE
          WHERE indx_code IN ('INDX_0046','INDX_0047','INDX_0048',
                              'INDX_0049','INDX_0050','INDX_0051')
-           AND (indx_code <> 'INDX_0047' OR blng_type = 'O')
+           AND (indx_code <> 'INDX_0047' OR blng_type = 'O')   -- INDX_0047 仅机构维度口径
     ),
     scope_member AS (
         -- A路径：营销活动成员
@@ -102,11 +110,11 @@ BEGIN
            sm.statis_dim,
            sm.data_blng,
            sm.persn_legal_bk_code,
-           SUM(NVL(b.curnt_aum, 0)) AS curnt_aum,
-           SUM(NVL(hb.yr_begin_aum, 0)) AS yr_begin_aum,
-           SUM(NVL(hb.mth_end_aum, 0)) AS mth_end_aum,
-           SUM(NVL(hb.qrt_end_aum, 0)) AS qrt_end_aum,
-           SUM(NVL(b.curnt_yr_avg_aum, 0)) AS curnt_yr_avg_aum,
+           SUM(NVL(b.curnt_aum, 0))         AS curnt_aum,
+           SUM(NVL(hb.yr_begin_aum, 0))     AS yr_begin_aum,
+           SUM(NVL(hb.mth_end_aum, 0))      AS mth_end_aum,
+           SUM(NVL(hb.qrt_end_aum, 0))      AS qrt_end_aum,
+           SUM(NVL(b.curnt_yr_avg_aum, 0))  AS curnt_yr_avg_aum,
            SUM(NVL(b.curnt_mth_avg_aum, 0)) AS curnt_mth_avg_aum
       FROM scope_member sm
       LEFT JOIN (
@@ -117,7 +125,9 @@ BEGIN
                  SUM(CASE WHEN bal_type = '2' THEN NVL(depo_bal, 0) ELSE 0 END) AS curnt_mth_avg_aum
             FROM DWS_CUST_ASSE_LIAB
            WHERE data_date = v_sysdat
-             AND EXISTS (SELECT 1 FROM scope_member sm2 WHERE sm2.cust_id = DWS_CUST_ASSE_LIAB.cust_id AND sm2.persn_legal_bk_code = DWS_CUST_ASSE_LIAB.persn_legal_bk_code)
+             AND EXISTS (SELECT 1 FROM scope_member sm2
+                          WHERE sm2.cust_id = DWS_CUST_ASSE_LIAB.cust_id
+                            AND sm2.persn_legal_bk_code = DWS_CUST_ASSE_LIAB.persn_legal_bk_code)
            GROUP BY cust_id, persn_legal_bk_code
       ) b
         ON b.cust_id             = sm.cust_id
@@ -133,7 +143,9 @@ BEGIN
                             AND bal_type = '1' THEN NVL(depo_bal, 0) ELSE 0 END) AS qrt_end_aum
             FROM DWS_CUST_ASSE_LIAB_HIS
            WHERE data_date IN (V_YAR_BEGIN, V_MTH_END, V_QRT_END)
-             AND EXISTS (SELECT 1 FROM scope_member sm2 WHERE sm2.cust_id = DWS_CUST_ASSE_LIAB_HIS.cust_id AND sm2.persn_legal_bk_code = DWS_CUST_ASSE_LIAB_HIS.persn_legal_bk_code)
+             AND EXISTS (SELECT 1 FROM scope_member sm2
+                          WHERE sm2.cust_id = DWS_CUST_ASSE_LIAB_HIS.cust_id
+                            AND sm2.persn_legal_bk_code = DWS_CUST_ASSE_LIAB_HIS.persn_legal_bk_code)
            GROUP BY cust_id, persn_legal_bk_code
       ) hb
         ON hb.cust_id             = sm.cust_id
@@ -265,13 +277,21 @@ BEGIN
        AND s.blng_type = 'O'
        AND s.indx_code = 'INDX_0047'
      GROUP BY s.data_blng, s.statis_dim, b.curnt_aum, s.persn_legal_bk_code;
-        outcde := SQL%ROWCOUNT;
+
+    -------------------------------------------------------------------------
+    -- 收尾：本次处理行数回填、提交并记录步骤日志
+    -------------------------------------------------------------------------
+    outcde := SQL%ROWCOUNT;
     COMMIT;
     V_END_DATE := SYSDATE;
     V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 86400);
     V_LOG_MSG := '步骤3处理完成，行数=' || NVL(outcde, 0);
     V_LOG_FLG := 0;
     SYS_PRC_STEP_LOGS(v_sysdat, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
+
+    -------------------------------------------------------------------------
+    -- 异常处理：回滚并记录错误日志后重抛
+    -------------------------------------------------------------------------
 EXCEPTION
     WHEN OTHERS THEN
         ROLLBACK;

@@ -1,0 +1,9 @@
+evidence_id: ev-req-001
+task_id: code-beautify-20260825
+phase: REQUIREMENT_ANALYZED
+kind: requirement_analysis
+purpose: requirement_analysis
+result: passed
+details: 需求=代码美化规范;遵守AGENTS与内美化规范文件
+repository_revision: be22768a01da27d52747da71f905b01b5531f264
+created_at: '2026-08-25T11:31:54+00:00'
