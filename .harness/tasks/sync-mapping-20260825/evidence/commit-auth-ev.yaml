@@ -1,0 +1,9 @@
+evidence_id: commit-auth-ev
+task_id: sync-mapping-20260825
+phase: COMMIT_ALLOWED
+kind: commit_authorization
+purpose: commit_authorization
+result: passed
+details: 本地提交34295cd完成，pre-commit钩子全量校验通过
+repository_revision: 34295cd1a570e646603cedce78b3103255e5dfec
+created_at: '2026-08-25T10:49:29+00:00'

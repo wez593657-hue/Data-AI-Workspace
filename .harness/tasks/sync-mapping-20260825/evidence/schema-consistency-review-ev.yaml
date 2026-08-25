@@ -1,0 +1,9 @@
+evidence_id: schema-consistency-review-ev
+task_id: sync-mapping-20260825
+phase: ASSETS_REVIEW_PASSED
+kind: schema_consistency_review
+purpose: schema_consistency_review
+result: passed
+details: 5张KYC表DDL/MD与Excel一致，表命名规范与跨层一致性校验通过
+repository_revision: 34295cd1a570e646603cedce78b3103255e5dfec
+created_at: '2026-08-25T10:47:42+00:00'

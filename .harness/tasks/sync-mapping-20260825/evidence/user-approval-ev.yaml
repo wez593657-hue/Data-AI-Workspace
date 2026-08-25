@@ -1,0 +1,9 @@
+evidence_id: user-approval-ev
+task_id: sync-mapping-20260825
+phase: USER_APPROVED
+kind: user_approval
+purpose: user_approval
+result: passed
+details: 用户确认无误，授权提交并推送
+repository_revision: 34295cd1a570e646603cedce78b3103255e5dfec
+created_at: '2026-08-25T10:49:14+00:00'

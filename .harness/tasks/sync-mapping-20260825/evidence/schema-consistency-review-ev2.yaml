@@ -1,0 +1,24 @@
+schema_version: '0.1'
+evidence_id: schema-consistency-review-ev2
+task_id: sync-mapping-20260825
+phase: ASSETS_REVIEW_PASSED
+kind: review
+purpose: schema_consistency_review
+result: passed
+details: 5张KYC表DDL/MD与Excel一致，表命名规范与跨层一致性校验通过
+repository_revision: 34295cd1a570e646603cedce78b3103255e5dfec
+created_at: '2026-08-25T10:48:30+00:00'
+checked_files:
+- data_assets/mapping/ods_to_dwd/ods到dwd映射.md
+- data_assets/ddl/dwd/dwd_cust_indv_kyc.sql
+- data_assets/ddl/dwd/dwd_cust_indv_car_kyc.sql
+- data_assets/ddl/dwd/dwd_cust_indv_house_kyc.sql
+- data_assets/ddl/dwd/dwd_cust_indv_kyc_othr.sql
+- data_assets/ddl/dwd/dwd_cust_indv_shop_kyc.sql
+- data_assets/ddl/tmp/tmp_pro_ads_cust_new_cust_kyc.ddl
+- data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_NEW_CUST_DTL.sql
+rules_checked:
+- 表名统一DWD_/ADS_前缀且无重名冲突
+- DDL字段与Mapping MD字段一致(20/11/11/8/11)
+- 存储过程完整度口径28项阈值≥23与需求文档一致
+- strict门禁8项全部通过(114单测+跨层一致性+工作区完整校验)
