@@ -3,21 +3,21 @@
 ## 映射来源
 
 - Excel：`data_assets/mapping/dwd_to_dws/DWS汇总层数据模型_CRM_ V1.0.xlsx`
-- Excel SHA-256：`3ad78e8104574f59f801212babfeae2a61885f651a112fb0196314b2b09a6d41`
+- Excel SHA-256：`032efa56d41cbafbf0c2a31a816f5ec988e9d4bc14856ff085b6d5185fc66cbc`
 
 ## 映射概览
 
 | 目标表 | 字段数 |
 |--------|-------:|
-| DWS_CUST_DEADLINE_RMND | 20 |
-| DWS_CUST_CARE_RMND | 17 |
-| DWS_CUST_CAPITAL_RMND | 21 |
-| DWS_CUST_INDIV_REFERRAL | 14 |
-| DWS_CUST_REFERRAL_RMND | 10 |
-| DWS_CUST_ASSE_LIAB_CUMU | 15 |
 | DWS_CUST_ASSE_LIAB | 19 |
+| DWS_CUST_ASSE_LIAB_CUMU | 18 |
+| DWS_CUST_ASSE_LIAB_HIS | 19 |
+| DWS_CUST_CAPITAL_RMND | 21 |
+| DWS_CUST_CARE_RMND | 17 |
+| DWS_CUST_DEADLINE_RMND | 20 |
+| DWS_CUST_INDIV_REFERRAL | 14 |
 | DWS_CUST_LVL_INFO | 6 |
-| DWS_CUST_INDV_POTEN | 31 |
+| DWS_CUST_REFERRAL_RMND | 10 |
 
 ## 字段映射详情
 
@@ -139,9 +139,6 @@
 | ACCT_ID | 账号 | VARCHAR2(40) |  |  |  |
 | PRDKT_ID | 产品编号 | VARCHAR2(40) |  |  |  |
 | PRDKT_CATE_BIG | 产品大类 | VARCHAR2(40) |  |  |  |
-| CHNL_NO | 办理渠道 | VARCHAR2(10) | DWD_ACCT_FIN / DWD_ACCT_INSUR | CHNL_NO / TX_CHNL | 存款、贷款无来源时置空；理财取CHNL_NO；保险取TX_CHNL |
-| ISSU_DATE | 办理日期 | VARCHAR2(10) | DWD_ACCT_DEPO / DWD_ACCT_LOAN / DWD_ACCT_FIN / DWD_ACCT_INSUR | OPEN_DATE / LOAN_ISSU_DATE / ISSU_DATE / TX_DATE | 分别取各产品办理或开户日期；保险按保单首次交易日期取值 |
-| IOU_NO | 投保单号或者借据号 | VARCHAR2(100) | DWD_ACCT_LOAN / DWD_ACCT_INSUR | IOU_NO / INSUR_BID_FORM_NO | 贷款取借据号；保险取投保单号；存款、理财无来源时置空 |
 | PRDKT_TYP | 产品类型 | VARCHAR2(1) |  |  |  |
 | BAL | 日余额 | NUMBER(20,2) |  |  |  |
 | MTH_BAL | 月余额 | NUMBER(20,2) |  |  |  |
@@ -150,6 +147,33 @@
 | MTH_DAYS | 月天数 | NUMBER(20,2) |  |  |  |
 | QRT_DAYS | 季天数 | NUMBER(20,2) |  |  |  |
 | YAR_DAYS | 年天数 | NUMBER(20,2) |  |  |  |
+| CHNL_NO | 办理渠道 | VARCHAR2(10) |  |  |  |
+| ISSU_DATE | 办理日期 | VARCHAR2(10) |  |  |  |
+| IOU_NO | 投保单号或者借据号 | VARCHAR2(100) |  |  |  |
+
+### DWS_CUST_ASSE_LIAB_HIS
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| DATA_DATE | 数据日期 | VARCHAR2(8) |  |  |  |
+| CUST_ID | 客户号 | VARCHAR2(20) |  |  |  |
+| ORG_ID | 归属机构 | VARCHAR2(7) |  |  |  |
+| ORG_ID_LOAN | 信贷归属机构 | VARCHAR2(6) |  |  |  |
+| BAL_TYPE | 类型1-余额2-月日均3-季日均4-年日均 | CHAR(1) |  |  |  |
+| AUM_BAL | AUM余额 | NUMBER(20,2) |  |  |  |
+| DEPO_BAL | 存款余额 | NUMBER(20,2) |  |  |  |
+| DEPO_CURNT_DEPO_BAL | 活期余额 | NUMBER(20,2) |  |  |  |
+| FIXD_DEPO_BAL | 普通定期余额 | NUMBER(20,2) |  |  |  |
+| LEHUI_BAL | 乐惠存产品余额 | NUMBER(20,2) |  |  |  |
+| LARGEDP_BAL | 大额存单余额 | NUMBER(20,2) |  |  |  |
+| FIN_BAL | 理财余额 | NUMBER(20,2) |  |  |  |
+| CLOSE_AGEN_FIN_BAL | 代销封闭式理财余额 | NUMBER(20,2) |  |  |  |
+| OPEN_AGEN_FIN_BAL | 代销开放式理财余额 | NUMBER(20,2) |  |  |  |
+| CLOSE_SELF_FIN_BAL | 自营封闭式理财余额 | NUMBER(20,2) |  |  |  |
+| OPEN_SELF_FIN_BAL | 自营开放式理财余额 | NUMBER(20,2) |  |  |  |
+| INSUR_BAL | 保险余额 | NUMBER(20,2) |  |  |  |
+| LOAN_BAL | 贷款余额 | NUMBER(20,2) |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(7) |  |  |  |
 
 ### DWS_CUST_ASSE_LIAB
 
@@ -161,7 +185,7 @@
 | ORG_ID_LOAN | 信贷归属机构 | VARCHAR2(6) |  |  |  |
 | BAL_TYPE | 类型1-余额2-月日均3-季日均4-年日均 | CHAR(1) |  |  |  |
 | AUM_BAL | AUM余额 | NUMBER(20,2) |  |  |  |
-| DEPO_BAL | 定期余额 | NUMBER(20,2) |  |  |  |
+| DEPO_BAL | 存款余额 | NUMBER(20,2) |  |  |  |
 | DEPO_CURNT_DEPO_BAL | 活期余额 | NUMBER(20,2) |  |  |  |
 | FIXD_DEPO_BAL | 普通定期余额 | NUMBER(20,2) |  |  |  |
 | LEHUI_BAL | 乐惠存产品余额 | NUMBER(20,2) |  |  |  |
@@ -185,42 +209,6 @@
 | CUST_LVL | 客户等级 | VARCHAR2(2) |  |  |  |
 | ORG_ID | 归属机构 | VARCHAR2(8) |  |  |  |
 | CUST_HRAKY | 客户权益等级 | VARCHAR2(2) |  |  |  |
-
-### DWS_CUST_INDV_POTEN
-
-| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
-|----------|----------------|--------------|------|--------|----------|
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR(4) | TMP_DWS_CUST_INDV_POTEN | PERSN_LEGAL_BK_CODE |  |
-| POTEN_CUST_ID | 潜在客户号(自增键) | VARCHAR(40) |  |  | SYS_GUID() |
-| POTEN_CUST_NAME | 潜在客户名称 | VARCHAR(40) | TMP_DWS_CUST_INDV_POTEN | POTEN_CUST_NAME |  |
-| POTEN_TYP | 潜客类型 | VARCHAR(100) | TMP_DWS_CUST_INDV_POTEN | POTEN_TYP |  |
-| GENDER | 性别 | VARCHAR(6) | TMP_DWS_CUST_INDV_POTEN | GENDER |  |
-| CERT_TYP | 证件类型 | VARCHAR(6) | TMP_DWS_CUST_INDV_POTEN | CERT_TYP |  |
-| CERT_ID | 证件号码 | VARCHAR(32) | TMP_DWS_CUST_INDV_POTEN | CERT_ID |  |
-| TEL_NO | 联系电话 | VARCHAR(32) | TMP_DWS_CUST_INDV_POTEN | TEL_NO |  |
-| INTENT_DSC | 备注说明 | VARCHAR(400) | TMP_DWS_CUST_INDV_POTEN | INTENT_DSC |  |
-| DTL_ADDRS | 居住地址 | VARCHAR(400) | TMP_DWS_CUST_INDV_POTEN | DTL_ADDRS |  |
-| CREATR | 创建人 | VARCHAR(20) | TMP_DWS_CUST_INDV_POTEN | CREATR |  |
-| CREAT_TIME | 创建时间 | VARCHAR(20) | TMP_DWS_CUST_INDV_POTEN | CREAT_TIME |  |
-| POTEN_CUST_STATE | 潜在客户状态 | VARCHAR(6) | TMP_DWS_CUST_INDV_POTEN | POTEN_CUST_STATE |  |
-| SRC_TYP | 来源类型 | VARCHAR(20) | TMP_DWS_CUST_INDV_POTEN | SRC_TYP | '01' |
-| MKT_PERSN | 客户经理 | VARCHAR(6) | TMP_DWS_CUST_INDV_POTEN | MKT_PERSN |  |
-| MKT_ORG | 归属机构 | VARCHAR(200) | TMP_DWS_CUST_INDV_POTEN | MKT_ORG |  |
-| SERV_ENTER | 工作单位 | VARCHAR(6) | TMP_DWS_CUST_INDV_POTEN | SERV_ENTER |  |
-| POST | 职位 | NUMERIC | TMP_DWS_CUST_INDV_POTEN | POST |  |
-| MTH_INCOM | 月收入 | NUMERIC | TMP_DWS_CUST_INDV_POTEN | MTH_INCOM |  |
-| YR_INCOM | 年收入 | VARCHAR(400) | TMP_DWS_CUST_INDV_POTEN | YR_INCOM |  |
-| RMARK | 备注 | VARCHAR(10) | TMP_DWS_CUST_INDV_POTEN | RMARK |  |
-| INF_KLKT_DATE | 潜客转化日期 | VARCHAR(200) | TMP_DWS_CUST_INDV_POTEN | INF_KLKT_DATE |  |
-| UNIT_ADDRS | 工作单位地址 | VARCHAR(60) | TMP_DWS_CUST_INDV_POTEN | UNIT_ADDRS |  |
-| INTN_PRDKT | 意向产品 | VARCHAR(40) | TMP_DWS_CUST_INDV_POTEN | INTN_PRDKT |  |
-| NO_BAT | 批次号 | VARCHAR(21) | TMP_DWS_CUST_INDV_POTEN | NO_BAT |  |
-| CUST_ID | 转化后核心客户号 | VARCHAR(60) | TMP_DWS_CUST_INDV_POTEN | CUST_ID |  |
-| POT_CNVRT_PRDKT | 潜客转化产品 | VARCHAR(6) | TMP_DWS_CUST_INDV_POTEN | POT_CNVRT_PRDKT |  |
-| POT_CNVRT_ORG | 潜客转化机构 | VARCHAR(8) | TMP_DWS_CUST_INDV_POTEN | POT_CNVRT_ORG |  |
-| ALLO_DATE | 分配日期 | VARCHAR(8) | TMP_DWS_CUST_INDV_POTEN | ALLO_DATE |  |
-| REC_DATE | 回收日期 | VARCHAR(8) | TMP_DWS_CUST_INDV_POTEN | ALLO_DATE |  |
-| AGE | 客户年龄 | NUMERIC | TMP_DWS_CUST_INDV_POTEN | AGE |  |
 
 ---
 

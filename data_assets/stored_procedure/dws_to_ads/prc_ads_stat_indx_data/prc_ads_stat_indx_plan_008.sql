@@ -1,3 +1,9 @@
+---------------------------------------------------------------------
+-- 需求版本: v5.1 (2026-08-25)
+-- 变更记录:
+--   v5.0 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_008，段首自清（并行跑批隔离）
+--   v5.1 0081/0069分母净额化：ORDER_TYPE='01'退款取负，'00'支付为正；>=500阈值按净额
+---------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE CRMDM.PRC_ADS_STAT_INDX_PLAN_008
 (
 	V_SYSDAT  IN VARCHAR2, -- 跑批业务日期 YYYYMMDD
@@ -35,10 +41,13 @@ BEGIN
 	V_YAR_BEGIN := SYS_FUN_DEAL_DATE(V_SYSDAT, 13);
 	V_DAY_END   := V_SYSDAT || '999999';
 
+	-- 段首自清：本过程专属汇总临时表，防止重跑/并行残留
+	DELETE FROM TMP_STAT_INDX_AGGR_008;
+
 	---------------------------------------------------------------------
 	-- 1. 0081 / 0069 合并产出：A/B 路径一次扫描，两指标共享宽表
 	---------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_008
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -128,11 +137,10 @@ BEGIN
 		 (
 			/*-- 商户年累计交易量预聚合：先按 mct_id 压缩订单明细 --*/
 			SELECT MCT_ID,
-							SUM(NVL(ORDER_AMT, 0)) AS ANNUAL_TX_AMT
+						SUM(CASE WHEN ORDER_TYPE = '01' THEN -ORDER_AMT ELSE ORDER_AMT END) AS ANNUAL_TX_AMT -- 净额：01退款取负
 				FROM UEPP_PAY_ORDER_INFO
-			 WHERE --ORDER_TYPE = '00'  --订单类型 00-支付交易  01-退款交易
-				 --AND
-				 STATUS = '02'      --订单状态  00：待付款  01：处理中 02：交易成功 03：交易失败  04：已关闭  05：已撤销  90:超时 91:异常  98：预下单  99：日终失效
+									WHERE ORDER_TYPE IN ('00', '01')      -- 订单类型 00-支付交易  01-退款交易（值域仅此两值）
+                                 AND STATUS = '02'      --订单状态  00：待付款  01：处理中 02：交易成功 03：交易失败  04：已关闭  05：已撤销  90:超时 91:异常  98：预下单  99：日终失效
 				 AND PAY_TIME >= V_YAR_BEGIN
 				 AND PAY_TIME <= V_DAY_END
 			 GROUP BY MCT_ID),
@@ -213,7 +221,7 @@ BEGIN
 	--           (期间结清账户期末不存在, 不计入分子; 期间新开账户期初不在基准, 不计入分母)
 	--    率   = ROUND(分子/分母*100, 2), 分母为0时输出 NULL
 	---------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_008
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,

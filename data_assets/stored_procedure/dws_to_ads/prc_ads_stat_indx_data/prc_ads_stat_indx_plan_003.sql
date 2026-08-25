@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------
--- 需求版本: v4.6 (2026-08-22)
+-- 需求版本: v4.7 (2026-08-25)
 -- 变更记录:
+--   v4.7 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_003，段首自清（并行跑批隔离）
 --   v4.6 0047基数缺失时增量与期初值置NULL；0050/0051基准改为基数表
 --        ADS_STAT_INDX_BASELINE_SUM（活动前一日冻结/存量补跑）；
 --        删除HIS直取的prev_yr_avg_aum/prev_mth_avg_aum及V_YAR_PREV_END
@@ -31,6 +32,9 @@ BEGIN
     IF v_sysdat IS NULL OR NOT REGEXP_LIKE(v_sysdat, '^[0-9]{8}$') THEN
         RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
     END IF;
+
+    -- 段首自清：本过程专属汇总临时表，防止重跑/并行残留
+    DELETE FROM TMP_STAT_INDX_AGGR_003;
     V_END_DATE := TO_DATE(v_sysdat, 'YYYYMMDD');    -------------------------------------------------------------------------
     -- 初始化日期边界
     -------------------------------------------------------------------------
@@ -139,7 +143,7 @@ BEGIN
     -------------------------------------------------------------------------
     -- 4.2 标准期间增量写入（INDX_0046/0048/0049/0050/0051）- A路径
     -------------------------------------------------------------------------
-    INSERT INTO TMP_STAT_INDX_AGGR (
+    INSERT INTO TMP_STAT_INDX_AGGR_003 (
         path_code, data_date, data_blng, statis_dim, statis_calib,
         indx_code, curnt_val, term_last_val, persn_legal_bk_code
     )
@@ -177,7 +181,7 @@ BEGIN
     -------------------------------------------------------------------------
     -- 4.2 标准期间增量写入（INDX_0046/0048/0049/0050/0051）- B路径
     -------------------------------------------------------------------------
-    INSERT INTO TMP_STAT_INDX_AGGR (
+    INSERT INTO TMP_STAT_INDX_AGGR_003 (
         path_code, data_date, data_blng, statis_dim, statis_calib,
         indx_code, curnt_val, term_last_val, persn_legal_bk_code
     )
@@ -215,7 +219,7 @@ BEGIN
     -------------------------------------------------------------------------
     -- 4.3 存款基数扣减指标 INDX_0047 - A路径（仅机构维度）
     -------------------------------------------------------------------------
-    INSERT INTO TMP_STAT_INDX_AGGR (
+    INSERT INTO TMP_STAT_INDX_AGGR_003 (
         path_code, data_date, data_blng, statis_dim, statis_calib,
         indx_code, curnt_val, term_last_val, persn_legal_bk_code
     )
@@ -240,7 +244,7 @@ BEGIN
     -------------------------------------------------------------------------
     -- 4.3 存款基数扣减指标 INDX_0047 - B路径（仅机构维度）
     -------------------------------------------------------------------------
-    INSERT INTO TMP_STAT_INDX_AGGR (
+    INSERT INTO TMP_STAT_INDX_AGGR_003 (
         path_code, data_date, data_blng, statis_dim, statis_calib,
         indx_code, curnt_val, term_last_val, persn_legal_bk_code
     )

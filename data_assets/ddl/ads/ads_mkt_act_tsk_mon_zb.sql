@@ -2,7 +2,7 @@
  * ADS_MKT_ACT_TSK_MON_ZB
  * 中文名称: 营销活动任务监控附表
  * 版本: v1.0
- * 创建时间: 2026-07-30
+ * 创建时间: 2026-08-25
  */
 
 CREATE TABLE IF NOT EXISTS ADS_MKT_ACT_TSK_MON_ZB (

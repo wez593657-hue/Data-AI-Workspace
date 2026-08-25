@@ -1,3 +1,9 @@
+-------------------------------------------------------------------------
+-- 需求版本: v5.1 (2026-08-25)
+-- 变更记录:
+--   v5.0 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_009，段首自清（并行跑批隔离）
+--   v5.1 0078/0079支付退款区分：金额净额化(01退款取负)，笔数含退款单；ORDER_TYPE IN('00','01')
+-------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE CRMDM.PRC_ADS_STAT_INDX_PLAN_009
 (
 	V_SYSDAT  IN VARCHAR2,
@@ -19,10 +25,14 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
     END IF;
     V_END_DATE := TO_DATE(v_sysdat, 'YYYYMMDD');
+
+	-- 段首自清：本过程专属汇总临时表，防止重跑/并行残留
+	DELETE FROM TMP_STAT_INDX_AGGR_009;
+
 	-------------------------------------------------------------------------
 	-- 0074/0075：手机银行交易金额/笔数 (合并 A/B 路径)
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_009
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -335,7 +345,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- 0078/0079：一码付交易金额/笔数 (合并 A/B 路径)
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_009
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -402,7 +412,7 @@ BEGIN
 						 SC.STATIS_DIM,
 						 SC.DATA_BLNG,
 						 SC.PERSN_LEGAL_BK_CODE,
-						 O.ORDER_AMT            AS TRAN_AMT,
+						CASE WHEN O.ORDER_TYPE = '01' THEN -O.ORDER_AMT ELSE O.ORDER_AMT END AS TRAN_AMT, -- 01退款取负，00支付为正
 						 1                      AS TRAN_NUM
 				FROM (SELECT DISTINCT PATH_CODE,
 															STATIS_CALIB,
@@ -423,6 +433,7 @@ BEGIN
 																		 AND M.STATUS <> '9'
 			 INNER JOIN UEPP_PAY_ORDER_INFO O ON O.MCT_ID = SA.MCT_ID
 																			 AND O.STATUS = '02'
+																AND O.ORDER_TYPE IN ('00', '01')   -- 00支付 01退款（值域仅此两值）
 																			 AND O.PAY_TIME BETWEEN
 																					 SC.TERM_BEGIN_DATE AND V_SYSDAT)
 		SELECT PATH_CODE,

@@ -17,6 +17,9 @@ BEGIN
     IF v_sysdat IS NULL OR NOT REGEXP_LIKE(v_sysdat, '^[0-9]{8}$') THEN
         RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
     END IF;
+
+    -- 段首自清：本过程专属汇总临时表，防止重跑/并行残留
+    DELETE FROM TMP_STAT_INDX_AGGR_005;
     V_END_DATE := TO_DATE(v_sysdat, 'YYYYMMDD');
     -------------------------------------------------------------------------
     -- 6.1 提取符合提升条件的客户明细
@@ -79,7 +82,7 @@ BEGIN
     -------------------------------------------------------------------------
     -- 6.2 汇总写入 AGGR（A路径）
     -------------------------------------------------------------------------
-    INSERT INTO TMP_STAT_INDX_AGGR (
+    INSERT INTO TMP_STAT_INDX_AGGR_005 (
         path_code, data_date, data_blng, statis_dim, statis_calib,
         indx_code, curnt_val, term_last_val, persn_legal_bk_code
     )
@@ -126,7 +129,7 @@ BEGIN
     -------------------------------------------------------------------------
     -- 6.3 汇总写入 AGGR（B路径）
     -------------------------------------------------------------------------
-    INSERT INTO TMP_STAT_INDX_AGGR (
+    INSERT INTO TMP_STAT_INDX_AGGR_005 (
         path_code, data_date, data_blng, statis_dim, statis_calib,
         indx_code, curnt_val, term_last_val, persn_legal_bk_code
     )

@@ -1,0 +1,9 @@
+evidence_id: excel-analysis-ev
+task_id: sync-mapping-20260825
+phase: MAPPING_EXCEL_ANALYZED
+kind: mapping_excel_analysis
+purpose: mapping_excel_analysis
+result: passed
+details: 根据3个Excel文件同步对应层的MD和DDL
+repository_revision: 8fadf7e46cee6532c9b682cf1b3f22ae4d18d5f1
+created_at: '2026-08-25T09:25:36+00:00'

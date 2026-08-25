@@ -2,7 +2,7 @@
  * ADS_CUST_DEADLINE_RMND_DTL
  * 中文名称: 到期承接明细表
  * 版本: v1.0
- * 创建时间: 2026-07-30
+ * 创建时间: 2026-08-25
  */
 
 CREATE TABLE IF NOT EXISTS ADS_CUST_DEADLINE_RMND_DTL (

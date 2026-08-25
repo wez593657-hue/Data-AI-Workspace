@@ -3,38 +3,40 @@
 ## 映射来源
 
 - Excel：`data_assets/mapping/ods_to_dwd/DWD明细层数据模型_CRM_ V1.0.xlsx`
-- Excel SHA-256：`eab214604c0cd2e5b4d7129b1abca6920168bff13bfd4502aed9811fe3206d26`
+- Excel SHA-256：`6624ab13349c0bc4e0769a0e01840c77ed351ce0eb1bf16b8e33a5f0988f3e5d`
 
 ## 映射概览
 
 | 目标表 | 字段数 |
 |--------|-------:|
-| DWD_CUST_INDV_INFO | 40 |
-| DWD_CUST_ENTER_RELA | 8 |
-| DWD_CUST_INDIV_MNER | 16 |
-| DWD_TX_ASET | 28 |
-| DWD_ACCT_DEPO | 22 |
-| DWD_ACCT_LOAN | 23 |
-| DWD_PRDKT_INFO | 12 |
+| DWD_ACCT_DEPO | 24 |
 | DWD_ACCT_FIN | 20 |
 | DWD_ACCT_INSUR | 26 |
-| DWD_CUST_SIGN_CTRAKT | 9 |
-| DWD_CUST_INDIV_CRDT | 9 |
-| DWD_CUST_CTRAKT_INFO | 19 |
-| DWD_CUST_INDIV_RISK_INVST | 8 |
-| DWD_SYS_ORG | 20 |
+| DWD_ACCT_LOAN | 23 |
 | DWD_CRM_SYS_XTHLCS | 5 |
-| DWD_CUST_INDV_KYC | 27 |
+| DWD_CUST_CTRAKT_INFO | 19 |
 | DWD_CUST_DORMANT_ACCOUT | 3 |
+| DWD_CUST_INDIV_CRDT | 9 |
+| DWD_CUST_INDIV_RISK_INVST | 8 |
+| DWD_CUST_INDV_CAR_KYC | 11 |
+| DWD_CUST_INDV_HOUSE_KYC | 11 |
+| DWD_CUST_INDV_INFO | 41 |
+| DWD_CUST_INDV_KYC | 20 |
+| DWD_CUST_INDV_KYC_OTHR | 8 |
+| DWD_CUST_INDV_SHOP_KYC | 11 |
 | DWD_CUST_MAN | 9 |
-| DWD_MKT_TSK_INFO | 16 |
+| DWD_CUST_SIGN_CTRAKT | 10 |
 | DWD_MKT_ACT_INFO | 15 |
 | DWD_MKT_ACT_ORG_REL | 2 |
+| DWD_MKT_ACT_TARGT | 5 |
 | DWD_MKT_INDX_TSK | 22 |
 | DWD_MKT_TSK_INDX_SUB | 12 |
+| DWD_MKT_TSK_INFO | 16 |
+| DWD_PRDKT_INFO | 12 |
+| DWD_PRDKT_INFO_DETAIL | 8 |
+| DWD_SYS_ORG | 20 |
 | DWD_SYS_POST | 21 |
-| DWD_MKT_ACT_TARGT | 5 |
-| DWD_PRDKT_INFO_DETAIL | 9 |
+| DWD_TX_ASET | 28 |
 
 ## 字段映射详情
 
@@ -61,6 +63,7 @@
 | OCCU_CLS | 职业分类 | VARCHAR2(6) | ECIF_T01_P_CUST_INFO | PROFESSION |  |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  | 9999' |
 | GEND | 性别 | VARCHAR2(2) |  |  | (CASE<br> WHEN T1.GENDER IN ('0') THEN '9'<br> ELSE T1.GENDER<br>END) GEND |
+| AGE | 年龄 | VARCHAR2(10) |  |  |  |
 | PHONE_NO | 手机号码 | VARCHAR2(20) | ECIF_T03_A_TELE_INFO | PHONE_NO |  |
 | CONTACT_ADDRESS | 联系地址 | VARCHAR2(254) | FLAT_ADDR | CONTACT_ADDRESS |  |
 | CONTACT_ADDRESS_DETAIL | 联系地址详细地址 | VARCHAR2(254) | FLAT_ADDR | CONTACT_ADDRESS_DETAIL |  |
@@ -82,40 +85,6 @@
 | COSPSR_CUST_MNGR_EMP_ID | 信贷客户经理工号 | VARCHAR2(6) |  |  |  |
 | COSPSR_ORG | 信贷机构 | VARCHAR2(7) |  |  |  |
 | COSPSR_ORG_PATH | 信贷机构路径 | VARCHAR2(50) |  |  |  |
-
-### DWD_CUST_ENTER_RELA
-
-| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
-|----------|----------------|--------------|------|--------|----------|
-| CUST_ID | 客户编号 | VARCHAR2(20) | ECIF_T01_P_CUST_INFO | ECIF_CUST_NO |  |
-| REL_TYP | 关系类型 | VARCHAR2(1) |  |  |  |
-| REL_CUST_ID | 关联人客户编号 | VARCHAR2(20) | ECIF_T01_P_CUST_INFO | ECIF_CUST_NO |  |
-| REL_CUST_NAME | 关联人客户名称 | VARCHAR2(100) | ECIF_T01_P_CUST_INFO | PARTY_NAME |  |
-| REL_VAL | 关联值 | NUMBER |  |  | ' |
-| BK_SELF_CUST_FLG | 是否我行客户 | VARCHAR2(1) |  |  | 是' |
-| REL_INF | 关系内容 | VARCHAR2(800) | ECIF_T02_P_PAR_TO_PAR_REL | OTHER_DESC |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  | 9999' |
-
-### DWD_CUST_INDIV_MNER
-
-| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
-|----------|----------------|--------------|------|--------|----------|
-| PK_ID | 主键 | VARCHAR2(40) |  |  |  |
-| CUST_ID | 客户编号 | VARCHAR2(20) | ECIF_T01_P_CUST_INFO | ECIF_CUST_NO |  |
-| MBER_NAME | 成员姓名 | VARCHAR2(200) | ECIF_T02_P_PAR_TO_PAR_REL | REL_NAME |  |
-| MBER_REL | 成员关系 | VARCHAR2(6) |  |  | (CASE<br> WHEN T2.RELATION_TYPE IN ('1110', '1111', '1112') THEN '02'<br> WHEN T2.RELATION_TYPE IN ('1120') THEN '01'<br> WHEN T2.RELATION_TYPE IN ('1130', '1131', '1132') THEN '03'<br> WHEN T2.RELATION_TYPE IN ('1210', '1211', '1212') THEN '04'<br> WHEN T2.RELATION_TYPE IN ('1220', '1221', '1222') THEN '05'<br> WHEN T2.RELATION_TYPE IN ('1100') THEN '06'<br> WHEN T2.RELATION_TYPE IN ('1200') THEN '07'<br> ELSE T2.RELATION_TYPE<br>END) MBER_REL |
-| GEND | 性别 | VARCHAR2(6) |  |  | (CASE<br> WHEN T3.GENDER IN ('0') THEN '9'<br> ELSE T3.GENDER<br>END) GEND |
-| TEL_NO | 联系电话 | VARCHAR2(32) | PHONE_N | PHONE_NO |  |
-| BK_SELF_CUST_FLG | 是否本行客户 | VARCHAR2(1) |  |  | 是' |
-| INNER_BK_CUST_ID | 行内客户编号 | VARCHAR2(20) | ECIF_T01_P_CUST_INFO | ECIF_CUST_NO |  |
-| BTH_DATE | 出生日期 | VARCHAR2(10) |  |  | TO_CHAR(T3.BIRTH_DATE, 'yyyy-mm-dd') |
-| MARI_DAY_MEM | 结婚纪念日 | VARCHAR2(10) |  |  | ' |
-| CERT_ID | 证件号码 | VARCHAR2(40) | ECIF_T01_P_CUST_INFO | CERT_NO |  |
-| CERT_TYP | 证件类型 | VARCHAR2(10) | ECIF_T01_P_CUST_INFO | CERT_TYPE |  |
-| SYS_SRC | 系统来源 | VARCHAR2(500) | ECIF_T02_P_PAR_TO_PAR_REL | INIT_SYSTEM_ID |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  | '9999' |
-| POST_ID | 维护人 | VARCHAR2(20) | ECIF_T02_P_PAR_TO_PAR_REL | LAST_UPDATED_TE |  |
-| REMARK | 备注 | VARCHAR2(200) |  |  |  |
 
 ### DWD_TX_ASET
 
@@ -154,28 +123,30 @@
 
 | 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
 |----------|----------------|--------------|------|--------|----------|
-| CUST_ID | 客户编号 | VARCHAR2(20) | CBS_KDPA_ZHXINX | KEHUHAOO |  |
-| CUST_TYP | 客户类型 | VARCHAR2(2) |  |  | 1' |
-| ACCT_ID | 账户 | VARCHAR2(40) | CBS_KDPA_ZHXINX | ZHANGHAO |  |
-| CARD_NO | 卡/折号 | VARCHAR2(40) | CBS_KDPA_ZHXINX | KEHUZHAO |  |
-| PRDKT_ID | 产品编号 | VARCHAR2(30) | CBS_KDPF_CHPSHX | CHAPBHAO |  |
-| PRDKT_NAME | 产品名称 | VARCHAR2(200) | CBS_KDPF_CHPSHX | CHANPSHM |  |
-| PRDKT_CATE_BIG | 产品大类 | VARCHAR2(64) |  |  | (CASE<br>           WHEN T1.CUNKZLEI = '00' THEN '01'<br>           WHEN T1.CUNKZLEI IN ('01', '02', '03', '04','06','07','12','13','15','19','24','25') THEN '02'<br>           WHEN T1.CUNKZLEI = '29' THEN '03'<br>           WHEN T1.CUNKZLEI = '05' THEN '04'<br>           WHEN T1.CUNKZLEI = '26' THEN '05'<br>           ELSE T1.CUNKZLEI<br> END) PRDKT_CATE_BIG |
-| ACCT_TYP | 账户类型 | VARCHAR2(10) | CBS_KDPA_KEHUZH | ZHHUFENL | (CASE<br>           WHEN T5.ZHHUFENL = '1' THEN '01'<br>           WHEN T5.ZHHUFENL = '2' THEN '02'<br>           WHEN T5.ZHHUFENL = '3' THEN '03'<br>           WHEN T5.ZHHUFENL = '4' THEN '04'<br>           ELSE T5.ZHHUFENL<br> END) ZHHUFENL |
-| CCY_CD | 币种 | VARCHAR2(4) | CBS_KDPA_ZHXINX | HUOBDAIH |  |
-| BAL | 余额 | NUMBER(20,2) | CBS_KDPA_ZHXINX | ZHHUYUEE |  |
-| RMB_BAL | 折人民币余额 | NUMBER(20,2) | CRM_SYS_XTHLCS |  | T1.ZHHUYUEE * T4.HL |
-| OPEN_ACCT_ORG | 归属机构 | VARCHAR2(6) | CBS_KDPA_ZHXINX | KAIHJIGO |  |
-| OPEN_DATE | 开户日期 | VARCHAR2(10) | CBS_KDPA_ZHXINX | KAIHRIQI |  |
-| RATE_INTRI | 利率 | NUMBER(20,2) | CBS_KDPA_ZHXINX | ZHIXLILV |  |
-| INTRI_BGN_DATE | 起息日期 | VARCHAR2(10) | CBS_KDPA_ZHXINX | CSQIXIRQ |  |
-| EXPR_DATE | 到期日期 | VARCHAR2(10) | CBS_KDPA_ZHXINX | DOQIRIQI |  |
-| ACCT_CLOZ_DATE | 销户日期 | VARCHAR2(10) | CBS_KDPA_ZHXINX | XIOHRIQI |  |
-| ACCT_STATE | 账户状态 | VARCHAR2(10) | CBS_KDPA_ZHXINX | ZHHUZTAI |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) |  |  | 9999' |
-| VCHR_TYP | 凭证类型 | VARCHAR2(10) | CBS_KCEV_KHPZHE | PINGZHZL |  |
-| CUNQ | 存期 | VARCHAR2(10) | CBS_KDPA_ZHXINX | CUNQIIII |  |
-| FIX_CURNT_FLG | 定活标志 | VARCHAR2(1) | CBS_KDPA_ZHXINX | FZCPLEIX |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR |  |  |  |
+| CUST_ID | 客户编号 | VARCHAR |  |  |  |
+| CUST_NAME | 客户名称 | VARCHAR |  |  |  |
+| CUST_TYP | 客户类型(1-对私) | VARCHAR |  |  |  |
+| ACCT_ID | 账户 | VARCHAR |  |  |  |
+| CARD_NO | 卡/折号 | VARCHAR |  |  |  |
+| PRDKT_ID | 产品编号 | VARCHAR |  |  |  |
+| PRDKT_NAME | 产品名称 | VARCHAR |  |  |  |
+| PRDKT_CATE_BIG | 产品大类(01活期(含智慧存)、02定期、03乐慧存、04通知存款、05大额存单的数据) | VARCHAR |  |  |  |
+| ACCT_TYP | 账户类型(个人账户分类（一类户、二类户、三类户）) | VARCHAR |  |  |  |
+| CCY_CD | 币种 | VARCHAR |  |  |  |
+| BAL | 余额 | NUMERIC |  |  |  |
+| RMB_BAL | 折人民币余额 | NUMERIC |  |  |  |
+| OPEN_ACCT_ORG | 归属机构 | VARCHAR |  |  |  |
+| OPEN_DATE | 开户日期 | VARCHAR |  |  |  |
+| RATE_INTRI | 利率 | NUMERIC |  |  |  |
+| INTRI_BGN_DATE | 起息日期 | VARCHAR |  |  |  |
+| EXPR_DATE | 到期日期 | VARCHAR |  |  |  |
+| ACCT_CLOZ_DATE | 销户日期 | VARCHAR |  |  |  |
+| ACCT_STATE | 账户状态 | VARCHAR |  |  |  |
+| VCHR_TYP | 凭证类型 | VARCHAR |  |  |  |
+| CUNQ | 存期 | VARCHAR |  |  |  |
+| FIX_CURNT_FLG | 定活标志(0-活期产品 1-定期产品) | VARCHAR |  |  |  |
+| DEPO_BAL | 当日存款金额 | NUMERIC |  |  |  |
 
 ### DWD_ACCT_LOAN
 
@@ -284,6 +255,7 @@
 |----------|----------------|--------------|------|--------|----------|
 | CUST_ID | 客户编号 | VARCHAR2(20) | T01_P_CUST_INFO | t0.ECIF_CUST_NO |  |
 | CTRAKT_ACCT | 签约账户 | VARCHAR2(40) | T02_A_CUST_SIGN_REL | t1.SIGN_ACC_NO |  |
+| SIGN_TYPE | 签约类型 | VARCHAR2(6) |  |  |  |
 | CTRAKT_TYP | 签约类型 | VARCHAR2(6) | T02_A_CUST_SIGN_REL | t1.SIGN_TYPE |  |
 | CTRAKT_DATE | 签约日期 | VARCHAR2(10) | T05_A_ACC_SIGN | t2.SIGN_DATE |  |
 | PHONE_NO | 手机号 | VARCHAR2(32) | T05_A_ACC_SIGN | t2.SIGN_REL_PHONE |  |
@@ -377,38 +349,6 @@
 | HUOBFHAO | 货币符号 | VARCHAR2 |  |  |  |
 | ZHNGJJIA | 中间价 | NUMBER |  |  |  |
 | HL | 汇率 | NUMBER |  |  |  |
-
-### DWD_CUST_INDV_KYC
-
-| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
-|----------|----------------|--------------|------|--------|----------|
-| CUST_ID | 客户编号 | VARCHAR2 |  |  |  |
-| CUST_NM | 客户名称 | VARCHAR2 |  |  |  |
-| BK_OUTER_DEPO | 行外存款 | NUMBER |  |  |  |
-| BK_OUTER_FIN | 行外理财 | NUMBER |  |  |  |
-| BK_OUTER_FUND | 行外基金 | NUMBER |  |  |  |
-| BK_OUTER_INSUR | 行外保险 | NUMBER |  |  |  |
-| BK_OUTER_GOLD | 行外贵金属 | NUMBER |  |  |  |
-| STK_INVEST | 股票投资 | VARCHAR2 |  |  |  |
-| ESTT_INF | 住宅信息 | VARCHAR2 |  |  |  |
-| PROP_OWNER_CERT_NO | 房产证号 | VARCHAR2 |  |  |  |
-| HOUSE_AREA | 面积 | NUMBER |  |  |  |
-| IS_HOUSE_MORTGAGED | 是否抵押 | VARCHAR2 |  |  |  |
-| RES_ADDRS | 地址 | VARCHAR2 |  |  |  |
-| SHOP_INVEST | 商铺投资 | VARCHAR2 |  |  |  |
-| VIKL_INF | 车辆信息 | VARCHAR2 |  |  |  |
-| VEHICLE_PLATE_NO | 车牌号 | VARCHAR2 |  |  |  |
-| USAGE_NATURE | 使用性质 | VARCHAR2 |  |  |  |
-| IS_CAR_LOAN | 是否有车贷 | VARCHAR2 |  |  |  |
-| IS_CAR_MORTGAGED | 是否抵押 | VARCHAR2 |  |  |  |
-| MTH_INCOM | 月收入 | NUMBER |  |  |  |
-| YR_INCOM | 年收入 | NUMBER |  |  |  |
-| BK_OUTER_LOAN_BAL | 行外贷款余额 | NUMBER |  |  |  |
-| BK_OUTER_CRDT_LMT | 行外授信额度 | NUMBER |  |  |  |
-| AVAIL_LMT | 可用额度 | NUMBER |  |  |  |
-| CREATR | 创建人 | VARCHAR2 |  |  |  |
-| CREAT_ORG | 创建机构 | VARCHAR2 |  |  |  |
-| CREAT_TIME | 创建时间 | VARCHAR2 |  |  |  |
 
 ### DWD_CUST_DORMANT_ACCOUT
 
@@ -507,23 +447,6 @@
 | BIZ_LINE | 条线(公司/零售) | VARCHAR2 |  |  |  |
 | TSK_YEAR | 任务年份 | VARCHAR2 |  |  |  |
 
-### DWD_MKT_TSK_INDX_SUB
-
-| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
-|----------|----------------|--------------|------|--------|----------|
-| TSK_INDX_ID | 指标任务映射编号 | VARCHAR2(40) |  |  |  |
-| TSK_ID | 任务编号 | VARCHAR2(40) |  |  |  |
-| MAIN_TSK_ID | 主任务编号 | VARCHAR2(40) |  |  |  |
-| INDX_ID | 指标ID | VARCHAR2(40) |  |  |  |
-| TSK_DSC | 指标任务说明 | VARCHAR2(500) |  |  |  |
-| TSK_BGN_DATE | 任务开始时间 | VARCHAR2(10) |  |  |  |
-| TSK_END_DATE | 任务结束时间 | VARCHAR2(10) |  |  |  |
-| INDX_UNIT | 指标单位(万元/个数/百分比) | VARCHAR2(6) |  |  |  |
-| INDX_VAL | 指标额 | NUMBER(22) |  |  |  |
-| INDX_VAL_ADD | 指标加码 | NUMBER(22) |  |  |  |
-| BASE_VAL | 基准值 | NUMBER(22) |  |  |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(30) |  |  |  |
-
 ### DWD_SYS_POST
 
 | 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
@@ -572,7 +495,109 @@
 | ORG_ID | 机构号 | VARCHAR2 |  |  |  |
 | JIGOUHAO | 机构号 | VARCHAR2 |  |  |  |
 | RN | 序号 | NUMBER |  |  |  |
-| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR(4) |  |  |  |
+
+### DWD_MKT_TSK_INDX_SUB
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| TSK_INDX_ID | 指标任务映射编号 | VARCHAR2 |  |  |  |
+| TSK_ID | 任务编号 | VARCHAR2 |  |  |  |
+| MAIN_TSK_ID | 主任务编号 | VARCHAR2 |  |  |  |
+| INDX_ID | 指标ID | VARCHAR2 |  |  |  |
+| TSK_DSC | 指标任务说明 | VARCHAR2 |  |  |  |
+| TSK_BGN_DATE | 任务开始时间 | VARCHAR2 |  |  |  |
+| TSK_END_DATE | 任务结束时间 | VARCHAR2 |  |  |  |
+| INDX_UNIT | 指标单位(万元/个数/百分比) | VARCHAR2 |  |  |  |
+| INDX_VAL | 指标额 | NUMBER |  |  |  |
+| INDX_VAL_ADD | 指标加码 | NUMBER |  |  |  |
+| BASE_VAL | 基准值 | NUMBER |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+
+### DWD_CUST_INDV_CAR_KYC
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| PK_ID |  | VARCHAR2 |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+| CUST_ID | 客户编号 | VARCHAR2 |  |  |  |
+| CUST_NAME | 客户名称 | VARCHAR2 |  |  |  |
+| VEHICLE_PLATE_NO | 车牌号 | VARCHAR2 |  |  |  |
+| USAGE_NATURE | 使用性质 | VARCHAR2 |  |  |  |
+| IS_CAR_LOAN | 是否有车贷 | VARCHAR2 |  |  |  |
+| IS_CAR_MORTGAGED | 是否抵押 | VARCHAR2 |  |  |  |
+| CREATR |  | VARCHAR2 |  |  |  |
+| CREAT_ORG |  | VARCHAR2 |  |  |  |
+| CREAT_TIME |  | VARCHAR2 |  |  |  |
+
+### DWD_CUST_INDV_HOUSE_KYC
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| PK_ID | 主键 | VARCHAR2 |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+| CUST_ID | 客户编号 | VARCHAR2 |  |  |  |
+| CUST_NAME | 客户名称 | VARCHAR2 |  |  |  |
+| PROP_OWNER_CERT_NO | 房产证号 | VARCHAR2 |  |  |  |
+| HOUSE_AREA | 面积 | NUMBER |  |  |  |
+| IS_HOUSE_MORTGAGED | 是否抵押 | VARCHAR2 |  |  |  |
+| RES_ADDRS | 地址 | VARCHAR2 |  |  |  |
+| CREATR | 创建人 | VARCHAR2 |  |  |  |
+| CREAT_ORG | 创建机构 | VARCHAR2 |  |  |  |
+| CREAT_TIME | 创建时间 | VARCHAR2 |  |  |  |
+
+### DWD_CUST_INDV_KYC
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+| CUST_ID | 客户编号 | VARCHAR2 |  |  |  |
+| CUST_NAME | 客户名称 | VARCHAR2 |  |  |  |
+| ESTT_INF | 住宅信息 | VARCHAR2 |  |  |  |
+| SHOP_INF | 商铺信息 | VARCHAR2 |  |  |  |
+| VIKL_INF | 车辆信息 | VARCHAR2 |  |  |  |
+| BK_OUTER_DEPO | 行外存款 | NUMBER |  |  |  |
+| BK_OUTER_FIN | 行外理财 | NUMBER |  |  |  |
+| BK_OUTER_FUND | 行外基金 | NUMBER |  |  |  |
+| BK_OUTER_INSUR | 行外保险 | NUMBER |  |  |  |
+| BK_OUTER_GOLD | 行外贵金属 | NUMBER |  |  |  |
+| STK_INVEST | 股票投资 | VARCHAR2 |  |  |  |
+| MTH_INCOM | 月收入 | NUMBER |  |  |  |
+| YR_INCOM | 年收入 | NUMBER |  |  |  |
+| BK_OUTER_LOAN_BAL | 行外贷款余额 | NUMBER |  |  |  |
+| BK_OUTER_CRDT_LMT | 行外授信额度 | NUMBER |  |  |  |
+| AVAIL_LMT | 可用额度 | NUMBER |  |  |  |
+| CREATR | 创建人 | VARCHAR2 |  |  |  |
+| CREAT_ORG | 创建机构 | VARCHAR2 |  |  |  |
+| CREAT_TIME | 创建时间 | VARCHAR2 |  |  |  |
+
+### DWD_CUST_INDV_KYC_OTHR
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| PK_ID | 主键 | VARCHAR2 |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+| CUST_ID | 客户编号 | VARCHAR2 |  |  |  |
+| KYC_INF | KYC信息 | VARCHAR2 |  |  |  |
+| CREATR | 创建人 | VARCHAR2 |  |  |  |
+| CREAT_ORG | 创建机构 | VARCHAR2 |  |  |  |
+| CREAT_TIME | 创建时间 | VARCHAR2 |  |  |  |
+| APDIX_ID | 附件ID | VARCHAR2 |  |  |  |
+
+### DWD_CUST_INDV_SHOP_KYC
+
+| 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
+|----------|----------------|--------------|------|--------|----------|
+| PK_ID |  | VARCHAR2 |  |  |  |
+| PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2 |  |  |  |
+| CUST_ID | 客户编号 | VARCHAR2 |  |  |  |
+| CUST_NAME | 客户名称 | VARCHAR2 |  |  |  |
+| PROP_OWNER_CERT_NO | 房产证号 | VARCHAR2 |  |  |  |
+| HOUSE_AREA | 面积 | NUMBER |  |  |  |
+| IS_HOUSE_MORTGAGED | 是否抵押 | VARCHAR2 |  |  |  |
+| RES_ADDRS | 地址 | VARCHAR2 |  |  |  |
+| CREATR | 创建人 | VARCHAR2 |  |  |  |
+| CREAT_ORG | 创建机构 | VARCHAR2 |  |  |  |
+| CREAT_TIME | 创建时间 | VARCHAR2 |  |  |  |
 
 ---
 

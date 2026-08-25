@@ -1,8 +1,6 @@
 -- PRC_ADS_STAT_INDX_DATA 临时表：客户维度分层重构 v2.0
 -- 非客户指标只在源关联内使用客户号并立即聚合；仅客户状态指标保留短生命周期客户行。
 
-DROP TABLE IF EXISTS TMP_STAT_INDX_AGGR_A;
-DROP TABLE IF EXISTS TMP_STAT_INDX_AGGR_B;
 DROP TABLE IF EXISTS TMP_STAT_INDX_AGGR;
 
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_SCOPE (
@@ -46,8 +44,84 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_CUST_STATE (
     PRIMARY KEY (path_code, statis_dim, indx_code, data_blng, cust_id, persn_legal_bk_code)
 );
 
-CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR (
+-- 指标汇总临时表按写入过程拆分（v3.0）：TMP_STAT_INDX_AGGR_003 ~ _009，
+-- 各过程段首自清，防止并行跑批相互影响；plan_010 合并至 _010 后统一强校验+落库。
+-- 旧 TMP_STAT_INDX_AGGR 已删除，不留兼容。
+CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_003 (
     path_code VARCHAR(1) NOT NULL, -- 统计路径：A=营销活动，B=目标任务
+    data_date VARCHAR(8) NOT NULL,
+    data_blng VARCHAR(100) NOT NULL,
+    statis_dim VARCHAR(100) NOT NULL,
+    statis_calib VARCHAR(100) NOT NULL,
+    indx_code VARCHAR(100) NOT NULL,
+    curnt_val NUMBER(20,2) NULL,
+    term_last_val NUMBER(20,2) NULL,
+    persn_legal_bk_code VARCHAR(30) NOT NULL,
+    PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
+);
+CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_004 (
+    path_code VARCHAR(1) NOT NULL,
+    data_date VARCHAR(8) NOT NULL,
+    data_blng VARCHAR(100) NOT NULL,
+    statis_dim VARCHAR(100) NOT NULL,
+    statis_calib VARCHAR(100) NOT NULL,
+    indx_code VARCHAR(100) NOT NULL,
+    curnt_val NUMBER(20,2) NULL,
+    term_last_val NUMBER(20,2) NULL,
+    persn_legal_bk_code VARCHAR(30) NOT NULL,
+    PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
+);
+CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_005 (
+    path_code VARCHAR(1) NOT NULL,
+    data_date VARCHAR(8) NOT NULL,
+    data_blng VARCHAR(100) NOT NULL,
+    statis_dim VARCHAR(100) NOT NULL,
+    statis_calib VARCHAR(100) NOT NULL,
+    indx_code VARCHAR(100) NOT NULL,
+    curnt_val NUMBER(20,2) NULL,
+    term_last_val NUMBER(20,2) NULL,
+    persn_legal_bk_code VARCHAR(30) NOT NULL,
+    PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
+);
+CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_007 (
+    path_code VARCHAR(1) NOT NULL,
+    data_date VARCHAR(8) NOT NULL,
+    data_blng VARCHAR(100) NOT NULL,
+    statis_dim VARCHAR(100) NOT NULL,
+    statis_calib VARCHAR(100) NOT NULL,
+    indx_code VARCHAR(100) NOT NULL,
+    curnt_val NUMBER(20,2) NULL,
+    term_last_val NUMBER(20,2) NULL,
+    persn_legal_bk_code VARCHAR(30) NOT NULL,
+    PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
+);
+CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_008 (
+    path_code VARCHAR(1) NOT NULL,
+    data_date VARCHAR(8) NOT NULL,
+    data_blng VARCHAR(100) NOT NULL,
+    statis_dim VARCHAR(100) NOT NULL,
+    statis_calib VARCHAR(100) NOT NULL,
+    indx_code VARCHAR(100) NOT NULL,
+    curnt_val NUMBER(20,2) NULL,
+    term_last_val NUMBER(20,2) NULL,
+    persn_legal_bk_code VARCHAR(30) NOT NULL,
+    PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
+);
+CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_009 (
+    path_code VARCHAR(1) NOT NULL,
+    data_date VARCHAR(8) NOT NULL,
+    data_blng VARCHAR(100) NOT NULL,
+    statis_dim VARCHAR(100) NOT NULL,
+    statis_calib VARCHAR(100) NOT NULL,
+    indx_code VARCHAR(100) NOT NULL,
+    curnt_val NUMBER(20,2) NULL,
+    term_last_val NUMBER(20,2) NULL,
+    persn_legal_bk_code VARCHAR(30) NOT NULL,
+    PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
+);
+-- plan_010 合并表：接收 _003~_009 全部结果后统一强校验并落库 ADS_STAT_INDX_DATA
+CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_010 (
+    path_code VARCHAR(1) NOT NULL,
     data_date VARCHAR(8) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,

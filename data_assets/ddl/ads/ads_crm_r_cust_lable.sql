@@ -1,8 +1,8 @@
 /*
  * ADS_CRM_R_CUST_LABLE
  * 中文名称: 对私客户标签表
- * 版本: v1.4.0
- * 创建时间: 2026-07-30
+ * 版本: v1.0
+ * 创建时间: 2026-08-25
  */
 
 CREATE TABLE IF NOT EXISTS ADS_CRM_R_CUST_LABLE (

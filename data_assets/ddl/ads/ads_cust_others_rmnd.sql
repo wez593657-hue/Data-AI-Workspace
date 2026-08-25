@@ -2,7 +2,7 @@
  * ADS_CUST_OTHERS_RMND
  * 中文名称: 其他事件提醒
  * 版本: v1.0
- * 创建时间: 2026-07-30
+ * 创建时间: 2026-08-25
  */
 
 CREATE TABLE IF NOT EXISTS ADS_CUST_OTHERS_RMND (

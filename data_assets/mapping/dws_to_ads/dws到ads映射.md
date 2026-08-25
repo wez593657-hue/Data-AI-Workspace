@@ -3,7 +3,7 @@
 ## 映射来源
 
 - Excel：`data_assets/mapping/dws_to_ads/ADS应用层数据模型_CRM_ V1.0.xlsx`
-- Excel SHA-256：`a2d1dfc821f432ef4d2ca8c73febe49043b52fc4c5efcb4cefb292a0ee979edf`
+- Excel SHA-256：`d2ca72976957451dd6b2352cc43daf8e4d6544f9176ed8701762c251eb3f424b`
 
 ## 映射概览
 
@@ -28,8 +28,8 @@
 | ADS_MKT_REC_INFO | 27 |
 | ADS_MKT_TASK_INDX_SUB_CMPLT | 17 |
 | ADS_MKT_TSK_INFO | 16 |
-| ADS_STAT_INDX_DATA | 13 |
-| REPORT_0001 | 20 |
+| ADS_REPORT_0001 | 20 |
+| ADS_STAT_INDX_DATA | 12 |
 
 ## 字段映射详情
 
@@ -153,9 +153,8 @@
 | YR_LAST_END_AVG_DAY_VAL | 上年末日均值 | NUMBER(20,2) |  |  |  |
 | DATA_DATE | 数据日期 | VARCHAR2(10) |  |  |  |
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(30) |  |  |  |
-| ID | [NULL] | VARCHAR2(10) |  |  | 自增主键 |
 
-### REPORT_0001
+### ADS_REPORT_0001
 
 | 目标字段 | 目标字段中文名 | 目标字段类型 | 源表 | 源字段 | 映射规则 |
 |----------|----------------|--------------|------|--------|----------|
@@ -245,7 +244,7 @@
 | FIN_AMT | 理财余额 | NUMBER(20,2) |  |  |  |
 | CNTCT_STATE | 接触状态 | VARCHAR2(1) |  |  |  |
 | RESCUE_STATE | 挽回状态 | VARCHAR2(1) |  |  |  |
-| RESCUED_FINA_ASSET | 已挽回金融资产 | NUMBER(20,2) |  |  | MAX(T-1日时点AUM-上月末时点AUM,0)，仅挽回客户计 |
+| RESCUED_FINA_ASSET | 已挽回金融资产 | NUMBER(20,2) |  |  |  |
 | POST_ID | 管户经理 | VARCHAR2(20) |  |  |  |
 | ORG_ID | 归属机构 | VARCHAR2(7) |  |  |  |
 | STATIS_CYCLE | 统计周期(月/季/年) | VARCHAR2(2) |  |  |  |

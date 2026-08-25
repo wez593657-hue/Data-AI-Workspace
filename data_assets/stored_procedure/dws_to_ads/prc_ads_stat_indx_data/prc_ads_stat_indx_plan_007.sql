@@ -1,3 +1,8 @@
+-------------------------------------------------------------------------
+-- 需求版本: v5.0 (2026-08-25)
+-- 变更记录:
+--   v5.0 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_007，段首自清（并行跑批隔离）
+-------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE CRMDM.PRC_ADS_STAT_INDX_PLAN_007
 (
 	V_SYSDAT  IN VARCHAR2,
@@ -22,10 +27,13 @@ BEGIN
     V_END_DATE := TO_DATE(v_sysdat, 'YYYYMMDD');
 	V_180_DAY_BEGIN := SYS_FUN_DEAL_DATE(V_SYSDAT, 27);
 
+	-- 段首自清：本过程专属汇总临时表，防止重跑/并行残留
+	DELETE FROM TMP_STAT_INDX_AGGR_007;
+
 	-------------------------------------------------------------------------
 	-- INDX_0080 新客交叉销售 (合并 A/B)
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_007
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -169,7 +177,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- INDX_0082 新增客户数 (合并 A/B)
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_007
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -262,7 +270,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- INDX_0073 手机银行客户数新增 (合并 A/B)
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_007
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -354,7 +362,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- INDX_0083 借记卡新开净增量（CBS发卡日期，合并 A/B）
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_007
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,

@@ -1,10 +1,11 @@
 -------------------------------------------------------------------------
--- 需求版本: v4.9 (2026-08-24)
+-- 需求版本: v5.0 (2026-08-25)
 -- 变更记录:
 --   v4.6 0071年龄边界修正：70岁以下改为AGE<70（原<=70）
 --   v4.7 0064改标签表口径：基数表ADS_CRM_R_SALRY_PAYROL_BASE按活动/任务隔离取新增
 --   v4.8 0065代销业务收入（暂不含贵金属）：理财FIN_AMT+保险INSUR_AMT合并，期间[开始日,跑批日]
 --   v4.9 修复0071/0072未声明变量V_YEAR_BEGIN/V_180_DAY_BEGIN；补全代发薪客户净增INDX_0064汇总段(7.17/7.18)
+--   v5.0 AGGR汇总表拆分：写入专属表TMP_STAT_INDX_AGGR_006并段首自清；基数表按活动结束日+3个自然月清理
 -------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE CRMDM.PRC_ADS_STAT_INDX_PLAN_006
 (
@@ -31,6 +32,29 @@ BEGIN
 		RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
 	END IF;
 	V_END_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
+
+   -------------------------------------------------------------------------
+   -- 7.0.0 基数表生命周期清理（INDX_0064）
+   -- 每日巡检：活动/任务结束日+3个自然月 <= 跑批日 → 删除该活动基数
+   --   A路径: DWD_MKT_ACT_INFO.STATIS_STOP_DATE
+   --   B路径: DWD_MKT_TSK_INDX_SUB.TSK_END_DATE（任务级一致）
+   --   另：AGGR 段首自清，本过程专属汇总临时表，防止重跑/并行残留
+   -------------------------------------------------------------------------
+   DELETE FROM TMP_STAT_INDX_AGGR_006;
+
+   DELETE FROM ADS_CRM_R_SALRY_PAYROL_BASE T
+    WHERE (T.PATH_CODE = 'A'
+           AND EXISTS (SELECT 1
+                         FROM DWD_MKT_ACT_INFO A
+                        WHERE A.MKT_ACT_ID = T.STATIS_DIM
+                          AND ADD_MONTHS(TO_DATE(A.STATIS_STOP_DATE, 'YYYYMMDD'), 3)
+                              <= TO_DATE(V_SYSDAT, 'YYYYMMDD')))
+       OR (T.PATH_CODE = 'B'
+           AND EXISTS (SELECT 1
+                         FROM DWD_MKT_TSK_INDX_SUB S
+                        WHERE S.TSK_ID = T.STATIS_DIM
+                          AND ADD_MONTHS(TO_DATE(S.TSK_END_DATE, 'YYYYMMDD'), 3)
+                              <= TO_DATE(V_SYSDAT, 'YYYYMMDD')));
    -------------------------------------------------------------------------
    -- 7.0 代发薪客户基数表刷新（INDX_0064）
    -- 每日跑批：范围内客户标签 IS_NOT_SALRY_PAYROL_BK='1' 入基数表
@@ -104,7 +128,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- 7.1/7.2 保险新保保费 INDX_0061 (合并 A/B)
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_006
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -197,7 +221,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- 7.3/7.4 手机银行活跃客户数 INDX_0067 (合并 A/B)
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_006
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -278,7 +302,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- 7.5/7.6 收单价值商户数 INDX_0068 (合并 A/B)
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_006
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -355,7 +379,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- 7.7/7.8 一码付收款客户数 INDX_0076 (合并 A/B)
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_006
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -459,7 +483,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- 7.9/7.10 一码付新增客户数 INDX_0077 (合并 A/B)
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_006
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -568,7 +592,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- 7.11/7.12 银行卡三方支付绑卡数 INDX_0070（A/B，活动期间）
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_006
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -680,7 +704,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- 7.13/7.14 银行卡三方支付绑卡率 INDX_0071（A/B，本年）
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_006
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -814,7 +838,7 @@ BEGIN
 	-------------------------------------------------------------------------
 	-- 7.15/7.16 活跃卡数 INDX_0072（A/B，近180天）
 	-------------------------------------------------------------------------
-	INSERT INTO TMP_STAT_INDX_AGGR
+	INSERT INTO TMP_STAT_INDX_AGGR_006
 		(PATH_CODE,
 		 DATA_DATE,
 		 DATA_BLNG,
@@ -921,7 +945,7 @@ BEGIN
    -- 范围客户 ∩ 基数表：FRST_MARK_DATE∈[活动开始日,跑批日]即活动期间新增标记，COUNT(DISTINCT CUST_ID)
    -- 基数客户首现记'19000101'自动巌除；按活动/任务编号(STATIS_DIM)隔离防多活动重复
    -------------------------------------------------------------------------
-   INSERT INTO TMP_STAT_INDX_AGGR
+   INSERT INTO TMP_STAT_INDX_AGGR_006
           (PATH_CODE,
            DATA_DATE,
            DATA_BLNG,
@@ -1009,7 +1033,7 @@ BEGIN
    -- 保险：DWD_ACCT_INSUR.POLICY_STATE='1'，TX_DATE∈[开始日,跑批日]，SUM(INSUR_AMT)
    -- 本期值 = 理财合计 + 保险合计（UNION ALL 后统一 SUM，一个活动/任务一条记录）
    -------------------------------------------------------------------------
-   INSERT INTO TMP_STAT_INDX_AGGR
+   INSERT INTO TMP_STAT_INDX_AGGR_006
            (PATH_CODE,
             DATA_DATE,
             DATA_BLNG,

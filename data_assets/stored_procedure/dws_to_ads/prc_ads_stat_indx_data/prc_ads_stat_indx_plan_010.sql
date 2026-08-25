@@ -1,3 +1,8 @@
+-------------------------------------------------------------------------
+-- 需求版本: v1.0 (2026-08-25)
+-- 变更记录:
+--   v1.0 AGGR汇总表拆分配套：合并各过程专属表_003~_009至_010后统一强校验+落库
+-------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_010(
     v_sysdat  IN  VARCHAR2,   -- 跑批业务日期
     outcde OUT INTEGER     -- 处理行数
@@ -20,11 +25,57 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20001, 'V_SYSDAT必须为YYYYMMDD格式');
     END IF;
     V_END_DATE := TO_DATE(v_sysdat, 'YYYYMMDD');
+
+    -------------------------------------------------------------------------
+    -- 0. 合并各过程专属汇总临时表（TMP_STAT_INDX_AGGR_003 ~ _009）
+    --    段首自清：防止重跑/并行残留
+    -------------------------------------------------------------------------
+    DELETE FROM TMP_STAT_INDX_AGGR_010;
+
+    INSERT INTO TMP_STAT_INDX_AGGR_010 (
+        path_code, data_date, data_blng, statis_dim,
+        statis_calib, indx_code, curnt_val, term_last_val,
+        persn_legal_bk_code
+    )
+    SELECT path_code, data_date, data_blng, statis_dim,
+           statis_calib, indx_code, curnt_val, term_last_val,
+           persn_legal_bk_code
+      FROM TMP_STAT_INDX_AGGR_003
+    UNION ALL
+    SELECT path_code, data_date, data_blng, statis_dim,
+           statis_calib, indx_code, curnt_val, term_last_val,
+           persn_legal_bk_code
+      FROM TMP_STAT_INDX_AGGR_004
+    UNION ALL
+    SELECT path_code, data_date, data_blng, statis_dim,
+           statis_calib, indx_code, curnt_val, term_last_val,
+           persn_legal_bk_code
+      FROM TMP_STAT_INDX_AGGR_005
+    UNION ALL
+    SELECT path_code, data_date, data_blng, statis_dim,
+           statis_calib, indx_code, curnt_val, term_last_val,
+           persn_legal_bk_code
+      FROM TMP_STAT_INDX_AGGR_006
+    UNION ALL
+    SELECT path_code, data_date, data_blng, statis_dim,
+           statis_calib, indx_code, curnt_val, term_last_val,
+           persn_legal_bk_code
+      FROM TMP_STAT_INDX_AGGR_007
+    UNION ALL
+    SELECT path_code, data_date, data_blng, statis_dim,
+           statis_calib, indx_code, curnt_val, term_last_val,
+           persn_legal_bk_code
+      FROM TMP_STAT_INDX_AGGR_008
+    UNION ALL
+    SELECT path_code, data_date, data_blng, statis_dim,
+           statis_calib, indx_code, curnt_val, term_last_val,
+           persn_legal_bk_code
+      FROM TMP_STAT_INDX_AGGR_009;
     -------------------------------------------------------------------------
     -- 发布前强校验：空值检查
     -------------------------------------------------------------------------
     SELECT COUNT(*) INTO V_INVALID_CNT
-      FROM TMP_STAT_INDX_AGGR
+      FROM TMP_STAT_INDX_AGGR_010
      WHERE data_date           IS NULL
         OR data_blng           IS NULL
         OR statis_dim          IS NULL
@@ -38,7 +89,7 @@ BEGIN
       FROM (
           SELECT data_date, data_blng, statis_dim, statis_calib,
                  indx_code, persn_legal_bk_code
-            FROM TMP_STAT_INDX_AGGR
+            FROM TMP_STAT_INDX_AGGR_010
            GROUP BY data_date, data_blng, statis_dim, statis_calib,
                     indx_code, persn_legal_bk_code
           HAVING COUNT(*) > 1
@@ -65,7 +116,7 @@ BEGIN
     WITH raw_aggr AS (
         SELECT data_date, data_blng, statis_dim, statis_calib,
                indx_code, curnt_val, term_last_val, persn_legal_bk_code
-          FROM TMP_STAT_INDX_AGGR
+          FROM TMP_STAT_INDX_AGGR_010
     ),
     org_closure AS (
         SELECT org_id                 AS ancestor_org_id,
