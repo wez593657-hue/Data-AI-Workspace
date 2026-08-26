@@ -4,8 +4,9 @@
 -- 参数说明:
 --   V_SYSDAT IN  VARCHAR2   跑批业务日期 YYYYMMDD
 --   OUTCDE   OUT INTEGER    处理行数
--- 需求版本: v4.7 (2026-08-25)
+-- 需求版本: v4.8 (2026-08-26)
 -- 变更记录:
+--   v4.8 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   v4.7 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_003，段首自清（并行跑批隔离）
 --   v4.6 0047基数缺失时增量与期初值置NULL；0050/0051基准改为基数表
 --        ADS_STAT_INDX_BASELINE_SUM（活动前一日冻结/存量补跑）；
@@ -68,12 +69,12 @@ BEGIN
            AND (indx_code <> 'INDX_0047' OR blng_type = 'O')       -- INDX_0047 仅机构维度口径
     ),
     scope_member AS (
-        -- A路径：营销活动成员
+        -- 路径08：营销活动成员
         SELECT s.path_code, s.statis_dim, s.data_blng,                -- 路径编码, 统计维度, 归属机构
                ti.cust_id, s.persn_legal_bk_code                      -- 客户ID, 法人行号
           FROM base_scope s                                           -- 复用统计范围CTE
          INNER JOIN DWD_MKT_TSK_INFO ti                               -- 营销任务信息表
-            ON s.path_code             = 'A'                          -- 限定A路径
+            ON s.path_code             = '08'                          -- 限定路径08
            AND ti.mkt_act_id           = s.statis_dim                 -- 任务活动ID=统计维度
            AND ti.persn_legal_bk_code  = s.persn_legal_bk_code        -- 法人行号一致
            AND ti.data_date            = v_sysdat                     -- 任务数据日期=跑批日期
@@ -82,12 +83,12 @@ BEGIN
 
         UNION
 
-        -- B路径-机构归属
+        -- 路径09-机构归属
         SELECT s.path_code, s.statis_dim, s.data_blng,  -- 路径编码, 统计维度, 归属机构
                lv.cust_id, s.persn_legal_bk_code        -- 客户ID, 法人行号
           FROM base_scope s                             -- 复用统计范围CTE
          INNER JOIN DWS_CUST_LVL_INFO lv                -- 客户层级信息表
-            ON s.path_code             = 'B'            -- 限定B路径
+            ON s.path_code             = '09'            -- 限定路径09
            AND s.blng_type             = 'O'            -- 只取机构口径
            AND lv.org_id               = s.blng_id      -- 客户所属机构=归属ID
            AND lv.persn_legal_bk_code  = s.persn_legal_bk_code   -- 法人行号一致
@@ -95,12 +96,12 @@ BEGIN
 
         UNION
 
-        -- B路径-客户经理归属
+        -- 路径09-客户经理归属
         SELECT s.path_code, s.statis_dim, s.data_blng,  -- 路径编码, 统计维度, 归属机构
                cm.cust_id, s.persn_legal_bk_code        -- 客户ID, 法人行号
           FROM base_scope s                             -- 复用统计范围CTE
          INNER JOIN DWD_CUST_MAN cm                     -- 客户管户关系表
-            ON s.path_code             = 'B'            -- 限定B路径
+            ON s.path_code             = '09'            -- 限定路径09
            AND s.blng_type             = 'M'            -- 只取客户经理口径
            AND cm.mngr_post_id         = s.blng_id      -- 管户经理岗位ID=归属ID
            AND cm.mng_typ              = '1'            -- 主管类型1（主管户）
@@ -153,13 +154,13 @@ BEGIN
      GROUP BY sm.path_code, sm.statis_dim, sm.data_blng, sm.persn_legal_bk_code;   -- 按路径/维度/机构/法人行汇总
 
     -------------------------------------------------------------------------
-    -- 4.2 标准期间增量写入（INDX_0046/0048/0049/0050/0051）- A路径
+    -- 4.2 标准期间增量写入（INDX_0046/0048/0049/0050/0051）- 路径08
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_003 (
         path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT 'A', v_sysdat, s.data_blng, s.statis_dim, '营销活动', s.indx_code,      -- 路径A/数据日期/归属机构/统计维度/口径/指标编码
+    SELECT '08', v_sysdat, s.data_blng, s.statis_dim, '08', s.indx_code,      -- 路径08/数据日期/归属机构/统计维度/口径/指标编码
            CASE s.indx_code                                                    -- 按指标编码取当期标准期间增量
                WHEN 'INDX_0046' THEN b.curnt_aum - b.yr_begin_aum              -- 当年存款新增=当期-年期初
                WHEN 'INDX_0048' THEN b.curnt_aum - b.mth_end_aum               -- 当月存款新增=当期-月期初(上月末)
@@ -177,27 +178,27 @@ BEGIN
            s.persn_legal_bk_code                          -- 法人行号
       FROM TMP_STAT_INDX_SCOPE s                          -- 指标统计范围表
      INNER JOIN TMP_STAT_INDX_BAL_AGGR b                  -- 余额预聚合表
-        ON b.path_code           = 'A'                    -- 只取A路径余额
+        ON b.path_code           = '08'                    -- 只取路径08余额
        AND b.statis_dim          = s.statis_dim           -- 统计维度一致
        AND b.data_blng           = s.data_blng            -- 归属机构一致
        AND b.persn_legal_bk_code = s.persn_legal_bk_code  -- 法人行号一致
       LEFT JOIN ADS_STAT_INDX_BASELINE_SUM bs             -- 指标存款基数汇总表
-        ON bs.statis_calib        = '营销活动'                -- 统计口径=营销活动
+        ON bs.statis_calib        = '08'                -- 统计口径=营销活动
        AND bs.statis_dim          = s.statis_dim          -- 统计维度一致
        AND bs.indx_code           = s.indx_code           -- 指标编码一致
        AND bs.data_blng           = s.data_blng           -- 归属机构一致
        AND bs.persn_legal_bk_code = s.persn_legal_bk_code -- 法人行号一致
-     WHERE s.path_code = 'A'                              -- 仅A路径
+     WHERE s.path_code = '08'                              -- 仅路径08
        AND s.indx_code IN ('INDX_0046','INDX_0048','INDX_0049','INDX_0050','INDX_0051');   -- 仅标准期间指标
 
     -------------------------------------------------------------------------
-    -- 4.2 标准期间增量写入（INDX_0046/0048/0049/0050/0051）- B路径
+    -- 4.2 标准期间增量写入（INDX_0046/0048/0049/0050/0051）- 路径09
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_003 (
         path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT 'B', v_sysdat, s.data_blng, s.statis_dim, '目标任务', s.indx_code,
+    SELECT '09', v_sysdat, s.data_blng, s.statis_dim, '09', s.indx_code,
            CASE s.indx_code                                                    -- 按指标编码取当期标准期间增量
                WHEN 'INDX_0046' THEN b.curnt_aum - b.yr_begin_aum              -- 当年存款新增=当期-年期初
                WHEN 'INDX_0048' THEN b.curnt_aum - b.mth_end_aum               -- 当月存款新增=当期-月期初
@@ -215,65 +216,65 @@ BEGIN
            s.persn_legal_bk_code                          -- 法人行号
       FROM TMP_STAT_INDX_SCOPE s                          -- 指标统计范围表
      INNER JOIN TMP_STAT_INDX_BAL_AGGR b                  -- 余额预聚合表
-        ON b.path_code           = 'B'                    -- 只取B路径余额
+        ON b.path_code           = '09'                    -- 只取路径09余额
        AND b.statis_dim          = s.statis_dim           -- 统计维度一致
        AND b.data_blng           = s.data_blng            -- 归属机构一致
        AND b.persn_legal_bk_code = s.persn_legal_bk_code  -- 法人行号一致
       LEFT JOIN ADS_STAT_INDX_BASELINE_SUM bs             -- 指标存款基数汇总表
-        ON bs.statis_calib        = '目标任务'                -- 统计口径=目标任务
+        ON bs.statis_calib        = '09'                -- 统计口径=目标任务
        AND bs.statis_dim          = s.statis_dim          -- 统计维度一致
        AND bs.indx_code           = s.indx_code           -- 指标编码一致
        AND bs.data_blng           = s.data_blng           -- 归属机构一致
        AND bs.persn_legal_bk_code = s.persn_legal_bk_code -- 法人行号一致
-     WHERE s.path_code = 'B'                              -- 仅B路径
+     WHERE s.path_code = '09'                              -- 仅路径09
        AND s.indx_code IN ('INDX_0046','INDX_0048','INDX_0049','INDX_0050','INDX_0051');   -- 仅标准期间指标
 
     -------------------------------------------------------------------------
-    -- 4.3 存款基数扣减指标 INDX_0047 - A路径（仅机构维度）
+    -- 4.3 存款基数扣减指标 INDX_0047 - 路径08（仅机构维度）
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_003 (
         path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT 'A', v_sysdat, s.data_blng, s.statis_dim, '营销活动', 'INDX_0047',   -- 路径A/数据日期/归属机构/统计维度/口径/固定指标0047
+    SELECT '08', v_sysdat, s.data_blng, s.statis_dim, '08', 'INDX_0047',   -- 路径08/数据日期/归属机构/统计维度/口径/固定指标0047
            CASE WHEN SUM(v.value_init) IS NULL THEN NULL           -- 基数缺失时当期值置NULL
                 ELSE b.curnt_aum - SUM(NVL(v.value_init, 0)) END,  -- 指标当期值=当期AUM-存款基数
            SUM(v.value_init),                                      -- 上期值=存款基数合计
            s.persn_legal_bk_code                                   -- 法人行号
       FROM TMP_STAT_INDX_SCOPE s                                   -- 指标统计范围表
      INNER JOIN TMP_STAT_INDX_BAL_AGGR b                           -- 余额预聚合表
-        ON b.path_code           = 'A'                             -- 只取A路径余额
+        ON b.path_code           = '08'                             -- 只取路径08余额
        AND b.statis_dim          = s.statis_dim                    -- 统计维度一致
        AND b.data_blng           = s.data_blng                     -- 归属机构一致
        AND b.persn_legal_bk_code = s.persn_legal_bk_code           -- 法人行号一致
       LEFT JOIN DWD_DEPO_VALUE_INIT v                              -- 存款基数初始化表
         ON v.org_id = s.blng_id                                    -- 按机构ID关联
-     WHERE s.path_code = 'A'                                       -- 仅A路径
+     WHERE s.path_code = '08'                                       -- 仅路径08
        AND s.blng_type = 'O'                                       -- 仅机构口径
        AND s.indx_code = 'INDX_0047'                               -- 仅存款基数扣减指标
      GROUP BY s.data_blng, s.statis_dim, b.curnt_aum, s.persn_legal_bk_code;   -- 按维度/机构/当期AUM/法人行聚合
 
     -------------------------------------------------------------------------
-    -- 4.3 存款基数扣减指标 INDX_0047 - B路径（仅机构维度）
+    -- 4.3 存款基数扣减指标 INDX_0047 - 路径09（仅机构维度）
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_003 (
         path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT 'B', v_sysdat, s.data_blng, s.statis_dim, '目标任务', 'INDX_0047',   -- 路径B/数据日期/归属机构/统计维度/口径/固定指标0047
+    SELECT '09', v_sysdat, s.data_blng, s.statis_dim, '09', 'INDX_0047',   -- 路径09/数据日期/归属机构/统计维度/口径/固定指标0047
            CASE WHEN SUM(v.value_init) IS NULL THEN NULL           -- 基数缺失时当期值置NULL
                 ELSE b.curnt_aum - SUM(NVL(v.value_init, 0)) END,  -- 指标当期值=当期AUM-存款基数
            SUM(v.value_init),                                      -- 上期值=存款基数合计
            s.persn_legal_bk_code                                   -- 法人行号
       FROM TMP_STAT_INDX_SCOPE s                                   -- 指标统计范围表
      INNER JOIN TMP_STAT_INDX_BAL_AGGR b                           -- 余额预聚合表
-        ON b.path_code           = 'B'                             -- 只取B路径余额
+        ON b.path_code           = '09'                             -- 只取路径09余额
        AND b.statis_dim          = s.statis_dim                    -- 统计维度一致
        AND b.data_blng           = s.data_blng                     -- 归属机构一致
        AND b.persn_legal_bk_code = s.persn_legal_bk_code           -- 法人行号一致
       LEFT JOIN DWD_DEPO_VALUE_INIT v                              -- 存款基数初始化表
         ON v.org_id = s.blng_id                                    -- 按机构ID关联
-     WHERE s.path_code = 'B'                                       -- 仅B路径
+     WHERE s.path_code = '09'                                       -- 仅路径09
        AND s.blng_type = 'O'                                       -- 仅机构口径
        AND s.indx_code = 'INDX_0047'                               -- 仅存款基数扣减指标
      GROUP BY s.data_blng, s.statis_dim, b.curnt_aum, s.persn_legal_bk_code;   -- 按维度/机构/当期AUM/法人行聚合

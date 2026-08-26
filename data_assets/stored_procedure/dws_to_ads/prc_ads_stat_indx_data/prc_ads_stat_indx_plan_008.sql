@@ -4,8 +4,9 @@
 -- 参数说明:
 --   V_SYSDAT IN  VARCHAR2   跑批业务日期 YYYYMMDD
 --   OUTCDE   OUT INTEGER     输出（写入行数）
--- 需求版本: v5.1 (2026-08-25)
+-- 需求版本: v5.2 (2026-08-26)
 -- 变更记录:
+--   v5.2 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   v5.0 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_008，段首自清（并行跑批隔离）
 --   v5.1 0081/0069分母净额化：ORDER_TYPE='01'退款取负，'00'支付为正；>=500阈值按净额
 --------------------------------------------------------------------
@@ -58,7 +59,7 @@ BEGIN
     -- 1. 0081 / 0069 合并产出：A/B 路径一次扫描，两指标共享宽表
     ---------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_008
-        (PATH_CODE,      -- 路径标识（A营销活动/B目标任务）
+        (PATH_CODE,      -- 路径标识（08营销活动/09目标任务）
          DATA_DATE,      -- 数据日期
          DATA_BLNG,      -- 数据归属
          STATIS_DIM,     -- 统计维度
@@ -70,8 +71,8 @@ BEGIN
     WITH SCOPE_ALL AS
      (
         /*                                                                -- 目标客户范围：A=营销活动  B=机构/管户 --*/
-        SELECT 'A'                  AS PATH_CODE,                         -- 路径标识：A=营销活动
-               '营销活动'          AS STATIS_CALIB,                           -- 统计口径：营销活动
+        SELECT '08'                  AS PATH_CODE,                         -- 路径标识：08=营销活动
+               '08'          AS STATIS_CALIB,                           -- 统计口径：营销活动
                S.STATIS_DIM,                                              -- 统计维度
                S.DATA_BLNG,                                               -- 数据归属
                S.PERSN_LEGAL_BK_CODE,                                     -- 法人机构编码
@@ -84,11 +85,11 @@ BEGIN
                                         TI.MKT_PERSN_ORG = S.BLNG_ID) OR  -- 营销人员机构编码=归属机构（O分支）
                                         (S.BLNG_TYPE = 'M' AND            -- 归属类型M：按营销人员匹配
                                         TI.MKT_PERSN = S.BLNG_ID))        -- 营销人员编码=归属ID（M分支）
-         WHERE S.PATH_CODE = 'A'                                          -- 仅A路径（营销活动）
+         WHERE S.PATH_CODE = '08'                                          -- 仅路径08（营销活动）
            AND S.INDX_CODE IN ('INDX_0081', 'INDX_0069')                  -- 仅0081/0069指标
         UNION ALL
-        SELECT 'B',                                                      -- 路径标识：B=目标任务
-               '目标任务',                                                   -- 统计口径：目标任务
+        SELECT '09',                                                      -- 路径标识：B=目标任务
+               '09',                                                   -- 统计口径：目标任务
                S.STATIS_DIM,                                             -- 统计维度
                S.DATA_BLNG,                                              -- 数据归属
                S.PERSN_LEGAL_BK_CODE,                                    -- 法人机构编码
@@ -97,12 +98,12 @@ BEGIN
           JOIN DWS_CUST_LVL_INFO LV ON LV.ORG_ID            = S.BLNG_ID  -- 客户层级信息：机构ID匹配归属
                                     AND LV.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE   -- 法人机构匹配
                                     AND LV.DATA_DATE           = V_SYSDAT-- 取跑批日层级快照
-         WHERE S.PATH_CODE = 'B'                                         -- 仅B路径
+         WHERE S.PATH_CODE = '09'                                         -- 仅路径09
            AND S.BLNG_TYPE = 'O'                                         -- 仅归属O（机构）
            AND S.INDX_CODE IN ('INDX_0081', 'INDX_0069')                 -- 仅0081/0069指标
         UNION ALL
-        SELECT 'B',                                         -- 路径标识：B=目标任务
-               '目标任务',                                      -- 统计口径：目标任务
+        SELECT '09',                                         -- 路径标识：B=目标任务
+               '09',                                      -- 统计口径：目标任务
                S.STATIS_DIM,                                -- 统计维度
                S.DATA_BLNG,                                 -- 数据归属
                S.PERSN_LEGAL_BK_CODE,                       -- 法人机构编码
@@ -111,7 +112,7 @@ BEGIN
           JOIN DWD_CUST_MAN CM ON CM.MNGR_POST_ID          = S.BLNG_ID       -- 客户经理信息：管户岗ID匹配归属
                               AND CM.MNG_TYP = '1'          -- 客户经理类型=1
                               AND CM.PERSN_LEGAL_BK_CODE    = S.PERSN_LEGAL_BK_CODE   -- 法人机构匹配
-         WHERE S.PATH_CODE = 'B'                            -- 仅B路径
+         WHERE S.PATH_CODE = '09'                            -- 仅路径09
            AND S.BLNG_TYPE = 'M'                            -- 仅归属M（管户）
            AND S.INDX_CODE IN ('INDX_0081', 'INDX_0069')),  -- 仅0081/0069指标
      CUST_MCT AS
@@ -227,7 +228,7 @@ BEGIN
     --    率   = ROUND(分子/分母*100, 2), 分母为0时输出 NULL
     ---------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_008
-        (PATH_CODE,      -- 路径标识（A营销活动/B目标任务）
+        (PATH_CODE,      -- 路径标识（08营销活动/09目标任务）
          DATA_DATE,      -- 数据日期
          DATA_BLNG,      -- 数据归属
          STATIS_DIM,     -- 统计维度
@@ -240,16 +241,16 @@ BEGIN
      (
         SELECT SC.PATH_CODE,  -- 路径标识
                CASE
-                   WHEN SC.PATH_CODE = 'A' THEN
-                      '营销活动'
+                   WHEN SC.PATH_CODE = '08' THEN
+                      '08'
                    ELSE
-                      '目标任务'
+                      '09'
                END AS STATIS_CALIB,                                               -- 口径：A→营销活动，否则→目标任务
                SC.STATIS_DIM,                                                     -- 统计维度
                SC.DATA_BLNG,                                                      -- 数据归属
                SC.PERSN_LEGAL_BK_CODE,                                            -- 法人机构编码
                SC.CUST_ID                                                         -- 目标客户ID
-          FROM (SELECT DISTINCT S.PATH_CODE,                                      -- 仅0066目标客户，A路径去重
+          FROM (SELECT DISTINCT S.PATH_CODE,                                      -- 仅0066目标客户，路径08去重
                                 S.STATIS_DIM,                                     -- 统计维度
                                 S.DATA_BLNG,                                      -- 数据归属
                                 S.PERSN_LEGAL_BK_CODE,                            -- 法人机构编码
@@ -262,10 +263,10 @@ BEGIN
                                                 TI.MKT_PERSN_ORG = S.BLNG_ID) OR  -- 营销人员机构编码=归属机构（O分支）
                                                 (S.BLNG_TYPE = 'M' AND            -- 归属M：按营销人员匹配
                                                 TI.MKT_PERSN = S.BLNG_ID))        -- 营销人员编码=归属ID（M分支）
-                 WHERE S.PATH_CODE = 'A'                                          -- 仅A路径（营销活动）
+                 WHERE S.PATH_CODE = '08'                                          -- 仅路径08（营销活动）
                    AND S.INDX_CODE = 'INDX_0066'                                  -- 仅0066指标
                 UNION
-                SELECT DISTINCT S.PATH_CODE,   -- 0066目标客户，B机构路径去重
+                SELECT DISTINCT S.PATH_CODE,   -- 0066目标客户，09机构路径去重
                                 S.STATIS_DIM,  -- 统计维度
                                 S.DATA_BLNG,   -- 数据归属
                                 S.PERSN_LEGAL_BK_CODE,   -- 法人机构编码
@@ -274,11 +275,11 @@ BEGIN
                   JOIN DWS_CUST_LVL_INFO LV ON LV.ORG_ID            = S.BLNG_ID   -- 客户层级：机构ID匹配归属
                                            AND LV.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE   -- 法人机构匹配
                                            AND LV.DATA_DATE           = V_SYSDAT  -- 跑批日快照
-                 WHERE S.PATH_CODE = 'B'                                          -- 仅B路径
+                 WHERE S.PATH_CODE = '09'                                          -- 仅路径09
                    AND S.BLNG_TYPE = 'O'                                          -- 仅归属O（机构）
                    AND S.INDX_CODE = 'INDX_0066'                                  -- 仅0066指标
                 UNION
-                SELECT DISTINCT S.PATH_CODE,   -- 0066目标客户，B管户路径去重
+                SELECT DISTINCT S.PATH_CODE,   -- 0066目标客户，09管户路径去重
                                 S.STATIS_DIM,  -- 统计维度
                                 S.DATA_BLNG,   -- 数据归属
                                 S.PERSN_LEGAL_BK_CODE,   -- 法人机构编码
@@ -287,7 +288,7 @@ BEGIN
                   JOIN DWD_CUST_MAN CM ON CM.MNGR_POST_ID          = S.BLNG_ID  -- 客户经理：管户岗ID匹配归属
                                       AND CM.MNG_TYP = '1'                      -- 客户经理类型=1
                                       AND CM.PERSN_LEGAL_BK_CODE    = S.PERSN_LEGAL_BK_CODE   -- 法人机构匹配
-                 WHERE S.PATH_CODE = 'B'                                        -- 仅B路径
+                 WHERE S.PATH_CODE = '09'                                        -- 仅路径09
                    AND S.BLNG_TYPE = 'M'                                        -- 仅归属M（管户）
                    AND S.INDX_CODE = 'INDX_0066') SC),                          -- 仅0066指标
      DENOM AS

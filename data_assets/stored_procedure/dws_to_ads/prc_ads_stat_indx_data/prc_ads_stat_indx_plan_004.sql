@@ -6,6 +6,7 @@
 --   OUTCDE   OUT INTEGER     输出（处理行数/结果标志）
 -- 需求版本: 【待确认】（原文件中无需求版本/变更记录信息，版本号待需求方确认）
 -- 变更记录:
+--   - 2026-08-26 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   - 2026-08-25 行内注释补全与对齐（仅注释与格式优化，业务逻辑零改动）
 ------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_004(
@@ -41,7 +42,7 @@ BEGIN
         path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT 'A', v_sysdat, s.data_blng, s.statis_dim, '营销活动', s.indx_code,                                                                                                       -- 路径A/数据日期/归属机构/统计维度/口径/指标编码
+    SELECT '08', v_sysdat, s.data_blng, s.statis_dim, '08', s.indx_code,                                                                                                       -- 路径08/数据日期/归属机构/统计维度/口径/指标编码
            CASE s.indx_code                                                                                                                                                     -- 按指标编码取当期增量
                WHEN 'INDX_0055' THEN SUM(CASE WHEN b.bal_type = '4' THEN NVL(b.fin_bal, 0) ELSE 0 END) - MAX(bs.base_yr_avg_fin)                                                -- 当年日均理财增量=当年日均理财-年度基数日均理财
                WHEN 'INDX_0056' THEN SUM(CASE WHEN b.bal_type = '2' THEN NVL(b.fin_bal, 0) ELSE 0 END) - MAX(bs.base_mth_avg_fin)                                               -- 当月日均理财增量=当月日均理财-月份基数日均理财
@@ -61,14 +62,14 @@ BEGIN
                WHEN 'INDX_0062' THEN MAX(bs.base_loan_bal)         -- 上期值=基数贷款余额
            END,
            s.persn_legal_bk_code                  -- 法人行号
-      FROM TMP_STAT_INDX_SCOPE s                  -- 指标统计范围表（A路径源数据）
+      FROM TMP_STAT_INDX_SCOPE s                  -- 指标统计范围表（路径08源数据）
      INNER JOIN ADS_STAT_INDX_BASELINE_MEMBER d   -- 指标基数成员表
-        ON d.statis_calib        = '营销活动'         -- 统计口径=营销活动
+        ON d.statis_calib        = '08'         -- 统计口径=营销活动
        AND d.statis_dim          = s.statis_dim   -- 统计维度一致
        AND d.data_blng           = s.data_blng    -- 归属机构一致
        AND d.persn_legal_bk_code = s.persn_legal_bk_code   -- 法人行号一致
      INNER JOIN ADS_STAT_INDX_BASELINE_SUM bs     -- 指标基数汇总表
-        ON bs.statis_calib        = '营销活动'        -- 统计口径=营销活动
+        ON bs.statis_calib        = '08'        -- 统计口径=营销活动
        AND bs.statis_dim          = s.statis_dim  -- 统计维度一致
        AND bs.indx_code           = s.indx_code   -- 指标编码一致
        AND bs.data_blng           = s.data_blng   -- 归属机构一致
@@ -82,7 +83,7 @@ BEGIN
       ) b
         ON b.cust_id             = d.cust_id                                  -- 按客户ID关联
        AND b.persn_legal_bk_code = d.persn_legal_bk_code                      -- 法人行号一致
-     WHERE s.path_code = 'A'                                                  -- 仅A路径
+     WHERE s.path_code = '08'                                                  -- 仅路径08
        AND s.indx_code IN ('INDX_0055','INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062')   -- 仅理财/贷款类指标
      GROUP BY s.data_blng, s.statis_dim, s.indx_code, s.persn_legal_bk_code;  -- 按机构/维度/指标/法人行聚合
 
@@ -93,7 +94,7 @@ BEGIN
         path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT 'B', v_sysdat, s.data_blng, s.statis_dim, '目标任务', s.indx_code,                                                                                                       -- 路径B/数据日期/归属机构/统计维度/口径/指标编码
+    SELECT '09', v_sysdat, s.data_blng, s.statis_dim, '09', s.indx_code,                                                                                                       -- 路径09/数据日期/归属机构/统计维度/口径/指标编码
            CASE s.indx_code                                                                                                                                                     -- 按指标编码取当期增量
                WHEN 'INDX_0055' THEN SUM(CASE WHEN b.bal_type = '4' THEN NVL(b.fin_bal, 0) ELSE 0 END) - MAX(bs.base_yr_avg_fin)                                                -- 当年日均理财增量
                WHEN 'INDX_0056' THEN SUM(CASE WHEN b.bal_type = '2' THEN NVL(b.fin_bal, 0) ELSE 0 END) - MAX(bs.base_mth_avg_fin)                                               -- 当月日均理财增量
@@ -113,14 +114,14 @@ BEGIN
                WHEN 'INDX_0062' THEN MAX(bs.base_loan_bal)         -- 上期值=基数贷款余额
            END,
            s.persn_legal_bk_code                  -- 法人行号
-      FROM TMP_STAT_INDX_SCOPE s                  -- 指标统计范围表（B路径源数据）
+      FROM TMP_STAT_INDX_SCOPE s                  -- 指标统计范围表（路径09源数据）
      INNER JOIN ADS_STAT_INDX_BASELINE_MEMBER d   -- 指标基数成员表
-        ON d.statis_calib        = '目标任务'         -- 统计口径=目标任务
+        ON d.statis_calib        = '09'         -- 统计口径=目标任务
        AND d.statis_dim          = s.statis_dim   -- 统计维度一致
        AND d.data_blng           = s.data_blng    -- 归属机构一致
        AND d.persn_legal_bk_code = s.persn_legal_bk_code   -- 法人行号一致
      INNER JOIN ADS_STAT_INDX_BASELINE_SUM bs     -- 指标基数汇总表
-        ON bs.statis_calib        = '目标任务'        -- 统计口径=目标任务
+        ON bs.statis_calib        = '09'        -- 统计口径=目标任务
        AND bs.statis_dim          = s.statis_dim  -- 统计维度一致
        AND bs.indx_code           = s.indx_code   -- 指标编码一致
        AND bs.data_blng           = s.data_blng   -- 归属机构一致
@@ -134,7 +135,7 @@ BEGIN
       ) b
         ON b.cust_id             = d.cust_id                                  -- 按客户ID关联
        AND b.persn_legal_bk_code = d.persn_legal_bk_code                      -- 法人行号一致
-     WHERE s.path_code = 'B'                                                  -- 仅B路径
+     WHERE s.path_code = '09'                                                  -- 仅路径09
        AND s.indx_code IN ('INDX_0055','INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062')   -- 仅理财/贷款类指标
      GROUP BY s.data_blng, s.statis_dim, s.indx_code, s.persn_legal_bk_code;  -- 按机构/维度/指标/法人行聚合
 

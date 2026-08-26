@@ -9,7 +9,7 @@
 -- crmdm.TMP_STAT_INDX_LOAN_BASE 定义
 
 CREATE TABLE IF NOT EXISTS crmdm.TMP_STAT_INDX_LOAN_BASE (
-    PATH_CODE            VARCHAR(1)   NOT NULL,  -- 路径: A=营销活动 B=目标任务
+    PATH_CODE            VARCHAR(2)   NOT NULL,  -- 路径: A=营销活动 B=目标任务
     STATIS_DIM           VARCHAR(64)  NOT NULL,  -- 活动ID/任务ID
     DATA_BLNG            VARCHAR(64)  NOT NULL,  -- 归属: ORG_机构 / MGR_客户经理
     PERSN_LEGAL_BK_CODE  VARCHAR(4)   NOT NULL,  -- 法人行

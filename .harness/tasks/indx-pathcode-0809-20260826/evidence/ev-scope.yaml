@@ -1,0 +1,9 @@
+evidence_id: ev-scope
+task_id: indx-pathcode-0809-20260826
+phase: SCOPE_CONFIRMED
+kind: scope_confirmation
+purpose: scope_confirmation
+result: passed
+details: 范围:10存储过程path_code 08/09+STATIS_CALIB+PATH_CODE扩VARCHAR(2)+4新ADS DDL+4需求文档同步
+repository_revision: 1458d423e0b9e2f6448f34b178a47c1609ce8db3
+created_at: '2026-08-26T07:38:12+00:00'

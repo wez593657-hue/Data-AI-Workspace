@@ -4,7 +4,7 @@
 DROP TABLE IF EXISTS TMP_STAT_INDX_AGGR;
 
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_SCOPE (
-    path_code VARCHAR(1) NOT NULL,
+    path_code VARCHAR(2) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,
     indx_code VARCHAR(100) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_SCOPE (
 );
 
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_BAL_AGGR (
-    path_code VARCHAR(1) NOT NULL,
+    path_code VARCHAR(2) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
     persn_legal_bk_code VARCHAR(30) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_BAL_AGGR (
 
 -- 仅用于0052~0054、0063的逐客户状态判定；不得用于金额或事件指标。
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_CUST_STATE (
-    path_code VARCHAR(1) NOT NULL,
+    path_code VARCHAR(2) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,
     indx_code VARCHAR(100) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_CUST_STATE (
 -- 各过程段首自清，防止并行跑批相互影响；plan_010 合并至 _010 后统一强校验+落库。
 -- 旧 TMP_STAT_INDX_AGGR 已删除，不留兼容。
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_003 (
-    path_code VARCHAR(1) NOT NULL, -- 统计路径：A=营销活动，B=目标任务
+    path_code VARCHAR(2) NOT NULL, -- 统计路径：A=营销活动，B=目标任务
     data_date VARCHAR(8) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_003 (
     PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
 );
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_004 (
-    path_code VARCHAR(1) NOT NULL,
+    path_code VARCHAR(2) NOT NULL,
     data_date VARCHAR(8) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,
@@ -72,7 +72,20 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_004 (
     PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
 );
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_005 (
-    path_code VARCHAR(1) NOT NULL,
+    path_code VARCHAR(2) NOT NULL,
+    data_date VARCHAR(8) NOT NULL,
+    data_blng VARCHAR(100) NOT NULL,
+    statis_dim VARCHAR(100) NOT NULL,
+    statis_calib VARCHAR(100) NOT NULL,
+    indx_code VARCHAR(100) NOT NULL,
+    curnt_val NUMBER(20,2) NULL,
+    term_last_val NUMBER(20,2) NULL,
+    persn_legal_bk_code VARCHAR(30) NOT NULL,
+    PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
+);
+-- plan_006 指标 INDX_0061/0064/0067/0068/0070/0071/0072/0076/0077/0078/0079 汇总临时表
+CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_006 (
+    path_code VARCHAR(2) NOT NULL,
     data_date VARCHAR(8) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,
@@ -84,7 +97,7 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_005 (
     PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
 );
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_007 (
-    path_code VARCHAR(1) NOT NULL,
+    path_code VARCHAR(2) NOT NULL,
     data_date VARCHAR(8) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,
@@ -96,7 +109,7 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_007 (
     PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
 );
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_008 (
-    path_code VARCHAR(1) NOT NULL,
+    path_code VARCHAR(2) NOT NULL,
     data_date VARCHAR(8) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,
@@ -108,7 +121,7 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_008 (
     PRIMARY KEY (path_code, data_date, data_blng, statis_dim, statis_calib, indx_code, persn_legal_bk_code)
 );
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_009 (
-    path_code VARCHAR(1) NOT NULL,
+    path_code VARCHAR(2) NOT NULL,
     data_date VARCHAR(8) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,
@@ -121,7 +134,7 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_009 (
 );
 -- plan_010 合并表：接收 _003~_009 全部结果后统一强校验并落库 ADS_STAT_INDX_DATA
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_010 (
-    path_code VARCHAR(1) NOT NULL,
+    path_code VARCHAR(2) NOT NULL,
     data_date VARCHAR(8) NOT NULL,
     data_blng VARCHAR(100) NOT NULL,
     statis_dim VARCHAR(100) NOT NULL,
@@ -138,7 +151,7 @@ CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_AGGR_010 (
  * 说明: 活动开始前一天建立，活动结束后保留；不纳入上方临时表清空逻辑
  */
 CREATE TABLE IF NOT EXISTS TMP_STAT_INDX_LOAN_BASE (
-    path_code            VARCHAR(1)   NOT NULL,
+    path_code            VARCHAR(2)   NOT NULL,
     statis_dim           VARCHAR(64)  NOT NULL,
     data_blng            VARCHAR(64)  NOT NULL,
     persn_legal_bk_code  VARCHAR(4)   NOT NULL,

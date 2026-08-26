@@ -4,8 +4,9 @@
 -- 参数说明:
 --   V_SYSDAT IN  VARCHAR2   跑批业务日期 YYYYMMDD
 --   OUTCDE   OUT INTEGER    输出（影响行数 / 错误标志）
--- 需求版本: v5.0 (2026-08-25)
+-- 需求版本: v5.1 (2026-08-26)
 -- 变更记录:
+--   v5.1 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   v5.0 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_007，段首自清（并行跑批隔离）
 -------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE CRMDM.PRC_ADS_STAT_INDX_PLAN_007
@@ -55,8 +56,8 @@ BEGIN
          TERM_LAST_VAL,                                          -- 上期值
          PERSN_LEGAL_BK_CODE)                                    -- 法人机构编号
         WITH SCOPE_ALL AS                                        -- 组装A/B各路径范围内客户
-         (SELECT 'A'       AS PATH_CODE,                         -- 路径代码A（营销活动）
-                 '营销活动' AS STATIS_CALIB,                         -- 统计口径=营销活动
+         (SELECT '08'       AS PATH_CODE,                         -- 路径代码08（营销活动）
+                 '08' AS STATIS_CALIB,                         -- 统计口径=营销活动
                  S.STATIS_DIM,                                   -- 统计维度（活动ID）
                  S.DATA_BLNG,                                    -- 数据归属
                  S.TERM_BEGIN_DATE,                              -- 活动开始日期
@@ -69,11 +70,11 @@ BEGIN
               AND TI.DATA_DATE = V_SYSDAT                        -- 取跑批日期当日活动
               AND ((S.BLNG_TYPE = 'O' AND TI.MKT_PERSN_ORG = S.BLNG_ID)  -- 按机构归属匹配
                 OR (S.BLNG_TYPE = 'M' AND TI.MKT_PERSN = S.BLNG_ID))  -- 按客户经理归属匹配
-          WHERE S.PATH_CODE = 'A'                                -- 限定A路径
+          WHERE S.PATH_CODE = '08'                                -- 限定路径08
             AND S.INDX_CODE = 'INDX_0080'                        -- 仅取0080指标
          UNION ALL                                               -- 合并（保留重复）
-         SELECT 'B',                                             -- 路径代码B（目标任务）
-                '目标任务',                                          -- 统计口径=目标任务
+         SELECT '09',                                             -- 路径代码B（目标任务）
+                '09',                                          -- 统计口径=目标任务
                 S.STATIS_DIM,                                    -- 统计维度
                 S.DATA_BLNG,                                     -- 数据归属
                 S.TERM_BEGIN_DATE,                               -- 任务开始日期
@@ -85,11 +86,11 @@ BEGIN
               AND LV.ORG_ID = S.BLNG_ID                          -- 机构ID一致
               AND LV.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE -- 法人机构一致
               AND LV.DATA_DATE = V_SYSDAT                        -- 取跑批日期当日层级
-          WHERE S.PATH_CODE = 'B'                                -- 限定B路径
+          WHERE S.PATH_CODE = '09'                                -- 限定路径09
             AND S.INDX_CODE = 'INDX_0080'                        -- 仅取0080指标
          UNION ALL                                               -- 合并（保留重复）
-         SELECT 'B',                                             -- 路径代码B
-                '目标任务',                                          -- 统计口径
+         SELECT '09',                                             -- 路径代码B
+                '09',                                          -- 统计口径
                 S.STATIS_DIM,                                    -- 统计维度
                 S.DATA_BLNG,                                     -- 数据归属
                 S.TERM_BEGIN_DATE,                               -- 任务开始日期
@@ -101,7 +102,7 @@ BEGIN
               AND CM.MNGR_POST_ID = S.BLNG_ID                    -- 客户经理岗位ID一致
               AND CM.MNG_TYP = '1'                               -- 客户经理类型主号
               AND CM.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE -- 法人机构一致
-          WHERE S.PATH_CODE = 'B'                                -- 限定B路径
+          WHERE S.PATH_CODE = '09'                                -- 限定路径09
             AND S.INDX_CODE = 'INDX_0080'),                      -- 仅取0080指标
         CUST_FLAGS AS                                            -- 客户维度打标（四类产品持有标志）
          (SELECT SM.PATH_CODE,                                   -- 路径代码
@@ -178,8 +179,8 @@ BEGIN
          TERM_LAST_VAL,                         -- 上期值
          PERSN_LEGAL_BK_CODE)                   -- 法人机构编号
         WITH SCOPE_ALL AS                       -- 组装A/B各路径范围内客户
-         (SELECT 'A'       AS PATH_CODE,        -- 路径代码A
-                 '营销活动' AS STATIS_CALIB,        -- 统计口径
+         (SELECT '08'       AS PATH_CODE,        -- 路径代码08
+                 '08' AS STATIS_CALIB,        -- 统计口径
                  S.STATIS_DIM,                  -- 统计维度
                  S.DATA_BLNG,                   -- 数据归属
                  S.TERM_BEGIN_DATE,             -- 开始日期
@@ -192,11 +193,11 @@ BEGIN
               AND TI.DATA_DATE = V_SYSDAT       -- 取跑批日期当日活动
               AND ((S.BLNG_TYPE = 'O' AND TI.MKT_PERSN_ORG = S.BLNG_ID)  -- 按机构归属匹配
                 OR (S.BLNG_TYPE = 'M' AND TI.MKT_PERSN = S.BLNG_ID))  -- 按客户经理归属匹配
-          WHERE S.PATH_CODE = 'A'               -- 限定A路径
+          WHERE S.PATH_CODE = '08'               -- 限定路径08
             AND S.INDX_CODE = 'INDX_0082'       -- 仅取0082指标
          UNION ALL                              -- 合并（保留重复）
-         SELECT 'B',                            -- 路径代码B
-                '目标任务',                         -- 统计口径
+         SELECT '09',                            -- 路径代码B
+                '09',                         -- 统计口径
                 S.STATIS_DIM,                   -- 统计维度
                 S.DATA_BLNG,                    -- 数据归属
                 S.TERM_BEGIN_DATE,              -- 开始日期
@@ -208,11 +209,11 @@ BEGIN
               AND LV.ORG_ID = S.BLNG_ID         -- 机构ID一致
               AND LV.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE  -- 法人机构一致
               AND LV.DATA_DATE = V_SYSDAT       -- 取跑批日期当日层级
-          WHERE S.PATH_CODE = 'B'               -- 限定B路径
+          WHERE S.PATH_CODE = '09'               -- 限定路径09
             AND S.INDX_CODE = 'INDX_0082'       -- 仅取0082指标
          UNION ALL                              -- 合并（保留重复）
-         SELECT 'B',                            -- 路径代码B
-                '目标任务',                         -- 统计口径
+         SELECT '09',                            -- 路径代码B
+                '09',                         -- 统计口径
                 S.STATIS_DIM,                   -- 统计维度
                 S.DATA_BLNG,                    -- 数据归属
                 S.TERM_BEGIN_DATE,              -- 开始日期
@@ -224,7 +225,7 @@ BEGIN
               AND CM.MNGR_POST_ID = S.BLNG_ID   -- 客户经理岗位ID一致
               AND CM.MNG_TYP = '1'              -- 客户经理类型主号
               AND CM.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE  -- 法人机构一致
-          WHERE S.PATH_CODE = 'B'               -- 限定B路径
+          WHERE S.PATH_CODE = '09'               -- 限定路径09
             AND S.INDX_CODE = 'INDX_0082')      -- 仅取0082指标
         SELECT SM.PATH_CODE,                    -- 路径代码
                V_SYSDAT,                        -- 数据日期=跑批日期
@@ -269,8 +270,8 @@ BEGIN
          TERM_LAST_VAL,                         -- 上期值
          PERSN_LEGAL_BK_CODE)                   -- 法人机构编号
         WITH SCOPE_ALL AS                       -- 组装A/B各路径范围内客户
-         (SELECT 'A'       AS PATH_CODE,        -- 路径代码A
-                 '营销活动' AS STATIS_CALIB,        -- 统计口径
+         (SELECT '08'       AS PATH_CODE,        -- 路径代码08
+                 '08' AS STATIS_CALIB,        -- 统计口径
                  S.STATIS_DIM,                  -- 统计维度
                  S.DATA_BLNG,                   -- 数据归属
                  S.TERM_BEGIN_DATE,             -- 开始日期
@@ -283,11 +284,11 @@ BEGIN
               AND TI.DATA_DATE = V_SYSDAT       -- 取跑批日期当日活动
               AND ((S.BLNG_TYPE = 'O' AND TI.MKT_PERSN_ORG = S.BLNG_ID)  -- 按机构归属匹配
                 OR (S.BLNG_TYPE = 'M' AND TI.MKT_PERSN = S.BLNG_ID))  -- 按客户经理归属匹配
-          WHERE S.PATH_CODE = 'A'               -- 限定A路径
+          WHERE S.PATH_CODE = '08'               -- 限定路径08
             AND S.INDX_CODE = 'INDX_0073'       -- 仅取0073指标
          UNION ALL                              -- 合并（保留重复）
-         SELECT 'B',                            -- 路径代码B
-                '目标任务',                         -- 统计口径
+         SELECT '09',                            -- 路径代码B
+                '09',                         -- 统计口径
                 S.STATIS_DIM,                   -- 统计维度
                 S.DATA_BLNG,                    -- 数据归属
                 S.TERM_BEGIN_DATE,              -- 开始日期
@@ -299,11 +300,11 @@ BEGIN
               AND LV.ORG_ID = S.BLNG_ID         -- 机构ID一致
               AND LV.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE  -- 法人机构一致
               AND LV.DATA_DATE = V_SYSDAT       -- 取跑批日期当日层级
-          WHERE S.PATH_CODE = 'B'               -- 限定B路径
+          WHERE S.PATH_CODE = '09'               -- 限定路径09
             AND S.INDX_CODE = 'INDX_0073'       -- 仅取0073指标
          UNION ALL                              -- 合并（保留重复）
-         SELECT 'B',                            -- 路径代码B
-                '目标任务',                         -- 统计口径
+         SELECT '09',                            -- 路径代码B
+                '09',                         -- 统计口径
                 S.STATIS_DIM,                   -- 统计维度
                 S.DATA_BLNG,                    -- 数据归属
                 S.TERM_BEGIN_DATE,              -- 开始日期
@@ -315,7 +316,7 @@ BEGIN
               AND CM.MNGR_POST_ID = S.BLNG_ID   -- 客户经理岗位ID一致
               AND CM.MNG_TYP = '1'              -- 客户经理类型主号
               AND CM.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE  -- 法人机构一致
-          WHERE S.PATH_CODE = 'B'               -- 限定B路径
+          WHERE S.PATH_CODE = '09'               -- 限定路径09
             AND S.INDX_CODE = 'INDX_0073')      -- 仅取0073指标
         SELECT SM.PATH_CODE,                    -- 路径代码
                V_SYSDAT,                        -- 数据日期=跑批日期
@@ -360,8 +361,8 @@ BEGIN
          TERM_LAST_VAL,                               -- 上期值
          PERSN_LEGAL_BK_CODE)                         -- 法人机构编号
         WITH SCOPE_ALL AS                             -- 组装A/B各路径范围内客户
-         (SELECT 'A'       AS PATH_CODE,              -- 路径代码A
-                 '营销活动' AS STATIS_CALIB,              -- 统计口径
+         (SELECT '08'       AS PATH_CODE,              -- 路径代码08
+                 '08' AS STATIS_CALIB,              -- 统计口径
                  S.STATIS_DIM,                        -- 统计维度
                  S.DATA_BLNG,                         -- 数据归属
                  S.TERM_BEGIN_DATE,                   -- 开始日期
@@ -374,11 +375,11 @@ BEGIN
               AND TI.DATA_DATE = V_SYSDAT             -- 取跑批日期当日活动
               AND ((S.BLNG_TYPE = 'O' AND TI.MKT_PERSN_ORG = S.BLNG_ID)  -- 按机构归属匹配
                 OR (S.BLNG_TYPE = 'M' AND TI.MKT_PERSN = S.BLNG_ID))  -- 按客户经理归属匹配
-          WHERE S.PATH_CODE = 'A'                     -- 限定A路径
+          WHERE S.PATH_CODE = '08'                     -- 限定路径08
             AND S.INDX_CODE = 'INDX_0083'             -- 仅取0083指标
          UNION ALL                                    -- 合并（保留重复）
-         SELECT 'B',                                  -- 路径代码B
-                '目标任务',                               -- 统计口径
+         SELECT '09',                                  -- 路径代码B
+                '09',                               -- 统计口径
                 S.STATIS_DIM,                         -- 统计维度
                 S.DATA_BLNG,                          -- 数据归属
                 S.TERM_BEGIN_DATE,                    -- 开始日期
@@ -390,11 +391,11 @@ BEGIN
               AND LV.ORG_ID = S.BLNG_ID               -- 机构ID一致
               AND LV.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE  -- 法人机构一致
               AND LV.DATA_DATE = V_SYSDAT             -- 取跑批日期当日层级
-          WHERE S.PATH_CODE = 'B'                     -- 限定B路径
+          WHERE S.PATH_CODE = '09'                     -- 限定路径09
             AND S.INDX_CODE = 'INDX_0083'             -- 仅取0083指标
          UNION ALL                                    -- 合并（保留重复）
-         SELECT 'B',                                  -- 路径代码B
-                '目标任务',                               -- 统计口径
+         SELECT '09',                                  -- 路径代码B
+                '09',                               -- 统计口径
                 S.STATIS_DIM,                         -- 统计维度
                 S.DATA_BLNG,                          -- 数据归属
                 S.TERM_BEGIN_DATE,                    -- 开始日期
@@ -406,7 +407,7 @@ BEGIN
               AND CM.MNGR_POST_ID = S.BLNG_ID         -- 客户经理岗位ID一致
               AND CM.MNG_TYP = '1'                    -- 客户经理类型主号
               AND CM.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE  -- 法人机构一致
-          WHERE S.PATH_CODE = 'B'                     -- 限定B路径
+          WHERE S.PATH_CODE = '09'                     -- 限定路径09
             AND S.INDX_CODE = 'INDX_0083')            -- 仅取0083指标
         SELECT SM.PATH_CODE,                          -- 路径代码
                V_SYSDAT,                              -- 数据日期=跑批日期

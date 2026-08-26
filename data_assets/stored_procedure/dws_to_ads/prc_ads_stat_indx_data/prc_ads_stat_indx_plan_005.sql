@@ -1,11 +1,12 @@
 ------------------------------------------------------------------------
 -- 存储过程: CRMDM.PRC_ADS_STAT_INDX_PLAN_005
--- 功能说明: 指标数据统计——步骤5（提取符合提升条件的客户明细并汇总A/B路径指标）
+-- 功能说明: 指标数据统计——步骤5（提取符合提升条件的客户明细并汇总A/路径09指标）
 -- 参数说明:
 --   V_SYSDAT IN  VARCHAR2   跑批业务日期 YYYYMMDD
 --   OUTCDE   OUT INTEGER     输出（处理行数）
 -- 需求版本: 【待确认】（原文件无头部版本信息，版本号待需求方确认）
 -- 变更记录:
+--   - 2026-08-26 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   - 2026-08-25 行内注释补全与对齐（仅注释与格式优化，业务逻辑零改动）
 ------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_005(
@@ -40,7 +41,7 @@ BEGIN
         persn_legal_bk_code, base_cust_lvl, curnt_cust_lvl,  -- 法人机构/期初层级/当前层级
         base_mth_avg_aum, curnt_mth_avg_aum                  -- 期初月日均AUM/当前月日均AUM
     )
-    SELECT CASE WHEN d.statis_calib = '营销活动' THEN 'A' ELSE 'B' END,  -- 路径标识：营销活动→A 目标任务→B
+    SELECT CASE WHEN d.statis_calib = '08' THEN '08' ELSE '09' END,  -- 路径标识：营销活动→A 目标任务→B
            d.statis_dim,                                  -- 统计维度
            d.indx_code,                                   -- 指标编码
            d.data_blng,                                   -- 数据归属
@@ -91,13 +92,13 @@ BEGIN
        );
 
     -------------------------------------------------------------------------
-    -- 段落: 6.2 汇总写入 AGGR（A路径：营销活动）
+    -- 段落: 6.2 汇总写入 AGGR（路径08：营销活动）
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_005 (                          -- 写入本步骤专项汇总表
         path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径/数据日期/归属/维度/口径
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标/当前值/期初值/法人机构
     )
-    SELECT 'A', v_sysdat, s.data_blng, s.statis_dim, '营销活动', s.indx_code,                               -- A路径汇总头：数据日期/归属/维度/营销活动/指标
+    SELECT '08', v_sysdat, s.data_blng, s.statis_dim, '08', s.indx_code,                               -- 路径08汇总头：数据日期/归属/维度/营销活动/指标
            CASE s.indx_code                                                                             -- 按指标分类型计算客户数
                WHEN 'INDX_0052' THEN COUNT(c.cust_id)                                                   -- 0052：层级提升至4级的客户数
                WHEN 'INDX_0053' THEN COUNT(c.cust_id)                                                   -- 0053：层级提升至6级的客户数
@@ -125,9 +126,9 @@ BEGIN
                         THEN 1 ELSE 0 END)
            ELSE 0 END,
            s.persn_legal_bk_code                                              -- 法人机构编码
-      FROM (SELECT DISTINCT path_code, statis_dim, indx_code, data_blng, persn_legal_bk_code  -- 子查询：A路径去重(路径/维度/指标/归属/法人)
-              FROM TMP_STAT_INDX_SCOPE                                        -- A/B路径目标客户范围表
-             WHERE path_code = 'A'                                            -- 仅A路径（营销活动）
+      FROM (SELECT DISTINCT path_code, statis_dim, indx_code, data_blng, persn_legal_bk_code  -- 子查询：路径08去重(路径/维度/指标/归属/法人)
+              FROM TMP_STAT_INDX_SCOPE                                        -- A/路径09目标客户范围表
+             WHERE path_code = '08'                                            -- 仅路径08（营销活动）
                AND indx_code IN ('INDX_0052','INDX_0053','INDX_0054','INDX_0063')) s  -- 仅提升类指标
       LEFT JOIN TMP_STAT_INDX_CUST_STATE c                                    -- 关联客户提升状态明细（取客户数）
         ON c.path_code           = s.path_code                                -- 路径匹配
@@ -138,13 +139,13 @@ BEGIN
      GROUP BY s.data_blng, s.statis_dim, s.indx_code, s.persn_legal_bk_code;  -- 按归属/维度/指标/法人机构分组
 
     -------------------------------------------------------------------------
-    -- 段落: 6.3 汇总写入 AGGR（B路径：目标任务）
+    -- 段落: 6.3 汇总写入 AGGR（路径09：目标任务）
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_005 (                          -- 写入本步骤专项汇总表
         path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径/数据日期/归属/维度/口径
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标/当前值/期初值/法人机构
     )
-    SELECT 'B', v_sysdat, s.data_blng, s.statis_dim, '目标任务', s.indx_code,                               -- B路径汇总头：数据日期/归属/维度/目标任务/指标
+    SELECT '09', v_sysdat, s.data_blng, s.statis_dim, '09', s.indx_code,                               -- 路径09汇总头：数据日期/归属/维度/目标任务/指标
            CASE s.indx_code                                                                             -- 按指标分类型计算客户数
                WHEN 'INDX_0052' THEN COUNT(c.cust_id)                                                   -- 0052：层级提升至4级的客户数
                WHEN 'INDX_0053' THEN COUNT(c.cust_id)                                                   -- 0053：层级提升至6级的客户数
@@ -172,9 +173,9 @@ BEGIN
                         THEN 1 ELSE 0 END)
            ELSE 0 END,
            s.persn_legal_bk_code                                              -- 法人机构编码
-      FROM (SELECT DISTINCT path_code, statis_dim, indx_code, data_blng, persn_legal_bk_code  -- 子查询：B路径去重(路径/维度/指标/归属/法人)
-              FROM TMP_STAT_INDX_SCOPE                                        -- A/B路径目标客户范围表
-             WHERE path_code = 'B'                                            -- 仅B路径（目标任务）
+      FROM (SELECT DISTINCT path_code, statis_dim, indx_code, data_blng, persn_legal_bk_code  -- 子查询：路径09去重(路径/维度/指标/归属/法人)
+              FROM TMP_STAT_INDX_SCOPE                                        -- A/路径09目标客户范围表
+             WHERE path_code = '09'                                            -- 仅路径09（目标任务）
                AND indx_code IN ('INDX_0052','INDX_0053','INDX_0054','INDX_0063')) s  -- 仅提升类指标
       LEFT JOIN TMP_STAT_INDX_CUST_STATE c                                    -- 关联客户提升状态明细（取客户数）
         ON c.path_code           = s.path_code                                -- 路径匹配

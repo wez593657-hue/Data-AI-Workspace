@@ -1,0 +1,9 @@
+evidence_id: ev-ua
+task_id: indx-pathcode-0809-20260826
+phase: USER_APPROVED
+kind: user_approval
+purpose: user_approval
+result: passed
+details: 用户确认提交并push
+repository_revision: 1458d423e0b9e2f6448f34b178a47c1609ce8db3
+created_at: '2026-08-26T07:38:57+00:00'

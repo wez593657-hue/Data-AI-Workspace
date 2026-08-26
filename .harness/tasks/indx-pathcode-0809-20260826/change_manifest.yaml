@@ -1,0 +1,43 @@
+schema_version: '0.1'
+task_id: indx-pathcode-0809-20260826
+purpose: 指标路径编码A/B改为08/09(营销=08/目标=09)，STATIS_CALIB同步编号，PATH_CODE类型扩VARCHAR(2)，同步需求文档
+description: |-
+  指标数据统计链路路径编码由 A/B 改为 08/09（营销活动/营销任务=08，目标任务=09）：
+  1) 10个存储过程(path_code)字面量与 CASE 映射同步改为 08/09，STATIS_CALIB 同步输出编号'08'/'09'。
+  2) 相关表 PATH_CODE 类型由 VARCHAR(1) 扩容为 VARCHAR(2)：tmp_pro_ads_stat_indx_data.ddl(12处)、
+     ads_crm_r_salry_payrol_base.sql、dwd_tmp_stat_indx_loan_base.sql。
+  3) 随附新增本模块配套ADS DDL：ADS_CRM_R_SALRY_PAYROL_BASE、ADS_STAT_INDX_BASELINE_MEMBER/DTL/SUM。
+  4) 同步需求文档与记忆卡片版本（记忆卡片v2.3/逻辑修复设计v1.1.3/指标需求v1.1/交叉分析勘误）。
+  已通过风险门禁 standard，SQL语法与工作区校验通过。
+user_confirmation: confirmed
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_001.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_002.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_003.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_004.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_005.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_006.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_007.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_008.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_009.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_010.sql
+  - path: data_assets/ddl/tmp/tmp_pro_ads_stat_indx_data.ddl
+  - path: data_assets/ddl/dwd/dwd_tmp_stat_indx_loan_base.sql
+  - path: data_assets/ddl/ads/ads_crm_r_salry_payrol_base.sql
+  - path: data_assets/ddl/ads/ads_stat_indx_baseline_member.sql
+  - path: data_assets/ddl/ads/ads_stat_indx_baseline_dtl.sql
+  - path: data_assets/ddl/ads/ads_stat_indx_baseline_sum.sql
+  - path: requirements/指标数据统计_记忆卡片.md
+  - path: requirements/指标逻辑修复设计文档.md
+  - path: requirements/指标需求_从v2.0.3提取.md
+  - path: requirements/指标交叉分析报告.md
+  - path: .harness/tasks/indx-pathcode-0809-20260826/
+  - path: requirements/产品推荐规则v2.0.md
+read_only_inputs:
+  - path: AGENTS.md
+  - path: docs/
+  - path: scripts/
+  - path: hooks/
+forbidden_changes:
+  - path: secrets/
+  - path: .env

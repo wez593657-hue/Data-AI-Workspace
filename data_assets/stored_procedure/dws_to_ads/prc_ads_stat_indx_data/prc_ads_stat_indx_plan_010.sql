@@ -4,8 +4,9 @@
 -- 参数说明:
 --   V_SYSDAT IN  VARCHAR2  跑批业务日期 YYYYMMDD
 --   OUTCDE   OUT INTEGER   输出（处理行数）
--- 需求版本: v1.0 (2026-08-25)
+-- 需求版本: v1.1 (2026-08-26)
 -- 变更记录:
+--   v1.1 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   v1.0 AGGR汇总表拆分配套：合并各过程专属表_003~_009至_010后统一强校验+落库
 -------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_010(

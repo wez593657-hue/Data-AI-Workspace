@@ -4,8 +4,9 @@
 -- 参数说明:
 --   V_SYSDAT IN  VARCHAR2   跑批业务日期 YYYYMMDD
 --   OUTCDE   OUT INTEGER    输出（处理行数/结果标志）
--- 需求版本: v4.6 (2026-08-22)
+-- 需求版本: v4.7 (2026-08-26)
 -- 变更记录:
+--   v4.7 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   v4.6 0050/0051纳入基数冻结范围；新增存量活动0050/0051基准补跑分支(3.3b)；
 --        汇总表新增BASE_YR_AVG_DEPO/BASE_MTH_AVG_DEPO两列；强校验覆盖0050/0051
 ------------------------------------------------------------------------
@@ -48,12 +49,12 @@ BEGIN
         persn_legal_bk_code, base_data_date, base_run_date  -- 法人机构编号、基准数据日期、基准跑批日期
     )
     WITH scope_member AS (  -- 组装本次需冻结的成员范围（A/B多路径汇总）
-        -- A路径：营销活动成员
+        -- 路径08：营销活动成员
         SELECT s.path_code, s.statis_dim, s.indx_code, s.data_blng,    -- 路径代码、统计维度、指标代码、数据归属
                s.term_begin_date, ti.cust_id, s.persn_legal_bk_code    -- 开始日期、客户ID、法人机构编号
           FROM TMP_STAT_INDX_SCOPE s                                   -- 指标范围临时表
          INNER JOIN DWD_MKT_TSK_INFO ti                                -- 关联营销活动任务信息表
-            ON s.path_code             = 'A'                           -- 限定A路径（营销活动）
+            ON s.path_code             = '08'                           -- 限定路径08（营销活动）
            AND ti.mkt_act_id           = s.statis_dim                  -- 营销活动ID等于统计维度
            AND ti.persn_legal_bk_code  = s.persn_legal_bk_code         -- 法人机构编号一致
            AND ti.data_date            = v_sysdat                      -- 取跑批日期当日的活动信息
@@ -65,12 +66,12 @@ BEGIN
 
         UNION  -- 合并去重
 
-        -- B路径-机构归属成员
+        -- 路径09-机构归属成员
         SELECT s.path_code, s.statis_dim, s.indx_code, s.data_blng,  -- 路径代码、统计维度、指标代码、数据归属
                s.term_begin_date, lv.cust_id, s.persn_legal_bk_code  -- 开始日期、客户ID、法人机构编号
           FROM TMP_STAT_INDX_SCOPE s                                 -- 指标范围临时表
          INNER JOIN DWS_CUST_LVL_INFO lv                             -- 关联客户层级信息表
-            ON s.path_code             = 'B'                         -- 限定B路径（目标任务）
+            ON s.path_code             = '09'                         -- 限定路径09（目标任务）
            AND s.blng_type             = 'O'                         -- 归属类型为机构
            AND lv.org_id               = s.blng_id                   -- 客户机构ID等于范围归属机构ID
            AND lv.persn_legal_bk_code  = s.persn_legal_bk_code       -- 法人机构编号一致
@@ -81,12 +82,12 @@ BEGIN
 
         UNION  -- 合并去重
 
-        -- B路径-客户经理归属成员
+        -- 路径09-客户经理归属成员
         SELECT s.path_code, s.statis_dim, s.indx_code, s.data_blng,  -- 路径代码、统计维度、指标代码、数据归属
                s.term_begin_date, cm.cust_id, s.persn_legal_bk_code  -- 开始日期、客户ID、法人机构编号
           FROM TMP_STAT_INDX_SCOPE s                                 -- 指标范围临时表
          INNER JOIN DWD_CUST_MAN cm                                  -- 关联客户经理归属表
-            ON s.path_code             = 'B'                         -- 限定B路径（目标任务）
+            ON s.path_code             = '09'                         -- 限定路径09（目标任务）
            AND s.blng_type             = 'M'                         -- 归属类型为客户经理
            AND cm.mngr_post_id         = s.blng_id                   -- 客户经理岗位ID等于范围归属岗位ID
            AND cm.mng_typ              = '1'                         -- 客户经理类型为主号
@@ -96,7 +97,7 @@ BEGIN
                                'INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062','INDX_0063')  -- 其余需冻结指标代码
     )
     SELECT DISTINCT                      -- 客户维度去重
-           CASE WHEN sm.path_code = 'A' THEN '营销活动' ELSE '目标任务' END AS statis_calib,  -- 按路径映射统计口径
+           CASE WHEN sm.path_code = '08' THEN '08' ELSE '09' END AS statis_calib,  -- 按路径映射统计口径
            sm.statis_dim,                -- 统计维度（活动ID/任务机构岗位ID）
            sm.data_blng,                 -- 数据归属
            sm.cust_id,                   -- 客户ID
@@ -107,7 +108,7 @@ BEGIN
      WHERE NOT EXISTS (                  -- 过滤掉已存在的成员基准，避免重复冻结
          SELECT 1
            FROM ADS_STAT_INDX_BASELINE_MEMBER x                 -- 冻结成员表
-          WHERE x.statis_calib        = CASE WHEN sm.path_code = 'A' THEN '营销活动' ELSE '目标任务' END  -- 口径一致
+          WHERE x.statis_calib        = CASE WHEN sm.path_code = '08' THEN '08' ELSE '09' END  -- 口径一致
             AND x.statis_dim          = sm.statis_dim           -- 维度一致
             AND x.data_blng           = sm.data_blng            -- 归属一致
             AND x.cust_id             = sm.cust_id              -- 客户一致
@@ -122,7 +123,7 @@ BEGIN
         persn_legal_bk_code, base_data_date, base_run_date,  -- 法人机构编号、基准数据日期、基准跑批日期
         base_cust_lvl, base_mth_avg_aum                      -- 基准客户等级、基准月日均AUM
     )
-    SELECT CASE WHEN s.path_code = 'A' THEN '营销活动' ELSE '目标任务' END,  -- 路径映射统计口径
+    SELECT CASE WHEN s.path_code = '08' THEN '08' ELSE '09' END,  -- 路径映射统计口径
            s.statis_dim,                                             -- 统计维度
            s.indx_code,                                              -- 指标代码
            s.data_blng,                                              -- 数据归属
@@ -136,7 +137,7 @@ BEGIN
                 THEN b.aum_bal END                                   -- 取月日均金融资产余额
       FROM TMP_STAT_INDX_SCOPE s                                     -- 指标范围临时表
      INNER JOIN ADS_STAT_INDX_BASELINE_MEMBER m                      -- 关联已冻结的成员基准
-        ON m.statis_calib        = CASE WHEN s.path_code = 'A' THEN '营销活动' ELSE '目标任务' END  -- 口径一致
+        ON m.statis_calib        = CASE WHEN s.path_code = '08' THEN '08' ELSE '09' END  -- 口径一致
        AND m.statis_dim          = s.statis_dim                      -- 维度一致
        AND m.data_blng           = s.data_blng                       -- 归属一致
        AND m.persn_legal_bk_code = s.persn_legal_bk_code             -- 法人机构一致
@@ -156,7 +157,7 @@ BEGIN
        AND NOT EXISTS (                                              -- 过滤已冻结的明细，避免重复
            SELECT 1
              FROM ADS_STAT_INDX_BASELINE_DTL d                   -- 冻结明细表
-            WHERE d.statis_calib        = CASE WHEN s.path_code = 'A' THEN '营销活动' ELSE '目标任务' END  -- 口径一致
+            WHERE d.statis_calib        = CASE WHEN s.path_code = '08' THEN '08' ELSE '09' END  -- 口径一致
               AND d.statis_dim          = s.statis_dim           -- 维度一致
               AND d.indx_code           = s.indx_code            -- 指标一致
               AND d.data_blng           = s.data_blng            -- 归属一致
@@ -174,7 +175,7 @@ BEGIN
         base_fin_bal, base_agen_fin_bal,                                -- 基准金融资产余额、基准代发金融资产余额
         base_yr_avg_depo, base_mth_avg_depo                             -- 基准年日均存款、基准月日均存款（v4.6新增）
     )
-    SELECT CASE WHEN s.path_code = 'A' THEN '营销活动' ELSE '目标任务' END,                                                     -- 路径映射统计口径
+    SELECT CASE WHEN s.path_code = '08' THEN '08' ELSE '09' END,                                                     -- 路径映射统计口径
            s.statis_dim,                                                                                                -- 统计维度
            s.indx_code,                                                                                                 -- 指标代码
            s.data_blng,                                                                                                 -- 数据归属
@@ -192,7 +193,7 @@ BEGIN
            SUM(CASE WHEN b.bal_type = '2' THEN NVL(b.depo_bal, 0) ELSE 0 END)                                           -- 月日均存款
       FROM TMP_STAT_INDX_SCOPE s                                                                                        -- 指标范围临时表
      INNER JOIN ADS_STAT_INDX_BASELINE_MEMBER m                                                                         -- 关联已冻结的成员基准
-        ON m.statis_calib        = CASE WHEN s.path_code = 'A' THEN '营销活动' ELSE '目标任务' END                              -- 口径一致
+        ON m.statis_calib        = CASE WHEN s.path_code = '08' THEN '08' ELSE '09' END                              -- 口径一致
        AND m.statis_dim          = s.statis_dim                                                                         -- 维度一致
        AND m.data_blng           = s.data_blng                                                                          -- 归属一致
        AND m.persn_legal_bk_code = s.persn_legal_bk_code                                                                -- 法人机构一致
@@ -205,7 +206,7 @@ BEGIN
        AND NOT EXISTS (                                                                                                 -- 过滤已冻结的汇总，避免重复
            SELECT 1
              FROM ADS_STAT_INDX_BASELINE_SUM x                   -- 冻结汇总表
-            WHERE x.statis_calib        = CASE WHEN s.path_code = 'A' THEN '营销活动' ELSE '目标任务' END  -- 口径一致
+            WHERE x.statis_calib        = CASE WHEN s.path_code = '08' THEN '08' ELSE '09' END  -- 口径一致
               AND x.statis_dim          = s.statis_dim           -- 维度一致
               AND x.indx_code           = s.indx_code            -- 指标一致
               AND x.data_blng           = s.data_blng            -- 归属一致
@@ -224,12 +225,12 @@ BEGIN
         base_data_date, base_run_date, base_yr_avg_depo, base_mth_avg_depo  -- 基准数据日期、基准跑批日期、基准年日均存款、基准月日均存款
     )
     WITH scope_member AS (  -- 组装存量活动范围内成员
-        -- A路径：营销活动成员
+        -- 路径08：营销活动成员
         SELECT s.path_code, s.statis_dim, s.indx_code, s.data_blng,  -- 路径代码、统计维度、指标代码、数据归属
                s.term_begin_date, ti.cust_id, s.persn_legal_bk_code  -- 开始日期、客户ID、法人机构编号
           FROM TMP_STAT_INDX_SCOPE s                                 -- 指标范围临时表
          INNER JOIN DWD_MKT_TSK_INFO ti                              -- 关联营销活动任务信息
-            ON s.path_code             = 'A'                         -- 限定A路径（营销活动）
+            ON s.path_code             = '08'                         -- 限定路径08（营销活动）
            AND ti.mkt_act_id           = s.statis_dim                -- 活动ID等于统计维度
            AND ti.persn_legal_bk_code  = s.persn_legal_bk_code       -- 法人机构一致
            AND ti.data_date            = v_sysdat                    -- 取跑批日期当日活动信息
@@ -238,12 +239,12 @@ BEGIN
          WHERE s.term_begin_date < v_sysdat                          -- 仅取已开始（存量）的活动范围
            AND s.indx_code IN ('INDX_0050','INDX_0051')              -- 仅补跑0050/0051指标
         UNION                                                        -- 合并
-        -- B路径-机构归属成员
+        -- 路径09-机构归属成员
         SELECT s.path_code, s.statis_dim, s.indx_code, s.data_blng,  -- 路径代码、统计维度、指标代码、数据归属
                s.term_begin_date, lv.cust_id, s.persn_legal_bk_code  -- 开始日期、客户ID、法人机构编号
           FROM TMP_STAT_INDX_SCOPE s                            -- 指标范围临时表
          INNER JOIN DWS_CUST_LVL_INFO lv                        -- 关联客户层级信息
-            ON s.path_code             = 'B'                    -- 限定B路径
+            ON s.path_code             = '09'                    -- 限定路径09
            AND s.blng_type             = 'O'                    -- 归属类型为机构
            AND lv.org_id               = s.blng_id              -- 机构ID一致
            AND lv.persn_legal_bk_code  = s.persn_legal_bk_code  -- 法人机构一致
@@ -251,12 +252,12 @@ BEGIN
          WHERE s.term_begin_date < v_sysdat                     -- 仅取已开始范围
            AND s.indx_code IN ('INDX_0050','INDX_0051')         -- 仅补跑0050/0051
         UNION                                                   -- 合并
-        -- B路径-客户经理归属成员
+        -- 路径09-客户经理归属成员
         SELECT s.path_code, s.statis_dim, s.indx_code, s.data_blng,  -- 路径代码、统计维度、指标代码、数据归属
                s.term_begin_date, cm.cust_id, s.persn_legal_bk_code  -- 开始日期、客户ID、法人机构编号
           FROM TMP_STAT_INDX_SCOPE s                            -- 指标范围临时表
          INNER JOIN DWD_CUST_MAN cm                             -- 关联客户经理归属表
-            ON s.path_code             = 'B'                    -- 限定B路径
+            ON s.path_code             = '09'                    -- 限定路径09
            AND s.blng_type             = 'M'                    -- 归属类型为客户经理
            AND cm.mngr_post_id         = s.blng_id              -- 客户经理岗位ID一致
            AND cm.mng_typ              = '1'                    -- 客户经理类型主号
@@ -264,7 +265,7 @@ BEGIN
          WHERE s.term_begin_date < v_sysdat                     -- 仅取已开始范围
            AND s.indx_code IN ('INDX_0050','INDX_0051')         -- 仅补跑0050/0051
     )
-    SELECT CASE WHEN sm.path_code = 'A' THEN '营销活动' ELSE '目标任务' END,  -- 路径映射统计口径
+    SELECT CASE WHEN sm.path_code = '08' THEN '08' ELSE '09' END,  -- 路径映射统计口径
            sm.statis_dim,                                             -- 统计维度
            sm.indx_code,                                              -- 指标代码
            sm.data_blng,                                              -- 数据归属
@@ -281,7 +282,7 @@ BEGIN
      WHERE NOT EXISTS (                                               -- 过滤已存在基准，避免重复补跑
          SELECT 1
            FROM ADS_STAT_INDX_BASELINE_SUM x                    -- 冻结汇总表
-          WHERE x.statis_calib        = CASE WHEN sm.path_code = 'A' THEN '营销活动' ELSE '目标任务' END  -- 口径一致
+          WHERE x.statis_calib        = CASE WHEN sm.path_code = '08' THEN '08' ELSE '09' END  -- 口径一致
             AND x.statis_dim          = sm.statis_dim           -- 维度一致
             AND x.indx_code           = sm.indx_code            -- 指标一致
             AND x.data_blng           = sm.data_blng            -- 归属一致
@@ -308,7 +309,7 @@ BEGIN
            AND ((s.blng_type = 'O' AND ti.mkt_persn_org = s.blng_id)  -- 按机构归属匹配
              OR (s.blng_type = 'M' AND ti.mkt_persn     = s.blng_id)) -- 按客户经理归属匹配
          WHERE s.term_begin_date = V_NEXT_DAY                         -- 仅取开始日期为今日的范围
-           AND s.path_code       = 'A'                                -- 限定A路径（营销活动）
+           AND s.path_code       = '08'                                -- 限定路径08（营销活动）
            AND s.indx_code       = 'INDX_0066'                        -- 仅取0066指标
         UNION                                                         -- 合并
         SELECT s.path_code, s.statis_dim, s.data_blng, s.persn_legal_bk_code, lv.cust_id  -- 路径/维度/归属/机构及客户ID
@@ -318,7 +319,7 @@ BEGIN
            AND lv.persn_legal_bk_code = s.persn_legal_bk_code         -- 法人机构一致
            AND lv.data_date           = v_sysdat                      -- 取跑批日期当日层级
          WHERE s.term_begin_date = V_NEXT_DAY                         -- 仅取开始日期为今日的范围
-           AND s.path_code       = 'B'                                -- 限定B路径
+           AND s.path_code       = '09'                                -- 限定路径09
            AND s.blng_type       = 'O'                                -- 归属类型为机构
            AND s.indx_code       = 'INDX_0066'                        -- 仅取0066指标
         UNION                                                         -- 合并
@@ -329,7 +330,7 @@ BEGIN
            AND cm.mng_typ             = '1'                           -- 客户经理类型主号
            AND cm.persn_legal_bk_code = s.persn_legal_bk_code         -- 法人机构一致
          WHERE s.term_begin_date = V_NEXT_DAY                         -- 仅取开始日期为今日的范围
-           AND s.path_code       = 'B'                                -- 限定B路径
+           AND s.path_code       = '09'                                -- 限定路径09
            AND s.blng_type       = 'M'                                -- 归属类型为客户经理
            AND s.indx_code       = 'INDX_0066'                        -- 仅取0066指标
     )
@@ -366,7 +367,7 @@ BEGIN
            (s.indx_code IN ('INDX_0052','INDX_0053','INDX_0054','INDX_0063')                         -- 明细类指标
             AND NOT EXISTS (                                                                         -- 明细表中无对应基准
                 SELECT 1 FROM ADS_STAT_INDX_BASELINE_DTL d                                           -- 冻结明细表
-                 WHERE d.statis_calib        = CASE WHEN s.path_code = 'A' THEN '营销活动' ELSE '目标任务' END  -- 口径一致
+                 WHERE d.statis_calib        = CASE WHEN s.path_code = '08' THEN '08' ELSE '09' END  -- 口径一致
                    AND d.statis_dim          = s.statis_dim                                          -- 维度一致
                    AND d.indx_code           = s.indx_code                                           -- 指标一致
                    AND d.data_blng           = s.data_blng                                           -- 归属一致
@@ -376,7 +377,7 @@ BEGIN
            (s.indx_code IN ('INDX_0050','INDX_0051','INDX_0055','INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062')  -- 汇总类指标
             AND NOT EXISTS (                                                                            -- 汇总表中无对应基准
                 SELECT 1 FROM ADS_STAT_INDX_BASELINE_SUM b                                              -- 冻结汇总表
-                 WHERE b.statis_calib        = CASE WHEN s.path_code = 'A' THEN '营销活动' ELSE '目标任务' END  -- 口径一致
+                 WHERE b.statis_calib        = CASE WHEN s.path_code = '08' THEN '08' ELSE '09' END  -- 口径一致
                    AND b.statis_dim          = s.statis_dim                                             -- 维度一致
                    AND b.indx_code           = s.indx_code                                              -- 指标一致
                    AND b.data_blng           = s.data_blng                                              -- 归属一致

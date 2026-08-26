@@ -1,0 +1,9 @@
+evidence_id: ev-route
+task_id: indx-pathcode-0809-20260826
+phase: CREATED
+kind: workflow_routing
+purpose: workflow_routing
+result: passed
+details: 指标路径编码A/B改为08/09+需求文档同步,选lightweight
+repository_revision: 1458d423e0b9e2f6448f34b178a47c1609ce8db3
+created_at: '2026-08-26T07:38:12+00:00'
