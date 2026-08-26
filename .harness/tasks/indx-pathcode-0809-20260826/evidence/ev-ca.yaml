@@ -1,0 +1,9 @@
+evidence_id: ev-ca
+task_id: indx-pathcode-0809-20260826
+phase: COMMIT_ALLOWED
+kind: commit_authorization
+purpose: commit_authorization
+result: passed
+details: 本地提交8815869完成,strict门禁8/8通过,用户已批准
+repository_revision: 8815869c73f548bbd2e5fa7fcc54caf945974eec
+created_at: '2026-08-26T07:43:58+00:00'

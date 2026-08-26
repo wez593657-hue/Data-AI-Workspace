@@ -1,0 +1,9 @@
+evidence_id: ev-push
+task_id: indx-pathcode-0809-20260826
+phase: PUSH_ALLOWED
+kind: push_authorization
+purpose: push_authorization
+result: passed
+details: 推送成功1458d42..8815869,28文件,用户已批准
+repository_revision: 8815869c73f548bbd2e5fa7fcc54caf945974eec
+created_at: '2026-08-26T07:46:27+00:00'

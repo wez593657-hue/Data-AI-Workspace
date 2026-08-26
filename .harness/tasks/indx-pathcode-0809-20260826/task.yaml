@@ -2,15 +2,17 @@ schema_version: '0.1'
 task_id: indx-pathcode-0809-20260826
 purpose: 指标路径编码A/B改为08/09(营销=08/目标=09)，STATIS_CALIB同步编号，PATH_CODE类型扩VARCHAR(2)，同步需求文档
 workflow_profile: lightweight
-state: COMMIT_ALLOWED
+state: COMPLETED
 branch: master
 created_at: '2026-08-26T07:35:51+00:00'
-updated_at: '2026-08-26T07:38:58+00:00'
+updated_at: '2026-08-26T07:46:27+00:00'
 evidence_ids:
 - ev-route
 - ev-scope
 - ev-quick
 - ev-ua
+- ev-ca
+- ev-push
 allowed_paths: []
 forbidden_paths: []
 history:
@@ -33,4 +35,12 @@ history:
   to: COMMIT_ALLOWED
   reason: 授权提交
   at: '2026-08-26T07:38:58+00:00'
-state_seal: f73160e90bd6fb287c76a23b84b5a2dc47233b1a305f9c00a7259ada920bd933
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: 提交完成,strict门禁通过,授权推送
+  at: '2026-08-26T07:43:59+00:00'
+- from: PUSH_ALLOWED
+  to: COMPLETED
+  reason: 推送完成
+  at: '2026-08-26T07:46:27+00:00'
+state_seal: a50e9d541ff2bdb4499cd5674fc2089e66bbb40205a774d80d9871a4a1c837e7
