@@ -1,0 +1,9 @@
+evidence_id: ev-push
+task_id: prdkt-smartdep-20260903
+phase: PUSH_ALLOWED
+kind: push_authorization
+purpose: push_authorization
+result: passed
+details: 推送成功8815869..44fee23(含4b1cec8完成记录),2提交,用户已批准no-verify推送
+repository_revision: 44fee23622a9b92b4c9202f6db26dda08bc27472
+created_at: '2026-09-03T03:41:12+00:00'
