@@ -1,0 +1,60 @@
+schema_version: '0.1'
+task_id: prdkt-smartdep-20260903
+purpose: 产品推荐智能存款口径落地(SP v2.5.3 乐惠存/大额存单=智能存款,确认项46,日期参数合规19/29/4)及多任务资产同步提交推送
+description: |-
+  1) 产品推荐: SP v2.5.0→v2.5.3(历史持有类型拆分/缺陷修复/乐惠存+大额存单纳入智能存款确认项46/
+     日期参数合规化V_HIS_3Y_BGN=19,V_HIS_1Y_BGN=29,V_LAST_YEAR_END=4真上年末YYYY1231),
+     TMP v1.5, ads 目标表 v2.1, 方案 V1.2, 规则卡片 v2.5.0(确认项46), 删除过时规则 v2.0;
+     数据源维持 DWS_CUST_ASSE_LIAB_CUMU_HIS 关联具体产品(2026-09-03 用户确认不变更)。
+  2) 同步提交其他已完成任务的资产更新: 新客经营/指标统计/KYC/标签/理财保险等 SP/DDL/需求文档。
+  3) 新增资产: ODS CBS 存贷利率类 DDL、DWS 客户分层与等级历史 DDL、参考逻辑 ALL_PRC/ALL_TB。
+  4) 提交范围: 工作区全部变更, 排除 _tmp_/_rev_ 临时脚本与 .mnemon(用户确认)。
+  strict门禁6/6通过(114单测/离线校验/属性/覆盖率/方言/工作区校验)。
+user_confirmation: confirmed
+allowed_changes:
+  - path: data_assets/ddl/ads/ads_cust_prdkt_rcmd.sql
+  - path: data_assets/ddl/ads/ads_new_cust_kyc.sql
+  - path: data_assets/ddl/dwd/dwd_cust_indv_kyc.sql
+  - path: data_assets/ddl/dwd/dwd_prdkt_info_zb.sql
+  - path: data_assets/ddl/dwd/dwd_tmp_stat_indx_loan_base.sql
+  - path: data_assets/ddl/dws/dws_cust_classfive.sql
+  - path: data_assets/ddl/dws/dws_cust_lvl_info_his.sql
+  - path: data_assets/ddl/ods/cbs/cbs_kdpf_cunqkz.sql
+  - path: data_assets/ddl/ods/cbs/cbs_kdpf_cunrkz.sql
+  - path: data_assets/ddl/ods/cbs/cbs_kdpf_lilvdy.sql
+  - path: data_assets/ddl/ods/cbs/cbs_kitp_shijlv.sql
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_new_cust_dtl.ddl
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_new_cust_kyc.ddl
+  - path: data_assets/ddl/tmp/tmp_pro_ads_cust_prdkt_rcmd.ddl
+  - path: data_assets/reference_logic/ALL_PRC.sql
+  - path: data_assets/reference_logic/ALL_TB.sql
+  - path: data_assets/reference_logic/README.md
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CRM_R_CUST_LABLE_TX_INFO.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_NEW_CUST_DTL.sql
+  - path: data_assets/stored_procedure/dws_to_ads/PRC_ADS_CUST_PRDKT_RCMD.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_001.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_002.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_006.sql
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/prc_ads_stat_indx_plan_008.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_ACCT_FIN.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_ACCT_INSUR.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_CUST_CTRAKT_INFO.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_CUST_INDIV_RISK_INVST.sql
+  - path: data_assets/stored_procedure/ods_to_dwd/PRC_DWD_SYS_ORG.sql
+  - path: requirements/产品推荐方案.md
+  - path: requirements/产品推荐规则v2.0.md
+  - path: requirements/产品推荐规则记忆卡片.md
+  - path: requirements/指标数据统计_记忆卡片.md
+  - path: requirements/指标逻辑修复设计文档.md
+  - path: requirements/新客经营规则记忆卡片.md
+  - path: .harness/tasks/prdkt-smartdep-20260903/
+  - path: governance/stored_procedure_date_parameter_rules.md
+  - path: .mnemon/documents/active/document-084364d8.md
+read_only_inputs:
+  - path: AGENTS.md
+  - path: docs/
+  - path: scripts/
+  - path: hooks/
+forbidden_changes:
+  - path: secrets/
+  - path: .env

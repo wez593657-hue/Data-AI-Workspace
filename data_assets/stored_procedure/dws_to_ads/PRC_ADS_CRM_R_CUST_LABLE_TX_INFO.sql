@@ -137,7 +137,7 @@ WITH txt AS (
       AND REPLACE(SYS_DATE,'_','') BETWEEN V_ONE_MONTH_AGO AND V_SYSDAT
     UNION ALL
     SELECT PYER_ACCT_NO_DE, SYS_DATE, TRX_AMT_D
-    FROM EPCC.E_TXN_PAYMENT
+    FROM ECPP_E_TXN_PAYMENT
     WHERE REPLACE(SYS_DATE,'_','') BETWEEN V_ONE_MONTH_AGO AND V_SYSDAT
 )
 SELECT B.PERSN_LEGAL_BK_CODE, B.CUST_ID,
@@ -205,7 +205,7 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
      AND I.cust_status = '1'
      AND f.tran_date  >= V_CURR_YEAR_BEGIN
    GROUP BY i.cust_core_no, 
-   CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','1')
+   CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','18')
               THEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2)||'00'
               ELSE '9999' END;
 
@@ -217,7 +217,7 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
       MTH_UTIL_PAY_TRAN_CNT
   )
   SELECT i.cust_core_no             AS CUST_ID,
-         CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','1')
+         CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','18')
               THEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2)||'00'
               ELSE '9999' END                AS PERSN_LEGAL_BK_CODE,
          SUM(TO_NUMBER(f.tran_amt)) AS UTIL_TRAN_AMT,
@@ -230,7 +230,7 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
      AND I.cust_status = '1'
      AND f.tran_date  >= V_CURR_MONTH_BEGIN
    GROUP BY i.cust_core_no, 
-   CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','1')
+   CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','18')
               THEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2)||'00'
               ELSE '9999' END;
 
@@ -248,11 +248,12 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
          END          AS PERSN_LEGAL_BK_CODE,
          cust_no  AS CUST_ID,
          COUNT(*)     AS MKT_CNT,
-         SUM(order_amt) AS MKT_AMT
+         SUM(CASE WHEN ORDER_TYPE = '01' THEN -ORDER_AMT ELSE ORDER_AMT END) AS ANNUAL_TX_AMT  -- 净额：01退款取负
     FROM crmdm.uepp_pay_order_info upo
     inner join crmdm.uepp_pay_mct_settle_account upm
       on upm.mct_id = upo.mct_id
-   WHERE upo.status   = '02'                            -- 交易成功
+   WHERE upo.status = '02'                         -- 交易成功
+     AND upm.status in ('0','2')                         -- 状态 0-正常（可交易） 1-未生效 2-冻结 3-冻结(涉案账户) 9-作废
      AND replace(SUBSTR(pay_time, 1, 10),'-','') >= V_PREV_MONTH_BEGIN
      AND replace(SUBSTR(pay_time, 1, 10),'-','') <= V_PREV_MONTH_END
    GROUP BY CASE WHEN SUBSTR(isscode, 1, 2) IN ('12', '15', '18')
@@ -294,7 +295,8 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
       BILL_RSV_MKNT_AMT_MTH_LAST,
       YR_CAMPUS_PAY_CNT,
       MTH_UTIL_PAY_TRAN_AMT,
-      MTH_UTIL_PAY_TRAN_CNT
+      MTH_UTIL_PAY_TRAN_CNT,
+      KYC_COMPL_RATE
   )
   SELECT a.PERSN_LEGAL_BK_CODE,
          a.CUST_ID,
@@ -307,7 +309,8 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
          NVL(g.BILL_RSV_MKNT_AMT_MTH_LAST, 0),
          NVL(e.YR_CAMPUS_PAY_CNT, 0),
          NVL(f.MTH_UTIL_PAY_TRAN_AMT, 0),
-         NVL(f.MTH_UTIL_PAY_TRAN_CNT, 0)
+         NVL(f.MTH_UTIL_PAY_TRAN_CNT, 0),
+         NVL(h.KYC_COMPL_RATE, 0)
     FROM TMP_ADS_CRM_CUST_LABLE_01 a
     LEFT JOIN TMP_ADS_CRM_CUST_LABLE_02 b
            ON b.CUST_ID            = a.CUST_ID
@@ -326,8 +329,10 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
           AND f.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
     LEFT JOIN TMP_ADS_CRM_CUST_LABLE_07 g
            ON g.CUST_ID            = a.CUST_ID
-          AND g.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE;
-
+          AND g.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
+    LEFT JOIN ADS_NEW_CUST_KYC h
+           on h.CUST_ID            = a.CUST_ID
+          AND h.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
   COMMIT;
 
   V_END_DATE := SYSDATE;

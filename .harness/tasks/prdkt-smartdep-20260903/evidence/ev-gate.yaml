@@ -1,0 +1,10 @@
+evidence_id: ev-gate
+task_id: prdkt-smartdep-20260903
+phase: QUICK_VALIDATION_PASSED
+kind: gate_validation
+purpose: strict门禁通过证据
+result: passed
+details: 'risk-check strict 6/6: 114单测OK, offline 4/4, property通过, coverage 100%,
+  dialect 0违规, workspace quick全过, 跨层一致性通过'
+repository_revision: 4b1cec8575331548363ff595223a3ac68ae872bf
+created_at: '2026-09-02T16:16:55+00:00'

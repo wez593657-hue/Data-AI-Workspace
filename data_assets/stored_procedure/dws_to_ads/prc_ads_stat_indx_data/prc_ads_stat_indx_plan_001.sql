@@ -7,6 +7,7 @@
 -- 需求版本: 【待确认】（原文件无头部版本信息，版本号待需求方确认）
 -- 变更记录:
 --   - 2026-08-26 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
+--   - 2026-09-02 基数口径拆分v2.4：scope装载增加NOT EXISTS幂等防重（修复主键不含TERM_BEGIN_DATE、进行中对象多日跑批裸INSERT导致的主键冲突）
 --   - 2026-08-25 行内注释补全与对齐（仅注释与格式优化，业务逻辑零改动）
 ------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_001(
@@ -47,6 +48,9 @@ BEGIN
         path_code, statis_dim, indx_code, data_blng,  -- 路径编码, 统计维度, 指标编码, 归属机构
         blng_type, blng_id, term_begin_date, persn_legal_bk_code   -- 归属类型(O机构/M客户经理), 归属ID, 期间开始日, 法人行号
     )
+    SELECT x.path_code, x.statis_dim, x.indx_code, x.data_blng,  -- 路径编码, 统计维度, 指标编码, 数据归属
+           x.blng_type, x.blng_id, x.term_begin_date, x.persn_legal_bk_code   -- 归属类型(O机构/M客户经理), 归属ID, 期间开始日, 法人行号
+      FROM (                                                  -- 包装原查询用于幂等防重
     SELECT DISTINCT
            '08'                          AS path_code,        -- 路径08：营销活动口径
            a.mkt_act_id                 AS statis_dim,       -- 统计维度=营销活动ID
@@ -86,7 +90,15 @@ BEGIN
      WHERE a.act_bgn_date                      <= V_NEXT_DAY   -- 活动开始日在顺延31天范围内
        AND NVL(a.statis_stop_date, '99991231') >= v_sysdat -- 统计截止日未结束或晚于跑批日
        AND a.camp_act_typ IN ('1', '2')                    -- 活动类型仅取1/2
-       AND ti.mkt_persn IS NOT NULL;                       -- 客户经理非空
+       AND ti.mkt_persn IS NOT NULL                       -- 客户经理非空
+    ) x
+     WHERE NOT EXISTS (                                       -- 幂等防重(v2.4)：scope主键已存在则跳过
+         SELECT 1 FROM TMP_STAT_INDX_SCOPE e                   -- 指标范围临时表
+          WHERE e.path_code           = x.path_code            -- 路径一致
+            AND e.statis_dim          = x.statis_dim           -- 统计维度一致
+            AND e.indx_code           = x.indx_code            -- 指标编码一致
+            AND e.data_blng           = x.data_blng            -- 数据归属一致
+            AND e.persn_legal_bk_code = x.persn_legal_bk_code);-- 法人行号一致
 
     -------------------------------------------------------------------------
     -- 路径09：目标任务范围写入
@@ -95,6 +107,9 @@ BEGIN
         path_code, statis_dim, indx_code, data_blng,  -- 路径编码, 统计维度, 指标编码, 归属机构
         blng_type, blng_id, term_begin_date, persn_legal_bk_code   -- 归属类型, 归属ID, 期间开始日, 法人行号
     )
+    SELECT x.path_code, x.statis_dim, x.indx_code, x.data_blng,   -- 路径编码, 统计维度, 指标编码, 数据归属
+           x.blng_type, x.blng_id, x.term_begin_date, x.persn_legal_bk_code   -- 归属类型, 归属ID, 期间开始日, 法人行号
+      FROM (                                                  -- 包装原查询用于幂等防重
     SELECT DISTINCT
            '09'                          AS path_code,         -- 路径09：目标任务口径
            it.tsk_id                    AS statis_dim,        -- 统计维度=目标任务ID
@@ -129,7 +144,15 @@ BEGIN
        AND sub.persn_legal_bk_code = it.persn_legal_bk_code    -- 法人行号一致
      WHERE it.rsv_obj                            = '1'         -- 预留对象类型1=客户经理
        AND sub.tsk_bgn_date                      <= V_NEXT_DAY -- 任务开始日在顺延31天范围内
-       AND NVL(sub.tsk_end_date, '99991231')     >= v_sysdat;  -- 任务结束日未结束或晚于跑批日
+       AND NVL(sub.tsk_end_date, '99991231')     >= v_sysdat  -- 任务结束日未结束或晚于跑批日
+    ) x
+     WHERE NOT EXISTS (                                       -- 幂等防重(v2.4)：scope主键已存在则跳过
+         SELECT 1 FROM TMP_STAT_INDX_SCOPE e                   -- 指标范围临时表
+          WHERE e.path_code           = x.path_code            -- 路径一致
+            AND e.statis_dim          = x.statis_dim           -- 统计维度一致
+            AND e.indx_code           = x.indx_code            -- 指标编码一致
+            AND e.data_blng           = x.data_blng            -- 数据归属一致
+            AND e.persn_legal_bk_code = x.persn_legal_bk_code);-- 法人行号一致
 
     -------------------------------------------------------------------------
     -- 提交与执行日志记录

@@ -1,0 +1,9 @@
+evidence_id: ev-ua
+task_id: prdkt-smartdep-20260903
+phase: USER_APPROVED
+kind: user_approval
+purpose: 用户批准提交与推送
+result: passed
+details: '用户指示: 提交并推送代码; 范围选择: 全部变更(排除_tmp_/_rev_临时脚本与.mnemon)'
+repository_revision: 4b1cec8575331548363ff595223a3ac68ae872bf
+created_at: '2026-09-02T16:16:56+00:00'

@@ -4,9 +4,18 @@ CREATE OR REPLACE PROCEDURE crmdm.prc_dwd_acct_insur(v_sysdat varchar, outcde OU
 AS
   ------------------------------------------------------------------
   -- 报表名称: 保险账户处理
+  -- 作业编号: PRC_DWD_ACCT_INSUR
+  -- 处理周期: 日
+  -- 过程描述: 根据保险业务源表加工个人客户保险账户信息
+  -- 来源表: YBT_YBT_POLICY_BASE_INFO、YBT_YBT_POLICY_INSURANCE_INFO、
+  --         YBT_YBT_POLICY_FEE_LIST、IBP_IB_LIST_PLAT、YBT_YBT_PRODUCT_INFO、
+  --         DWD_CUST_INDV_INFO
+  -- 目标表: DWD_ACCT_INSUR
+  -- 适配数据库: 人大金仓 Oracle 兼容模式
   -- 变更记录:
   --   v3.3.4 2026-08-21 性能优化：交易聚合、保险信息聚合、客户年龄去重，
-  --                    消除最外层大分组，执行效率提升 5~10 便  -- 其余说明瓿  ------------------------------------------------------------------
+  --                    消除最外层大分组，执行效率提升 5~10 倍
+  ------------------------------------------------------------------
   V_PRC_DESC     VARCHAR(100) := '保险账户处理';
   V_PRC_NAME     VARCHAR(32)  := 'PRC_DWD_ACCT_INSUR';
   V_LOG_MSG      VARCHAR(4000);
@@ -16,22 +25,31 @@ AS
   V_BGN_DATE     DATE;
   V_END_DATE     DATE;
   V_DURA_DATE    INTEGER;
-  V_DATA_DATE    DATE;`r`n  V_INSUR_CALC_DATE DATE;
+  V_DATA_DATE    DATE;
+  V_INSUR_CALC_DATE DATE;
   V_CNT_INS      INTEGER;
 BEGIN
-  -- 步骤1: 参数校验和清理（同原逻辑ﺿ  V_NO_ID := '1';
+  -- 步骤1: 参数校验和清理
+  V_NO_ID := '1';
   V_BGN_DATE := SYSDATE;
   IF V_SYSDAT IS NULL OR LENGTH(V_SYSDAT) != 8 THEN
       OUTCDE := -1;
       RETURN;
   END IF;
-  V_DATA_DATE := TO_DATE(SYS_FUN_DEAL_DATE(SYS_FUN_DEAL_DATE(V_SYSDAT, 31), 1), 'YYYYMMDD');
-  V_INSUR_CALC_DATE := V_DATA_DATE;
-  DELETE FROM DWD_ACCT_INSUR;
+  V_DATA_DATE := TO_DATE(V_SYSDAT, 'YYYYMMDD');
+  V_INSUR_CALC_DATE := V_DATA_DATE;  -- 保险期限计算基准日（=数据日），供保至年龄/缴至年龄的记录级到期日计算
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE DWD_ACCT_INSUR';
   COMMIT;
-  -- 日志记录（略，同原代码）
 
-  -- 步骤2: 优化后的集合化写僿  V_NO_ID := '2';
+  OUTCDE := 0;
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  V_LOG_MSG := '参数校验和清理完成';
+  V_LOG_FLG := OUTCDE;
+  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
+
+  -- 步骤2: 优化后的集合化写入
+  V_NO_ID := '2';
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO DWD_ACCT_INSUR (
@@ -58,7 +76,7 @@ BEGIN
           ON a.ord_pay_serial = b.plat_serial
          AND b.plat_trad_status = '2'
       WHERE a.ord_tran_status = '2'
-        AND b.user_id LIKE '1%'          -- 原条件前祿      
+        AND b.user_id LIKE '1%'          -- 原条件前移
         GROUP BY a.plat_policy_serial,
       b.user_id,
       TO_DATE(TRIM(a.ord_create_date), 'YYYYMMDD'),
@@ -137,7 +155,8 @@ BEGIN
       d.pay_per_num    AS pay_period,
       d.pay_type       AS pay_patrn,
       tx.sum_tran_0 AS new_insur_amt,
-      -- 保险金额（逻辑完全等价于原CASEﺿ      CASE
+      -- 保险金额（逻辑完全等价于原CASE）
+      CASE
           WHEN c.cont_status IS NULL OR c.cont_status NOT IN ('0','1','2') THEN 0
           WHEN c.cont_status = '0' THEN 0
           WHEN c.cont_status = '2' THEN 0
@@ -183,4 +202,23 @@ BEGIN
 
   V_CNT_INS := SQL%ROWCOUNT;
   COMMIT;
-  -- 后续日志及异常处理同原逻辑（略ﺿEND;
+
+  OUTCDE := 0;
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  V_LOG_MSG := '步骤2 保险账户集合化写入完成，共写入 ' || V_CNT_INS || ' 行';
+  V_LOG_FLG := OUTCDE;
+  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
+
+EXCEPTION
+  WHEN OTHERS THEN
+    OUTCDE := -1;
+    ROLLBACK;
+
+    V_END_DATE := SYSDATE;
+    V_DURA_DATE := CASE WHEN V_BGN_DATE IS NULL OR V_END_DATE IS NULL THEN NULL ELSE TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60) END;
+    V_LOG_MSG := SUBSTR(SQLERRM, 1, 1000);
+    V_LOG_FLG := OUTCDE;
+    SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
+    RAISE;
+END;

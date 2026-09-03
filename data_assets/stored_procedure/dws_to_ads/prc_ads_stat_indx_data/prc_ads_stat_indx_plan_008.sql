@@ -5,6 +5,8 @@
 --   V_SYSDAT IN  VARCHAR2   跑批业务日期 YYYYMMDD
 --   OUTCDE   OUT INTEGER     输出（写入行数）
 -- 需求版本: v5.2 (2026-08-26)
+--   v5.3 (2026-09-02) 0066分子分类口径：DWD_ACCT_LOAN 换 DWS_CUST_CLASSFIVE（按 BASE_DATE join cust_id）
+--   v5.3 (2026-09-02) 0066分子分类口径：DWD_ACCT_LOAN 换 DWS_CUST_CLASSFIVE（按 BASE_DATE join cust_id）
 -- 变更记录:
 --   v5.2 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   v5.0 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_008，段首自清（并行跑批隔离）
@@ -319,16 +321,17 @@ BEGIN
                SC.STATIS_DIM,           -- 统计维度
                SC.DATA_BLNG,            -- 数据归属
                SC.PERSN_LEGAL_BK_CODE,  -- 法人机构编码
-               SUM(NVL(A.BAL, 0)) AS BAD_AMT   -- 变不良账户当前余额合计（分子）
+               SUM(NVL(A.LOAN_BAL, 0)) AS BAD_AMT   -- 变不良账户当前余额合计（分子）
           FROM SCOPE_CUST SC
           JOIN TMP_STAT_INDX_LOAN_BASE B ON B.PATH_CODE        = SC.PATH_CODE    -- 期初贷款基准表：路径匹配
                                         AND B.STATIS_DIM       = SC.STATIS_DIM   -- 维度匹配
                                         AND B.DATA_BLNG        = SC.DATA_BLNG    -- 数据归属匹配
                                         AND B.PERSN_LEGAL_BK_CODE = SC.PERSN_LEGAL_BK_CODE   -- 法人机构匹配
                                         AND B.CUST_ID          = SC.CUST_ID      -- 客户匹配
-          JOIN DWD_ACCT_LOAN A ON A.ACCT_ID          = B.ACCT_ID                 -- 期末贷款账户：账号匹配期初基准
-                              AND A.CUST_ID          = B.CUST_ID                 -- 客户ID匹配
+           JOIN DWS_CUST_CLASSFIVE A ON A.CUST_ID          = B.CUST_ID                 -- v5.3: 客户五级分类（按BASE_DATE匹配客户）
                               AND A.PERSN_LEGAL_BK_CODE = B.PERSN_LEGAL_BK_CODE  -- 法人机构匹配
+                               AND A.DATA_DATE        = B.BASE_DATE               -- v5.3: 分类按基数基准日取
+                               AND A.DATA_DATE        = B.BASE_DATE               -- v5.3: 分类按基数基准日取
                               AND A.CATE_5LVL IN ('3', '4', '5')                 -- 五级分类：3次级/4可疑/5损失（不良）
          GROUP BY SC.PATH_CODE,                                                  -- 按客户+维度聚合
                   SC.STATIS_CALIB,

@@ -13,6 +13,29 @@ AS
   -- author :
   -- date   : 2026-07-09
   -- 适配数据库: 人大金仓 Oracle 兼容模式
+  -- 业务规则(2026-08-03 确认):
+  --   系统仅允许 3 个虚拟机构: 010100a(总行营业部管理部), 010500a(五通管理部), 010600a(峨眉山市管理部);
+  --   所有乐山地区支行机构(0101xx~0120xx)必须分别隶属于这三个虚拟机构之下, 分组依据机构目录 ORG_PATH:
+  --     010100a <- 0101xx, 0102xx, 0103xx(010300汇总机构已删除, 0103xx网点改挂010100)
+  --     010500a <- 0105xx, 0107xx, 0108xx, 0110xx, 0120xx
+  --     010600a <- 0104xx, 0106xx, 0109xx, 0111xx
+  --   非白名单虚拟机构一律拒绝生成并回滚。
+  -- 变更记录:
+  --   2026-08-03 整改(测试驱动):
+  --     1) 新增 V_SYSDAT 入参校验(8位YYYYMMDD)，非法值报错并记日志;
+  --     2) 汇总机构(010100~012000)名称保留源名称，不再转换为"管理部";
+  --     3) 管理部(a)节点名称规则修正: 含"支行"时替换为"管理部"，否则追加"管理部";
+  --     4) 管理部(a)节点 DIRECT_UNDER_ORG 由'000000'修正为'010000'(直属乐山分行);
+  --     5) CREAT_TIME 规范为 YYYY-MM-DD HH24:MI:SS，占位值(0)置空;
+  --     6) 根节点(000000)名称防清空处理。
+  --   2026-08-03 三虚拟机构重构:
+  --     7) 虚拟机构收缩为 010100a/010500a/010600a，其余 9 个管理部节点不再生成，对应汇总机构改挂映射虚拟机构;
+  --     8) 新增 2.5 数据校验: 虚拟机构白名单/归属完整性/无悬挂/无重复/无空路径;
+  --     9) 全部 DELETE+INSERT 事务化，校验通过才 COMMIT，异常 ROLLBACK;
+  --    10) 各步骤日志记录成功条数，校验失败记录明细及原因。
+  --    11) 2.1 增加源机构编码格式校验(6位数字)。
+  --   2026-09-01 删除010300机构:
+  --    12) 010300汇总机构不再生成(2.2排除列表)，原上级为010300的网点(YEWUGXJG='010300')改挂010100。
   ------------------------------------------------------------------
   ------------------------------------------------------------------
   --***************************************
@@ -30,24 +53,25 @@ AS
   V_BGN_DATE             DATE;
   V_END_DATE             DATE;
   V_DURA_DATE            INTEGER;
-  P_INTERVAL_START_DATE  VARCHAR2(8);
-  P_INTERVAL_END_DATE    VARCHAR2(8);
+  V_CNT                  INTEGER;
 BEGIN
+  -- 0. 参数校验：V_SYSDAT 必须为 8 位 YYYYMMDD 日期
+  IF V_SYSDAT IS NULL OR LENGTH(V_SYSDAT) <> 8 OR TRANSLATE(V_SYSDAT, '1234567890', '0000000000') <> '00000000' THEN
+    OUTCDE := -1;
+    RAISE_APPLICATION_ERROR(-20001, 'PRC_DWD_SYS_ORG: V_SYSDAT must be YYYYMMDD, got: ' || NVL(V_SYSDAT, 'NULL'));
+  END IF;
+
   --***************************************
   -- 2. 业务逻辑区
   --***************************************
   V_START_DT := SYSDATE;
-  V_SYSDAT2 := sys_fun_deal_date(V_SYSDAT, 1);  -- 参数1：上一日
-  P_INTERVAL_START_DATE := sys_fun_deal_date(V_SYSDAT, 18);  -- 参数18：30天承接窗口开始日
-  P_INTERVAL_END_DATE   := sys_fun_deal_date(V_SYSDAT, 1);  -- 参数1：上一日
-
   --***************************************
   -- 2.1 临时表1：基础数据
   --***************************************
   V_NO_ID := '1';
   V_BGN_DATE := SYSDATE;
 
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE DWD_TMP_JIGOU_BASE';
+  DELETE FROM DWD_TMP_JIGOU_BASE;
   INSERT INTO DWD_TMP_JIGOU_BASE (
       JIGOUHAO,
       FARENDMA,
@@ -96,12 +120,13 @@ BEGIN
       ON c.FARENDMA = g.FARENDMA
      AND c.JIGOUHAO = g.JIGOUHAO
      AND G.YEWUGXZL = 'BAOBSJ';
+  V_CNT := SQL%ROWCOUNT;
 
   -- 记录第1段结束时间和耗时
   OUTCDE      := 0;
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG := '2.1 临时表1：基础数据';
+  V_LOG_MSG := '2.1 临时表1：基础数据（成功 ' || TO_CHAR(V_CNT) || ' 条）';
   V_LOG_FLG := OUTCDE;
 
   -- 调用日志过程，记录第1段正常结束信息
@@ -124,7 +149,7 @@ BEGIN
   V_NO_ID := '2';
   V_BGN_DATE := SYSDATE;
 
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE DWD_TMP_JIGOU_CODE';
+  DELETE FROM DWD_TMP_JIGOU_CODE;
   INSERT INTO DWD_TMP_JIGOU_CODE (
       ORG_ID,
       SUP_ORG_ID,
@@ -169,43 +194,21 @@ BEGIN
               WHEN b.JIGOUHAO = '000000' THEN '-1'
               WHEN b.JIGOUHAO IN ('120000', '150000', '180000') THEN '-1'
               WHEN b.YEWUGXJG = '000090' THEN '000000'
-              WHEN b.YEWUGXJG = b.JIGOUHAO
-                    AND b.JIGOUHAO IN ('010100', '010200', '010300', '010400', '010500', '010600', '010700', '010800', '010900', '011000', '011100', '012000')
-                THEN LPAD(b.JIGOUHAO, 6, '0') || 'a'
-              WHEN b.YEWUGXJG = b.JIGOUHAO THEN '000000'
               WHEN b.YEWUGXJG = '000095' THEN ''
-              WHEN b.YEWUGXJG = '010000' THEN LPAD(b.JIGOUHAO, 6, '0') || 'a'
+              WHEN b.JIGOUHAO IN ('010100', '010200', '010400', '010500', '010600', '010700', '010800', '010900', '011000', '011100', '012000')
+                THEN CASE
+                         WHEN b.JIGOUHAO LIKE '0101%' OR b.JIGOUHAO LIKE '0102%' THEN '010100a'
+                         WHEN b.JIGOUHAO LIKE '0105%' OR b.JIGOUHAO LIKE '0107%' OR b.JIGOUHAO LIKE '0108%'
+                              OR b.JIGOUHAO LIKE '0110%' OR b.JIGOUHAO LIKE '0120%' THEN '010500a'
+                         WHEN b.JIGOUHAO LIKE '0104%' OR b.JIGOUHAO LIKE '0106%' OR b.JIGOUHAO LIKE '0109%'
+                              OR b.JIGOUHAO LIKE '0111%' THEN '010600a'
+                         ELSE ''
+                     END -- 汇总机构归属虚拟机构(依据机构目录 ORG_PATH)
+              WHEN b.YEWUGXJG = '010300' THEN '010100' -- 010300已删除, 其下网点改挂010100
+              WHEN b.YEWUGXJG = b.JIGOUHAO THEN '000000'
               ELSE NVL(LPAD(p.JIGOUHAO, 6, '0'), '')
           END AS SUP_ORG_ID,
-          CASE
-              WHEN b.YEWUGXJG = '010000' THEN
-                  CASE
-                      WHEN b.JIGOUZWM LIKE '%乐山市商业银行%' THEN
-                          CASE
-                              WHEN REPLACE(b.JIGOUZWM, '乐山市商业银行', '') LIKE '%（汇总）' THEN
-                                  REPLACE(REPLACE(b.JIGOUZWM, '乐山市商业银行', ''), '（汇总）', '') || '管理部'
-                              WHEN REPLACE(b.JIGOUZWM, '乐山市商业银行', '') LIKE '%支行' THEN
-                                  REPLACE(REPLACE(b.JIGOUZWM, '乐山市商业银行', ''), '支行', '管理部')
-                              ELSE REPLACE(b.JIGOUZWM, '乐山市商业银行', '') || '管理部'
-                          END
-                      ELSE b.JIGOUZWM || '管理部'
-                  END
-              WHEN b.YEWUGXJG = b.JIGOUHAO
-                   AND b.JIGOUHAO IN ('010100', '010200', '010300', '010400', '010500', '010600', '010700', '010800', '010900', '011000', '011100', '012000')
-                THEN
-                  CASE
-                      WHEN b.JIGOUZWM LIKE '%乐山市商业银行%' THEN
-                          CASE
-                              WHEN REPLACE(b.JIGOUZWM, '乐山市商业银行', '') LIKE '%（汇总）' THEN
-                                  REPLACE(REPLACE(b.JIGOUZWM, '乐山市商业银行', ''), '（汇总）', '') || '管理部'
-                              WHEN REPLACE(b.JIGOUZWM, '乐山市商业银行', '') LIKE '%支行' THEN
-                                  REPLACE(REPLACE(b.JIGOUZWM, '乐山市商业银行', ''), '支行', '管理部')
-                              ELSE REPLACE(b.JIGOUZWM, '乐山市商业银行', '') || '管理部'
-                          END
-                      ELSE b.JIGOUZWM || '管理部'
-                  END
-              ELSE b.JIGOUZWM
-          END AS ORG_NAME,
+          b.JIGOUZWM AS ORG_NAME, -- 机构名称：汇总机构保留源名称，管理部节点由 UNION ALL 分支生成
           CASE
               WHEN LPAD(b.FENHDAIM, 2, '0') = '00' THEN ''
               WHEN LPAD(b.FENHDAIM, 2, '0') = '01' THEN '010000'
@@ -250,16 +253,21 @@ BEGIN
           END AS ORG_STATE,
           TO_NUMBER(LPAD(b.JIGOUHAO, 6, '0')) AS DSPLY_SEQ,
           NULL AS CREATR,
-          TRIM(
-              CASE
-                  WHEN b.WEIHRIQI IS NOT NULL THEN TO_CHAR(b.WEIHRIQI)
-                  ELSE ''
-              END ||
-              CASE
-                  WHEN b.WEIHSHIJ IS NOT NULL THEN ' ' || TO_CHAR(b.WEIHSHIJ)
-                  ELSE ''
-              END
-          ) AS CREAT_TIME,
+          CASE
+              WHEN b.WEIHRIQI IS NOT NULL
+                   AND b.WEIHRIQI <> '0'
+                   AND TRANSLATE(b.WEIHRIQI, '1234567890', '0000000000') = '00000000'
+                   AND SUBSTR(b.WEIHRIQI, 5, 2) BETWEEN '01' AND '12'
+                   AND SUBSTR(b.WEIHRIQI, 7, 2) BETWEEN '01' AND '31'
+              THEN SUBSTR(b.WEIHRIQI, 1, 4) || '-' || SUBSTR(b.WEIHRIQI, 5, 2) || '-' || SUBSTR(b.WEIHRIQI, 7, 2) ||
+                   CASE
+                       WHEN b.WEIHSHIJ IS NOT NULL
+                            AND LENGTH(b.WEIHSHIJ) >= 6
+                            AND TRANSLATE(SUBSTR(b.WEIHSHIJ, 1, 6), '1234567890', '0000000000') = '000000'
+                       THEN ' ' || SUBSTR(b.WEIHSHIJ, 1, 2) || ':' || SUBSTR(b.WEIHSHIJ, 3, 2) || ':' || SUBSTR(b.WEIHSHIJ, 5, 2)
+                   END
+              ELSE NULL
+          END AS CREAT_TIME, -- 创建时间：YYYY-MM-DD HH24:MI:SS，占位值(0)置空
           NULL AS CREAT_ORG,
           TO_CHAR(b.FARENDMA) AS PERSN_LEGAL_BK_CODE,
           NULL AS HR_MS_ORG_ID,
@@ -271,7 +279,7 @@ BEGIN
       LEFT JOIN DWD_TMP_JIGOU_BASE p
         ON b.YEWUGXJG = p.JIGOUHAO
       WHERE NOT (
-          LPAD(b.JIGOUHAO, 6, '0') IN ('000090', '000095', '010000', '001100', '002000', '002600')
+          LPAD(b.JIGOUHAO, 6, '0') IN ('000090', '000095', '010000', '001100', '002000', '002600', '010300')
           OR (
               NVL(b.JIGOUZWM, ' ') NOT LIKE '%营业部%'
               AND (NVL(b.JIGOUZWM, ' ') LIKE '%部%' OR NVL(b.JIGOUZWM, ' ') LIKE '%办公室%')
@@ -284,17 +292,11 @@ BEGIN
           LPAD(b.JIGOUHAO, 6, '0') || 'a' AS ORG_ID,
           '000000' AS SUP_ORG_ID,
           CASE
-              WHEN b.JIGOUZWM LIKE '%乐山市商业银行%' THEN
-                  CASE
-                      WHEN REPLACE(b.JIGOUZWM, '乐山市商业银行', '') LIKE '%（汇总）' THEN
-                          REPLACE(REPLACE(b.JIGOUZWM, '乐山市商业银行', ''), '（汇总）', '') || '管理部'
-                      WHEN REPLACE(b.JIGOUZWM, '乐山市商业银行', '') LIKE '%支行' THEN
-                          REPLACE(REPLACE(b.JIGOUZWM, '乐山市商业银行', ''), '支行', '管理部')
-                      ELSE REPLACE(b.JIGOUZWM, '乐山市商业银行', '') || '管理部'
-                  END
-              ELSE b.JIGOUZWM || '管理部'
-          END AS ORG_NAME,
-          '000000' AS DIRECT_UNDER_ORG,
+              WHEN REPLACE(REPLACE(b.JIGOUZWM, '乐山市商业银行', ''), '（汇总）', '') LIKE '%支行%' THEN
+                  REPLACE(REPLACE(REPLACE(b.JIGOUZWM, '乐山市商业银行', ''), '（汇总）', ''), '支行', '管理部')
+              ELSE REPLACE(REPLACE(b.JIGOUZWM, '乐山市商业银行', ''), '（汇总）', '') || '管理部'
+          END AS ORG_NAME, -- 管理部名称：含“支行”时替换为“管理部”，否则追加“管理部”
+          '010000' AS DIRECT_UNDER_ORG, -- 管理部直属乐山分行(010000)
           '02' AS ORG_TYP,
           '' AS ORG_ADDRS,
           '1' AS ORG_STATE,
@@ -309,14 +311,15 @@ BEGIN
           NULL AS ORG_RSPONR,
           NULL AS ORG_TEL
       FROM DWD_TMP_JIGOU_BASE b
-      WHERE b.JIGOUHAO IN ('010100', '010200', '010300', '010400', '010500', '010600', '010700', '010800', '010900', '011000', '011100', '012000')
+      WHERE b.JIGOUHAO IN ('010100', '010500', '010600')
   ) src;
+  V_CNT := SQL%ROWCOUNT;
 
   -- 记录第2段结束时间和耗时
   OUTCDE      := 0;
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG := '2.2 临时表2：机构编码与分类';
+  V_LOG_MSG := '2.2 临时表2：机构编码与分类（成功 ' || TO_CHAR(V_CNT) || ' 条）';
   V_LOG_FLG := OUTCDE;
 
   -- 调用日志过程，记录第2段正常结束信息
@@ -339,7 +342,7 @@ BEGIN
   V_NO_ID := '3';
   V_BGN_DATE := SYSDATE;
 
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE DWD_TMP_JIGOU_PATH';
+  DELETE FROM DWD_TMP_JIGOU_PATH;
   INSERT INTO DWD_TMP_JIGOU_PATH (
       ORG_ID,
       SUP_ORG_ID,
@@ -356,12 +359,13 @@ BEGIN
            OR c.SUP_ORG_ID = ''
            OR c.SUP_ORG_ID = '-1'
  CONNECT BY NOCYCLE PRIOR c.ORG_ID = c.SUP_ORG_ID;
+  V_CNT := SQL%ROWCOUNT;
 
   -- 记录第3段结束时间和耗时
   OUTCDE      := 0;
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG := '2.3 临时表3：机构路径';
+  V_LOG_MSG := '2.3 临时表3：机构路径（成功 ' || TO_CHAR(V_CNT) || ' 条）';
   V_LOG_FLG := OUTCDE;
 
   -- 调用日志过程，记录第3段正常结束信息
@@ -384,7 +388,7 @@ BEGIN
   V_NO_ID := '4';
   V_BGN_DATE := SYSDATE;
 
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE DWD_SYS_ORG';
+  DELETE FROM DWD_SYS_ORG;
   INSERT INTO DWD_SYS_ORG (
       ORG_ID,
       SUP_ORG_ID,
@@ -411,8 +415,10 @@ BEGIN
       c.ORG_ID, -- 机构编号
       c.SUP_ORG_ID, -- 上级机构编号
       p.ORG_PATH, -- 机构路径
-      REPLACE(c.ORG_NAME,'乐山市商业银行','') AS ORG_NAME, -- 机构名称
-      REPLACE(s.ORG_NAME,'乐山市商业银行','') AS SUP_ORG_NAME, -- 上级机构名称
+      CASE WHEN REPLACE(c.ORG_NAME, '乐山市商业银行', '') IS NULL THEN c.ORG_NAME
+           ELSE REPLACE(c.ORG_NAME, '乐山市商业银行', '') END AS ORG_NAME, -- 机构名称（避免根节点被清空）
+      CASE WHEN REPLACE(s.ORG_NAME, '乐山市商业银行', '') IS NULL THEN s.ORG_NAME
+           ELSE REPLACE(s.ORG_NAME, '乐山市商业银行', '') END AS SUP_ORG_NAME, -- 上级机构名称
       c.DIRECT_UNDER_ORG, -- 直属机构
       c.ORG_TYP, -- 机构类型
       p.ORG_HARCY, -- 机构层级
@@ -436,12 +442,13 @@ BEGIN
       ON c.SUP_ORG_ID = s.ORG_ID
     LEFT JOIN DWD_TMP_JIGOU_PATH p
       ON c.ORG_ID = p.ORG_ID;
+  V_CNT := SQL%ROWCOUNT;
 
   -- 记录第4段结束时间和耗时
   OUTCDE      := 0;
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG := '2.4 汇总表落库';
+  V_LOG_MSG := '2.4 汇总表落库（成功 ' || TO_CHAR(V_CNT) || ' 条）';
   V_LOG_FLG := OUTCDE;
 
   -- 调用日志过程，记录第4段正常结束信息
@@ -473,4 +480,3 @@ EXCEPTION
     SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
     RAISE;
 END;
-/

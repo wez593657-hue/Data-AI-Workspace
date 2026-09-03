@@ -100,20 +100,20 @@ BEGIN
       pi.PROD_NAME,                                                          -- 理财产品名称
       CASE WHEN pi.PROD_TYPE IN ('2','3') THEN '1' ELSE '2' END,             -- 产品大类：1=代销开放/2=代销封闭
       pi.ESTABLISH_DATE,                                                     -- 成立日期
-      ROUND(NVL(pn.NAV, 0) * NVL(cv.REMAIN_VOL, 0), 2),                       -- 理财余额=ROUND(净值×份额,2)
+      ROUND(NVL(pn.NAV, 0) * NVL(cv.REMAIN_VOL, 0), 2),                      -- 理财余额=ROUND(净值×份额,2)
       ROUND(NVL(pn.TONOWCLIENTRATIO, 0), 2),                                 -- 收益率=成立以来参考年化收益率
       fa.ACCT_STATUS,                                                        -- 理财账户状态
       pi.VALUE_DATE,                                                         -- 起息日期
       pi.WINDING_DATE,                                                       -- 到期日期
-      ctl.TRANS_ORGNO,                                                       -- 归属机构（无交易记录时为NULL）
+      cv.TRANS_ORGNO,                                                        -- 归属机构
       fa.ISS_BANK_CODE,                                                      -- 办理渠道
       -- 法人行号推导：15开头→1500，12开头→1200，18开头→1800，其他→9999
-      CASE WHEN ctl.TRANS_ORGNO LIKE '15%' THEN '1500'
-           WHEN ctl.TRANS_ORGNO LIKE '12%' THEN '1200'
-           WHEN ctl.TRANS_ORGNO LIKE '18%' THEN '1800'
+      CASE WHEN cv.TRANS_ORGNO LIKE '15%' THEN '1500'
+           WHEN cv.TRANS_ORGNO LIKE '12%' THEN '1200'
+           WHEN cv.TRANS_ORGNO LIKE '18%' THEN '1800'
            ELSE '9999' END,
       pi.TANO,                                                               -- 发行机构
-      fa.CRT_DATE,                                                           -- 办理日期
+      NVL(ctl.CFM_DATE,cv.UPD_DATE),                                         -- 办理日期
       pi.PROD_RISK_LEVEL,                                                    -- 风险等级
       ctl.cfm_amt                                                            -- 交易确认金额（认购+申购合计）
     FROM FMS_TD_CUST_VOL_DETAIL cv                                         -- 理财客户份额表（驱动表）
@@ -125,36 +125,39 @@ BEGIN
     LEFT JOIN (                                                      -- 客户交易请求日志（认购/申购成功汇总）
         SELECT fnc_trans_acct_no,
                CUST_NO,
-               TRANS_ORGNO,
+               TA_ACCT_NO,
+               TANO,
+               TA_CFM_SERNO,
+               CFM_DATE,
                SUM(cfm_amt) cfm_amt
           FROM FMS_TD_CUST_TRANS_REQ_LOG
          WHERE TRANS_STATUS IN ('1','3')                            -- 申请成功 确认成功
            AND busi_code IN ('020','022')                           -- 认购 申购
-         GROUP BY fnc_trans_acct_no, CUST_NO, TRANS_ORGNO
+         GROUP BY fnc_trans_acct_no, CUST_NO, TA_ACCT_NO,TANO,TA_CFM_SERNO,CFM_DATE
     ) ctl
       ON ctl.CUST_NO           = cv.CUST_NO
      AND ctl.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
+     AND ctl.TA_ACCT_NO        = cv.TA_ACCT_NO
+     AND ctl.TANO              = cv.TANO
+     AND NVL(ctl.TA_CFM_SERNO,'#')= NVL(cv.TA_CFM_SERNO,'#')
     INNER JOIN FMS_TD_PROD_INFO pi                                  -- 理财产品信息表
       ON cv.TANO                  = pi.TANO
      AND cv.PROD_CODE             = pi.PROD_CODE
-     AND NVL(cv.SHARE_CLASS, '~') = NVL(pi.SHARE_CLASS, '~')
     LEFT JOIN (
         SELECT
             x.TANO,
             x.PROD_CODE,
-            x.SHARE_CLASS,
             x.NAV,
             x.TONOWCLIENTRATIO,
             ROW_NUMBER() OVER (
-                PARTITION BY x.TANO, x.PROD_CODE, x.SHARE_CLASS
+                PARTITION BY x.TANO, x.PROD_CODE
                 ORDER BY x.NAV_DATE DESC                            -- 取最新净值日期
             ) AS RN
           FROM FMS_TD_PROD_NAV x                                    -- 理财产品行情表
-         WHERE x.NET_VALUE_TYPE = '0'
+         WHERE x.NET_VALUE_TYPE = '0'                               -- 0	普通净值   1	申购净值  2	赎回净值
     ) pn
       ON cv.TANO                  = pn.TANO
      AND cv.PROD_CODE             = pn.PROD_CODE
-     AND NVL(cv.SHARE_CLASS, '~') = NVL(pn.SHARE_CLASS, '~')
      AND pn.RN = 1
    WHERE SUBSTR(ci.HOST_CUST_NO, 1, 1) = '1'                        -- 仅个人客户
 
@@ -175,33 +178,21 @@ BEGIN
       fa.ACCT_STATUS,                                                        -- 理财账户状态
       pp.VALUE_DATE,                                                         -- 起息日期
       pp.WINDING_DATE,                                                       -- 到期日期
-      ci.SUB_BRANCH_CODE,                                                    -- 归属机构
-      fa.TRADINGMETHOD,                                                      -- 办理渠道
+      cv.SUB_BRANCH_CODE,                                                    -- 归属机构
+      cv.ACK_DATE,                                                      -- 办理渠道
       -- 法人行号推导：15开头→1500，12开头→1200，18开头→1800，其他→9999
-      CASE WHEN ctl.SUB_BRANCH_CODE LIKE '15%' THEN '1500'
-           WHEN ctl.SUB_BRANCH_CODE LIKE '12%' THEN '1200'
-           WHEN ctl.SUB_BRANCH_CODE LIKE '18%' THEN '1800'
+      CASE WHEN cv.SUB_BRANCH_CODE LIKE '15%' THEN '1500'
+           WHEN cv.SUB_BRANCH_CODE LIKE '12%' THEN '1200'
+           WHEN cv.SUB_BRANCH_CODE LIKE '18%' THEN '1800'
            ELSE '9999' END,
       pi.ORGNO,                                                              -- 发行机构
       fa.CRT_DATE,                                                           -- 办理日期
       pi.PROD_RISK_LEVEL,                                                    -- 风险等级
-      ctl.ack_amt                                                            -- 交易确认金额（认购+申购合计）
+      cv.BUY_AMT                                                             -- 购买金额（认购+申购合计）
     FROM FMS_T5_CUST_VOL_LIST cv                                         -- 客户份额汇总表（驱动表）
     INNER JOIN FMS_T1_CUST_FNC_ACCT fa                              -- 客户理财交易账号表
       ON fa.CUST_NO           = cv.CUST_NO
      AND fa.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
-    LEFT JOIN (                                                      -- 客户交易日志（认购/申购成功汇总）
-        SELECT fnc_trans_acct_no,
-               CUST_NO,
-               sub_branch_code,
-               SUM(ack_amt) ack_amt
-          FROM FMS_T5_CUST_TRANS_LOG
-         WHERE TRANS_STATUS IN ('1','3')                            -- 申请成功 确认成功
-           AND busi_code IN ('120','122')                           -- 认购 申购
-         GROUP BY fnc_trans_acct_no, CUST_NO, sub_branch_code
-    ) ctl
-      ON ctl.CUST_NO           = cv.CUST_NO
-     AND ctl.FNC_TRANS_ACCT_NO = cv.FNC_TRANS_ACCT_NO
     INNER JOIN FMS_T1_CUST_INFO ci                                  -- 客户信息表
       ON ci.CUST_NO = fa.CUST_NO
     INNER JOIN (

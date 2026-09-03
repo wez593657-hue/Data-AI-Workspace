@@ -947,33 +947,33 @@ BEGIN
                 AND CM.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE            -- 法人机构一致
            WHERE S.PATH_CODE = '09'    -- 目标任务路径
              AND S.INDX_CODE = 'INDX_0064')                      -- 指标编码
-        SELECT PATH_CODE,             -- 路径标识
+        SELECT SM.PATH_CODE,             -- 路径标识
                V_SYSDAT,              -- 跑批业务日期
                DATA_BLNG,             -- 数据归属
-               STATIS_DIM,            -- 统计维度（活动/任务编号）
+               SM.STATIS_DIM,            -- 统计维度（活动/任务编号）
                STATIS_CALIB,          -- 统计口径名称
                'INDX_0064',           -- 指标编码
-               COUNT(DISTINCT CUST_ID),                          -- 活动期间代发薪净增客户去重数
+               COUNT(DISTINCT SM.CUST_ID),                          -- 活动期间代发薪净增客户去重数
                0,                     -- 上期值（本期不统计）
-               PERSN_LEGAL_BK_CODE    -- 法人机构编码
-          FROM (SELECT DISTINCT SM.PATH_CODE,                    -- 路径标识
-                                SM.STATIS_CALIB,                 -- 统计口径名称
-                                SM.STATIS_DIM,                   -- 统计维度（活动/任务编号）
-                                SM.DATA_BLNG,                    -- 数据归属
-                                SM.TERM_BEGIN_DATE,              -- 活动开始日期
-                                SM.CUST_ID,                      -- 客户ID
-                                SM.PERSN_LEGAL_BK_CODE           -- 法人机构编码
+               SM.PERSN_LEGAL_BK_CODE    -- 法人机构编码
+          FROM (SELECT DISTINCT PATH_CODE,                    -- 路径标识
+                                STATIS_CALIB,                 -- 统计口径名称
+                                STATIS_DIM,                   -- 统计维度（活动/任务编号）
+                                DATA_BLNG,                    -- 数据归属
+                                TERM_BEGIN_DATE,              -- 活动开始日期
+                                CUST_ID,                      -- 客户ID
+                                PERSN_LEGAL_BK_CODE           -- 法人机构编码
                   FROM SCOPE_ALL) SM  -- 去重后的范围集
          INNER JOIN ADS_CRM_R_SALRY_PAYROL_BASE B ON B.CUST_ID = SM.CUST_ID   -- 基数表客户关联
               AND B.PERSN_LEGAL_BK_CODE = SM.PERSN_LEGAL_BK_CODE -- 法人机构一致
               AND B.STATIS_DIM = SM.STATIS_DIM                   -- 统计维度一致（防多活动重复）
               AND B.PATH_CODE = SM.PATH_CODE                     -- 路径一致
               AND B.FRST_MARK_DATE BETWEEN SM.TERM_BEGIN_DATE AND V_SYSDAT   -- 活动期间新增标记
-         GROUP BY PATH_CODE,          -- 按路径分组
+         GROUP BY SM.PATH_CODE,          -- 按路径分组
                   DATA_BLNG,          -- 按数据归属分组
-                  STATIS_DIM,         -- 按统计维度分组
+                  SM.STATIS_DIM,         -- 按统计维度分组
                   STATIS_CALIB,       -- 按统计口径分组
-                  PERSN_LEGAL_BK_CODE;                           -- 按法人机构分组
+                  SM.PERSN_LEGAL_BK_CODE;                           -- 按法人机构分组
 
     -------------------------------------------------------------------------
     -- 7.19/7.20 代销业务收入 INDX_0065（合并 A/B，暂不含贵金属）
@@ -1037,22 +1037,22 @@ BEGIN
                 AND CM.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE            -- 法人机构一致
            WHERE S.PATH_CODE = '09'    -- 目标任务路径
              AND S.INDX_CODE = 'INDX_0065')                 -- 指标编码
-        SELECT PATH_CODE,             -- 路径标识
+        SELECT SM.PATH_CODE,             -- 路径标识
                V_SYSDAT,              -- 跑批业务日期
-               DATA_BLNG,             -- 数据归属
-               STATIS_DIM,            -- 统计维度（活动/任务编号）
-               STATIS_CALIB,          -- 统计口径名称
+               SM.DATA_BLNG,             -- 数据归属
+               SM.STATIS_DIM,            -- 统计维度（活动/任务编号）
+               SM.STATIS_CALIB,          -- 统计口径名称
                'INDX_0065',           -- 指标编码
                SUM(AMT),              -- 理财+保险代销收入合计
                0,                     -- 上期值（本期不统计）
-               PERSN_LEGAL_BK_CODE    -- 法人机构编码
-          FROM (SELECT DISTINCT SM.PATH_CODE,               -- 路径标识
-                                SM.STATIS_CALIB,            -- 统计口径名称
-                                SM.STATIS_DIM,              -- 统计维度（活动/任务编号）
-                                SM.DATA_BLNG,               -- 数据归属
-                                SM.TERM_BEGIN_DATE,         -- 活动开始日期
-                                SM.CUST_ID,                 -- 客户ID
-                                SM.PERSN_LEGAL_BK_CODE      -- 法人机构编码
+               SM.PERSN_LEGAL_BK_CODE    -- 法人机构编码
+          FROM (SELECT DISTINCT PATH_CODE,               -- 路径标识
+                                STATIS_CALIB,            -- 统计口径名称
+                                STATIS_DIM,              -- 统计维度（活动/任务编号）
+                                DATA_BLNG,               -- 数据归属
+                                TERM_BEGIN_DATE,         -- 活动开始日期
+                                CUST_ID,                 -- 客户ID
+                                PERSN_LEGAL_BK_CODE      -- 法人机构编码
                   FROM SCOPE_ALL) SM  -- 去重后的范围集
          INNER JOIN (SELECT F.CUST_ID,                      -- 客户ID
                             F.PERSN_LEGAL_BK_CODE,          -- 法人机构编码
@@ -1070,11 +1070,11 @@ BEGIN
               ON D.CUST_ID = SM.CUST_ID                     -- 客户ID关联
              AND D.PERSN_LEGAL_BK_CODE = SM.PERSN_LEGAL_BK_CODE               -- 法人机构一致
              AND D.TX_DATE BETWEEN SM.TERM_BEGIN_DATE AND V_SYSDAT            -- 交易日期在活动期间内
-         GROUP BY PATH_CODE,          -- 按路径分组
-                  DATA_BLNG,          -- 按数据归属分组
-                  STATIS_DIM,         -- 按统计维度分组
-                  STATIS_CALIB,       -- 按统计口径分组
-                  PERSN_LEGAL_BK_CODE;                      -- 按法人机构分组
+         GROUP BY SM.PATH_CODE,          -- 按路径分组
+                  SM.DATA_BLNG,          -- 按数据归属分组
+                  SM.STATIS_DIM,         -- 按统计维度分组
+                  SM.STATIS_CALIB,       -- 按统计口径分组
+                  SM.PERSN_LEGAL_BK_CODE;                      -- 按法人机构分组
     OUTCDE := SQL%ROWCOUNT;           -- 输出影响行数（最后一次INSERT处理行数）
     COMMIT;                           -- 提交本段事务
     V_END_DATE  := SYSDATE;           -- 记录结束时间

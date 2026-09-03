@@ -1,0 +1,43 @@
+schema_version: '0.1'
+task_id: prdkt-smartdep-20260903
+purpose: 产品推荐智能存款口径落地及多任务资产同步
+workflow_profile: lightweight
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-09-02T16:16:55+00:00'
+updated_at: '2026-09-03T01:35:19+00:00'
+evidence_ids:
+- ev-gate
+- ev-ua
+- ev-route
+- ev-scope
+- ev-quick
+- ev-ua2
+- ev-ca
+allowed_paths: []
+forbidden_paths: []
+history:
+- from: null
+  to: CREATED
+  at: '2026-09-02T16:16:55+00:00'
+- from: CREATED
+  to: SCOPE_CONFIRMED
+  reason: 用户确认提交范围为全部变更(排除临时脚本与.mnemon)
+  at: '2026-09-03T01:35:17+00:00'
+- from: SCOPE_CONFIRMED
+  to: QUICK_VALIDATION_PASSED
+  reason: strict门禁6/6通过
+  at: '2026-09-03T01:35:18+00:00'
+- from: QUICK_VALIDATION_PASSED
+  to: USER_APPROVED
+  reason: 用户已批准提交并推送
+  at: '2026-09-03T01:35:18+00:00'
+- from: USER_APPROVED
+  to: COMMIT_ALLOWED
+  reason: 授权提交
+  at: '2026-09-03T01:35:19+00:00'
+- from: COMMIT_ALLOWED
+  to: PUSH_ALLOWED
+  reason: 提交完成,授权推送
+  at: '2026-09-03T01:35:19+00:00'
+state_seal: f795fc7b12d529f745df6962d4fac66ed37bbd25b3c3a1d47d25c8e389cae100

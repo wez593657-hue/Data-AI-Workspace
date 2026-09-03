@@ -1,13 +1,14 @@
 -- ============================================================
 -- 新客经营明细存储过程临时表建表语句
 -- 存储过程名称: PRC_ADS_CUST_NEW_CUST_DTL
--- 需求版本: v2.5.0
+-- 需求版本: v2.6.0
 -- 临时表: TMP_ADS_NEW_CUST_BASE(物理临时表，存储180天内新客基础数据)
 -- 用途: 存储新客定义、周期分类、资产余额、接触状态、KYC状态、
 --       管户经理与归属机构，供明细表写入使用
 -- 变更记录:
---   v2.5.0(2026-08-25): KYC_STATE改由TMP_ADS_NEW_CUST_KYC临时表提供(见
---                       tmp_pro_ads_cust_new_cust_kyc.ddl)，口径28项≥23
+--   v2.5.0(2026-08-25): KYC_STATE改由TMP_ADS_NEW_CUST_KYC临时表提供，口径28项≥23
+--   v2.6.0(2026-08-25): KYC临时表转为正式ADS基表ADS_NEW_CUST_KYC
+--                       (data_assets/ddl/ads/ads_new_cust_kyc.sql)，新增KYC_COMPL_RATE率值
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS TMP_ADS_NEW_CUST_BASE (
@@ -35,6 +36,6 @@ COMMENT ON COLUMN TMP_ADS_NEW_CUST_BASE.DEPO_CURNT_DEPO_BAL IS '活期存款余�
 COMMENT ON COLUMN TMP_ADS_NEW_CUST_BASE.FIXD_DEPO_BAL IS '定期存款余额：NUMBER(20,2)，金额元，缺失按0处理。';
 COMMENT ON COLUMN TMP_ADS_NEW_CUST_BASE.FIN_AMT IS '理财余额：NUMBER(20,2)，金额元，缺失按0处理。';
 COMMENT ON COLUMN TMP_ADS_NEW_CUST_BASE.CNTCT_STATE IS '接触状态：VARCHAR2(1)，1=新客周期内有有效接触，0=无。';
-COMMENT ON COLUMN TMP_ADS_NEW_CUST_BASE.KYC_STATE IS 'KYC完成状态：VARCHAR2(1)，v2.5.0起取自TMP_ADS_NEW_CUST_KYC临时表，1=28项中≥23个不为空，0=不完整，无KYC记录兜底0。';
+COMMENT ON COLUMN TMP_ADS_NEW_CUST_BASE.KYC_STATE IS 'KYC完成状态：VARCHAR2(1)，v2.6.0起取自ADS_NEW_CUST_KYC基表，1=28项中≥23个不为空，0=不完整，无KYC记录兜底0。';
 COMMENT ON COLUMN TMP_ADS_NEW_CUST_BASE.POST_ID IS '管户经理岗位编号：VARCHAR2(20)，取DWD_CUST_MAN(MNG_TYP=1)理财管户经理，允许空值。';
 COMMENT ON COLUMN TMP_ADS_NEW_CUST_BASE.ORG_ID IS '归属机构：VARCHAR2(7)，取资产快照机构编码。';
