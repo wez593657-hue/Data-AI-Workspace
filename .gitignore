@@ -77,7 +77,35 @@ _v*_full_text.txt
 scripts/_*.py
 scripts/_*.txt
 
+# Local scratch files (one-off conversion / patch / test logs 鈥?not project deliverables)
+/cs_*.txt
+/src_*.txt
+_fix_*.py
+_v*_convert.py
+ddl_v52_append_utf8.txt
+mvtest_root.txt
+sip_log_*.txt
+
 # External reference material (A.txt design draft, GBK-encoded, not a project deliverable)
 ABCD/
+# 一次性转换/补丁脚本与过程产物（非项目交付物，2026-09 指标模块改造副产物）
+_fix_*.py
+_v*_convert.py
+ddl_v52_append_utf8.txt
+mvtest_root.txt
+sip_log_*.txt
+/cs_*.txt
+/src_*.txt
+prc_plan*_backup.sql
 
+# 一次性 Oracle 验证运行台（含编译/跑批日志，属过程产物）
+scripts/oracle_validation/stat_indx_plan/
 
+# 一次性诊断脚本/临时文档（非项目交付物，2026-09 指标模块改造副产物）
+.cs_*_tmp.txt
+.src_*_tmp.txt
+docs/analysis/2026-09-12-stat-indx-plan-oracle-validation.md
+requirements/PRC_ADS_STAT_INDX_PLAN_006_CS.sql
+requirements/产品推荐优化方案.md
+requirements/产品推荐新架构设计.md
+requirements/指标数据统计存储过程全量代码审查报告.md

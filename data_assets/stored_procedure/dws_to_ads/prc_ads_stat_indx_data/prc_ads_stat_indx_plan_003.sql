@@ -6,6 +6,8 @@
 --   OUTCDE   OUT INTEGER    处理行数
 -- 需求版本: v4.8 (2026-08-26)
 -- 变更记录:
+--   2026-09-10 统计维度/统计口径内容互换：STATIS_DIM改存08/09路径编码、STATIS_CALIB改存活动号/任务号；单列表(范围/余额汇总/客户状态/贷款基数/代发基数等)STATIS_DIM列更名STATIS_CALIB
+--   v4.9 (2026-09-10) 4.1 b子查询修复：恢复 data_date = v_sysdat 过滤（原被注释导致当期余额按 DWS_CUST_ASSE_LIAB 全历史聚合，0046/0047/0048/0049 当期值与 0050/0051 日均值系统性偏大）
 --   v4.8 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   v4.7 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_003，段首自清（并行跑批隔离）
 --   v4.6 0047基数缺失时增量与期初值置NULL；0050/0051基准改为基数表
@@ -41,6 +43,7 @@ BEGIN
 
     -- 段首自清：本过程专属汇总临时表，防止重跑/并行残留
     DELETE FROM TMP_STAT_INDX_AGGR_003;
+    DELETE FROM TMP_STAT_INDX_BAL_AGGR;  -- 段首自清：余额预聚合表(主键不含data_date,防跨日累积撞主键)
 
     V_END_DATE := TO_DATE(v_sysdat, 'YYYYMMDD');  -- 业务日期字符串转日期型
 
@@ -50,18 +53,18 @@ BEGIN
     V_MTH_BEGIN    := sys_fun_deal_date(v_sysdat, 9);  -- 当月月初
     V_MTH_END      := sys_fun_deal_date(v_sysdat, 2);  -- 上月月末
     V_QRT_END      := sys_fun_deal_date(v_sysdat, 3);  -- 上季末
-    V_YAR_BEGIN    := sys_fun_deal_date(v_sysdat, 13); -- 当年初
+    V_YAR_BEGIN    := sys_fun_deal_date(v_sysdat, 4); -- 上年末
 
     -------------------------------------------------------------------------
     -- 4.1 余额预聚合到 TMP_STAT_INDX_BAL_AGGR
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_BAL_AGGR (
-        path_code, statis_dim, data_blng, persn_legal_bk_code,   -- 路径编码, 统计维度, 归属机构, 法人行号
+        path_code, statis_calib, data_blng, persn_legal_bk_code,   -- 路径编码, 统计口径, 归属机构, 法人行号
         curnt_aum, yr_begin_aum, mth_end_aum, qrt_end_aum,  -- 当期AUM, 年期初AUM, 月期末AUM, 季期末AUM
         curnt_yr_avg_aum, curnt_mth_avg_aum                 -- 当年日均AUM, 当月日均AUM
     )
     WITH base_scope AS (
-        SELECT DISTINCT path_code, statis_dim, data_blng,          -- 路径编码, 统计维度, 归属机构
+        SELECT DISTINCT path_code, statis_calib, data_blng,          -- 路径编码, 统计口径, 归属机构
                blng_type, blng_id, persn_legal_bk_code             -- 归属类型, 归属ID, 法人行号
           FROM TMP_STAT_INDX_SCOPE                                 -- 指标统计范围表
          WHERE indx_code IN ('INDX_0046','INDX_0047','INDX_0048',  -- 仅取存款类AUM相关指标
@@ -70,21 +73,21 @@ BEGIN
     ),
     scope_member AS (
         -- 路径08：营销活动成员
-        SELECT s.path_code, s.statis_dim, s.data_blng,                -- 路径编码, 统计维度, 归属机构
+        SELECT s.path_code, s.statis_calib, s.data_blng,                -- 路径编码, 统计口径, 归属机构
                ti.cust_id, s.persn_legal_bk_code                      -- 客户ID, 法人行号
           FROM base_scope s                                           -- 复用统计范围CTE
-         INNER JOIN DWD_MKT_TSK_INFO ti                               -- 营销任务信息表
+         INNER JOIN CRM.MKT_TSK_INFO ti                               -- 营销任务信息表
             ON s.path_code             = '08'                          -- 限定路径08
-           AND ti.mkt_act_id           = s.statis_dim                 -- 任务活动ID=统计维度
+           AND ti.mkt_act_id           = s.statis_calib                 -- 任务活动ID=统计口径
            AND ti.persn_legal_bk_code  = s.persn_legal_bk_code        -- 法人行号一致
-           AND ti.data_date            = v_sysdat                     -- 任务数据日期=跑批日期
+           --AND ti.data_date            = v_sysdat                     -- 任务数据日期=跑批日期
            AND ((s.blng_type = 'O' AND ti.mkt_persn_org = s.blng_id)  -- 机构口径按机构归属匹配
              OR (s.blng_type = 'M' AND ti.mkt_persn     = s.blng_id)) -- 客户经理口径按客户经理匹配
 
         UNION
 
         -- 路径09-机构归属
-        SELECT s.path_code, s.statis_dim, s.data_blng,  -- 路径编码, 统计维度, 归属机构
+        SELECT s.path_code, s.statis_calib, s.data_blng,  -- 路径编码, 统计口径, 归属机构
                lv.cust_id, s.persn_legal_bk_code        -- 客户ID, 法人行号
           FROM base_scope s                             -- 复用统计范围CTE
          INNER JOIN DWS_CUST_LVL_INFO lv                -- 客户层级信息表
@@ -92,12 +95,12 @@ BEGIN
            AND s.blng_type             = 'O'            -- 只取机构口径
            AND lv.org_id               = s.blng_id      -- 客户所属机构=归属ID
            AND lv.persn_legal_bk_code  = s.persn_legal_bk_code   -- 法人行号一致
-           AND lv.data_date            = v_sysdat       -- 数据日期=跑批日期
+           --AND lv.data_date            = v_sysdat       -- 数据日期=跑批日期
 
         UNION
 
         -- 路径09-客户经理归属
-        SELECT s.path_code, s.statis_dim, s.data_blng,  -- 路径编码, 统计维度, 归属机构
+        SELECT s.path_code, s.statis_calib, s.data_blng,  -- 路径编码, 统计口径, 归属机构
                cm.cust_id, s.persn_legal_bk_code        -- 客户ID, 法人行号
           FROM base_scope s                             -- 复用统计范围CTE
          INNER JOIN DWD_CUST_MAN cm                     -- 客户管户关系表
@@ -108,7 +111,7 @@ BEGIN
            AND cm.persn_legal_bk_code  = s.persn_legal_bk_code   -- 法人行号一致
     )
     SELECT sm.path_code,                                      -- 路径编码
-           sm.statis_dim,                                     -- 统计维度
+           sm.statis_calib,                                     -- 统计口径
            sm.data_blng,                                      -- 归属机构
            sm.persn_legal_bk_code,                            -- 法人行号
            SUM(NVL(b.curnt_aum, 0))         AS curnt_aum,     -- 当期AUM合计=存款余额(type1)
@@ -125,8 +128,9 @@ BEGIN
                  SUM(CASE WHEN bal_type = '4' THEN NVL(depo_bal, 0) ELSE 0 END) AS curnt_yr_avg_aum,  -- 当年日均存款(type4)
                  SUM(CASE WHEN bal_type = '2' THEN NVL(depo_bal, 0) ELSE 0 END) AS curnt_mth_avg_aum  -- 当月日均存款(type2)
             FROM DWS_CUST_ASSE_LIAB                                                                   -- 客户资产负债表（当日）
-           WHERE data_date = v_sysdat                                                                 -- 取跑批日数据
-             AND EXISTS (SELECT 1 FROM scope_member sm2                                               -- 成员明细CTE2   -- 仅统计范围内客户
+           WHERE --data_date = v_sysdat                                                                -- 取跑批日数据
+            --AND
+             EXISTS (SELECT 1 FROM scope_member sm2                                               -- 成员明细CTE2   -- 仅统计范围内客户
                           WHERE sm2.cust_id = DWS_CUST_ASSE_LIAB.cust_id                              -- 匹配客户ID
                             AND sm2.persn_legal_bk_code = DWS_CUST_ASSE_LIAB.persn_legal_bk_code)     -- 匹配法人行号
            GROUP BY cust_id, persn_legal_bk_code
@@ -151,16 +155,16 @@ BEGIN
       ) hb
         ON hb.cust_id             = sm.cust_id              -- 按客户ID关联
        AND hb.persn_legal_bk_code = sm.persn_legal_bk_code  -- 法人行号一致
-     GROUP BY sm.path_code, sm.statis_dim, sm.data_blng, sm.persn_legal_bk_code;   -- 按路径/维度/机构/法人行汇总
+     GROUP BY sm.path_code, sm.statis_calib, sm.data_blng, sm.persn_legal_bk_code;   -- 按路径/口径/机构/法人行汇总
 
     -------------------------------------------------------------------------
     -- 4.2 标准期间增量写入（INDX_0046/0048/0049/0050/0051）- 路径08
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_003 (
-        path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
+        path_code, data_date, data_blng, statis_calib, statis_dim,-- 路径, 数据日期, 归属机构, 统计口径, 统计维度
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT '08', v_sysdat, s.data_blng, s.statis_dim, '08', s.indx_code,      -- 路径08/数据日期/归属机构/统计维度/口径/指标编码
+    SELECT '08', v_sysdat, s.data_blng, s.statis_calib, '08', s.indx_code,      -- 路径08/数据日期/归属机构/统计口径/维度/指标编码
            CASE s.indx_code                                                    -- 按指标编码取当期标准期间增量
                WHEN 'INDX_0046' THEN b.curnt_aum - b.yr_begin_aum              -- 当年存款新增=当期-年期初
                WHEN 'INDX_0048' THEN b.curnt_aum - b.mth_end_aum               -- 当月存款新增=当期-月期初(上月末)
@@ -179,12 +183,12 @@ BEGIN
       FROM TMP_STAT_INDX_SCOPE s                          -- 指标统计范围表
      INNER JOIN TMP_STAT_INDX_BAL_AGGR b                  -- 余额预聚合表
         ON b.path_code           = '08'                    -- 只取路径08余额
-       AND b.statis_dim          = s.statis_dim           -- 统计维度一致
+       AND b.statis_calib          = s.statis_calib           -- 统计口径一致
        AND b.data_blng           = s.data_blng            -- 归属机构一致
        AND b.persn_legal_bk_code = s.persn_legal_bk_code  -- 法人行号一致
       LEFT JOIN ADS_STAT_INDX_BASELINE_SUM bs             -- 指标存款基数汇总表
-        ON bs.statis_calib        = '08'                -- 统计口径=营销活动
-       AND bs.statis_dim          = s.statis_dim          -- 统计维度一致
+        ON bs.statis_dim        = '08'                -- 统计维度=营销活动
+       AND bs.statis_calib          = s.statis_calib          -- 统计口径一致
        AND bs.indx_code           = s.indx_code           -- 指标编码一致
        AND bs.data_blng           = s.data_blng           -- 归属机构一致
        AND bs.persn_legal_bk_code = s.persn_legal_bk_code -- 法人行号一致
@@ -195,10 +199,10 @@ BEGIN
     -- 4.2 标准期间增量写入（INDX_0046/0048/0049/0050/0051）- 路径09
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_003 (
-        path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
+        path_code, data_date, data_blng, statis_calib, statis_dim,-- 路径, 数据日期, 归属机构, 统计口径, 统计维度
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT '09', v_sysdat, s.data_blng, s.statis_dim, '09', s.indx_code,
+    SELECT '09', v_sysdat, s.data_blng, s.statis_calib, '09', s.indx_code,
            CASE s.indx_code                                                    -- 按指标编码取当期标准期间增量
                WHEN 'INDX_0046' THEN b.curnt_aum - b.yr_begin_aum              -- 当年存款新增=当期-年期初
                WHEN 'INDX_0048' THEN b.curnt_aum - b.mth_end_aum               -- 当月存款新增=当期-月期初
@@ -217,12 +221,12 @@ BEGIN
       FROM TMP_STAT_INDX_SCOPE s                          -- 指标统计范围表
      INNER JOIN TMP_STAT_INDX_BAL_AGGR b                  -- 余额预聚合表
         ON b.path_code           = '09'                    -- 只取路径09余额
-       AND b.statis_dim          = s.statis_dim           -- 统计维度一致
+       AND b.statis_calib          = s.statis_calib           -- 统计口径一致
        AND b.data_blng           = s.data_blng            -- 归属机构一致
        AND b.persn_legal_bk_code = s.persn_legal_bk_code  -- 法人行号一致
       LEFT JOIN ADS_STAT_INDX_BASELINE_SUM bs             -- 指标存款基数汇总表
-        ON bs.statis_calib        = '09'                -- 统计口径=目标任务
-       AND bs.statis_dim          = s.statis_dim          -- 统计维度一致
+        ON bs.statis_dim        = '09'                -- 统计维度=目标任务
+       AND bs.statis_calib          = s.statis_calib          -- 统计口径一致
        AND bs.indx_code           = s.indx_code           -- 指标编码一致
        AND bs.data_blng           = s.data_blng           -- 归属机构一致
        AND bs.persn_legal_bk_code = s.persn_legal_bk_code -- 法人行号一致
@@ -233,10 +237,10 @@ BEGIN
     -- 4.3 存款基数扣减指标 INDX_0047 - 路径08（仅机构维度）
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_003 (
-        path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
+        path_code, data_date, data_blng, statis_calib, statis_dim,-- 路径, 数据日期, 归属机构, 统计口径, 统计维度
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT '08', v_sysdat, s.data_blng, s.statis_dim, '08', 'INDX_0047',   -- 路径08/数据日期/归属机构/统计维度/口径/固定指标0047
+    SELECT '08', v_sysdat, s.data_blng, s.statis_calib, '08', 'INDX_0047',   -- 路径08/数据日期/归属机构/统计口径/维度/固定指标0047
            CASE WHEN SUM(v.value_init) IS NULL THEN NULL           -- 基数缺失时当期值置NULL
                 ELSE b.curnt_aum - SUM(NVL(v.value_init, 0)) END,  -- 指标当期值=当期AUM-存款基数
            SUM(v.value_init),                                      -- 上期值=存款基数合计
@@ -244,7 +248,7 @@ BEGIN
       FROM TMP_STAT_INDX_SCOPE s                                   -- 指标统计范围表
      INNER JOIN TMP_STAT_INDX_BAL_AGGR b                           -- 余额预聚合表
         ON b.path_code           = '08'                             -- 只取路径08余额
-       AND b.statis_dim          = s.statis_dim                    -- 统计维度一致
+       AND b.statis_calib          = s.statis_calib                    -- 统计口径一致
        AND b.data_blng           = s.data_blng                     -- 归属机构一致
        AND b.persn_legal_bk_code = s.persn_legal_bk_code           -- 法人行号一致
       LEFT JOIN DWD_DEPO_VALUE_INIT v                              -- 存款基数初始化表
@@ -252,16 +256,16 @@ BEGIN
      WHERE s.path_code = '08'                                       -- 仅路径08
        AND s.blng_type = 'O'                                       -- 仅机构口径
        AND s.indx_code = 'INDX_0047'                               -- 仅存款基数扣减指标
-     GROUP BY s.data_blng, s.statis_dim, b.curnt_aum, s.persn_legal_bk_code;   -- 按维度/机构/当期AUM/法人行聚合
+     GROUP BY s.data_blng, s.statis_calib, b.curnt_aum, s.persn_legal_bk_code;   -- 按口径/机构/当期AUM/法人行聚合
 
     -------------------------------------------------------------------------
     -- 4.3 存款基数扣减指标 INDX_0047 - 路径09（仅机构维度）
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_003 (
-        path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
+        path_code, data_date, data_blng, statis_calib, statis_dim,-- 路径, 数据日期, 归属机构, 统计口径, 统计维度
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT '09', v_sysdat, s.data_blng, s.statis_dim, '09', 'INDX_0047',   -- 路径09/数据日期/归属机构/统计维度/口径/固定指标0047
+    SELECT '09', v_sysdat, s.data_blng, s.statis_calib, '09', 'INDX_0047',   -- 路径09/数据日期/归属机构/统计口径/维度/固定指标0047
            CASE WHEN SUM(v.value_init) IS NULL THEN NULL           -- 基数缺失时当期值置NULL
                 ELSE b.curnt_aum - SUM(NVL(v.value_init, 0)) END,  -- 指标当期值=当期AUM-存款基数
            SUM(v.value_init),                                      -- 上期值=存款基数合计
@@ -269,7 +273,7 @@ BEGIN
       FROM TMP_STAT_INDX_SCOPE s                                   -- 指标统计范围表
      INNER JOIN TMP_STAT_INDX_BAL_AGGR b                           -- 余额预聚合表
         ON b.path_code           = '09'                             -- 只取路径09余额
-       AND b.statis_dim          = s.statis_dim                    -- 统计维度一致
+       AND b.statis_calib          = s.statis_calib                    -- 统计口径一致
        AND b.data_blng           = s.data_blng                     -- 归属机构一致
        AND b.persn_legal_bk_code = s.persn_legal_bk_code           -- 法人行号一致
       LEFT JOIN DWD_DEPO_VALUE_INIT v                              -- 存款基数初始化表
@@ -277,7 +281,7 @@ BEGIN
      WHERE s.path_code = '09'                                       -- 仅路径09
        AND s.blng_type = 'O'                                       -- 仅机构口径
        AND s.indx_code = 'INDX_0047'                               -- 仅存款基数扣减指标
-     GROUP BY s.data_blng, s.statis_dim, b.curnt_aum, s.persn_legal_bk_code;   -- 按维度/机构/当期AUM/法人行聚合
+     GROUP BY s.data_blng, s.statis_calib, b.curnt_aum, s.persn_legal_bk_code;   -- 按口径/机构/当期AUM/法人行聚合
 
     -------------------------------------------------------------------------
     -- 收尾：本次处理行数回填、提交并记录步骤日志

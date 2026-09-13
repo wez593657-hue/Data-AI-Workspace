@@ -1,0 +1,21 @@
+schema_version: '0.1'
+task_id: stat-indx-zero-fill-20260913
+purpose: 指标数据统计流水线 v1.4 落地：补零可见性保障与分发口径闭环
+workflow_profile: lightweight
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-09-13T09:40:00+08:00'
+updated_at: '2026-09-13T09:40:00+08:00'
+evidence_ids:
+- user-approval-20260913
+allowed_paths:
+- data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/
+- data_assets/ddl/ads/ads_stat_indx_data_mkt.sql
+forbidden_paths:
+- secrets/
+- .env
+history:
+- from: null
+  to: PUSH_ALLOWED
+  reason: 用户已确认三条决策（0客户显示0/0081历史核查未误删/机构经理编码不会同值）并明确指令提交并推送至远程
+  at: '2026-09-13T09:40:00+08:00'

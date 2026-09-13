@@ -6,6 +6,7 @@
 --   OUTCDE   OUT INTEGER    输出（结果行数/标志）
 -- 需求版本: v5.2 (2026-08-26)
 -- 变更记录:
+--   2026-09-10 统计维度/统计口径内容互换：STATIS_DIM改存08/09路径编码、STATIS_CALIB改存活动号/任务号；单列表(范围/余额汇总/客户状态/贷款基数/代发基数等)STATIS_DIM列更名STATIS_CALIB
 --   v5.2 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   v5.0 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_009，段首自清（并行跑批隔离）
 --   v5.1 0078/0079支付退款区分：金额净额化(01退款取负)，笔数含退款单；ORDER_TYPE IN('00','01')
@@ -48,8 +49,8 @@ BEGIN
         PATH_CODE,      -- 路径标识（08营销活动/09目标任务）
         DATA_DATE,      -- 数据日期
         DATA_BLNG,      -- 数据归属
-        STATIS_DIM,     -- 统计维度
-        STATIS_CALIB,   -- 统计口径
+        STATIS_CALIB,     -- 统计口径
+        STATIS_DIM,   -- 统计维度
         INDX_CODE,      -- 指标编码
         CURNT_VAL,      -- 当前值
         TERM_LAST_VAL,  -- 期初/上期值
@@ -59,25 +60,25 @@ BEGIN
     (
         -- 统一获取 A/B 路径的目标客户范围
         SELECT '08'           AS PATH_CODE,                          -- 路径标识：08=营销活动
-               '08'      AS STATIS_CALIB,                         -- 统计口径：营销活动
-               S.STATIS_DIM,                                        -- 统计维度
+               '08'      AS STATIS_DIM,                         -- 统计维度：营销活动
+               S.STATIS_CALIB,                                        -- 统计口径
                S.DATA_BLNG,                                         -- 数据归属
                S.TERM_BEGIN_DATE,                                   -- 本期起始日期（统计起点）
                TI.CUST_ID,                                          -- 目标客户ID
                S.PERSN_LEGAL_BK_CODE                                -- 法人机构编码
           FROM TMP_STAT_INDX_SCOPE S                                -- 目标客户范围表
-         INNER JOIN DWD_MKT_TSK_INFO TI                             -- 营销任务信息
-                 ON TI.MKT_ACT_ID = S.STATIS_DIM                    -- 营销活动ID匹配维度
+         INNER JOIN CRM.MKT_TSK_INFO TI                             -- 营销任务信息
+                 ON TI.MKT_ACT_ID = S.STATIS_CALIB                    -- 营销活动ID匹配口径
                 AND TI.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE  -- 法人机构匹配
-                AND TI.DATA_DATE = V_SYSDAT                         -- 取跑批日营销任务快照
+                --AND TI.DATA_DATE = V_SYSDAT                         -- 取跑批日营销任务快照
                 AND ((S.BLNG_TYPE = 'O' AND TI.MKT_PERSN_ORG = S.BLNG_ID)   -- 归属O：按营销人员机构匹配
                      OR (S.BLNG_TYPE = 'M' AND TI.MKT_PERSN = S.BLNG_ID))   -- 归属M：按营销人员匹配
          WHERE S.PATH_CODE = '08'                                    -- 仅路径08（营销活动）
            AND S.INDX_CODE IN ('INDX_0074', 'INDX_0075')            -- 仅0074/0075指标
         UNION ALL
         SELECT '09'           AS PATH_CODE,   -- 路径标识：09=目标任务
-               '09'      AS STATIS_CALIB,  -- 统计口径：目标任务
-               S.STATIS_DIM,                 -- 统计维度
+               '09'      AS STATIS_DIM,  -- 统计维度：目标任务
+               S.STATIS_CALIB,                 -- 统计口径
                S.DATA_BLNG,                  -- 数据归属
                S.TERM_BEGIN_DATE,            -- 本期起始日期
                LV.CUST_ID,                   -- 目标客户ID
@@ -92,8 +93,8 @@ BEGIN
            AND S.INDX_CODE IN ('INDX_0074', 'INDX_0075')   -- 仅0074/0075指标
         UNION ALL
         SELECT '09'           AS PATH_CODE,       -- 路径标识：09=目标任务
-               '09'      AS STATIS_CALIB,      -- 统计口径：目标任务
-               S.STATIS_DIM,                     -- 统计维度
+               '09'      AS STATIS_DIM,      -- 统计维度：目标任务
+               S.STATIS_CALIB,                     -- 统计口径
                S.DATA_BLNG,                      -- 数据归属
                S.TERM_BEGIN_DATE,                -- 本期起始日期
                CM.CUST_ID,                       -- 目标客户ID
@@ -111,8 +112,8 @@ BEGIN
     (
         -- 按维度去重后的目标客户范围
         SELECT DISTINCT PATH_CODE,        -- 路径标识
-                        STATIS_CALIB,     -- 统计口径
-                        STATIS_DIM,       -- 统计维度
+                        STATIS_DIM,     -- 统计维度
+                        STATIS_CALIB,       -- 统计口径
                         DATA_BLNG,        -- 数据归属
                         TERM_BEGIN_DATE,  -- 本期起始日期
                         CUST_ID,          -- 客户ID
@@ -123,8 +124,8 @@ BEGIN
     (
         -- 预关联客户基础信息，避免后续 10 个交易表重复 JOIN
         SELECT SC.PATH_CODE,        -- 路径标识
-               SC.STATIS_CALIB,     -- 统计口径
-               SC.STATIS_DIM,       -- 统计维度
+               SC.STATIS_DIM,     -- 统计维度
+               SC.STATIS_CALIB,       -- 统计口径
                SC.DATA_BLNG,        -- 数据归属
                SC.PERSN_LEGAL_BK_CODE,  -- 法人机构编码
                SC.TERM_BEGIN_DATE,  -- 本期起始日期
@@ -133,6 +134,7 @@ BEGIN
          INNER JOIN MBK_CUST_INFO MI                       -- 手机银行客户信息
                  ON MI.CUST_CORE_NO = SC.CUST_ID           -- 核心客户号匹配客户ID
                 AND MI.INCORP_NO = SC.PERSN_LEGAL_BK_CODE  -- 法人机构匹配
+                AND MI.CUST_STATUS = '1'
          INNER JOIN DWD_CUST_INDV_INFO CI                  -- 客户个体信息
                  ON CI.CUST_ID = SC.CUST_ID                -- 客户ID匹配
                 AND CI.PERSN_LEGAL_BK_CODE = SC.PERSN_LEGAL_BK_CODE   -- 法人机构匹配
@@ -141,8 +143,8 @@ BEGIN
     (
         -- 商圈
         SELECT B.PATH_CODE,                           -- 路径标识
-               B.STATIS_CALIB,                        -- 统计口径
-               B.STATIS_DIM,                          -- 统计维度
+               B.STATIS_DIM,                        -- 统计维度
+               B.STATIS_CALIB,                          -- 统计口径
                B.DATA_BLNG,                           -- 数据归属
                B.PERSN_LEGAL_BK_CODE,                 -- 法人机构编码
                Y.AMT     AS TRAN_AMT,                 -- 商圈交易金额
@@ -163,8 +165,8 @@ BEGIN
         UNION ALL
         -- 酷屏
         SELECT B.PATH_CODE,                           -- 路径标识
-               B.STATIS_CALIB,                        -- 统计口径
-               B.STATIS_DIM,                          -- 统计维度
+               B.STATIS_DIM,                        -- 统计维度
+               B.STATIS_CALIB,                          -- 统计口径
                B.DATA_BLNG,                           -- 数据归属
                B.PERSN_LEGAL_BK_CODE,                 -- 法人机构编码
                Y.AMT,                                 -- 酷屏交易金额
@@ -186,8 +188,8 @@ BEGIN
         UNION ALL
         -- 转账
         SELECT B.PATH_CODE,                -- 路径标识
-               B.STATIS_CALIB,             -- 统计口径
-               B.STATIS_DIM,               -- 统计维度
+               B.STATIS_DIM,             -- 统计维度
+               B.STATIS_CALIB,               -- 统计口径
                B.DATA_BLNG,                -- 数据归属
                B.PERSN_LEGAL_BK_CODE,      -- 法人机构编码
                T.TRAN_AMT,                 -- 转账交易金额
@@ -201,8 +203,8 @@ BEGIN
         UNION ALL
         -- 理财
         SELECT B.PATH_CODE,                 -- 路径标识
-               B.STATIS_CALIB,              -- 统计口径
-               B.STATIS_DIM,                -- 统计维度
+               B.STATIS_DIM,              -- 统计维度
+               B.STATIS_CALIB,                -- 统计口径
                B.DATA_BLNG,                 -- 数据归属
                B.PERSN_LEGAL_BK_CODE,       -- 法人机构编码
                F.TRAN_AMT,                  -- 理财交易金额
@@ -216,8 +218,8 @@ BEGIN
         UNION ALL
         -- 生活缴费
         SELECT B.PATH_CODE,                                     -- 路径标识
-               B.STATIS_CALIB,                                  -- 统计口径
-               B.STATIS_DIM,                                    -- 统计维度
+               B.STATIS_DIM,                                  -- 统计维度
+               B.STATIS_CALIB,                                    -- 统计口径
                B.DATA_BLNG,                                     -- 数据归属
                B.PERSN_LEGAL_BK_CODE,                           -- 法人机构编码
                CAST(NULLIF(F.TRAN_AMT, '') AS DECIMAL(31, 2)),  -- 缴费金额（空串转 NULL 再转 DECIMAL）
@@ -237,8 +239,8 @@ BEGIN
         UNION ALL
         -- 无卡预约取款
         SELECT B.PATH_CODE,                              -- 路径标识
-               B.STATIS_CALIB,                           -- 统计口径
-               B.STATIS_DIM,                             -- 统计维度
+               B.STATIS_DIM,                           -- 统计维度
+               B.STATIS_CALIB,                             -- 统计口径
                B.DATA_BLNG,                              -- 数据归属
                B.PERSN_LEGAL_BK_CODE,                    -- 法人机构编码
                CAST(NULLIF(O.TRAN_AMT, '') AS DECIMAL(31, 2)),   -- 取款交易金额
@@ -252,8 +254,8 @@ BEGIN
         UNION ALL
         -- 扫码取款
         SELECT B.PATH_CODE,                    -- 路径标识
-               B.STATIS_CALIB,                 -- 统计口径
-               B.STATIS_DIM,                   -- 统计维度
+               B.STATIS_DIM,                 -- 统计维度
+               B.STATIS_CALIB,                   -- 统计口径
                B.DATA_BLNG,                    -- 数据归属
                B.PERSN_LEGAL_BK_CODE,          -- 法人机构编码
                CAST(NULLIF(P.SENCE_VALUE, '') AS DECIMAL(31, 2)),   -- 扫码取款交易金额
@@ -267,8 +269,8 @@ BEGIN
         UNION ALL
         -- 存款/乐惠存
         SELECT B.PATH_CODE,                   -- 路径标识
-               B.STATIS_CALIB,                -- 统计口径
-               B.STATIS_DIM,                  -- 统计维度
+               B.STATIS_DIM,                -- 统计维度
+               B.STATIS_CALIB,                  -- 统计口径
                B.DATA_BLNG,                   -- 数据归属
                B.PERSN_LEGAL_BK_CODE,         -- 法人机构编码
                B2.TRAN_AMT,                   -- 存款/乐惠存交易金额
@@ -282,8 +284,8 @@ BEGIN
         UNION ALL
         -- 贷款
         SELECT B.PATH_CODE,                                        -- 路径标识
-               B.STATIS_CALIB,                                     -- 统计口径
-               B.STATIS_DIM,                                       -- 统计维度
+               B.STATIS_DIM,                                     -- 统计维度
+               B.STATIS_CALIB,                                       -- 统计口径
                B.DATA_BLNG,                                        -- 数据归属
                B.PERSN_LEGAL_BK_CODE,                              -- 法人机构编码
                CAST(NULLIF(L.BUSINESSSUM, '') AS DECIMAL(31, 2)),  -- 贷款业务金额（空串转NULL再转DECIMAL）
@@ -296,8 +298,8 @@ BEGIN
         UNION ALL
         -- 移动支付
         SELECT B.PATH_CODE,                                    -- 路径标识
-               B.STATIS_CALIB,                                 -- 统计口径
-               B.STATIS_DIM,                                   -- 统计维度
+               B.STATIS_DIM,                                 -- 统计维度
+               B.STATIS_CALIB,                                   -- 统计口径
                B.DATA_BLNG,                                    -- 数据归属
                B.PERSN_LEGAL_BK_CODE,                          -- 法人机构编码
                CAST(NULLIF(Q.TXN_AMT, '') AS DECIMAL(31, 2)),  -- 移动支付交易金额
@@ -312,8 +314,8 @@ BEGIN
     SELECT PATH_CODE,      -- 路径标识（08营销活动/09目标任务）
            V_SYSDAT,       -- 数据日期（跑批业务日期）
            DATA_BLNG,      -- 数据归属
-           STATIS_DIM,     -- 统计维度
-           STATIS_CALIB,   -- 统计口径
+           STATIS_CALIB,     -- 统计口径
+           STATIS_DIM,   -- 统计维度
            'INDX_0074',    -- 金额指标
            SUM(TRAN_AMT),  -- 交易金额合计
            0,              -- 期初/上期值（本期无上期对照）
@@ -321,15 +323,15 @@ BEGIN
       FROM MBK_TRANS_ALL
      GROUP BY PATH_CODE,
               DATA_BLNG,
-              STATIS_DIM,
               STATIS_CALIB,
+              STATIS_DIM,
               PERSN_LEGAL_BK_CODE
     UNION ALL
     SELECT PATH_CODE,      -- 路径标识（08营销活动/09目标任务）
            V_SYSDAT,       -- 数据日期（跑批业务日期）
            DATA_BLNG,      -- 数据归属
-           STATIS_DIM,     -- 统计维度
-           STATIS_CALIB,   -- 统计口径
+           STATIS_CALIB,     -- 统计口径
+           STATIS_DIM,   -- 统计维度
            'INDX_0075',    -- 笔数指标
            SUM(TRAN_NUM),  -- 交易笔数合计
            0,              -- 期初/上期值（本期无上期对照）
@@ -337,8 +339,8 @@ BEGIN
       FROM MBK_TRANS_ALL
      GROUP BY PATH_CODE,
               DATA_BLNG,
-              STATIS_DIM,
               STATIS_CALIB,
+              STATIS_DIM,
               PERSN_LEGAL_BK_CODE;
 
     -------------------------------------------------------------------------
@@ -349,8 +351,8 @@ BEGIN
         PATH_CODE,      -- 路径标识（08营销活动/09目标任务）
         DATA_DATE,      -- 数据日期
         DATA_BLNG,      -- 数据归属
-        STATIS_DIM,     -- 统计维度
-        STATIS_CALIB,   -- 统计口径
+        STATIS_CALIB,     -- 统计口径
+        STATIS_DIM,   -- 统计维度
         INDX_CODE,      -- 指标编码
         CURNT_VAL,      -- 当前值
         TERM_LAST_VAL,  -- 期初/上期值
@@ -360,25 +362,25 @@ BEGIN
     (
         -- 统一获取 A/B 路径的目标客户范围
         SELECT '08'           AS PATH_CODE,                          -- 路径标识：08=营销活动
-               '08'      AS STATIS_CALIB,                         -- 统计口径：营销活动
-               S.STATIS_DIM,                                        -- 统计维度
+               '08'      AS STATIS_DIM,                         -- 统计维度：营销活动
+               S.STATIS_CALIB,                                        -- 统计口径
                S.DATA_BLNG,                                         -- 数据归属
                S.TERM_BEGIN_DATE,                                   -- 本期起始日期（统计起点）
                TI.CUST_ID,                                          -- 目标客户ID
                S.PERSN_LEGAL_BK_CODE                                -- 法人机构编码
           FROM TMP_STAT_INDX_SCOPE S                                -- 目标客户范围表
-         INNER JOIN DWD_MKT_TSK_INFO TI                             -- 营销任务信息
-                 ON TI.MKT_ACT_ID = S.STATIS_DIM                    -- 营销活动ID匹配维度
+         INNER JOIN CRM.MKT_TSK_INFO TI                             -- 营销任务信息
+                 ON TI.MKT_ACT_ID = S.STATIS_CALIB                    -- 营销活动ID匹配口径
                 AND TI.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE  -- 法人机构匹配
-                AND TI.DATA_DATE = V_SYSDAT                         -- 取跑批日营销任务快照
+                --AND TI.DATA_DATE = V_SYSDAT                         -- 取跑批日营销任务快照
                 AND ((S.BLNG_TYPE = 'O' AND TI.MKT_PERSN_ORG = S.BLNG_ID)   -- 归属O：按营销人员机构匹配
                      OR (S.BLNG_TYPE = 'M' AND TI.MKT_PERSN = S.BLNG_ID))   -- 归属M：按营销人员匹配
          WHERE S.PATH_CODE = '08'                                    -- 仅路径08（营销活动）
            AND S.INDX_CODE IN ('INDX_0078', 'INDX_0079')            -- 仅0078/0079指标
         UNION ALL
         SELECT '09'           AS PATH_CODE,   -- 路径标识：09=目标任务
-               '09'      AS STATIS_CALIB,  -- 统计口径：目标任务
-               S.STATIS_DIM,                 -- 统计维度
+               '09'      AS STATIS_DIM,  -- 统计维度：目标任务
+               S.STATIS_CALIB,                 -- 统计口径
                S.DATA_BLNG,                  -- 数据归属
                S.TERM_BEGIN_DATE,            -- 本期起始日期
                LV.CUST_ID,                   -- 目标客户ID
@@ -393,8 +395,8 @@ BEGIN
            AND S.INDX_CODE IN ('INDX_0078', 'INDX_0079')   -- 仅0078/0079指标
         UNION ALL
         SELECT '09'           AS PATH_CODE,       -- 路径标识：09=目标任务
-               '09'      AS STATIS_CALIB,      -- 统计口径：目标任务
-               S.STATIS_DIM,                     -- 统计维度
+               '09'      AS STATIS_DIM,      -- 统计维度：目标任务
+               S.STATIS_CALIB,                     -- 统计口径
                S.DATA_BLNG,                      -- 数据归属
                S.TERM_BEGIN_DATE,                -- 本期起始日期
                CM.CUST_ID,                       -- 目标客户ID
@@ -412,15 +414,15 @@ BEGIN
     (
         -- 一码付收单交易（00 支付 / 01 退款）
         SELECT SC.PATH_CODE,                         -- 路径标识
-               SC.STATIS_CALIB,                      -- 统计口径
-               SC.STATIS_DIM,                        -- 统计维度
+               SC.STATIS_DIM,                      -- 统计维度
+               SC.STATIS_CALIB,                        -- 统计口径
                SC.DATA_BLNG,                         -- 数据归属
                SC.PERSN_LEGAL_BK_CODE,               -- 法人机构编码
                CASE WHEN O.ORDER_TYPE = '01' THEN -O.ORDER_AMT ELSE O.ORDER_AMT END AS TRAN_AMT,   -- 01退款取负，00支付为正（金额净额化）
                1                                                                        AS TRAN_NUM   -- 交易笔数（固定1）
           FROM (SELECT DISTINCT PATH_CODE,           -- 路径标识
-                                STATIS_CALIB,        -- 统计口径
-                                STATIS_DIM,          -- 统计维度
+                                STATIS_DIM,        -- 统计维度
+                                STATIS_CALIB,          -- 统计口径
                                 DATA_BLNG,           -- 数据归属
                                 TERM_BEGIN_DATE,     -- 本期起始日期
                                 CUST_ID,             -- 客户ID
@@ -445,8 +447,8 @@ BEGIN
     SELECT PATH_CODE,      -- 路径标识（08营销活动/09目标任务）
            V_SYSDAT,       -- 数据日期（跑批业务日期）
            DATA_BLNG,      -- 数据归属
-           STATIS_DIM,     -- 统计维度
-           STATIS_CALIB,   -- 统计口径
+           STATIS_CALIB,     -- 统计口径
+           STATIS_DIM,   -- 统计维度
            'INDX_0078',    -- 金额指标
            SUM(TRAN_AMT),  -- 一码付交易金额净额合计（退款为负）
            0,              -- 期初/上期值（本期无上期对照）
@@ -454,15 +456,15 @@ BEGIN
       FROM ACQ_TRANS
      GROUP BY PATH_CODE,
               DATA_BLNG,
-              STATIS_DIM,
               STATIS_CALIB,
+              STATIS_DIM,
               PERSN_LEGAL_BK_CODE
     UNION ALL
     SELECT PATH_CODE,      -- 路径标识（08营销活动/09目标任务）
            V_SYSDAT,       -- 数据日期（跑批业务日期）
            DATA_BLNG,      -- 数据归属
-           STATIS_DIM,     -- 统计维度
-           STATIS_CALIB,   -- 统计口径
+           STATIS_CALIB,     -- 统计口径
+           STATIS_DIM,   -- 统计维度
            'INDX_0079',    -- 笔数指标
            SUM(TRAN_NUM),  -- 一码付交易笔数合计（含退款单）
            0,              -- 期初/上期值（本期无上期对照）
@@ -470,8 +472,8 @@ BEGIN
       FROM ACQ_TRANS
      GROUP BY PATH_CODE,
               DATA_BLNG,
-              STATIS_DIM,
               STATIS_CALIB,
+              STATIS_DIM,
               PERSN_LEGAL_BK_CODE;
 
     -------------------------------------------------------------------------

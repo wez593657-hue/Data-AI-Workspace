@@ -1,0 +1,24 @@
+schema_version: '0.1'
+task_id: stat-indx-zero-fill-20260913
+purpose: 指标数据统计流水线 v1.4 落地：补零可见性保障与分发口径闭环（机构/经理分发后0值可查）
+description: |-
+  plan_010 新增补零可见性保障：合并 AGGR_003~009 后按分发清单 TMP_STAT_INDX_SCOPE
+  补零缺失的(机构/客户经理+活动/任务+指标)组合，被分发对象无指标数据时目标表仍可取到0值行；
+  指标范围守卫 0046~0083 与主表幂等删除清单对齐。
+  同批提交该模块工作区变更：plan_001~010（统计维度/口径互换、归属值去前缀、机构树上卷改
+  DWD_SYS_ORG 成员判断、两段式发布）+ 新增中转表 DDL ads_stat_indx_data_mkt.sql。
+  已确认：0客户显示0；INDX_0081 经 git 历史核查未被误删（plan_008 在算，2026-09-08 拆分链）；
+  机构/经理编码不会同值，无撞码风险。
+user_confirmation: confirmed
+allowed_changes:
+  - path: data_assets/stored_procedure/dws_to_ads/prc_ads_stat_indx_data/
+  - path: data_assets/ddl/ads/ads_stat_indx_data_mkt.sql
+  - path: .harness/tasks/stat-indx-zero-fill-20260913/
+  - path: .gitignore
+  - path: .mnemon/plans/
+read_only_inputs:
+  - path: AGENTS.md
+  - path: docs/
+forbidden_changes:
+  - path: secrets/
+  - path: .env

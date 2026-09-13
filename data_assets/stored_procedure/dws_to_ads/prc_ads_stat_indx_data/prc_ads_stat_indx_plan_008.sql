@@ -4,10 +4,12 @@
 -- 参数说明:
 --   V_SYSDAT IN  VARCHAR2   跑批业务日期 YYYYMMDD
 --   OUTCDE   OUT INTEGER     输出（写入行数）
--- 需求版本: v5.2 (2026-08-26)
---   v5.3 (2026-09-02) 0066分子分类口径：DWD_ACCT_LOAN 换 DWS_CUST_CLASSFIVE（按 BASE_DATE join cust_id）
---   v5.3 (2026-09-02) 0066分子分类口径：DWD_ACCT_LOAN 换 DWS_CUST_CLASSFIVE（按 BASE_DATE join cust_id）
+-- 需求版本: v5.5 (2026-09-08)
+--   v5.5 (2026-09-08) 0066分子修复：分类列名改A.CLASS_FIVE（DWS_CUST_CLASSFIVE实际列名，原A.CATE_5LVL编译错误，自v5.3即存在）；分子余额A.LOAN_BAL不存在——改JOIN DWS_CUST_ASSE_LIAB C（DATA_DATE=V_SYSDAT, BAL_TYPE='1'）取当前贷款余额
+--   v5.3 (2026-09-02) 0066分子分类口径：DWD_ACCT_LOAN 换 DWS_CUST_CLASSFIVE（按客户关联分类表）
+--   v5.4 (2026-09-02) 0066分子分类日期修正：A.DATA_DATE 由 B.BASE_DATE 改为 V_SYSDAT（基准日分类恒1/2致分子恒空，属口径缺陷）
 -- 变更记录:
+--   2026-09-10 统计维度/统计口径内容互换：STATIS_DIM改存08/09路径编码、STATIS_CALIB改存活动号/任务号；单列表(范围/余额汇总/客户状态/贷款基数/代发基数等)STATIS_DIM列更名STATIS_CALIB
 --   v5.2 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   v5.0 AGGR汇总表拆分：写入专属表 TMP_STAT_INDX_AGGR_008，段首自清（并行跑批隔离）
 --   v5.1 0081/0069分母净额化：ORDER_TYPE='01'退款取负，'00'支付为正；>=500阈值按净额
@@ -64,8 +66,8 @@ BEGIN
         (PATH_CODE,      -- 路径标识（08营销活动/09目标任务）
          DATA_DATE,      -- 数据日期
          DATA_BLNG,      -- 数据归属
-         STATIS_DIM,     -- 统计维度
-         STATIS_CALIB,   -- 统计口径
+         STATIS_CALIB,     -- 统计口径
+         STATIS_DIM,   -- 统计维度
          INDX_CODE,      -- 指标编码
          CURNT_VAL,      -- 当前值
          TERM_LAST_VAL,  -- 期初/上期值
@@ -74,15 +76,15 @@ BEGIN
      (
         /*                                                                -- 目标客户范围：A=营销活动  B=机构/管户 --*/
         SELECT '08'                  AS PATH_CODE,                         -- 路径标识：08=营销活动
-               '08'          AS STATIS_CALIB,                           -- 统计口径：营销活动
-               S.STATIS_DIM,                                              -- 统计维度
+               '08'          AS STATIS_DIM,                           -- 统计维度：营销活动
+               S.STATIS_CALIB,                                              -- 统计口径
                S.DATA_BLNG,                                               -- 数据归属
                S.PERSN_LEGAL_BK_CODE,                                     -- 法人机构编码
                TI.CUST_ID                                                 -- 目标客户ID
           FROM TMP_STAT_INDX_SCOPE S                                      -- 目标客户范围表
-          JOIN DWD_MKT_TSK_INFO TI ON TI.MKT_ACT_ID         = S.STATIS_DIM-- 营销任务关联：营销活动ID匹配维度
+          JOIN CRM.MKT_TSK_INFO TI ON TI.MKT_ACT_ID         = S.STATIS_CALIB-- 营销任务关联：营销活动ID匹配口径
                                   AND TI.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE   -- 法人机构匹配
-                                  AND TI.DATA_DATE           = V_SYSDAT   -- 取跑批日营销任务快照
+                                  --AND TI.DATA_DATE           = V_SYSDAT   -- 取跑批日营销任务快照
                                   AND ((S.BLNG_TYPE = 'O' AND             -- 归属类型O：按营销人员机构匹配
                                         TI.MKT_PERSN_ORG = S.BLNG_ID) OR  -- 营销人员机构编码=归属机构（O分支）
                                         (S.BLNG_TYPE = 'M' AND            -- 归属类型M：按营销人员匹配
@@ -91,8 +93,8 @@ BEGIN
            AND S.INDX_CODE IN ('INDX_0081', 'INDX_0069')                  -- 仅0081/0069指标
         UNION ALL
         SELECT '09',                                                      -- 路径标识：B=目标任务
-               '09',                                                   -- 统计口径：目标任务
-               S.STATIS_DIM,                                             -- 统计维度
+               '09',                                                   -- 统计维度：目标任务
+               S.STATIS_CALIB,                                             -- 统计口径
                S.DATA_BLNG,                                              -- 数据归属
                S.PERSN_LEGAL_BK_CODE,                                    -- 法人机构编码
                LV.CUST_ID                                                -- 目标客户ID
@@ -105,8 +107,8 @@ BEGIN
            AND S.INDX_CODE IN ('INDX_0081', 'INDX_0069')                 -- 仅0081/0069指标
         UNION ALL
         SELECT '09',                                         -- 路径标识：B=目标任务
-               '09',                                      -- 统计口径：目标任务
-               S.STATIS_DIM,                                -- 统计维度
+               '09',                                      -- 统计维度：目标任务
+               S.STATIS_CALIB,                                -- 统计口径
                S.DATA_BLNG,                                 -- 数据归属
                S.PERSN_LEGAL_BK_CODE,                       -- 法人机构编码
                CM.CUST_ID                                   -- 目标客户ID
@@ -121,15 +123,15 @@ BEGIN
      (
         /*                                                                -- 客户 → 一码付商户：先去重到(客户,商户)对，防多结算账号膨胀 --*/
         SELECT DISTINCT SC.PATH_CODE,                                     -- 路径标识
-                        SC.STATIS_CALIB,                                  -- 统计口径
-                        SC.STATIS_DIM,                                    -- 统计维度
+                        SC.STATIS_DIM,                                  -- 统计维度
+                        SC.STATIS_CALIB,                                    -- 统计口径
                         SC.DATA_BLNG,                                     -- 数据归属
                         SC.PERSN_LEGAL_BK_CODE,                           -- 法人机构编码
                         SC.CUST_ID,                                       -- 客户ID
                         M.MCT_ID                                          -- 一码付商户ID
           FROM (SELECT DISTINCT PATH_CODE,                                -- 先对范围去重
-                                STATIS_CALIB,                             -- 统计口径
-                                STATIS_DIM,                               -- 统计维度
+                                STATIS_DIM,                             -- 统计维度
+                                STATIS_CALIB,                               -- 统计口径
                                 DATA_BLNG,                                -- 数据归属
                                 PERSN_LEGAL_BK_CODE,                      -- 法人机构编码
                                 CUST_ID                                   -- 客户ID
@@ -156,8 +158,8 @@ BEGIN
      (
         /*                              -- 客户年累计交易量：区间比较(可走 pay_time 索引) + >=500 阈值 --*/
         SELECT CM.PATH_CODE,            -- 路径标识
-               CM.STATIS_CALIB,         -- 统计口径
-               CM.STATIS_DIM,           -- 统计维度
+               CM.STATIS_DIM,         -- 统计维度
+               CM.STATIS_CALIB,           -- 统计口径
                CM.DATA_BLNG,            -- 数据归属
                CM.PERSN_LEGAL_BK_CODE,  -- 法人机构编码
                CM.CUST_ID,              -- 客户ID
@@ -165,8 +167,8 @@ BEGIN
           FROM CUST_MCT CM
           JOIN MCT_TX T ON T.MCT_ID = CM.MCT_ID        -- 关联商户交易聚合
          GROUP BY CM.PATH_CODE,  -- 按客户+维度分组
-                  CM.STATIS_CALIB,
                   CM.STATIS_DIM,
+                  CM.STATIS_CALIB,
                   CM.DATA_BLNG,
                   CM.PERSN_LEGAL_BK_CODE,
                   CM.CUST_ID
@@ -175,8 +177,8 @@ BEGIN
      (
         /*                                        -- 客户级宽表：分母(交易量) + 分子(年日均AUM/存款)，LEFT JOIN 保零余额客户 --*/
         SELECT T.PATH_CODE,                       -- 路径标识
-               T.STATIS_CALIB,                    -- 统计口径
-               T.STATIS_DIM,                      -- 统计维度
+               T.STATIS_DIM,                    -- 统计维度
+               T.STATIS_CALIB,                      -- 统计口径
                T.DATA_BLNG,                       -- 数据归属
                T.PERSN_LEGAL_BK_CODE,             -- 法人机构编码
                T.ANNUAL_TX_AMT,                   -- 年累计交易量（分母）
@@ -192,34 +194,34 @@ BEGIN
     SELECT PATH_CODE,           -- 路径标识
            V_SYSDAT,            -- 数据日期
            DATA_BLNG,           -- 数据归属
-           STATIS_DIM,          -- 统计维度
-           STATIS_CALIB,        -- 统计口径
+           STATIS_CALIB,          -- 统计口径
+           STATIS_DIM,        -- 统计维度
            'INDX_0081',         -- 指标编码：AUM留存率
            ROUND(SUM(ANNUAL_AUM) * 100 / NULLIF(SUM(ANNUAL_TX_AMT), 0), 2),  -- 年日均AUM/年累计交易量*100（分母0时置NULL）
            0,                   -- 期初/上期值（固定0）
            PERSN_LEGAL_BK_CODE  -- 法人机构编码
       FROM CUST_WIDE
      GROUP BY PATH_CODE,  -- 按路径/口径/归属/维度/法人分组
-              STATIS_CALIB,
-              DATA_BLNG,
               STATIS_DIM,
+              DATA_BLNG,
+              STATIS_CALIB,
               PERSN_LEGAL_BK_CODE
     UNION ALL
     /*                          -- 0069：结算存款留存率 --*/
     SELECT PATH_CODE,           -- 路径标识
            V_SYSDAT,            -- 数据日期
            DATA_BLNG,           -- 数据归属
-           STATIS_DIM,          -- 统计维度
-           STATIS_CALIB,        -- 统计口径
+           STATIS_CALIB,          -- 统计口径
+           STATIS_DIM,        -- 统计维度
            'INDX_0069',         -- 指标编码：结算存款留存率
            ROUND(SUM(ANNUAL_DEPO) * 100 / NULLIF(SUM(ANNUAL_TX_AMT), 0), 2),  -- 年日均存款/年累计交易量*100（分母0时置NULL）
            0,                   -- 期初/上期值（固定0）
            PERSN_LEGAL_BK_CODE  -- 法人机构编码
       FROM CUST_WIDE
      GROUP BY PATH_CODE,  -- 按路径/口径/归属/维度/法人分组
-              STATIS_CALIB,
-              DATA_BLNG,
               STATIS_DIM,
+              DATA_BLNG,
+              STATIS_CALIB,
               PERSN_LEGAL_BK_CODE;
 
     ---------------------------------------------------------------------
@@ -233,8 +235,8 @@ BEGIN
         (PATH_CODE,      -- 路径标识（08营销活动/09目标任务）
          DATA_DATE,      -- 数据日期
          DATA_BLNG,      -- 数据归属
-         STATIS_DIM,     -- 统计维度
-         STATIS_CALIB,   -- 统计口径
+         STATIS_CALIB,     -- 统计口径
+         STATIS_DIM,   -- 统计维度
          INDX_CODE,      -- 指标编码
          CURNT_VAL,      -- 当前值
          TERM_LAST_VAL,  -- 期初/上期值
@@ -247,20 +249,20 @@ BEGIN
                       '08'
                    ELSE
                       '09'
-               END AS STATIS_CALIB,                                               -- 口径：A→营销活动，否则→目标任务
-               SC.STATIS_DIM,                                                     -- 统计维度
+               END AS STATIS_DIM,                                               -- 维度：A→营销活动，否则→目标任务
+               SC.STATIS_CALIB,                                                     -- 统计口径
                SC.DATA_BLNG,                                                      -- 数据归属
                SC.PERSN_LEGAL_BK_CODE,                                            -- 法人机构编码
                SC.CUST_ID                                                         -- 目标客户ID
           FROM (SELECT DISTINCT S.PATH_CODE,                                      -- 仅0066目标客户，路径08去重
-                                S.STATIS_DIM,                                     -- 统计维度
+                                S.STATIS_CALIB,                                     -- 统计口径
                                 S.DATA_BLNG,                                      -- 数据归属
                                 S.PERSN_LEGAL_BK_CODE,                            -- 法人机构编码
                                 TI.CUST_ID                                        -- 目标客户ID
                   FROM TMP_STAT_INDX_SCOPE S                                      -- 目标客户范围表
-                  JOIN DWD_MKT_TSK_INFO TI ON TI.MKT_ACT_ID         = S.STATIS_DIM-- 营销任务：活动ID匹配
+                  JOIN CRM.MKT_TSK_INFO TI ON TI.MKT_ACT_ID         = S.STATIS_CALIB-- 营销任务：活动ID匹配
                                           AND TI.PERSN_LEGAL_BK_CODE = S.PERSN_LEGAL_BK_CODE   -- 法人机构匹配
-                                          AND TI.DATA_DATE           = V_SYSDAT   -- 跑批日快照
+                                          --AND TI.DATA_DATE           = V_SYSDAT   -- 跑批日快照
                                           AND ((S.BLNG_TYPE = 'O' AND             -- 归属O：按营销人员机构匹配
                                                 TI.MKT_PERSN_ORG = S.BLNG_ID) OR  -- 营销人员机构编码=归属机构（O分支）
                                                 (S.BLNG_TYPE = 'M' AND            -- 归属M：按营销人员匹配
@@ -269,7 +271,7 @@ BEGIN
                    AND S.INDX_CODE = 'INDX_0066'                                  -- 仅0066指标
                 UNION
                 SELECT DISTINCT S.PATH_CODE,   -- 0066目标客户，09机构路径去重
-                                S.STATIS_DIM,  -- 统计维度
+                                S.STATIS_CALIB,  -- 统计口径
                                 S.DATA_BLNG,   -- 数据归属
                                 S.PERSN_LEGAL_BK_CODE,   -- 法人机构编码
                                 LV.CUST_ID     -- 目标客户ID
@@ -282,7 +284,7 @@ BEGIN
                    AND S.INDX_CODE = 'INDX_0066'                                  -- 仅0066指标
                 UNION
                 SELECT DISTINCT S.PATH_CODE,   -- 0066目标客户，09管户路径去重
-                                S.STATIS_DIM,  -- 统计维度
+                                S.STATIS_CALIB,  -- 统计口径
                                 S.DATA_BLNG,   -- 数据归属
                                 S.PERSN_LEGAL_BK_CODE,   -- 法人机构编码
                                 CM.CUST_ID     -- 目标客户ID
@@ -297,59 +299,62 @@ BEGIN
      (
         /*                              -- 分母：期初基准(正常1/关注2账户)余额合计 --*/
         SELECT SC.PATH_CODE,            -- 路径标识
-               SC.STATIS_CALIB,         -- 统计口径
-               SC.STATIS_DIM,           -- 统计维度
+               SC.STATIS_DIM,         -- 统计维度
+               SC.STATIS_CALIB,           -- 统计口径
                SC.DATA_BLNG,            -- 数据归属
                SC.PERSN_LEGAL_BK_CODE,  -- 法人机构编码
                SUM(NVL(B.LOAN_BAL, 0)) AS BASE_AMT   -- 期初基准账户余额合计（分母）
           FROM SCOPE_CUST SC
           JOIN TMP_STAT_INDX_LOAN_BASE B ON B.PATH_CODE        = SC.PATH_CODE   -- 期初贷款基准表：路径匹配
-                                        AND B.STATIS_DIM       = SC.STATIS_DIM  -- 维度匹配
+                                        AND B.STATIS_CALIB       = SC.STATIS_CALIB  -- 口径匹配
                                         AND B.DATA_BLNG        = SC.DATA_BLNG   -- 数据归属匹配
                                         AND B.PERSN_LEGAL_BK_CODE = SC.PERSN_LEGAL_BK_CODE   -- 法人机构匹配
                                         AND B.CUST_ID          = SC.CUST_ID     -- 客户匹配
          GROUP BY SC.PATH_CODE,                                                 -- 按客户+维度聚合
-                  SC.STATIS_CALIB,
                   SC.STATIS_DIM,
+                  SC.STATIS_CALIB,
                   SC.DATA_BLNG,
                   SC.PERSN_LEGAL_BK_CODE),
      NUMER AS
      (
         /*                              -- 分子：期初基准账户中期末变不良(3/4/5)的当前余额合计 --*/
         SELECT SC.PATH_CODE,            -- 路径标识
-               SC.STATIS_CALIB,         -- 统计口径
-               SC.STATIS_DIM,           -- 统计维度
+               SC.STATIS_DIM,         -- 统计维度
+               SC.STATIS_CALIB,           -- 统计口径
                SC.DATA_BLNG,            -- 数据归属
                SC.PERSN_LEGAL_BK_CODE,  -- 法人机构编码
-               SUM(NVL(A.LOAN_BAL, 0)) AS BAD_AMT   -- 变不良账户当前余额合计（分子）
+               SUM(NVL(C.LOAN_BAL, 0)) AS BAD_AMT   -- 变不良客户当前余额合计（分子，v5.5余额源=ASSE_LIAB当日）
           FROM SCOPE_CUST SC
           JOIN TMP_STAT_INDX_LOAN_BASE B ON B.PATH_CODE        = SC.PATH_CODE    -- 期初贷款基准表：路径匹配
-                                        AND B.STATIS_DIM       = SC.STATIS_DIM   -- 维度匹配
+                                        AND B.STATIS_CALIB       = SC.STATIS_CALIB   -- 口径匹配
                                         AND B.DATA_BLNG        = SC.DATA_BLNG    -- 数据归属匹配
                                         AND B.PERSN_LEGAL_BK_CODE = SC.PERSN_LEGAL_BK_CODE   -- 法人机构匹配
                                         AND B.CUST_ID          = SC.CUST_ID      -- 客户匹配
-           JOIN DWS_CUST_CLASSFIVE A ON A.CUST_ID          = B.CUST_ID                 -- v5.3: 客户五级分类（按BASE_DATE匹配客户）
+           JOIN DWS_CUST_CLASSFIVE A ON A.CUST_ID          = B.CUST_ID                 -- v5.4: 客户五级分类（客户匹配）
                               AND A.PERSN_LEGAL_BK_CODE = B.PERSN_LEGAL_BK_CODE  -- 法人机构匹配
-                               AND A.DATA_DATE        = B.BASE_DATE               -- v5.3: 分类按基数基准日取
-                               AND A.DATA_DATE        = B.BASE_DATE               -- v5.3: 分类按基数基准日取
-                              AND A.CATE_5LVL IN ('3', '4', '5')                 -- 五级分类：3次级/4可疑/5损失（不良）
+                               AND A.DATA_DATE        = V_SYSDAT                  -- v5.4: 分子按跑批日当前分类取(基准日分类恒1/2,取BASE_DATE分子恒空)
+                              AND A.CLASS_FIVE IN ('3', '4', '5')                 -- 五级分类：3次级/4可疑/5损失（不良）
+            JOIN DWS_CUST_ASSE_LIAB C ON C.CUST_ID          = B.CUST_ID                 -- v5.5: 当前贷款余额（客户粒度）
+                                      AND C.PERSN_LEGAL_BK_CODE = B.PERSN_LEGAL_BK_CODE  -- 法人机构匹配
+                                      AND C.DATA_DATE        = V_SYSDAT                  -- 跑批日当日余额
+                                      AND C.BAL_TYPE         = '1'                       -- 类型1-余额
          GROUP BY SC.PATH_CODE,                                                  -- 按客户+维度聚合
-                  SC.STATIS_CALIB,
                   SC.STATIS_DIM,
+                  SC.STATIS_CALIB,
                   SC.DATA_BLNG,
                   SC.PERSN_LEGAL_BK_CODE)
     SELECT D.PATH_CODE,                                        -- 路径标识
            V_SYSDAT,                                           -- 数据日期
            D.DATA_BLNG,                                        -- 数据归属
-           D.STATIS_DIM,                                       -- 统计维度
-           D.STATIS_CALIB,                                     -- 统计口径
+           D.STATIS_CALIB,                                       -- 统计口径
+           D.STATIS_DIM,                                     -- 统计维度
            'INDX_0066',                                        -- 指标编码：个贷新形成不良贷款率
            ROUND(NVL(N.BAD_AMT, 0) * 100 / NULLIF(D.BASE_AMT, 0), 2),   -- 分子/分母*100（分母0置NULL）
            0,                                                  -- 期初/上期值（固定0）
            D.PERSN_LEGAL_BK_CODE                               -- 法人机构编码
       FROM DENOM D                                             -- 分母表
       LEFT JOIN NUMER N ON N.PATH_CODE         = D.PATH_CODE   -- 关联分子：路径匹配
-                       AND N.STATIS_DIM        = D.STATIS_DIM  -- 维度匹配
+                       AND N.STATIS_CALIB        = D.STATIS_CALIB  -- 口径匹配
                        AND N.DATA_BLNG         = D.DATA_BLNG   -- 数据归属匹配
                        AND N.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE;   -- 法人机构匹配
 

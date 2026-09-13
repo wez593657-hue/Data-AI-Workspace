@@ -6,6 +6,7 @@
 --   OUTCDE   OUT INTEGER     输出（处理行数/结果标志）
 -- 需求版本: 【待确认】（原文件中无需求版本/变更记录信息，版本号待需求方确认）
 -- 变更记录:
+--   2026-09-10 统计维度/统计口径内容互换：STATIS_DIM改存08/09路径编码、STATIS_CALIB改存活动号/任务号；单列表(范围/余额汇总/客户状态/贷款基数/代发基数等)STATIS_DIM列更名STATIS_CALIB
 --   - 2026-08-26 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   - 2026-08-25 行内注释补全与对齐（仅注释与格式优化，业务逻辑零改动）
 ------------------------------------------------------------------------
@@ -14,7 +15,7 @@ CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_004(
     outcde OUT INTEGER  -- 处理行数
 ) AS
     V_PRC_DESC VARCHAR2(100) := '指标数据统计步骤44处理完成 4';  -- 过程描述，用于日志
-    V_PRC_NAME VARCHAR2(32) := 'prc_ads_stat_indx_plan_004';   -- 过程名称，用于日志
+    V_PRC_NAME VARCHAR2(32) := 'PRC_ADS_STAT_INDX_PLAN_004';   -- 过程名称，用于日志
     V_LOG_MSG VARCHAR2(4000);                        -- 日志消息
     V_LOG_FLG INTEGER;                               -- 日志标志（0成功/-1失败）
     V_LOG_BUTTON INTEGER := 1;                       -- 日志按钮，1启用步骤日志
@@ -23,9 +24,7 @@ CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_004(
     V_END_DATE DATE;                                 -- 过程结束时间
     V_DURA_DATE INTEGER;                             -- 过程耗时（秒）
 BEGIN
-    V_NO_ID := '0';  -- 初始化日志序号
-    V_BGN_DATE := SYSDATE;   -- 记录过程开始时间
-    -------------------------------------------------------------------------
+
     -- 参数校验：跑批业务日期格式校验（必须为 8 位数字 YYYYMMDD）
     -------------------------------------------------------------------------
     IF v_sysdat IS NULL OR NOT REGEXP_LIKE(v_sysdat, '^[0-9]{8}$') THEN   -- 校验业务日期为非空8位数字
@@ -38,11 +37,14 @@ BEGIN
     -------------------------------------------------------------------------
     -- 营销活动路径（A）：理财产品/代销理财/贷款 0055/0056/0057/0058/0059/0060/0062
     -------------------------------------------------------------------------
+    V_NO_ID := '1';  -- 初始化日志序号
+    V_BGN_DATE := SYSDATE;   -- 记录过程开始时间
+    -------------------------------------------------------------------------    
     INSERT INTO TMP_STAT_INDX_AGGR_004 (
-        path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
+        path_code, data_date, data_blng, statis_calib, statis_dim,-- 路径, 数据日期, 归属机构, 统计口径, 统计维度
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT '08', v_sysdat, s.data_blng, s.statis_dim, '08', s.indx_code,                                                                                                       -- 路径08/数据日期/归属机构/统计维度/口径/指标编码
+    SELECT '08', v_sysdat, s.data_blng, s.statis_calib, '08', s.indx_code,                                                                                                       -- 路径08/数据日期/归属机构/统计口径/维度/指标编码
            CASE s.indx_code                                                                                                                                                     -- 按指标编码取当期增量
                WHEN 'INDX_0055' THEN SUM(CASE WHEN b.bal_type = '4' THEN NVL(b.fin_bal, 0) ELSE 0 END) - MAX(bs.base_yr_avg_fin)                                                -- 当年日均理财增量=当年日均理财-年度基数日均理财
                WHEN 'INDX_0056' THEN SUM(CASE WHEN b.bal_type = '2' THEN NVL(b.fin_bal, 0) ELSE 0 END) - MAX(bs.base_mth_avg_fin)                                               -- 当月日均理财增量=当月日均理财-月份基数日均理财
@@ -64,13 +66,13 @@ BEGIN
            s.persn_legal_bk_code                  -- 法人行号
       FROM TMP_STAT_INDX_SCOPE s                  -- 指标统计范围表（路径08源数据）
      INNER JOIN ADS_STAT_INDX_BASELINE_MEMBER d   -- 指标基数成员表
-        ON d.statis_calib        = '08'         -- 统计口径=营销活动
-       AND d.statis_dim          = s.statis_dim   -- 统计维度一致
+        ON d.statis_dim        = '08'         -- 统计维度=营销活动
+       AND d.statis_calib          = s.statis_calib   -- 统计口径一致
        AND d.data_blng           = s.data_blng    -- 归属机构一致
        AND d.persn_legal_bk_code = s.persn_legal_bk_code   -- 法人行号一致
      INNER JOIN ADS_STAT_INDX_BASELINE_SUM bs     -- 指标基数汇总表
-        ON bs.statis_calib        = '08'        -- 统计口径=营销活动
-       AND bs.statis_dim          = s.statis_dim  -- 统计维度一致
+        ON bs.statis_dim        = '08'        -- 统计维度=营销活动
+       AND bs.statis_calib          = s.statis_calib  -- 统计口径一致
        AND bs.indx_code           = s.indx_code   -- 指标编码一致
        AND bs.data_blng           = s.data_blng   -- 归属机构一致
        AND bs.persn_legal_bk_code = s.persn_legal_bk_code   -- 法人行号一致
@@ -85,16 +87,28 @@ BEGIN
        AND b.persn_legal_bk_code = d.persn_legal_bk_code                      -- 法人行号一致
      WHERE s.path_code = '08'                                                  -- 仅路径08
        AND s.indx_code IN ('INDX_0055','INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062')   -- 仅理财/贷款类指标
-     GROUP BY s.data_blng, s.statis_dim, s.indx_code, s.persn_legal_bk_code;  -- 按机构/维度/指标/法人行聚合
+     GROUP BY s.data_blng, s.statis_calib, s.indx_code, s.persn_legal_bk_code;  -- 按机构/口径/指标/法人行聚合
+  -------------------------------------------------------------------------
+    -- 提交事务并记录成功日志
+    -------------------------------------------------------------------------
+    COMMIT;                                                   -- 提交事务
+    V_END_DATE := SYSDATE;                                    -- 记录过程结束时间
+    V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 86400);  -- 计算过程耗时秒数
+    V_LOG_MSG := '步骤4处理完成，行数=' || NVL(outcde, 0);             -- 组装成功日志消息
+    V_LOG_FLG := 0;                                           -- 日志标志置成功
+    SYS_PRC_STEP_LOGS(v_sysdat, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);   -- 记录步骤日志
 
     -------------------------------------------------------------------------
     -- 目标任务路径（B）：理财产品/代销理财/贷款 0055/0056/0057/0058/0059/0060/0062
     -------------------------------------------------------------------------
+      V_NO_ID := '2';  -- 初始化日志序号
+    V_BGN_DATE := SYSDATE;   -- 记录过程开始时间
+    -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_AGGR_004 (
-        path_code, data_date, data_blng, statis_dim, statis_calib,-- 路径, 数据日期, 归属机构, 统计维度, 统计口径
+        path_code, data_date, data_blng, statis_calib, statis_dim,-- 路径, 数据日期, 归属机构, 统计口径, 统计维度
         indx_code, curnt_val, term_last_val, persn_legal_bk_code  -- 指标编码, 当期值, 上期值, 法人行号
     )
-    SELECT '09', v_sysdat, s.data_blng, s.statis_dim, '09', s.indx_code,                                                                                                       -- 路径09/数据日期/归属机构/统计维度/口径/指标编码
+    SELECT '09', v_sysdat, s.data_blng, s.statis_calib, '09', s.indx_code,                                                                                                       -- 路径09/数据日期/归属机构/统计口径/维度/指标编码
            CASE s.indx_code                                                                                                                                                     -- 按指标编码取当期增量
                WHEN 'INDX_0055' THEN SUM(CASE WHEN b.bal_type = '4' THEN NVL(b.fin_bal, 0) ELSE 0 END) - MAX(bs.base_yr_avg_fin)                                                -- 当年日均理财增量
                WHEN 'INDX_0056' THEN SUM(CASE WHEN b.bal_type = '2' THEN NVL(b.fin_bal, 0) ELSE 0 END) - MAX(bs.base_mth_avg_fin)                                               -- 当月日均理财增量
@@ -116,13 +130,13 @@ BEGIN
            s.persn_legal_bk_code                  -- 法人行号
       FROM TMP_STAT_INDX_SCOPE s                  -- 指标统计范围表（路径09源数据）
      INNER JOIN ADS_STAT_INDX_BASELINE_MEMBER d   -- 指标基数成员表
-        ON d.statis_calib        = '09'         -- 统计口径=目标任务
-       AND d.statis_dim          = s.statis_dim   -- 统计维度一致
+        ON d.statis_dim        = '09'         -- 统计维度=目标任务
+       AND d.statis_calib          = s.statis_calib   -- 统计口径一致
        AND d.data_blng           = s.data_blng    -- 归属机构一致
        AND d.persn_legal_bk_code = s.persn_legal_bk_code   -- 法人行号一致
      INNER JOIN ADS_STAT_INDX_BASELINE_SUM bs     -- 指标基数汇总表
-        ON bs.statis_calib        = '09'        -- 统计口径=目标任务
-       AND bs.statis_dim          = s.statis_dim  -- 统计维度一致
+        ON bs.statis_dim        = '09'        -- 统计维度=目标任务
+       AND bs.statis_calib          = s.statis_calib  -- 统计口径一致
        AND bs.indx_code           = s.indx_code   -- 指标编码一致
        AND bs.data_blng           = s.data_blng   -- 归属机构一致
        AND bs.persn_legal_bk_code = s.persn_legal_bk_code   -- 法人行号一致
@@ -137,7 +151,7 @@ BEGIN
        AND b.persn_legal_bk_code = d.persn_legal_bk_code                      -- 法人行号一致
      WHERE s.path_code = '09'                                                  -- 仅路径09
        AND s.indx_code IN ('INDX_0055','INDX_0056','INDX_0057','INDX_0058','INDX_0059','INDX_0060','INDX_0062')   -- 仅理财/贷款类指标
-     GROUP BY s.data_blng, s.statis_dim, s.indx_code, s.persn_legal_bk_code;  -- 按机构/维度/指标/法人行聚合
+     GROUP BY s.data_blng, s.statis_calib, s.indx_code, s.persn_legal_bk_code;  -- 按机构/口径/指标/法人行聚合
 
     outcde := SQL%ROWCOUNT;  -- 返回最近DML影响行数
     -------------------------------------------------------------------------

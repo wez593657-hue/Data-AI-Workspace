@@ -6,8 +6,12 @@
 --   OUTCDE   OUT INTEGER    输出（写入行数）
 -- 需求版本: 【待确认】（原文件无头部版本信息，版本号待需求方确认）
 -- 变更记录:
+--   2026-09-10 统计维度/统计口径内容互换：STATIS_DIM改存08/09路径编码、STATIS_CALIB改存活动号/任务号；单列表(范围/余额汇总/客户状态/贷款基数/代发基数等)STATIS_DIM列更名STATIS_CALIB
 --   - 2026-08-26 路径编码A/B改为08/09（营销任务=08，目标任务=09），statis_calib同步编号，PATH_CODE类型扩VARCHAR(2)
 --   - 2026-09-02 基数口径拆分v2.4：scope装载增加NOT EXISTS幂等防重（修复主键不含TERM_BEGIN_DATE、进行中对象多日跑批裸INSERT导致的主键冲突）
+--   - 2026-09-02 复核修复：修正"顺延31天"备注错误（sys_fun_deal_date参数31=次日，实际为次日窗口，代码行为未变）
+--   - 2026-09-02 清理机制v2.4.2：scope装载改段首全量刷新（写者自清规则）——错误数据次日自愈、已结束对象自然清除；NOT EXISTS幂等防重随全量刷新过时删除；plan_002冻结后清除scope明日对象的既有语义不变
+--   - 2026-09-10 归属值去前缀：data_blng不再拼接ORG_/MGR_前缀（O型=机构编码裸值，M型=客户经理编码裸值，类型区分依赖blng_type/blng_id）；plan_010机构树上卷改用DWD_SYS_ORG成员判断
 --   - 2026-08-25 行内注释补全与对齐（仅注释与格式优化，业务逻辑零改动）
 ------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE crmdm.prc_ads_stat_indx_plan_001(
@@ -39,36 +43,47 @@ BEGIN
     -------------------------------------------------------------------------
     -- 初始化日期边界
     -------------------------------------------------------------------------
-    V_NEXT_DAY := sys_fun_deal_date(v_sysdat, 31);  -- 计算顺延31天后日期（活动范围判断基准）
+    V_NEXT_DAY := sys_fun_deal_date(v_sysdat, 31);  -- 计算次日日期（活动/任务开始日；sys_fun_deal_date参数31=次日）
+
+    -------------------------------------------------------------------------
+    -- 段首全量刷新（写者自清）：scope 每日重建
+    --   1) 错误数据自愈：首跑装载的错误行次日随重建修正（NOT EXISTS 防重只防重复不纠错）
+    --   2) 已结束对象自然清除：不再满足装载条件的行随重建消失
+    --   3) plan_002 冻结后清除 scope 明日对象（维持现状）的既有语义不受影响
+    -------------------------------------------------------------------------
+    DELETE FROM TMP_STAT_INDX_SCOPE;
 
     -------------------------------------------------------------------------
     -- 路径08：营销活动范围写入
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_SCOPE (
-        path_code, statis_dim, indx_code, data_blng,  -- 路径编码, 统计维度, 指标编码, 归属机构
+        path_code, statis_calib, indx_code, data_blng,  -- 路径编码, 统计口径, 指标编码, 归属机构
         blng_type, blng_id, term_begin_date, persn_legal_bk_code   -- 归属类型(O机构/M客户经理), 归属ID, 期间开始日, 法人行号
     )
-    SELECT x.path_code, x.statis_dim, x.indx_code, x.data_blng,  -- 路径编码, 统计维度, 指标编码, 数据归属
+    SELECT x.path_code, x.statis_calib, x.indx_code, x.data_blng,  -- 路径编码, 统计口径, 指标编码, 数据归属
            x.blng_type, x.blng_id, x.term_begin_date, x.persn_legal_bk_code   -- 归属类型(O机构/M客户经理), 归属ID, 期间开始日, 法人行号
-      FROM (                                                  -- 包装原查询用于幂等防重
+      FROM (                                                  -- 全量刷新模式（v2.4.2）：scope 每日重建
     SELECT DISTINCT
-           '08'                          AS path_code,        -- 路径08：营销活动口径
-           a.mkt_act_id                 AS statis_dim,       -- 统计维度=营销活动ID
+           '08'                          AS path_code,        -- 路径08：营销活动维度
+           a.mkt_act_id                 AS statis_calib,       -- 统计口径=营销活动ID
            t.indx_id                    AS indx_code,        -- 统计指标编码
-           'ORG_' || ti.mkt_persn_org   AS data_blng,        -- 归属机构=客户经理所属机构加前缀
+           ti.mkt_persn_org           AS data_blng,        -- 归属机构=客户经理所属机构
            'O'                          AS blng_type,        -- 归属类型：机构维度
            ti.mkt_persn_org             AS blng_id,          -- 归属ID=客户经理所属机构
            a.act_bgn_date               AS term_begin_date,  -- 指标期间开始日期=活动开始日期
            ti.persn_legal_bk_code       AS persn_legal_bk_code   -- 法人机构行号
-      FROM DWD_MKT_ACT_INFO a                        -- 营销活动信息表
-     INNER JOIN DWD_MKT_ACT_TARGT t                  -- 营销活动目标表
+      FROM CRM.MKT_ACT_INFO a                        -- 营销活动信息表
+     INNER JOIN CRM.MKT_ACT_TARGT t                  -- 营销活动目标表
         ON t.mkt_act_id = a.mkt_act_id               -- 按活动ID关联
-     INNER JOIN DWD_MKT_TSK_INFO ti                  -- 营销任务信息表
+     INNER JOIN CRM.MKT_TSK_INFO ti                  -- 营销任务信息表
         ON ti.mkt_act_id          = a.mkt_act_id     -- 按活动ID关联任务
-       AND ti.mkt_persn_org       = t.prtspt_org     -- 任务机构=目标参与机构
+       --AND ti.mkt_persn_org       = t.prtspt_org     -- 任务机构=目标参与机构
        AND ti.persn_legal_bk_code = a.persn_legal_bk_code    -- 法人行号一致
-       AND ti.data_date           = v_sysdat         -- 任务数据日期=跑批日期
-     WHERE a.act_bgn_date                      <= V_NEXT_DAY -- 活动开始日在顺延31天范围内
+       --AND ti.data_date           = v_sysdat         -- 任务数据日期=跑批日期
+     INNER JOIN CRM.MKT_ACT_ORG_REL TR 
+         on TR.MKT_ACT_ID = a.mkt_act_id
+         and TR.PRTSPT_ORG = ti.mkt_persn_org  
+     WHERE a.act_bgn_date                      <= V_NEXT_DAY -- 活动开始日不晚于次日（含明日开始的冻结窗口）
        AND NVL(a.statis_stop_date, '99991231') >= v_sysdat   -- 统计截止日未结束或晚于跑批日
        AND a.camp_act_typ IN ('1', '2')              -- 活动类型仅取1/2（营销活动口径）
        AND ti.mkt_persn_org IS NOT NULL              -- 所属机构非空
@@ -77,54 +92,50 @@ BEGIN
 
     SELECT DISTINCT
            '08', a.mkt_act_id, t.indx_id,                   -- 路径08/活动ID/指标编码
-           'MGR_' || ti.mkt_persn, 'M', ti.mkt_persn,      -- 归属机构加MGR_前缀, 归属类型=客户经理, 归属ID=客户经理
+           ti.mkt_persn, 'M', ti.mkt_persn,                 -- 归属=客户经理, 归属类型=客户经理, 归属ID=客户经理
            a.act_bgn_date, ti.persn_legal_bk_code          -- 期间开始日, 法人行号
-      FROM DWD_MKT_ACT_INFO a                              -- 营销活动信息表
-     INNER JOIN DWD_MKT_ACT_TARGT t                        -- 营销活动目标表
+      FROM CRM.MKT_ACT_INFO a                              -- 营销活动信息表
+     INNER JOIN CRM.MKT_ACT_TARGT t                        -- 营销活动目标表
         ON t.mkt_act_id = a.mkt_act_id                     -- 按活动ID关联
-     INNER JOIN DWD_MKT_TSK_INFO ti                        -- 营销任务信息表
+     INNER JOIN CRM.MKT_TSK_INFO ti                        -- 营销任务信息表
         ON ti.mkt_act_id          = a.mkt_act_id           -- 按活动ID关联任务
-       AND ti.mkt_persn_org       = t.prtspt_org           -- 任务机构=目标参与机构
+       --AND ti.mkt_persn_org       = t.prtspt_org           -- 任务机构=目标参与机构
        AND ti.persn_legal_bk_code = a.persn_legal_bk_code  -- 法人行号一致
-       AND ti.data_date           = v_sysdat               -- 任务数据日期=跑批日期
-     WHERE a.act_bgn_date                      <= V_NEXT_DAY   -- 活动开始日在顺延31天范围内
+       --AND ti.data_date           = v_sysdat               -- 任务数据日期=跑批日期
+      INNER JOIN CRM.MKT_ACT_ORG_REL TR 
+         on TR.MKT_ACT_ID = a.mkt_act_id
+         and TR.PRTSPT_ORG = ti.mkt_persn_org  
+     WHERE a.act_bgn_date                      <= V_NEXT_DAY   -- 活动开始日不晚于次日（含明日开始的冻结窗口）
        AND NVL(a.statis_stop_date, '99991231') >= v_sysdat -- 统计截止日未结束或晚于跑批日
        AND a.camp_act_typ IN ('1', '2')                    -- 活动类型仅取1/2
        AND ti.mkt_persn IS NOT NULL                       -- 客户经理非空
-    ) x
-     WHERE NOT EXISTS (                                       -- 幂等防重(v2.4)：scope主键已存在则跳过
-         SELECT 1 FROM TMP_STAT_INDX_SCOPE e                   -- 指标范围临时表
-          WHERE e.path_code           = x.path_code            -- 路径一致
-            AND e.statis_dim          = x.statis_dim           -- 统计维度一致
-            AND e.indx_code           = x.indx_code            -- 指标编码一致
-            AND e.data_blng           = x.data_blng            -- 数据归属一致
-            AND e.persn_legal_bk_code = x.persn_legal_bk_code);-- 法人行号一致
+    ) x;
 
     -------------------------------------------------------------------------
     -- 路径09：目标任务范围写入
     -------------------------------------------------------------------------
     INSERT INTO TMP_STAT_INDX_SCOPE (
-        path_code, statis_dim, indx_code, data_blng,  -- 路径编码, 统计维度, 指标编码, 归属机构
+        path_code, statis_calib, indx_code, data_blng,  -- 路径编码, 统计口径, 指标编码, 归属机构
         blng_type, blng_id, term_begin_date, persn_legal_bk_code   -- 归属类型, 归属ID, 期间开始日, 法人行号
     )
-    SELECT x.path_code, x.statis_dim, x.indx_code, x.data_blng,   -- 路径编码, 统计维度, 指标编码, 数据归属
+    SELECT x.path_code, x.statis_calib, x.indx_code, x.data_blng,   -- 路径编码, 统计口径, 指标编码, 数据归属
            x.blng_type, x.blng_id, x.term_begin_date, x.persn_legal_bk_code   -- 归属类型, 归属ID, 期间开始日, 法人行号
-      FROM (                                                  -- 包装原查询用于幂等防重
+      FROM (                                                  -- 全量刷新模式（v2.4.2）：scope 每日重建
     SELECT DISTINCT
-           '09'                          AS path_code,         -- 路径09：目标任务口径
-           it.tsk_id                    AS statis_dim,        -- 统计维度=目标任务ID
+           '09'                          AS path_code,         -- 路径09：目标任务维度
+           it.tsk_id                    AS statis_calib,        -- 统计口径=目标任务ID
            sub.indx_id                  AS indx_code,         -- 统计指标编码
-           'ORG_' || it.rsv_obj_id      AS data_blng,         -- 归属机构=预留对象ID加前缀
+           it.rsv_obj_id               AS data_blng,         -- 归属机构=预留对象ID
            'O'                          AS blng_type,         -- 归属类型：机构维度
            it.rsv_obj_id                AS blng_id,           -- 归属ID=预留对象ID
            sub.tsk_bgn_date             AS term_begin_date,   -- 指标期间开始日=任务开始日
            it.persn_legal_bk_code       AS persn_legal_bk_code-- 法人机构行号
-      FROM DWD_MKT_INDX_TSK it                       -- 指标任务表
-     INNER JOIN DWD_MKT_TSK_INDX_SUB sub             -- 任务指标子表
+      FROM CRM.MKT_INDX_TSK it                       -- 指标任务表
+     INNER JOIN CRM.MKT_TSK_INDX_SUB sub             -- 任务指标子表
         ON sub.tsk_id              = it.tsk_id       -- 按任务ID关联
        AND sub.persn_legal_bk_code = it.persn_legal_bk_code   -- 法人行号一致
      WHERE it.rsv_obj                            = '0'        -- 预留对象类型0=机构
-       AND sub.tsk_bgn_date                      <= V_NEXT_DAY-- 任务开始日在顺延31天范围内
+       AND sub.tsk_bgn_date                      <= V_NEXT_DAY-- 任务开始日不晚于次日（含明日开始）
        AND NVL(sub.tsk_end_date, '99991231')     >= v_sysdat  -- 任务结束日未结束或晚于跑批日
 
     UNION
@@ -133,26 +144,19 @@ BEGIN
            '09',                                -- 路径09
            it.tsk_id,                          -- 任务ID
            sub.indx_id,                        -- 指标编码
-           'MGR_' || it.rsv_obj_id, 
+           it.rsv_obj_id, 
            'M', 
-           it.rsv_obj_id,        -- 归属机构加MGR_前缀, 归属类型=客户经理, 归属ID=预留对象ID
+           it.rsv_obj_id,        -- 归属=预留对象ID, 归属类型=客户经理, 归属ID=预留对象ID
            sub.tsk_bgn_date, 
            it.persn_legal_bk_code            -- 期间开始日, 法人行号
-      FROM DWD_MKT_INDX_TSK it         -- 指标任务表
-     INNER JOIN DWD_MKT_TSK_INDX_SUB sub                       -- 任务指标子表
+      FROM CRM.MKT_INDX_TSK it         -- 指标任务表
+     INNER JOIN CRM.MKT_TSK_INDX_SUB sub                       -- 任务指标子表
         ON sub.tsk_id              = it.tsk_id                 -- 按任务ID关联
        AND sub.persn_legal_bk_code = it.persn_legal_bk_code    -- 法人行号一致
      WHERE it.rsv_obj                            = '1'         -- 预留对象类型1=客户经理
-       AND sub.tsk_bgn_date                      <= V_NEXT_DAY -- 任务开始日在顺延31天范围内
+       AND sub.tsk_bgn_date                      <= V_NEXT_DAY -- 任务开始日不晚于次日（含明日开始）
        AND NVL(sub.tsk_end_date, '99991231')     >= v_sysdat  -- 任务结束日未结束或晚于跑批日
-    ) x
-     WHERE NOT EXISTS (                                       -- 幂等防重(v2.4)：scope主键已存在则跳过
-         SELECT 1 FROM TMP_STAT_INDX_SCOPE e                   -- 指标范围临时表
-          WHERE e.path_code           = x.path_code            -- 路径一致
-            AND e.statis_dim          = x.statis_dim           -- 统计维度一致
-            AND e.indx_code           = x.indx_code            -- 指标编码一致
-            AND e.data_blng           = x.data_blng            -- 数据归属一致
-            AND e.persn_legal_bk_code = x.persn_legal_bk_code);-- 法人行号一致
+    ) x;
 
     -------------------------------------------------------------------------
     -- 提交与执行日志记录
