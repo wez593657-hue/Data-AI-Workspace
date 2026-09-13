@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ybt_ybt_policy_insurance_info;
 
+DROP TABLE crmdm.ybt_ybt_policy_insurance_info;
 CREATE TABLE crmdm.ybt_ybt_policy_insurance_info (
 	plat_policy_serial varchar(200) NOT NULL, -- 保单平台流水号
 	item_id varchar(40) NOT NULL, -- 中间业务缴费项目编号

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_customer_realty;
 
+DROP TABLE crmdm.cms_customer_realty;
 CREATE TABLE crmdm.cms_customer_realty (
 	customerid varchar(40) NOT NULL, -- 客户编号
 	serialno varchar(32) NOT NULL, -- 流水号

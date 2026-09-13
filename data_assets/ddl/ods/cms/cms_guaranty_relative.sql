@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_guaranty_relative;
 
+DROP TABLE crmdm.cms_guaranty_relative;
 CREATE TABLE crmdm.cms_guaranty_relative (
 	objecttype varchar(30) NOT NULL, -- 担保关联对象类型
 	objectno varchar(40) NOT NULL, -- 担保关联对象编号

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kbrp_gxdyii;
 
+DROP TABLE crmdm.cbs_kbrp_gxdyii;
 CREATE TABLE crmdm.cbs_kbrp_gxdyii (
 	farendma varchar(4) NOT NULL, -- 法人代码
 	guanxizl varchar(2) NOT NULL, -- 关系种类

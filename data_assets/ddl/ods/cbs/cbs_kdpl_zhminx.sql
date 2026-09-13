@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kdpl_zhminx;
 
+DROP TABLE crmdm.cbs_kdpl_zhminx;
 CREATE TABLE crmdm.cbs_kdpl_zhminx (
 	farendma varchar(4) NOT NULL, -- FARENDMA
 	zhanghao varchar(40) NOT NULL, -- ZHANGHAO

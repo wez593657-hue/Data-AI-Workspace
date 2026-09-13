@@ -11,7 +11,8 @@
 --                       (data_assets/ddl/ads/ads_new_cust_kyc.sql)，新增KYC_COMPL_RATE率值
 -- ============================================================
 
-CREATE TABLE IF NOT EXISTS TMP_ADS_NEW_CUST_BASE (
+DROP TABLE TMP_ADS_NEW_CUST_BASE;
+CREATE TABLE TMP_ADS_NEW_CUST_BASE (
     PERSN_LEGAL_BK_CODE   VARCHAR2(4),       -- 法人行号
     CUST_ID               VARCHAR2(20),      -- 客户编号
     CUST_NAME             VARCHAR2(100),     -- 客户姓名

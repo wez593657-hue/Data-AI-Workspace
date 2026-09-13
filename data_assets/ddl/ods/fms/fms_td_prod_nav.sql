@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_td_prod_nav;
 
+DROP TABLE crmdm.fms_td_prod_nav;
 CREATE TABLE crmdm.fms_td_prod_nav (
 	tano varchar(16) NOT NULL, -- TA代码
 	prod_code varchar(32) NOT NULL, -- 产品代码

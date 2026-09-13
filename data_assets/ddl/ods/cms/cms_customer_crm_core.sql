@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_customer_crm_core;
 
+DROP TABLE crmdm.cms_customer_crm_core;
 CREATE TABLE crmdm.cms_customer_crm_core (
 	customerid varchar(32) NULL, -- 客户编号
 	customeridcore varchar(32) NULL, -- 核心客户号

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_t1_cust_fnc_acct;
 
+DROP TABLE crmdm.fms_t1_cust_fnc_acct;
 CREATE TABLE crmdm.fms_t1_cust_fnc_acct (
 	fnc_trans_acct_no varchar(17) NULL, -- 理财交易账号
 	cust_no varchar(20) NULL, -- 客户号

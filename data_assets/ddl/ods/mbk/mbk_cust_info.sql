@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.mbk_cust_info;
 
+DROP TABLE crmdm.mbk_cust_info;
 CREATE TABLE crmdm.mbk_cust_info (
 	cust_no varchar(32) NOT NULL, -- 客户号
 	cert_id varchar(64) NULL, -- 证书ID

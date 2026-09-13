@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_funds_data;
 
+DROP TABLE crmdm.cms_funds_data;
 CREATE TABLE crmdm.cms_funds_data (
 	serialno varchar(32) NOT NULL, -- 流水号
 	xingming varchar(120) NULL, -- 客户姓名

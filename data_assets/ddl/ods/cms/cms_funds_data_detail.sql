@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_funds_data_detail;
 
+DROP TABLE crmdm.cms_funds_data_detail;
 CREATE TABLE crmdm.cms_funds_data_detail (
 	serialno varchar(32) NOT NULL, -- 流水号
 	relativeserialno varchar(32) NOT NULL, -- 关联流水号

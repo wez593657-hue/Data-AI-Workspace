@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_business_approve;
 
+DROP TABLE crmdm.cms_business_approve;
 CREATE TABLE crmdm.cms_business_approve (
 	serialno varchar(32) NOT NULL, -- 流水号字段
 	relativeserialno varchar(40) NULL, -- 关联流水号字段

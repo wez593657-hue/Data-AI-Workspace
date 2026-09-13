@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kdpf_lilvdy;
 
+DROP TABLE crmdm.cbs_kdpf_lilvdy;
 CREATE TABLE crmdm.cbs_kdpf_lilvdy (
 	farendma varchar(4) NOT NULL, -- 法人行号
 	chapbhao varchar(100) NOT NULL, -- 产品编号

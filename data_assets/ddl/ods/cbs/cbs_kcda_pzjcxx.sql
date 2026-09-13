@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kcda_pzjcxx;
 
+DROP TABLE crmdm.cbs_kcda_pzjcxx;
 CREATE TABLE crmdm.cbs_kcda_pzjcxx (
 	farendma varchar(4) NOT NULL, -- 法人代码
 	kahaoooo varchar(35) NOT NULL, -- 卡号

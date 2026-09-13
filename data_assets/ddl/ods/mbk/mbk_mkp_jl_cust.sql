@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.mbk_mkp_jl_cust;
 
+DROP TABLE crmdm.mbk_mkp_jl_cust;
 CREATE TABLE crmdm.mbk_mkp_jl_cust (
 	ecif_no varchar(16) NOT NULL, -- 核心客户号
 	user_id varchar(64) NOT NULL, -- 权益用户号

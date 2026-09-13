@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kbrp_jggxii;
 
+DROP TABLE crmdm.cbs_kbrp_jggxii;
 CREATE TABLE crmdm.cbs_kbrp_jggxii (
 	farendma varchar(4) NOT NULL, -- 法人代码
 	jigouhao varchar(10) NOT NULL, -- 机构号

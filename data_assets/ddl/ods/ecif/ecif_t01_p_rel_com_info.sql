@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ecif_t01_p_rel_com_info;
 
+DROP TABLE crmdm.ecif_t01_p_rel_com_info;
 CREATE TABLE crmdm.ecif_t01_p_rel_com_info (
 	relation_id bpchar(20) NOT NULL, -- 关系人ID
 	cert_expd_date sys."date" NULL, -- 证件到期日期

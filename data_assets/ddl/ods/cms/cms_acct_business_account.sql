@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_acct_business_account;
 
+DROP TABLE crmdm.cms_acct_business_account;
 CREATE TABLE crmdm.cms_acct_business_account (
 	serialno varchar(40) NOT NULL, -- 流水号
 	objecttype varchar(40) NULL, -- 对象类型

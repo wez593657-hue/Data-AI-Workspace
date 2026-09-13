@@ -10,6 +10,7 @@
 
 -- DROP TABLE crmdm.dwd_tmp_jigou_path;
 
+DROP TABLE crmdm.dwd_tmp_jigou_path;
 CREATE TABLE crmdm.dwd_tmp_jigou_path (
     org_id varchar(7) NULL,
     sup_org_id varchar(7) NULL,

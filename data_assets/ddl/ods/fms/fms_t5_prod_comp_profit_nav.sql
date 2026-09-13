@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_t5_prod_comp_profit_nav;
 
+DROP TABLE crmdm.fms_t5_prod_comp_profit_nav;
 CREATE TABLE crmdm.fms_t5_prod_comp_profit_nav (
 	prod_code varchar(32) NOT NULL, -- 产品代码
 	benchmarks numeric(7, 4) NULL, -- 业绩比较基准

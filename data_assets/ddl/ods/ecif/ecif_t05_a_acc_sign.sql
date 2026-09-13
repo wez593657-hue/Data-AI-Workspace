@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ecif_t05_a_acc_sign;
 
+DROP TABLE crmdm.ecif_t05_a_acc_sign;
 CREATE TABLE crmdm.ecif_t05_a_acc_sign (
 	acc_sign_id bpchar(20) NOT NULL, -- 账户签约ID
 	sign_prd_2 varchar(200) NULL, -- 签约产品2

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_t4_cust_risk_assess_info;
 
+DROP TABLE crmdm.fms_t4_cust_risk_assess_info;
 CREATE TABLE crmdm.fms_t4_cust_risk_assess_info (
 	host_cust_no varchar(32) NULL, -- 主机客户号
 	cust_no varchar(20) NULL, -- 客户号

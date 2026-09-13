@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cds_tb_cash_acct_info;
 
+DROP TABLE crmdm.cds_tb_cash_acct_info;
 CREATE TABLE crmdm.cds_tb_cash_acct_info (
 	cash_acct_no varchar(32) NOT NULL, -- 虚拟账户编号
 	fnc_trans_acct_no bpchar(17) NOT NULL, -- 理财交易账号

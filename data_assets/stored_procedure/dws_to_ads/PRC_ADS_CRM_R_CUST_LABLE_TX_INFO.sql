@@ -12,6 +12,7 @@ AS
   -- 适配数据库: Kingbase Oracle 兼容模式
   -- 需求版本: v1.4.0
   -- 变更记录:
+  --   v1.4.1 【日期待确认】3.1–3.7各子逻辑段补充独立日志段（段号+COMMIT+SYS_PRC_STEP_LOGS），删除TMP2汇总日志
   --   v1.4.0 2026-08-14 日期参数补充：新增sys_fun_deal_date code=30（6月前的前一天，近6月窗口滚动清理边界）
   --   v1.3.2 2026-08-04 F-01:修复TMP_02/TMP_03 SELECT列顺序与INSERT不一致导致PERSN_LEGAL_BK_CODE与CUST_ID交叉写入；
   --                        F-02:补充TMP_02/TMP_03近1月窗口上界TX_DATE<=V_SYSDAT；
@@ -70,7 +71,7 @@ BEGIN
   V_NO_ID := 'TMP1';
   V_BGN_DATE := SYSDATE;
 
-  TRUNC_TMP('ADS_CRM_R_CUST_LABLE');
+  TRUNC_TMP('ADS_CRM_R_CUST_LABLE_TX_INFO');
   TRUNC_TMP('TMP_ADS_CRM_CUST_LABLE_01');
   TRUNC_TMP('TMP_ADS_CRM_CUST_LABLE_02');
   TRUNC_TMP('TMP_ADS_CRM_CUST_LABLE_03');
@@ -91,12 +92,12 @@ BEGIN
   );
 
   ------------------------------------------------------------------
-  -- 3. TMP2：各段独立建临时表
+  -- 3. 各段独立建临时表（3.1–3.7，每段独立提交并记日志）
   ------------------------------------------------------------------
-  V_NO_ID := 'TMP2';
+  -- 3.1 基础客户列表
+  V_NO_ID := '3.1';
   V_BGN_DATE := SYSDATE;
 
-  -- 3.1 基础客户列表
   INSERT INTO TMP_ADS_CRM_CUST_LABLE_01 (
       PERSN_LEGAL_BK_CODE,
       CUST_ID
@@ -105,7 +106,24 @@ BEGIN
          CUST_ID
     FROM DWD_CUST_INDV_INFO;
 
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '3.1 完成：基础客户列表写入临时表01';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+      V_BGN_DATE, V_END_DATE, V_DURA_DATE,
+      V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON
+  );
+
   -- 3.2 近1月交易汇总（主动动账：JIOYCFFS='0'）
+  V_NO_ID := '3.2';
+  V_BGN_DATE := SYSDATE;
+
   INSERT INTO TMP_ADS_CRM_CUST_LABLE_02 (
       PERSN_LEGAL_BK_CODE,
       CUST_ID,
@@ -123,33 +141,91 @@ BEGIN
      AND CHONGZBZ = '0' --要未冲正的数据
    GROUP BY PERSN_LEGAL_BK_CODE, CUST_ID;
 
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '3.2 完成：近1月交易汇总写入临时表02';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+      V_BGN_DATE, V_END_DATE, V_DURA_DATE,
+      V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON
+  );
+
   -- 3.3 近1月第三方支付交易（网联渠道）
-  INSERT INTO TMP_ADS_CRM_CUST_LABLE_03 (
-      PERSN_LEGAL_BK_CODE,
-      CUST_ID,
-      NEAR_MTH_THIRD_PAY_OUT_CNT,
-      NEAR_MTH_THIRD_PAY_OUT_AMT
-  )
-WITH txt AS (
-    SELECT PYER_ACCT_NO AS card_no, SYS_DATE, TRX_AMT_D
-    FROM ECPP_E_TXN_COLLECTION
-    WHERE TRX_STATUS IN ('00','03')
-      AND REPLACE(SYS_DATE,'_','') BETWEEN V_ONE_MONTH_AGO AND V_SYSDAT
-    UNION ALL
-    SELECT PYER_ACCT_NO_DE, SYS_DATE, TRX_AMT_D
-    FROM ECPP_E_TXN_PAYMENT
-    WHERE REPLACE(SYS_DATE,'_','') BETWEEN V_ONE_MONTH_AGO AND V_SYSDAT
+  V_NO_ID := '3.3';
+  V_BGN_DATE := SYSDATE;
+
+INSERT INTO TMP_ADS_CRM_CUST_LABLE_03 (
+    PERSN_LEGAL_BK_CODE,
+    CUST_ID,
+    NEAR_MTH_THIRD_PAY_OUT_CNT,
+    NEAR_MTH_THIRD_PAY_OUT_AMT
 )
-SELECT B.PERSN_LEGAL_BK_CODE, B.CUST_ID,
-       COUNT(1) AS txn_cnt,
-       SUM(A.TRX_AMT_D) AS total_amt
-FROM txt A
-INNER JOIN (SELECT DISTINCT CUST_ID, CARD_NO, PERSN_LEGAL_BK_CODE FROM DWD_ACCT_DEPO) B
-   ON A.card_no = B.CARD_NO
-GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
+WITH 
+-- 1. 按卡号预聚合收集表（过滤日期，避免REPLACE在关联后重复计算）
+agg_collect AS (
+    SELECT PYER_ACCT_NO AS card_no,
+           COUNT(1) AS cnt,
+           SUM(TRX_AMT_D) AS amt
+      FROM ECPP_E_TXN_COLLECTION
+     WHERE TRX_STATUS IN ('00','03')
+       AND REPLACE(SYS_DATE,'_','') BETWEEN V_ONE_MONTH_AGO AND V_SYSDAT
+     GROUP BY PYER_ACCT_NO
+),
+-- 2. 按卡号预聚合支付表
+agg_payment AS (
+    SELECT PYER_ACCT_NO_DE AS card_no,
+           COUNT(1) AS cnt,
+           SUM(TRX_AMT_D) AS amt
+      FROM ECPP_E_TXN_PAYMENT
+     WHERE REPLACE(SYS_DATE,'_','') BETWEEN V_ONE_MONTH_AGO AND V_SYSDAT
+     GROUP BY PYER_ACCT_NO_DE
+),
+-- 3. 合并两个预聚合结果并汇总（按卡号）
+agg_total AS (
+    SELECT card_no, SUM(cnt) AS total_cnt, SUM(amt) AS total_amt
+      FROM (SELECT card_no, cnt, amt FROM agg_collect
+            UNION ALL
+            SELECT card_no, cnt, amt FROM agg_payment) t
+     GROUP BY card_no
+),
+-- 4. 账户去重（若CARD_NO唯一，可直接用DISTINCT，但可能重复，建议取最新一条）
+account_map AS (
+    SELECT DISTINCT CUST_ID, CARD_NO, PERSN_LEGAL_BK_CODE
+      FROM DWD_ACCT_DEPO
+     WHERE CARD_NO IS NOT NULL
+)
+-- 5. 关联并最终聚合（按客户，因为可能存在多个卡号对应同一客户）
+SELECT b.PERSN_LEGAL_BK_CODE,
+       b.CUST_ID,
+       SUM(a.total_cnt) AS NEAR_MTH_THIRD_PAY_OUT_CNT,
+       SUM(a.total_amt) AS NEAR_MTH_THIRD_PAY_OUT_AMT
+  FROM agg_total a
+  JOIN account_map b ON a.card_no = b.CARD_NO
+ GROUP BY b.PERSN_LEGAL_BK_CODE, b.CUST_ID;
+
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '3.3 完成：近1月第三方支付交易写入临时表03';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+      V_BGN_DATE, V_END_DATE, V_DURA_DATE,
+      V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON
+  );
 
   -- 3.4 是否向他行同名户规律转出
   -- 口径：近半年每月至少向他行同名账户转账一笔
+  V_NO_ID := '3.4';
+  V_BGN_DATE := SYSDATE;
 
  --将每天数据导入中间表
  DELETE FROM TMP_ADS_CRM_CUST_LABLE_04_01 WHERE TX_DATE = V_SIX_MONTH_AGO_AGO; --删除6个月前的前一天数据
@@ -159,8 +235,9 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
       CUST_ID,
       TX_DATE
 )
-   SELECT a.CUST_ID,
+   SELECT 
                 a.PERSN_LEGAL_BK_CODE,
+                a.CUST_ID,
                 a.TX_DATE
            FROM DWD_TX_ASET a
           WHERE a.TX_DATE = V_SYSDAT 
@@ -170,7 +247,7 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
             AND A.XIANZZBZ = '1'		--现转标志(0-现金,1-转账)
             AND INSTR(a.OPNT_ACCT_NAME_FST, A.CUST_NAME) > 0
             AND a.OPNT_BK_KEEP NOT IN (SELECT ORG_ID FROM DWD_SYS_ORG) --
-          GROUP BY a.CUST_ID, a.PERSN_LEGAL_BK_CODE, a.TX_DATE;
+          GROUP BY  a.PERSN_LEGAL_BK_CODE, a.CUST_ID,a.TX_DATE;
 
 --从中间表取近半年每月至少向他行同名账户转账一笔
    INSERT INTO TMP_ADS_CRM_CUST_LABLE_04 (
@@ -178,48 +255,86 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
       CUST_ID,
       IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME
   )
-  SELECT CUST_ID,
-         PERSN_LEGAL_BK_CODE,
-         CASE WHEN COUNT(DISTINCT SUBSTR(a.TX_DATE, 1, 6)) >= 6 THEN '1' ELSE '0' END AS RGLAR_FLAG
+  SELECT PERSN_LEGAL_BK_CODE,
+         CUST_ID,
+         CASE WHEN COUNT(DISTINCT SUBSTR(m.TX_DATE, 1, 6)) >= 6 THEN '1' ELSE '0' END AS RGLAR_FLAG
     FROM TMP_ADS_CRM_CUST_LABLE_04_01 m where TX_DATE >= V_SIX_MONTH_AGO
-   GROUP BY CUST_ID, PERSN_LEGAL_BK_CODE;  
-   
-   
+   GROUP BY PERSN_LEGAL_BK_CODE,CUST_ID ;
+
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '3.4 完成：他行同名户规律转出写入临时表04_01/04';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+      V_BGN_DATE, V_END_DATE, V_DURA_DATE,
+      V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON
+  );
 
   -- 3.5 当年校园缴费笔数（tran_type='1', tran_status='1',cust_status = '1'）
-  INSERT INTO TMP_ADS_CRM_CUST_LABLE_05 (
-      PERSN_LEGAL_BK_CODE,
-      CUST_ID,
-      YR_CAMPUS_PAY_CNT
-  )
-  SELECT i.cust_core_no          AS CUST_ID,
-         CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','18')
-              THEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2)||'00'
-              ELSE '9999' END    AS PERSN_LEGAL_BK_CODE,
-         COUNT(*)        AS CAMPUS_CNT
-    FROM crmdm.mbk_cust_log_fee f
-    JOIN crmdm.mbk_cust_info    i
-      ON i.cust_no = f.cust_no
-   WHERE f.tran_type   = '1'
-     AND f.tran_status = '1'
-     AND I.cust_status = '1'
-     AND f.tran_date  >= V_CURR_YEAR_BEGIN
-   GROUP BY i.cust_core_no, 
-   CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','18')
-              THEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2)||'00'
-              ELSE '9999' END;
+  V_NO_ID := '3.5';
+  V_BGN_DATE := SYSDATE;
+
+INSERT INTO TMP_ADS_CRM_CUST_LABLE_05 (
+    PERSN_LEGAL_BK_CODE,
+    CUST_ID,
+    YR_CAMPUS_PAY_CNT
+)
+SELECT 
+    CASE 
+        WHEN SUBSTR(NVL(f.DEPT_ID, i.CUST_ORG_NO), 1, 2) IN ('12','15','18')
+        THEN SUBSTR(NVL(f.DEPT_ID, i.CUST_ORG_NO), 1, 2) || '00'
+        ELSE '9999' 
+    END AS PERSN_LEGAL_BK_CODE,
+    i.CUST_CORE_NO AS CUST_ID,
+    COUNT(*) AS YR_CAMPUS_PAY_CNT
+FROM crmdm.MBK_CUST_LOG_FEE f
+JOIN crmdm.MBK_CUST_INFO i
+    ON i.CUST_NO = f.CUST_NO
+WHERE f.TRAN_TYPE   = '1'
+  AND f.TRAN_STATUS = '1'
+  AND REPLACE(f.TRAN_DATE,'-','')  >= V_CURR_YEAR_BEGIN
+  AND i.CUST_STATUS = '1'
+GROUP BY 
+    CASE 
+        WHEN SUBSTR(NVL(f.DEPT_ID, i.CUST_ORG_NO), 1, 2) IN ('12','15','18')
+        THEN SUBSTR(NVL(f.DEPT_ID, i.CUST_ORG_NO), 1, 2) || '00'
+        ELSE '9999' 
+    END,
+    i.CUST_CORE_NO;
+
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '3.5 完成：当年校园缴费笔数写入临时表05';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+      V_BGN_DATE, V_END_DATE, V_DURA_DATE,
+      V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON
+  );
 
   -- 3.6 当月水电气缴费交易金额+笔数（tran_type='0', tran_status='1',cust_status = '1'）
+  V_NO_ID := '3.6';
+  V_BGN_DATE := SYSDATE;
+
   INSERT INTO TMP_ADS_CRM_CUST_LABLE_06 (
       PERSN_LEGAL_BK_CODE,
       CUST_ID,
       MTH_UTIL_PAY_TRAN_AMT,
       MTH_UTIL_PAY_TRAN_CNT
   )
-  SELECT i.cust_core_no             AS CUST_ID,
-         CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','18')
+  SELECT CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','18')
               THEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2)||'00'
               ELSE '9999' END                AS PERSN_LEGAL_BK_CODE,
+         i.cust_core_no             AS CUST_ID,
          SUM(TO_NUMBER(f.tran_amt)) AS UTIL_TRAN_AMT,
          COUNT(*)                   AS UTIL_TRAN_CNT
     FROM crmdm.mbk_cust_log_fee f
@@ -228,13 +343,31 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
    WHERE f.tran_type   = '0'
      AND f.tran_status = '1'
      AND I.cust_status = '1'
-     AND f.tran_date  >= V_CURR_MONTH_BEGIN
-   GROUP BY i.cust_core_no, 
+     AND REPLACE(f.TRAN_DATE,'-','')  >= V_CURR_MONTH_BEGIN
+   GROUP BY 
    CASE WHEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2) IN ('12','15','18')
               THEN SUBSTR(NVL(F.DEPT_ID,I.CUST_ORG_NO),1,2)||'00'
-              ELSE '9999' END;
+              ELSE '9999' END,
+         i.cust_core_no;
+
+  COMMIT;
+
+  V_END_DATE := SYSDATE;
+  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
+  OUTCDE := 0;
+  V_LOG_MSG := '3.6 完成：当月水电气缴费写入临时表06';
+  V_LOG_FLG := OUTCDE;
+
+  SYS_PRC_STEP_LOGS(
+      V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+      V_BGN_DATE, V_END_DATE, V_DURA_DATE,
+      V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON
+  );
 
   -- 3.7 收单商户上月交易（uepp_pay_order_info: status='02'，pay_time在上月范围内）
+  V_NO_ID := '3.7';
+  V_BGN_DATE := SYSDATE;
+
   -- isscode映射法人行号：前2位=12/15/18 → isscode||'00'，其余 → '9999'
   INSERT INTO TMP_ADS_CRM_CUST_LABLE_07 (
       PERSN_LEGAL_BK_CODE,
@@ -267,7 +400,7 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
   V_END_DATE := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   OUTCDE := 0;
-  V_LOG_MSG := 'TMP2 完成：7个临时表独立写入';
+  V_LOG_MSG := '3.7 完成：收单商户上月交易写入临时表07';
   V_LOG_FLG := OUTCDE;
 
   SYS_PRC_STEP_LOGS(
@@ -283,7 +416,7 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
   V_NO_ID := '3';
   V_BGN_DATE := SYSDATE;
 
-  INSERT INTO ADS_CRM_R_CUST_LABLE (
+  INSERT INTO ADS_CRM_R_CUST_LABLE_TX_INFO (
       PERSN_LEGAL_BK_CODE,
       CUST_ID,
       NEAR_MTH_TX_CNT,
@@ -332,7 +465,7 @@ GROUP BY B.PERSN_LEGAL_BK_CODE, B.CUST_ID;
           AND g.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
     LEFT JOIN ADS_NEW_CUST_KYC h
            on h.CUST_ID            = a.CUST_ID
-          AND h.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE
+          AND h.PERSN_LEGAL_BK_CODE = a.PERSN_LEGAL_BK_CODE;
   COMMIT;
 
   V_END_DATE := SYSDATE;

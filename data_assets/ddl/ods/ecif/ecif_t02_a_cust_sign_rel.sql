@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ecif_t02_a_cust_sign_rel;
 
+DROP TABLE crmdm.ecif_t02_a_cust_sign_rel;
 CREATE TABLE crmdm.ecif_t02_a_cust_sign_rel (
 	sign_seq_id bpchar(20) NULL, -- 签约记录编号
 	party_id bpchar(20) NULL, -- 参与人ID

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kitp_shijlv;
 
+DROP TABLE crmdm.cbs_kitp_shijlv;
 CREATE TABLE crmdm.cbs_kitp_shijlv (
 	farendma varchar(4) NOT NULL, -- 法人行号
 	fenhdaim varchar(4) NOT NULL, -- 分行代码

@@ -11,7 +11,7 @@ AS
   --         FMS_TD_CUST_VOL、FMS_TD_PROD_INFO、FMS_TD_PROD_NAV、
   --         FMS_T5_CUST_VOL、FMS_T5_PROD_INFO、FMS_T5_PROD_NAV、FMS_T5_PROD_PERIOD
   -- 目标表：DWD_ACCT_FIN
-  -- 需求版本: v2.0.0
+  -- 需求版本: v2.1.0
   -- 适配数据库：人大金仓 Oracle 兼容模式
   -- 变更记录:
   --   v1.0.0 2026-07-10 初始版本：TRUNCATE+INSERT全量覆盖方案
@@ -23,6 +23,8 @@ AS
   --                     增加V_SYSDAT参数校验；
   --                     精简冗余过滤条件(NVL(TOTAL_AMT,0)>0)；
   --                     DDL补充CFM_AMT列
+  --   v2.1.0 2026-09-07 起息日期取值调整：代销取GREATEST(FMS_TD_PROD_INFO.VALUE_DATE, FMS_TD_CUST_VOL_DETAIL.REGISTER_DATE)、
+  --                     自营取GREATEST(FMS_T5_PROD_PERIOD.VALUE_DATE, FMS_T5_CUST_VOL_LIST.ACK_DATE)，任一方为空取另一方
   ------------------------------------------------------------------
   V_PRC_DESC     VARCHAR(100) := '理财账户处理';   -- 过程描述，用于SYS_PRC_STEP_LOGS日志标识
   V_PRC_NAME     VARCHAR(32)  := 'PRC_DWD_ACCT_FIN'; -- 过程编号，对应报表编号
@@ -102,8 +104,9 @@ BEGIN
       pi.ESTABLISH_DATE,                                                     -- 成立日期
       ROUND(NVL(pn.NAV, 0) * NVL(cv.REMAIN_VOL, 0), 2),                      -- 理财余额=ROUND(净值×份额,2)
       ROUND(NVL(pn.TONOWCLIENTRATIO, 0), 2),                                 -- 收益率=成立以来参考年化收益率
-      fa.ACCT_STATUS,                                                        -- 理财账户状态
-      pi.VALUE_DATE,                                                         -- 起息日期
+      CASE WHEN nvl(ctl.CFM_AMT,0) > '0' THEN '1' ELSE '0' END       ACCT_STATUS,   
+      GREATEST(NVL(pi.VALUE_DATE, cv.REGISTER_DATE),                         -- 起息日期=产品起息日与份额注册日期取较大者，任一方为空取另一方
+               NVL(cv.REGISTER_DATE, pi.VALUE_DATE)),
       pi.WINDING_DATE,                                                       -- 到期日期
       cv.TRANS_ORGNO,                                                        -- 归属机构
       fa.ISS_BANK_CODE,                                                      -- 办理渠道
@@ -175,8 +178,9 @@ BEGIN
       pp.ESTABLISH_DATE,                                                     -- 成立日期
       ROUND(NVL(pn.NAV, 0) * NVL(cv.REMAIN_VOL, 0), 2),                       -- 理财余额=ROUND(净值×份额,2)
       ROUND(NVL(pn.SEVEN_DAYS_INCOME, 0), 2),                                -- 收益率=7日年化收益率
-      fa.ACCT_STATUS,                                                        -- 理财账户状态
-      pp.VALUE_DATE,                                                         -- 起息日期
+      CASE WHEN cv.BUY_AMT > '0' THEN '1' ELSE '0' END       ACCT_STATUS,   -- 理财账户状态
+      GREATEST(NVL(pp.VALUE_DATE, cv.ACK_DATE),                              -- 起息日期=产品起息日与确认日期取较大者，任一方为空取另一方
+               NVL(cv.ACK_DATE, pp.VALUE_DATE)),
       pp.WINDING_DATE,                                                       -- 到期日期
       cv.SUB_BRANCH_CODE,                                                    -- 归属机构
       cv.ACK_DATE,                                                      -- 办理渠道
@@ -186,7 +190,7 @@ BEGIN
            WHEN cv.SUB_BRANCH_CODE LIKE '18%' THEN '1800'
            ELSE '9999' END,
       pi.ORGNO,                                                              -- 发行机构
-      fa.CRT_DATE,                                                           -- 办理日期
+      cv.TRANS_DATE,                                                           -- 办理日期
       pi.PROD_RISK_LEVEL,                                                    -- 风险等级
       cv.BUY_AMT                                                             -- 购买金额（认购+申购合计）
     FROM FMS_T5_CUST_VOL_LIST cv                                         -- 客户份额汇总表（驱动表）
@@ -261,11 +265,17 @@ BEGIN
   V_NO_ID := '3';
   V_BGN_DATE := SYSDATE;
 
-  DELETE FROM DWD_ACCT_FIN
-   WHERE (CUST_ID, ACCT_ID, PRDKT_ID) IN (
-       SELECT cust_id, acct_id, prdkt_id FROM TMP_DWD_ACCT_FIN_ACTIVE
-   );
-
+DELETE FROM DWD_ACCT_FIN d
+ WHERE EXISTS (
+   SELECT 1
+     FROM TMP_DWD_ACCT_FIN_ACTIVE t
+    WHERE (d.cust_id, d.acct_id, d.prdkt_id, d.OPRT_ORG, d.CHNL_NO, d.ISSU_DATE)
+      IS NOT DISTINCT FROM
+      (t.cust_id, t.acct_id, t.prdkt_id, t.OPRT_ORG, t.CHNL_NO, t.ISSU_DATE)
+ );
+      
+  UPDATE DWD_ACCT_FIN SET CFM_AMT = '0' , ACCT_STATE = '0' ;
+   
   INSERT INTO DWD_ACCT_FIN (
       CUST_ID,             -- 客户编号
       CUST_TYP,            -- 客户类型
@@ -317,36 +327,6 @@ BEGIN
   V_END_DATE  := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
   V_LOG_MSG   := '3 完成: [写入] DELETE+INSERT同一事务';
-  V_LOG_FLG   := OUTCDE;
-  SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
-      V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-
-  ------------------------------------------------------------------
-  V_NO_ID := '4';
-  V_BGN_DATE := SYSDATE;
-  
- -- 【新增：份额表检查逻辑】
-   -- 如果明细表中无对应记录，则FIN_AMT置0
-   UPDATE DWD_ACCT_FIN af
-      SET FIN_AMT = CASE 
-                        WHEN EXISTS (SELECT 1 FROM FMS_TD_CUST_VOL_DETAIL cv 
-                                     WHERE cv.CUST_NO = af.CUST_ID 
-                                       AND cv.FNC_TRANS_ACCT_NO = af.ACCT_ID 
-                                       AND cv.TA_CFM_SERNO = af.PRDKT_ID) 
-                                  OR EXISTS (SELECT 1 FROM FMS_T5_CUST_VOL_LIST cv 
-                                             WHERE cv.CUST_NO = af.CUST_ID 
-                                               AND cv.FNC_TRANS_ACCT_NO = af.ACCT_ID 
-                                               AND cv.TRANS_SERNO = af.PRDKT_ID)
-                                  THEN af.FIN_AMT 
-                                  ELSE 0 
-                    END
-    WHERE (af.CUST_ID, af.ACCT_ID, af.PRDKT_ID) IN (SELECT cust_id, acct_id, prdkt_id FROM TMP_DWD_ACCT_FIN_ACTIVE);
-
-   COMMIT;  
-  OUTCDE      := 0;
-  V_END_DATE  := SYSDATE;
-  V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '4 完成: [写入] 不在份额表中余额置为0';
   V_LOG_FLG   := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
       V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);

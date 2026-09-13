@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kfxp_xthlcs;
 
+DROP TABLE crmdm.cbs_kfxp_xthlcs;
 CREATE TABLE crmdm.cbs_kfxp_xthlcs (
 	farendma varchar(4) NOT NULL, -- 法人代码
 	shenxriq varchar(8) NOT NULL, -- 生效日期

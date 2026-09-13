@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.mbk_mkp_acti_drawn_list;
 
+DROP TABLE crmdm.mbk_mkp_acti_drawn_list;
 CREATE TABLE crmdm.mbk_mkp_acti_drawn_list (
 	drawn_no varchar(32) NOT NULL, -- 中奖记录编号
 	busi_type bpchar(1) NOT NULL, -- 业务类型1:游戏  2：直接领取 3：第三方活动 4：积分兑换的奖品

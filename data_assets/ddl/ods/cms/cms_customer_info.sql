@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_customer_info;
 
+DROP TABLE crmdm.cms_customer_info;
 CREATE TABLE crmdm.cms_customer_info (
 	customerid varchar(40) NOT NULL, -- 客户编号
 	customername varchar(80) NULL, -- 客户名称

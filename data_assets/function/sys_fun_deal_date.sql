@@ -75,6 +75,8 @@ BEGIN
             V_RETUR_DATE := to_char(add_months(V_DATE, -6)-1, 'YYYYMMDD'); -- 6月前的前一天
         WHEN 31 THEN
             V_RETUR_DATE := to_char(V_DATE + interval '1' day, 'YYYYMMDD'); -- 次日
+        WHEN 32 THEN
+            V_RETUR_DATE := to_char(add_months(V_DATE, -3), 'YYYYMMDD'); -- 3个月前（基准生命周期清理边界）
         ELSE
             V_RETUR_DATE := NULL;
     END CASE;

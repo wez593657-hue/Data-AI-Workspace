@@ -20,7 +20,8 @@
  *           取数日直接使用当日快照（data_date = 跑批日），当日快照就绪为跑批前置条件。
  */
 
-CREATE TABLE IF NOT EXISTS DWS_CUST_DORMANT_ACCOUT (
+DROP TABLE DWS_CUST_DORMANT_ACCOUT;
+CREATE TABLE DWS_CUST_DORMANT_ACCOUT (
     PERSN_LEGAL_BK_CODE VARCHAR(4),   -- 客户所在法人行号
     DATA_DATE           VARCHAR(8),   -- 快照日期，YYYYMMDD，每日一条快照
     CUST_ID             VARCHAR(20)   -- 客户号

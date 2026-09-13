@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_customer_belong;
 
+DROP TABLE crmdm.cms_customer_belong;
 CREATE TABLE crmdm.cms_customer_belong (
 	customerid varchar(40) NOT NULL, -- 客户编号
 	orgid varchar(40) NOT NULL, -- 所属机构

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ecif_t01_c_party_resolve;
 
+DROP TABLE crmdm.ecif_t01_c_party_resolve;
 CREATE TABLE crmdm.ecif_t01_c_party_resolve (
 	party_resolve_id bpchar(20) NULL, -- PARTY_RESOLVE_ID
 	party_id bpchar(20) NULL, -- PARTY_ID

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_td_cust_trans_req_log;
 
+DROP TABLE crmdm.fms_td_cust_trans_req_log;
 CREATE TABLE crmdm.fms_td_cust_trans_req_log (
 	app_serno varchar(32) NOT NULL, -- 交易申请流水号
 	busi_code varchar(3) NOT NULL, -- 业务代码

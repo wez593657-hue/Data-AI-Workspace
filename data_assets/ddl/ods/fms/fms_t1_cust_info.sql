@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_t1_cust_info;
 
+DROP TABLE crmdm.fms_t1_cust_info;
 CREATE TABLE crmdm.fms_t1_cust_info (
 	cust_no varchar(20) NULL, -- 客户号
 	host_cust_no varchar(32) NULL, -- 主机客户号

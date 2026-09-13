@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_business_type;
 
+DROP TABLE crmdm.cms_business_type;
 CREATE TABLE crmdm.cms_business_type (
 	typeno varchar(32) NOT NULL, -- 产品编号
 	sortno varchar(32) NULL, -- 排序编号

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ecif_t02_p_par_to_par_rel;
 
+DROP TABLE crmdm.ecif_t02_p_par_to_par_rel;
 CREATE TABLE crmdm.ecif_t02_p_par_to_par_rel (
 	par_seq_id bpchar(20) NULL, -- 关联关系记录编号
 	party_id bpchar(20) NULL, -- 参与人ID

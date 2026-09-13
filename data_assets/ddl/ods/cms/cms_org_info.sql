@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_org_info;
 
+DROP TABLE crmdm.cms_org_info;
 CREATE TABLE crmdm.cms_org_info (
 	orgid varchar(32) NULL, -- 机构编号
 	sortno varchar(32) NULL, -- 排序号

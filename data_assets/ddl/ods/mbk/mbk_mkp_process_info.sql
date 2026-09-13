@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.mbk_mkp_process_info;
 
+DROP TABLE crmdm.mbk_mkp_process_info;
 CREATE TABLE crmdm.mbk_mkp_process_info (
 	trans_sn varchar(128) NOT NULL, -- 交易流水号
 	sence_status varchar(1) NULL, -- 场景状态

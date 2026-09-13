@@ -10,6 +10,7 @@
 
 -- DROP TABLE crmdm.dwd_acct_depo_his;
 
+DROP TABLE crmdm.dwd_acct_depo_his;
 CREATE TABLE crmdm.dwd_acct_depo_his (
     cust_id varchar(20) NULL,
     cust_typ varchar(2) NULL,

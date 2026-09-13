@@ -1,3 +1,4 @@
+DROP TABLE crmdm.dws_cust_classfive;
 CREATE TABLE crmdm.dws_cust_classfive (
     persn_legal_bk_code varchar(30) NULL, -- 法人行号
     data_date varchar(8), --数据日期

@@ -1,4 +1,5 @@
 -- Create table
+DROP TABLE FMS_T5_CUST_VOL_LIST;
 create table FMS_T5_CUST_VOL_LIST
 (
   TRANS_SERNO       VARCHAR2(32) not null,

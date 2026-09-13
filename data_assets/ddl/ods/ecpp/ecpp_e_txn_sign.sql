@@ -1,3 +1,4 @@
+DROP TABLE crmdm."ECPP_E_TXN_SIGN";
 CREATE TABLE crmdm."ECPP_E_TXN_SIGN" (
     "TRX_ID"            VARCHAR(80)  NULL,  -- 交易ID
     "ISSR_ID"           VARCHAR(28)  NULL,  -- 发行者ID

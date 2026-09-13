@@ -1,0 +1,25 @@
+schema_version: '0.1'
+task_id: workspace-sync-20260913
+purpose: 工作区其余未授权文档/资产同步提交（DDL 重建规范化 + 文档/需求/映射同步）
+workflow_profile: lightweight
+state: PUSH_ALLOWED
+branch: master
+created_at: '2026-09-13T12:00:00+08:00'
+updated_at: '2026-09-13T12:00:00+08:00'
+evidence_ids:
+- user-continue-commit-20260913
+allowed_paths:
+- data_assets/
+- requirements/
+- governance/
+- scripts/harness/sync_deadline_ads_mapping.py
+- .mnemon/documents/index.json
+- .harness/tasks/workspace-sync-20260913/
+forbidden_paths:
+- secrets/
+- .env
+history:
+- from: null
+  to: PUSH_ALLOWED
+  reason: 用户指令「继续提交其余文档」，承接 stat-indx-zero-fill-20260913 遗留的 237 个未授权工作区变更
+  at: '2026-09-13T12:00:00+08:00'

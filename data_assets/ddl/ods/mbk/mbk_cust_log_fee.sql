@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.mbk_cust_log_fee;
 
+DROP TABLE crmdm.mbk_cust_log_fee;
 CREATE TABLE crmdm.mbk_cust_log_fee (
 	tran_sn varchar(32) NOT NULL, -- 交易流水号
 	cust_name varchar(64) NULL, -- 客户名称

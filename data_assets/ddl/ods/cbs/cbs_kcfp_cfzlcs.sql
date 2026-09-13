@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kcfp_cfzlcs;
 
+DROP TABLE crmdm.cbs_kcfp_cfzlcs;
 CREATE TABLE crmdm.cbs_kcfp_cfzlcs (
 	farendma varchar(4) NOT NULL, -- 法人代码
 	canshmch varchar(500) NOT NULL, -- 参数名称

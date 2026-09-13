@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_acct_loan;
 
+DROP TABLE crmdm.cms_acct_loan;
 CREATE TABLE crmdm.cms_acct_loan (
 	serialno varchar(40) NOT NULL, -- 贷款账号
 	accountno varchar(40) NULL, -- 贷款文本账号

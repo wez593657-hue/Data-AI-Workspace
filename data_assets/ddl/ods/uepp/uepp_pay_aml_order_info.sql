@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.uepp_pay_aml_order_info;
 
+DROP TABLE crmdm.uepp_pay_aml_order_info;
 CREATE TABLE crmdm.uepp_pay_aml_order_info (
 	tr_id varchar(256) NOT NULL, -- 业务识别号（平台订单号）
 	tr_dt varchar(48) NULL, -- 交易日期

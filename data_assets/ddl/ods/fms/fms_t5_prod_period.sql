@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_t5_prod_period;
 
+DROP TABLE crmdm.fms_t5_prod_period;
 CREATE TABLE crmdm.fms_t5_prod_period (
 	prod_code varchar(32) NOT NULL, -- 产品代码
 	booking_begin_date bpchar(8) NULL, -- 预留开始日

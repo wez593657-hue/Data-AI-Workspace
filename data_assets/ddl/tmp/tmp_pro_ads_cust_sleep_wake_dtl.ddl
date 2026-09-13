@@ -29,7 +29,8 @@
 --           DWD_ACCT_FIN(理财办理日ISSU_DATE),
 --           DWD_ACCT_INSUR(保险最近交易日LAST_TX_DATE)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS TMP_ADS_SLEEP_WAKE_PROD (
+DROP TABLE TMP_ADS_SLEEP_WAKE_PROD;
+CREATE TABLE TMP_ADS_SLEEP_WAKE_PROD (
     PERSN_LEGAL_BK_CODE VARCHAR2(4),   -- 法人行号
     CUST_ID             VARCHAR2(20)   -- 客户号
 );
@@ -42,7 +43,8 @@ CREATE TABLE IF NOT EXISTS TMP_ADS_SLEEP_WAKE_PROD (
 --       v2.14.0 F-2: TX_DATE字符串范围比较利用索引
 -- 数据来源: DWD_TX_ASET
 -- ============================================================
-CREATE TABLE IF NOT EXISTS TMP_ADS_SLEEP_ACTIVE_TXN (
+DROP TABLE TMP_ADS_SLEEP_ACTIVE_TXN;
+CREATE TABLE TMP_ADS_SLEEP_ACTIVE_TXN (
     PERSN_LEGAL_BK_CODE VARCHAR2(4),   -- 法人行号
     CUST_ID             VARCHAR2(20)   -- 客户号
 );
@@ -56,7 +58,8 @@ CREATE TABLE IF NOT EXISTS TMP_ADS_SLEEP_ACTIVE_TXN (
 --       v2.14.0 F-1: [B]步骤改用此表消除DWS_CUST_ASSE_LIAB重复扫描
 -- 数据来源: DWS_CUST_ASSE_LIAB, TMP_ADS_SLEEP_WAKE_PROD
 -- ============================================================
-CREATE TABLE IF NOT EXISTS TMP_ADS_SLEEP_DWS_WAKE (
+DROP TABLE TMP_ADS_SLEEP_DWS_WAKE;
+CREATE TABLE TMP_ADS_SLEEP_DWS_WAKE (
     PERSN_LEGAL_BK_CODE   VARCHAR(4),
     CUST_ID               VARCHAR(20),
     ORG_ID                VARCHAR(7),
@@ -92,7 +95,8 @@ COMMENT ON COLUMN TMP_ADS_SLEEP_DWS_WAKE.IS_WAKE IS '唤醒标志：NUMBER(1)，
 -- 不采用历史余额为零或当日余额增量条件；本注释覆盖前文旧版本基线余额描述。
 COMMENT ON COLUMN TMP_ADS_SLEEP_DWS_WAKE.IS_WAKE IS '本月新增持有定期、理财或保险产品标志：1=账户业务日期在当月首日至跑批日窗口内，0=否则';
 
-CREATE TABLE IF NOT EXISTS TMP_ADS_SLEEP_CNTCT (
+DROP TABLE TMP_ADS_SLEEP_CNTCT;
+CREATE TABLE TMP_ADS_SLEEP_CNTCT (
     PERSN_LEGAL_BK_CODE   VARCHAR(4),
     CUST_ID               VARCHAR(20),
     MKT_PERSN             VARCHAR(20)
@@ -111,7 +115,8 @@ COMMENT ON COLUMN TMP_ADS_SLEEP_CNTCT.MKT_PERSN IS '管户经理：VARCHAR(20)�
 --       以LEFT JOIN/EXISTS直接计算，不使用UPDATE。
 -- 数据来源: DWS_CUST_DORMANT_ACCOUT(当日快照), ADS_CUST_SLEEP_WAKE_DTL(昨日身份)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS TMP_ADS_SLEEP_WAKE_BASE (
+DROP TABLE TMP_ADS_SLEEP_WAKE_BASE;
+CREATE TABLE TMP_ADS_SLEEP_WAKE_BASE (
     PERSN_LEGAL_BK_CODE VARCHAR(4),   -- 法人行号：与客户号构成睡眠户身份键。
     CUST_ID             VARCHAR(20)   -- 客户号：客户唯一标识。
 );

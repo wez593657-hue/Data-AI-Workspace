@@ -10,6 +10,7 @@
 
 -- DROP TABLE crmdm.dwd_tmp_jigou_base;
 
+DROP TABLE crmdm.dwd_tmp_jigou_base;
 CREATE TABLE crmdm.dwd_tmp_jigou_base (
     jigouhao varchar(10) NOT NULL,
     farendma varchar(4) NOT NULL,

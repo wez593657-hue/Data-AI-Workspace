@@ -8,7 +8,8 @@
 --       供新客数、接触率、KYC完成率、金融资产区间分布统计使用
 -- ============================================================
 
-CREATE TABLE IF NOT EXISTS TMP_ADS_NEW_CUST_STAT_SRC (
+DROP TABLE TMP_ADS_NEW_CUST_STAT_SRC;
+CREATE TABLE TMP_ADS_NEW_CUST_STAT_SRC (
     PERSN_LEGAL_BK_CODE   VARCHAR2(4),       -- 法人行号
     DATA_DATE             VARCHAR2(8),       -- 数据日期(YYYYMMDD)
     STATIS_CYCLE          VARCHAR2(2),       -- 统计周期(M=月度)
@@ -32,7 +33,8 @@ COMMENT ON COLUMN TMP_ADS_NEW_CUST_STAT_SRC.PNT_AUM_BAL IS 'T-1日AUM余额：NU
 -- ============================================================
 -- T-1日AUM预查询中间表（两个UNION ALL分支共用，F-04）
 -- ============================================================
-CREATE TABLE IF NOT EXISTS TMP_ADS_NEW_CUST_AUM (
+DROP TABLE TMP_ADS_NEW_CUST_AUM;
+CREATE TABLE TMP_ADS_NEW_CUST_AUM (
     CUST_ID               VARCHAR2(20),      -- 客户编号
     PERSN_LEGAL_BK_CODE   VARCHAR2(4),       -- 法人行号
     ORG_ID                VARCHAR2(7),       -- 归属机构

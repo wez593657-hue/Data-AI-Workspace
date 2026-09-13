@@ -1,14 +1,15 @@
 -- ============================================================
 -- 到期承接统计表存储过程临时表建表语句
 -- 存储过程名称: PRC_ADS_CUST_DEADLINE_RMND_STATIS
--- 需求版本: v2.5.0
+-- 需求版本: v2.18.0
 -- ============================================================
 
 -- 2.1 统计基础明细中间表
-CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_BASE (
+DROP TABLE TMP_CDR_STAT_BASE;
+CREATE TABLE TMP_CDR_STAT_BASE (
     PERSN_LEGAL_BK_CODE              VARCHAR2(32),   -- 法人行号
     DATA_DATE                        VARCHAR2(8),    -- 数据日期
-    STAT_PERD                        VARCHAR2(1),    -- 统计周期：M-月,Q-季,Y-年
+    STATIS_CYCLE                        VARCHAR2(1),    -- 统计周期：M-月,Q-季,Y-年
     STATIS_TYP                       VARCHAR2(1),    -- 承接类型：0-全部,1-存款,2-理财
     CUST_ID                          VARCHAR2(64),   -- 客户编号
     ORG_ID                           VARCHAR2(64),   -- 归属机构
@@ -28,11 +29,12 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_BASE (
 );
 
 -- 2.2 统计对象展开中间表
-CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_SRC (
+DROP TABLE TMP_CDR_STAT_SRC;
+CREATE TABLE TMP_CDR_STAT_SRC (
     PERSN_LEGAL_BK_CODE              VARCHAR2(32),   -- 法人行号
     STATIS_OBJ                       VARCHAR2(64),   -- 统计对象
     DATA_DATE                        VARCHAR2(8),    -- 数据日期
-    STAT_PERD                        VARCHAR2(1),    -- 统计周期：M-月,Q-季,Y-年
+    STATIS_CYCLE                        VARCHAR2(1),    -- 统计周期：M-月,Q-季,Y-年
     STATIS_TYP                       VARCHAR2(1),    -- 承接类型：0-全部,1-存款,2-理财
     CUST_ID                          VARCHAR2(64),   -- 客户编号
     ORG_ID                           VARCHAR2(64),   -- 归属机构
@@ -52,8 +54,8 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_SRC (
 );
 
 -- 2.3 本期统计隔离存储表（v3.0.0：本期统计结果仅写入本表）
-DROP TABLE IF NOT EXISTS TMP_CDR_STAT_CURR_STAGE;
-CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_CURR_STAGE (
+DROP TABLE TMP_CDR_STAT_CURR_STAGE;
+CREATE TABLE TMP_CDR_STAT_CURR_STAGE (
     PERSN_LEGAL_BK_CODE     VARCHAR2(4),    -- 法人行号
     DATA_DATE               VARCHAR2(8),    -- 数据日期=跑批日期V_SYSDAT
     STATIS_OBJ              VARCHAR2(20),   -- 统计对象（机构ID/管户经理岗位ID）
@@ -72,8 +74,8 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_CURR_STAGE (
 );
 
 -- 2.4 上期统计隔离存储表（v3.0.0：上期统计结果仅写入本表，目标表仅更新6率值列）
-DROP TABLE IF NOT EXISTS TMP_CDR_STAT_PREV_STAGE;
-CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_PREV_STAGE (
+DROP TABLE TMP_CDR_STAT_PREV_STAGE;
+CREATE TABLE TMP_CDR_STAT_PREV_STAGE (
     PERSN_LEGAL_BK_CODE     VARCHAR2(4),    -- 法人行号
     DATA_DATE               VARCHAR2(8),    -- 数据日期=上期期末日期
     STATIS_OBJ              VARCHAR2(20),   -- 统计对象
@@ -92,8 +94,8 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_PREV_STAGE (
 );
 
 -- 2.5 上期统计冻结快照表（v3.0.0：验证段比对9基础列是否被修改）
-DROP TABLE IF NOT EXISTS TMP_CDR_STAT_FREEZE_LOG;
-CREATE TABLE IF NOT EXISTS TMP_CDR_STAT_FREEZE_LOG (
+DROP TABLE TMP_CDR_STAT_FREEZE_LOG;
+CREATE TABLE TMP_CDR_STAT_FREEZE_LOG (
     BATCH_DATE              VARCHAR2(8),    -- 跑批日期
     PERSN_LEGAL_BK_CODE     VARCHAR2(4),    -- 法人行号
     DATA_DATE               VARCHAR2(8),    -- 数据日期

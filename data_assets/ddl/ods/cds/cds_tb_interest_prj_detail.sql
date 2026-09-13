@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cds_tb_interest_prj_detail;
 
+DROP TABLE crmdm.cds_tb_interest_prj_detail;
 CREATE TABLE crmdm.cds_tb_interest_prj_detail (
 	interest_no varchar(32) NOT NULL, -- 方案信息代码
 	time_step varchar(3) NULL, -- D1：1天通知存款 D2：7天通知存款 M1：1个月定期存款 M3：3个月定期存款 M6：6个月定期存款 Y1：1年定期存款 Y2：2年定期存款 Y3：3年定期存款 Y5：5年定期存款

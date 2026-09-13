@@ -10,6 +10,7 @@
 
 -- DROP TABLE crmdm.dwd_tmp_jigou_code;
 
+DROP TABLE crmdm.dwd_tmp_jigou_code;
 CREATE TABLE crmdm.dwd_tmp_jigou_code (
     org_id varchar(7) NULL,
     sup_org_id varchar(7) NULL,

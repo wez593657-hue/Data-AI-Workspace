@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.mbk_cust_acct;
 
+DROP TABLE crmdm.mbk_cust_acct;
 CREATE TABLE crmdm.mbk_cust_acct (
 	cust_no varchar(32) NOT NULL, -- 电子银行客户号
 	acct varchar(32) NOT NULL, -- 卡号

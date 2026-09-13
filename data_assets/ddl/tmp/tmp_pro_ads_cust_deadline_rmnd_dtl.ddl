@@ -1,20 +1,20 @@
 -- ============================================================
 -- 到期承接明细表存储过程临时表建表语句
 -- 存储过程名称: PRC_ADS_CUST_DEADLINE_RMND_DTL
--- 需求版本: v2.7.0
+-- 需求版本: v2.17.0
 -- ============================================================
 
 -- 2.1 统计周期中间表
-DROP TABLE IF NOT EXISTS TMP_CDR_DTL_PERIOD;
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_PERIOD (
-    STAT_PERD VARCHAR2(1),   -- 统计周期：M-月,Q-季,Y-年
+DROP TABLE TMP_CDR_DTL_PERIOD;
+CREATE TABLE TMP_CDR_DTL_PERIOD (
+    STATIS_CYCLE VARCHAR2(1),   -- 统计周期：M-月,Q-季,Y-年
     BGN_DT    DATE,          -- 统计周期开始日期
     END_DT    DATE           -- 统计周期结束日期
 );
 
 -- 2.2 到期产品源中间表
-DROP TABLE IF NOT EXISTS TMP_CDR_DTL_MATURE_SRC;
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_MATURE_SRC (
+DROP TABLE TMP_CDR_DTL_MATURE_SRC;
+CREATE TABLE TMP_CDR_DTL_MATURE_SRC (
     CUST_ID              VARCHAR2(64),  -- 客户编号
     STATIS_TYP           VARCHAR2(1),   -- 承接类型：0-全部,1-存款,2-理财
     ACCT_ID              VARCHAR2(64),  -- 账户
@@ -27,9 +27,9 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_MATURE_SRC (
 );
 
 -- 2.3 到期窗口中间表
-DROP TABLE IF NOT EXISTS TMP_CDR_DTL_DUE_WIN;
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_DUE_WIN (
-    STAT_PERD            VARCHAR2(1),   -- 统计周期：M-月,Q-季,Y-年
+DROP TABLE TMP_CDR_DTL_DUE_WIN;
+CREATE TABLE TMP_CDR_DTL_DUE_WIN (
+    STATIS_CYCLE            VARCHAR2(1),   -- 统计周期：M-月,Q-季,Y-年
     BGN_DT               DATE,          -- 统计周期开始日期
     END_DT               DATE,          -- 统计周期结束日期
     CUST_ID              VARCHAR2(64),  -- 客户编号
@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_DUE_WIN (
 );
 
 -- 2.4 购买产品源中间表
-DROP TABLE IF NOT EXISTS TMP_CDR_DTL_PURCHASE_SRC;
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_PURCHASE_SRC (
+DROP TABLE TMP_CDR_DTL_PURCHASE_SRC;
+CREATE TABLE TMP_CDR_DTL_PURCHASE_SRC (
     CUST_ID              VARCHAR2(64),  -- 客户编号
     PRDKT_TYP            VARCHAR2(10),  -- 购买产品类型：DEPO-存款,FIN-理财,INSUR-保险
     BUY_AMT              NUMBER(20,2),  -- 购买金额
@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_PURCHASE_SRC (
 );
 
 -- 2.5 承接金额中间表
-DROP TABLE IF NOT EXISTS TMP_CDR_DTL_TAKE_AMT;
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_TAKE_AMT (
-    STAT_PERD            VARCHAR2(1),   -- 统计周期：M-月,Q-季,Y-年
+DROP TABLE TMP_CDR_DTL_TAKE_AMT;
+CREATE TABLE TMP_CDR_DTL_TAKE_AMT (
+    STATIS_CYCLE            VARCHAR2(1),   -- 统计周期：M-月,Q-季,Y-年
     CUST_ID              VARCHAR2(64),  -- 客户编号
     STATIS_TYP           VARCHAR2(1),   -- 承接类型：0-全部,1-存款,2-理财
     TAKE_AMT_30D         NUMBER(20,2),  -- 30天长期化产品承接金额
@@ -70,9 +70,9 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_TAKE_AMT (
 );
 
 -- 2.5.1 跨类型转化金额中间表(优化:预聚合替代关联子查询)
-DROP TABLE IF NOT EXISTS TMP_CDR_DTL_CROSS_CONV;
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_CROSS_CONV (
-    STAT_PERD                   VARCHAR2(1),   -- 统计周期：M-月,Q-季,Y-年
+DROP TABLE TMP_CDR_DTL_CROSS_CONV;
+CREATE TABLE TMP_CDR_DTL_CROSS_CONV (
+    STATIS_CYCLE                   VARCHAR2(1),   -- 统计周期：M-月,Q-季,Y-年
     CUST_ID                     VARCHAR2(64),  -- 客户编号
     PERSN_LEGAL_BK_CODE         VARCHAR2(32),  -- 法人行号
     ORG_ID                      VARCHAR2(64),  -- 归属机构
@@ -81,8 +81,8 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_CROSS_CONV (
 );
 
 -- 2.6 客户基础及余额中间表
-DROP TABLE IF NOT EXISTS TMP_CDR_DTL_CUST_BASE;
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_CUST_BASE (
+DROP TABLE TMP_CDR_DTL_CUST_BASE;
+CREATE TABLE TMP_CDR_DTL_CUST_BASE (
     CUST_ID              VARCHAR2(64),  -- 客户编号
     CUST_NAME            VARCHAR2(200), -- 客户名称
     CUST_LVL             VARCHAR2(20),  -- 客户等级
@@ -95,9 +95,9 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_CUST_BASE (
 );
 
 -- 2.7 AUM中间表
-DROP TABLE IF NOT EXISTS TMP_CDR_DTL_AUM_BAL;
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_AUM_BAL (
-    STAT_PERD            VARCHAR2(1),   -- 统计周期：M-月,Q-季,Y-年
+DROP TABLE TMP_CDR_DTL_AUM_BAL;
+CREATE TABLE TMP_CDR_DTL_AUM_BAL (
+    STATIS_CYCLE            VARCHAR2(1),   -- 统计周期：M-月,Q-季,Y-年
     CUST_ID              VARCHAR2(64),  -- 客户编号
     STATIS_TYP           VARCHAR2(1),   -- 承接类型：0-全部,1-存款,2-理财
     AUM_TYP              VARCHAR2(10),  -- AUM类型：PREV-第一笔到期前一日,CURR-当前日
@@ -108,8 +108,8 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_AUM_BAL (
 );
 
 -- 2.8 本期隔离存储表（v3.0.0：两期计算完全分离，本期结果仅写入本表）
-DROP TABLE IF NOT EXISTS TMP_CDR_DTL_CURR_STAGE;
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_CURR_STAGE (
+DROP TABLE TMP_CDR_DTL_CURR_STAGE;
+CREATE TABLE TMP_CDR_DTL_CURR_STAGE (
     PERSN_LEGAL_BK_CODE   VARCHAR2(4),   -- 法人行号
     DATA_DATE             VARCHAR2(8),   -- 数据日期=跑批日期V_SYSDAT
     CUST_ID               VARCHAR2(20),  -- 客户编号
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_CURR_STAGE (
     DEPO_CURNT_DEPO_BAL   NUMBER(20,2),  -- 活期余额
     FIXD_DEPO_BAL         NUMBER(20,2),  -- 定期余额
     FIN_AMT               NUMBER(20,2),  -- 理财余额
-    STAT_PERD             VARCHAR2(2),   -- 统计周期：M-月,Q-季,Y-年
+    STATIS_CYCLE             VARCHAR2(2),   -- 统计周期：M-月,Q-季,Y-年
     STATIS_TYP            VARCHAR2(2),   -- 承接类型：0-全部,1-存款,2-理财
     EXPR_AMT              NUMBER(20,2),  -- 到期金额
     MATURE_TTL_AMT        NUMBER(20,2),  -- 到期总金额
@@ -138,8 +138,8 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_CURR_STAGE (
 );
 
 -- 2.9 上期隔离存储表（v3.0.0：上期结果仅写入本表，目标表仅定点更新7字段）
-DROP TABLE IF NOT EXISTS TMP_CDR_DTL_PREV_STAGE;
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_PREV_STAGE (
+DROP TABLE TMP_CDR_DTL_PREV_STAGE;
+CREATE TABLE TMP_CDR_DTL_PREV_STAGE (
     PERSN_LEGAL_BK_CODE   VARCHAR2(4),   -- 法人行号
     DATA_DATE             VARCHAR2(8),   -- 数据日期=上期期末日期
     CUST_ID               VARCHAR2(20),  -- 客户编号
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_PREV_STAGE (
     DEPO_CURNT_DEPO_BAL   NUMBER(20,2),  -- 活期余额
     FIXD_DEPO_BAL         NUMBER(20,2),  -- 定期余额
     FIN_AMT               NUMBER(20,2),  -- 理财余额
-    STAT_PERD             VARCHAR2(2),   -- 统计周期：M-月,Q-季,Y-年
+    STATIS_CYCLE             VARCHAR2(2),   -- 统计周期：M-月,Q-季,Y-年
     STATIS_TYP            VARCHAR2(2),   -- 承接类型：0-全部,1-存款,2-理财
     EXPR_AMT              NUMBER(20,2),  -- 到期金额
     MATURE_TTL_AMT        NUMBER(20,2),  -- 到期总金额
@@ -168,8 +168,8 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_PREV_STAGE (
 );
 
 -- 2.10 上期冻结快照表（v3.0.0：验证段比对18基础字段是否被修改）
-DROP TABLE IF NOT EXISTS TMP_CDR_DTL_FREEZE_LOG;
-CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_FREEZE_LOG (
+DROP TABLE TMP_CDR_DTL_FREEZE_LOG;
+CREATE TABLE TMP_CDR_DTL_FREEZE_LOG (
     BATCH_DATE            VARCHAR2(8),   -- 跑批日期
     PERSN_LEGAL_BK_CODE   VARCHAR2(4),   -- 法人行号
     DATA_DATE             VARCHAR2(8),   -- 数据日期
@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_FREEZE_LOG (
     DEPO_CURNT_DEPO_BAL   NUMBER(20,2),  -- 活期余额
     FIXD_DEPO_BAL         NUMBER(20,2),  -- 定期余额
     FIN_AMT               NUMBER(20,2),  -- 理财余额
-    STAT_PERD             VARCHAR2(2),   -- 统计周期
+    STATIS_CYCLE             VARCHAR2(2),   -- 统计周期
     STATIS_TYP            VARCHAR2(2),   -- 承接类型
     EXPR_AMT              NUMBER(20,2),  -- 到期金额
     MATURE_TTL_AMT        NUMBER(20,2),  -- 到期总金额
@@ -199,8 +199,8 @@ CREATE TABLE IF NOT EXISTS TMP_CDR_DTL_FREEZE_LOG (
 );
 
 -- 2.11 两期验证结果日志表（v3.0.0：DTL/STATIS 共用，FAIL即中止批次）
-DROP TABLE IF NOT EXISTS TMP_CDR_VALIDATE_RESULT;
-CREATE TABLE IF NOT EXISTS TMP_CDR_VALIDATE_RESULT (
+DROP TABLE TMP_CDR_VALIDATE_RESULT;
+CREATE TABLE TMP_CDR_VALIDATE_RESULT (
     BATCH_DATE    VARCHAR2(8),   -- 跑批日期
     PERIOD_TYP    VARCHAR2(1),   -- 期别：C-本期,P-上期
     VALIDATE_ITEM VARCHAR2(100), -- 校验项

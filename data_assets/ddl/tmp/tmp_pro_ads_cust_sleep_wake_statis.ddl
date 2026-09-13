@@ -18,7 +18,8 @@
 --       避免在INSERT子查询中重复执行递归（O-04优化）。
 -- 数据来源: DWD_SYS_ORG, ADS_CUST_SLEEP_WAKE_DTL
 -- ============================================================
-CREATE TABLE IF NOT EXISTS TMP_ADS_SLEEP_ORG_HIER (
+DROP TABLE TMP_ADS_SLEEP_ORG_HIER;
+CREATE TABLE TMP_ADS_SLEEP_ORG_HIER (
     LEAF_ORG_ID     VARCHAR(7),     -- 叶子机构（网点级机构）
     ANCESTOR_ORG_ID VARCHAR(7)      -- 祖先机构（含自身，向上汇总目标）
 );
@@ -30,7 +31,8 @@ CREATE TABLE IF NOT EXISTS TMP_ADS_SLEEP_ORG_HIER (
 --       供目标表写入步骤按统计对象汇总计数。
 -- 数据来源: ADS_CUST_SLEEP_WAKE_DTL, TMP_ADS_SLEEP_ORG_HIER
 -- ============================================================
-CREATE TABLE IF NOT EXISTS TMP_ADS_SLEEP_STAT_SRC (
+DROP TABLE TMP_ADS_SLEEP_STAT_SRC;
+CREATE TABLE TMP_ADS_SLEEP_STAT_SRC (
     PERSN_LEGAL_BK_CODE VARCHAR(4),
     DATA_DATE VARCHAR(8),
     STATIS_CYCLE VARCHAR(2),

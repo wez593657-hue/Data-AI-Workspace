@@ -10,7 +10,8 @@
 -- 01: 活跃快照表
 --     按三键主键(CUST_ID+ACCT_ID+PRDKT_ID)存储当日活跃理财记录，
 --     供步骤3 DELETE+INSERT和步骤4到期标记使用
-CREATE TABLE IF NOT EXISTS TMP_DWD_ACCT_FIN_ACTIVE (
+DROP TABLE TMP_DWD_ACCT_FIN_ACTIVE;
+CREATE TABLE TMP_DWD_ACCT_FIN_ACTIVE (
     cust_id              VARCHAR(20)    NOT NULL,  -- 客户编号(三键主键)
     cust_typ             VARCHAR(2)     NULL,      -- 客户类型('1'=个人)
     acct_id              VARCHAR(40)    NOT NULL,  -- 账户(三键主键)

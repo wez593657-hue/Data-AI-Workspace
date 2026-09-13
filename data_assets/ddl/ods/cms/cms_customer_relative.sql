@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_customer_relative;
 
+DROP TABLE crmdm.cms_customer_relative;
 CREATE TABLE crmdm.cms_customer_relative (
 	customerid varchar(40) NULL,
 	relativeid varchar(32) NULL,

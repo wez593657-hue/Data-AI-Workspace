@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ecif_t03_a_tele_info;
 
+DROP TABLE crmdm.ecif_t03_a_tele_info;
 CREATE TABLE crmdm.ecif_t03_a_tele_info (
 	tele_id bpchar(20) NULL, -- TELE_ID
 	country_no varchar(6) NULL, -- COUNTRY_NO

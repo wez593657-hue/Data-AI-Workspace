@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kdpf_chpshx;
 
+DROP TABLE crmdm.cbs_kdpf_chpshx;
 CREATE TABLE crmdm.cbs_kdpf_chpshx (
 	farendma varchar(4) NOT NULL, -- 法人代码
 	chapbhao varchar(10) NOT NULL, -- 产品编号

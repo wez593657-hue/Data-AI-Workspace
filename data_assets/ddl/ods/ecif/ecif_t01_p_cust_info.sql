@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ecif_t01_p_cust_info;
 
+DROP TABLE crmdm.ecif_t01_p_cust_info;
 CREATE TABLE crmdm.ecif_t01_p_cust_info (
 	party_id bpchar(20) NULL, -- PARTY_ID
 	ecif_cust_no varchar(20) NULL, -- ECIF_CUST_NO

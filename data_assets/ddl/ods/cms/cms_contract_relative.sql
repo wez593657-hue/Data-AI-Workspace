@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_contract_relative;
 
+DROP TABLE crmdm.cms_contract_relative;
 CREATE TABLE crmdm.cms_contract_relative (
 	serialno varchar(40) NOT NULL, -- 合同流水号字段
 	objecttype varchar(18) NOT NULL, -- 合同关联对象类型

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.uepp_pay_mct_info;
 
+DROP TABLE crmdm.uepp_pay_mct_info;
 CREATE TABLE crmdm.uepp_pay_mct_info (
 	mct_id varchar(40) NOT NULL, -- 商户号
 	"name" varchar(300) NOT NULL, -- 商户全称

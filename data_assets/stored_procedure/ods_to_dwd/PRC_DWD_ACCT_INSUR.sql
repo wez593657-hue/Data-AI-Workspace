@@ -210,15 +210,22 @@ BEGIN
   V_LOG_FLG := OUTCDE;
   SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
 
+  -- ***************************************
+  -- 异常处理区：捕获错误，整体回滚，记录日志，向上传播
+  -- ***************************************
 EXCEPTION
   WHEN OTHERS THEN
-    OUTCDE := -1;
-    ROLLBACK;
-
+    OUTCDE := -3;    -- 返回码：-3=系统异常
+    ROLLBACK;        -- 整体回滚，撤销本事务内所有未提交的数据变更
     V_END_DATE := SYSDATE;
-    V_DURA_DATE := CASE WHEN V_BGN_DATE IS NULL OR V_END_DATE IS NULL THEN NULL ELSE TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60) END;
-    V_LOG_MSG := SUBSTR(SQLERRM, 1, 1000);
+    -- 计算耗时，若BGN_DATE或END_DATE为NULL则耗时置NULL
+    V_DURA_DATE := CASE WHEN V_BGN_DATE IS NULL OR V_END_DATE IS NULL
+                        THEN NULL
+                        ELSE TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60)
+                   END;
+    V_LOG_MSG := SUBSTR(SQLERRM, 1, 1000);   -- 截取错误消息前1000字符
     V_LOG_FLG := OUTCDE;
-    SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-    RAISE;
+    SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID,
+        V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
+    RAISE;   -- 向上传播异常
 END;

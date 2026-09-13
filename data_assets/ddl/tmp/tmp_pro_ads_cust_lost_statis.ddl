@@ -8,7 +8,8 @@
 -- ============================================================
 
 -- 2.1 统计对象展开中间表
-CREATE TABLE IF NOT EXISTS TMP_ADS_LOST_STAT_SRC (
+DROP TABLE TMP_ADS_LOST_STAT_SRC;
+CREATE TABLE TMP_ADS_LOST_STAT_SRC (
     PERSN_LEGAL_BK_CODE   VARCHAR2(4),       -- 法人行号
     DATA_DATE             VARCHAR2(8),       -- 数据日期
     STATIS_CYCLE          VARCHAR2(2),       -- 统计周期

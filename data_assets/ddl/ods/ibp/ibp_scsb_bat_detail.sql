@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ibp_scsb_bat_detail;
 
+DROP TABLE crmdm.ibp_scsb_bat_detail;
 CREATE TABLE crmdm.ibp_scsb_bat_detail (
 	bat_no varchar(18) NOT NULL, -- 社保代发批次号
 	det_no varchar(10) NOT NULL, -- 序号

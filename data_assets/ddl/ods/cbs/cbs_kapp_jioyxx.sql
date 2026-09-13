@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kapp_jioyxx;
 
+DROP TABLE crmdm.cbs_kapp_jioyxx;
 CREATE TABLE crmdm.cbs_kapp_jioyxx (
 	jiaoyima varchar(10) NULL, -- 交易码
 	jiaoyimc varchar(1000) NULL, -- 交易名称

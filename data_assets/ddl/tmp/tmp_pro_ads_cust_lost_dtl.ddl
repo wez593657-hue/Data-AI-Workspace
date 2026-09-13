@@ -9,13 +9,15 @@
 -- ============================================================
 
 -- 2.1 客户等级达标阈值查找表（消除6处CASE WHEN重复）
-CREATE TABLE IF NOT EXISTS TMP_ADS_LOST_THRESH (
+DROP TABLE TMP_ADS_LOST_THRESH;
+CREATE TABLE TMP_ADS_LOST_THRESH (
     LVL_CODE              VARCHAR2(2),       -- 客户等级代码（04-10）
     THRESHOLD             NUMBER(20,2)       -- 达标阈值金额
 );
 
 -- 2.2 流失客户基础中间表
-CREATE TABLE IF NOT EXISTS TMP_ADS_LOST_BASE (
+DROP TABLE TMP_ADS_LOST_BASE;
+CREATE TABLE TMP_ADS_LOST_BASE (
     PERSN_LEGAL_BK_CODE   VARCHAR2(4),       -- 法人行号
     CUST_ID               VARCHAR2(20),      -- 客户编号
     CUST_NAME             VARCHAR2(100),     -- 客户名称

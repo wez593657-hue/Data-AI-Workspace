@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.uepp_pay_mct_settle_account;
 
+DROP TABLE crmdm.uepp_pay_mct_settle_account;
 CREATE TABLE crmdm.uepp_pay_mct_settle_account (
 	mct_id varchar(40) NOT NULL, -- 商户号
 	acct_type varchar(2) NULL, -- 账户类型0：对公户1：对私户2：存折

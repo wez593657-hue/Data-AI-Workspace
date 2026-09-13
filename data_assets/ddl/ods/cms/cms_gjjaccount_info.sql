@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_gjjaccount_info;
 
+DROP TABLE crmdm.cms_gjjaccount_info;
 CREATE TABLE crmdm.cms_gjjaccount_info (
 	relativeno varchar(40) NULL, -- 编号
 	certtype varchar(8) NULL, -- CERTTYPE

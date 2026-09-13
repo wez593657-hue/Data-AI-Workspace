@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_t5_prod_comp_limit;
 
+DROP TABLE crmdm.fms_t5_prod_comp_limit;
 CREATE TABLE crmdm.fms_t5_prod_comp_limit (
 	prod_code varchar(32) NOT NULL, -- 产品代码
 	max_person_no numeric(8) NULL, -- 人数上限

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kdpb_kouhua;
 
+DROP TABLE crmdm.cbs_kdpb_kouhua;
 CREATE TABLE crmdm.cbs_kdpb_kouhua (
 	farendma varchar(4) NOT NULL, -- 法人代码
 	kouhabho varchar(32) NOT NULL, -- 扣划编号

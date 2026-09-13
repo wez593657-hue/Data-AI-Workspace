@@ -1,4 +1,5 @@
 -- 来源：data_assets/reference_logic/表结构.xlsx
+DROP TABLE crmdm.ybt_ib_list_plat;
 CREATE TABLE crmdm.ybt_ib_list_plat (
     plat_serial varchar(35) NULL, -- 平台流水
     plat_date varchar(8) NULL, -- 交易日期

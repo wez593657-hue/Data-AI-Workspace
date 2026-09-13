@@ -6,13 +6,15 @@
 -- ============================================================
 
 -- 01: 基础客户列表
-CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_01 (
+DROP TABLE TMP_ADS_CRM_CUST_LABLE_01;
+CREATE TABLE TMP_ADS_CRM_CUST_LABLE_01 (
     PERSN_LEGAL_BK_CODE               VARCHAR2(4),        -- 法人行号
     CUST_ID                           VARCHAR2(20)        -- 核心客户号
 );
 
 -- 02: 近1月交易（主动动账）
-CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_02 (
+DROP TABLE TMP_ADS_CRM_CUST_LABLE_02;
+CREATE TABLE TMP_ADS_CRM_CUST_LABLE_02 (
     PERSN_LEGAL_BK_CODE               VARCHAR2(4),        -- 法人行号
     CUST_ID                           VARCHAR2(20),       -- 核心客户号
     NEAR_MTH_TX_CNT                   NUMBER(8),          -- 近1月累计交易笔数（主动动账）
@@ -20,7 +22,8 @@ CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_02 (
 );
 
 -- 03: 近1月第三方支付（网联渠道）
-CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_03 (
+DROP TABLE TMP_ADS_CRM_CUST_LABLE_03;
+CREATE TABLE TMP_ADS_CRM_CUST_LABLE_03 (
     PERSN_LEGAL_BK_CODE               VARCHAR2(4),        -- 法人行号
     CUST_ID                           VARCHAR2(20),       -- 核心客户号
     NEAR_MTH_THIRD_PAY_OUT_CNT        NUMBER(8),          -- 近1月第三方累计交易笔数（网联渠道）
@@ -28,28 +31,32 @@ CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_03 (
 );
 
 -- 04: 是否向他行同名户规律转出
-CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_04 (
+DROP TABLE TMP_ADS_CRM_CUST_LABLE_04;
+CREATE TABLE TMP_ADS_CRM_CUST_LABLE_04 (
     PERSN_LEGAL_BK_CODE               VARCHAR2(4),        -- 法人行号
     CUST_ID                           VARCHAR2(20),       -- 核心客户号
     IS_NOT_RGLAR_TRANS_BK_OTHER_SAMENAME CHAR(1)          -- 是否向他行同名户规律转出
 );
 
 -- 04_01: 近6月滚动交易明细（按日增量维护，保留近6月窗口）
-CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_04_01 (
+DROP TABLE TMP_ADS_CRM_CUST_LABLE_04_01;
+CREATE TABLE TMP_ADS_CRM_CUST_LABLE_04_01 (
     PERSN_LEGAL_BK_CODE               VARCHAR2(4),        -- 法人行号
     CUST_ID                           VARCHAR2(20),       -- 核心客户号
     TX_DATE                           VARCHAR2(8)         -- 交易日期YYYYMMDD
 );
 
 -- 05: 当年校园缴费笔数
-CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_05 (
+DROP TABLE TMP_ADS_CRM_CUST_LABLE_05;
+CREATE TABLE TMP_ADS_CRM_CUST_LABLE_05 (
     PERSN_LEGAL_BK_CODE               VARCHAR2(4),        -- 法人行号
     CUST_ID                           VARCHAR2(20),       -- 核心客户号
     YR_CAMPUS_PAY_CNT                 NUMBER(8)           -- 当年校园缴费笔数
 );
 
 -- 06: 当月水电气缴费
-CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_06 (
+DROP TABLE TMP_ADS_CRM_CUST_LABLE_06;
+CREATE TABLE TMP_ADS_CRM_CUST_LABLE_06 (
     PERSN_LEGAL_BK_CODE               VARCHAR2(4),        -- 法人行号
     CUST_ID                           VARCHAR2(20),       -- 核心客户号
     MTH_UTIL_PAY_TRAN_AMT             NUMBER(20,2),       -- 当月水电气缴费交易金额
@@ -57,7 +64,8 @@ CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_06 (
 );
 
 -- 07: 收单商户上月交易
-CREATE TABLE IF NOT EXISTS TMP_ADS_CRM_CUST_LABLE_07 (
+DROP TABLE TMP_ADS_CRM_CUST_LABLE_07;
+CREATE TABLE TMP_ADS_CRM_CUST_LABLE_07 (
     PERSN_LEGAL_BK_CODE               VARCHAR2(4),        -- 法人行号
     CUST_ID                           VARCHAR2(20),       -- 核心客户号
     BILL_RSV_MKNT_CNT_MTH_LAST        NUMBER(8),          -- 收单商户上月交易笔数

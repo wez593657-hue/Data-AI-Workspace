@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.uepp_pay_order_info;
 
+DROP TABLE crmdm.uepp_pay_order_info;
 CREATE TABLE crmdm.uepp_pay_order_info (
 	order_id varchar(40) NOT NULL, -- 平台订单号
 	order_type varchar(10) NULL, -- 订单类型 00-支付交易  01-退款交易

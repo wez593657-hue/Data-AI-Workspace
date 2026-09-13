@@ -10,6 +10,7 @@
 
 -- DROP TABLE crmdm.dws_cust_asse_liab_cumu_his;
 
+DROP TABLE crmdm.dws_cust_asse_liab_cumu_his;
 CREATE TABLE crmdm.dws_cust_asse_liab_cumu_his (
     data_date varchar(8) NOT NULL,
     persn_legal_bk_code varchar(7) NULL,

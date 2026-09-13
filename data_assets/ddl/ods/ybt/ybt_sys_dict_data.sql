@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ybt_sys_dict_data;
 
+DROP TABLE crmdm.ybt_sys_dict_data;
 CREATE TABLE crmdm.ybt_sys_dict_data (
 	dict_code numeric(20) NOT NULL, -- 字典主键seq_sys_dict_data.nextval
 	dict_sort numeric(4) NULL, -- 字典排序

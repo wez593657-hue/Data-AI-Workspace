@@ -1,0 +1,26 @@
+schema_version: '0.1'
+task_id: workspace-sync-20260913
+purpose: 工作区其余未授权文档/资产同步提交
+description: |-
+  承接 stat-indx-zero-fill-20260913 提交后遗留的 237 个工作区变更，用户指令「继续提交其余文档」确认入库：
+  1) 219 个 DDL（ods/dwd/dws/ads/tmp 全层）统一 DROP TABLE 重建规范化（CREATE TABLE IF NOT EXISTS
+     → DROP TABLE + CREATE TABLE，对齐 Kingbase 重放语义）；
+  2) 3 个基准表 DDL（baseline_dtl/member/sum）同步 stat_indx v1.4 口径：STATIS_DIM/STATIS_CALIB
+     注释互换、DATA_BLNG 去 ORG_/MGR_ 前缀；
+  3) tmp_pro_* 临时表 DDL 同步新流水线字段（stat_indx_data +55 行等）；
+  4) 8 个存量存储过程（dws_to_ads/ods_to_dwd/dwd_to_dws）同步；
+  5) 需求/记忆卡片/治理规则/映射文档 7 个 + .mnemon 索引 + 同步脚本各 1。
+  DDL 全部 GB/GBK 编码无 BOM；CRLF 行尾保持既有（个别 LF 文件维持原状，不做全量重排）。
+user_confirmation: confirmed
+allowed_changes:
+  - path: data_assets/
+  - path: requirements/
+  - path: governance/
+  - path: scripts/harness/sync_deadline_ads_mapping.py
+  - path: .mnemon/documents/index.json
+  - path: .harness/tasks/workspace-sync-20260913/
+read_only_inputs:
+  - path: AGENTS.md
+forbidden_changes:
+  - path: secrets/
+  - path: .env

@@ -1,7 +1,8 @@
 -- ============================================================
 -- 1. DWD_CUST_INDV_KYC (客户KYC信息_主表)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS DWD_CUST_INDV_KYC (
+DROP TABLE DWD_CUST_INDV_KYC;
+CREATE TABLE DWD_CUST_INDV_KYC (
     PERSN_LEGAL_BK_CODE VARCHAR(4),
     CUST_ID VARCHAR(20),
     CUST_NAME VARCHAR(100),

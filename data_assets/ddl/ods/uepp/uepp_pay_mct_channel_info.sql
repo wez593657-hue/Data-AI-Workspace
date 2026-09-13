@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.uepp_pay_mct_channel_info;
 
+DROP TABLE crmdm.uepp_pay_mct_channel_info;
 CREATE TABLE crmdm.uepp_pay_mct_channel_info (
 	channel varchar(40) NOT NULL, -- 支付通道
 	pay_type varchar(40) NOT NULL, -- 支付类型

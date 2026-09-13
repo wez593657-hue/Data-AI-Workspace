@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ibp_czdf_bat_detail;
 
+DROP TABLE crmdm.ibp_czdf_bat_detail;
 CREATE TABLE crmdm.ibp_czdf_bat_detail (
 	batch_no varchar(30) NOT NULL, -- 批次号
 	serial_id varchar(12) NOT NULL, -- 流水号

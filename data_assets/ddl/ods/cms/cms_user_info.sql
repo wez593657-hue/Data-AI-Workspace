@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_user_info;
 
+DROP TABLE crmdm.cms_user_info;
 CREATE TABLE crmdm.cms_user_info (
 	userid varchar(32) NOT NULL, -- 用户编号
 	loginid varchar(32) NULL, -- 登录账号

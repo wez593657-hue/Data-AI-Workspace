@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cds_t1_cust_info;
 
+DROP TABLE crmdm.cds_t1_cust_info;
 CREATE TABLE crmdm.cds_t1_cust_info (
 	cust_no bpchar(8) NOT NULL, -- 客户号
 	fund_id_type varchar(2) NULL, -- 基金证件类型

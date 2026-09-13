@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_guaranty_info;
 
+DROP TABLE crmdm.cms_guaranty_info;
 CREATE TABLE crmdm.cms_guaranty_info (
 	guarantyid varchar(40) NOT NULL, -- 质物编号
 	guarantytype varchar(20) NULL, -- 质物类型

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.mbk_mkp_jl_join_info;
 
+DROP TABLE crmdm.mbk_mkp_jl_join_info;
 CREATE TABLE crmdm.mbk_mkp_jl_join_info (
 	tran_no varchar(32) NOT NULL, -- 记录流水号
 	order_id varchar(64) NOT NULL, -- 订单号

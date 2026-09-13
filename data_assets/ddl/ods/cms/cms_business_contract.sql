@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_business_contract;
 
+DROP TABLE crmdm.cms_business_contract;
 CREATE TABLE crmdm.cms_business_contract (
 	serialno varchar(40) NOT NULL, -- 合同编号
 	relativeserialno varchar(40) NULL, -- 关联流水号字段

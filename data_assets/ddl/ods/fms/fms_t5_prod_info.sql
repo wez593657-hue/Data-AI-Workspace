@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_t5_prod_info;
 
+DROP TABLE crmdm.fms_t5_prod_info;
 CREATE TABLE crmdm.fms_t5_prod_info (
 	prod_code varchar(32) NOT NULL, -- 产品代码
 	prod_name varchar(256) NOT NULL, -- 产品名称

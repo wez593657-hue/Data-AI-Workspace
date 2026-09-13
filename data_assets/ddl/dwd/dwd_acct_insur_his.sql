@@ -16,6 +16,7 @@
 
 -- DROP TABLE crmdm.dwd_acct_insur_his;
 
+DROP TABLE crmdm.dwd_acct_insur_his;
 CREATE TABLE crmdm.dwd_acct_insur_his (
     data_date            varchar(10) NULL,      -- 数据日期(归档批次)
     cust_id              varchar(20) NULL,      -- 客户编号

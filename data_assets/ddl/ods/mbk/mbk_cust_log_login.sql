@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.mbk_cust_log_login;
 
+DROP TABLE crmdm.mbk_cust_log_login;
 CREATE TABLE crmdm.mbk_cust_log_login (
 	tran_sn varchar(32) NOT NULL, -- 流水号
 	cust_no varchar(32) NOT NULL, -- 电子银行客户号

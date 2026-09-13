@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_ent_info;
 
+DROP TABLE crmdm.cms_ent_info;
 CREATE TABLE crmdm.cms_ent_info (
 	customerid varchar(40) NOT NULL, -- 客户编号
 	corpid varchar(32) NULL, -- 证件号码

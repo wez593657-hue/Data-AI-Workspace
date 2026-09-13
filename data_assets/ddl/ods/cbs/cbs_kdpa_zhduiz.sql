@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kdpa_zhduiz;
 
+DROP TABLE crmdm.cbs_kdpa_zhduiz;
 CREATE TABLE crmdm.cbs_kdpa_zhduiz (
 	farendma varchar(4) NOT NULL, -- 法人代码
 	kehuzhao varchar(35) NOT NULL, -- 客户账号

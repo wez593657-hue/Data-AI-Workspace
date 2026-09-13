@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_code_library;
 
+DROP TABLE crmdm.cms_code_library;
 CREATE TABLE crmdm.cms_code_library (
 	codeno varchar(32) NOT NULL, -- 代码编号
 	itemno varchar(32) NOT NULL, -- 代码项编号

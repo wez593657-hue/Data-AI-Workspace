@@ -143,8 +143,8 @@
 |----------|----------------|--------------|------|--------|----------|
 | INDX_CODE | 指标编码 | VARCHAR2(100) |  |  |  |
 | DATA_BLNG | 数据归属 | VARCHAR2(100) |  |  |  |
-| STATIS_DIM | 统计维度 | VARCHAR2(100) |  |  |  |
-| STATIS_CALIB | 统计口径 | VARCHAR2(100) |  |  |  |
+| STATIS_DIM | 统计维度(08营销活动/09目标任务) | VARCHAR2(100) |  |  |  |
+| STATIS_CALIB | 统计口径(活动ID或任务ID) | VARCHAR2(100) |  |  |  |
 | CURNT_VAL | 本期值 | NUMBER(20,2) |  |  |  |
 | TERM_LAST_VAL | 上期值 | NUMBER(20,2) |  |  |  |
 | MTH_END_VAL | 月末值 | NUMBER(20,2) |  |  |  |
@@ -191,7 +191,7 @@
 | DEPO_CURNT_DEPO_BAL | 活期余额 | NUMBER(20,2) | TMP_CDR_DTL_CUST_BASE | DEPO_CURNT_DEPO_BAL | 直接取客户余额中间表 |
 | FIXD_DEPO_BAL | 定期余额 | NUMBER(20,2) | TMP_CDR_DTL_CUST_BASE | FIXD_DEPO_BAL | 直接取客户余额中间表 |
 | FIN_AMT | 理财余额 | NUMBER(20,2) | TMP_CDR_DTL_CUST_BASE | FIN_AMT | 直接取客户余额中间表 |
-| STAT_PERD | 统计周期 | VARCHAR2(2) | TMP_CDR_DTL_DUE_WIN | STAT_PERD | 直接取到期窗口统计周期 |
+| STATIS_CYCLE | 统计周期 | VARCHAR2(2) | TMP_CDR_DTL_DUE_WIN | STATIS_CYCLE | 直接取到期窗口统计周期 |
 | STATIS_TYP | 承接类型1-存款2-理财 | VARCHAR2(2) | TMP_CDR_DTL_DUE_WIN | STATIS_TYP | 1 存款、2 理财、0 汇总 |
 | EXPR_AMT | 到期金额 | NUMBER(20,2) | TMP_CDR_DTL_DUE_WIN | EXPR_AMT | 直接取窗口已到期金额 |
 | MATURE_TTL_AMT | 到期总金额 | NUMBER(20,2) | TMP_CDR_DTL_DUE_WIN | MATURE_TTL_AMT | 直接取窗口到期总金额 |
@@ -216,7 +216,7 @@
 | PERSN_LEGAL_BK_CODE | 法人行号 | VARCHAR2(4) | TMP_CDR_STAT_SRC | PERSN_LEGAL_BK_CODE | 直接取统计来源中间表 |
 | DATA_DATE | 数据日期 | VARCHAR2(8) | TMP_CDR_STAT_SRC | DATA_DATE | 直接取统计来源中间表 |
 | STATIS_OBJ | 统计对象 | VARCHAR2(20) | TMP_CDR_STAT_SRC | STATIS_OBJ | 机构维度取机构层级展开结果，客户经理维度取 POST_ID |
-| STATIS_CYCLE | 统计周期 | VARCHAR2(2) | TMP_CDR_STAT_SRC | STAT_PERD | 由明细统计周期映射为统计周期 |
+| STATIS_CYCLE | 统计周期 | VARCHAR2(2) | TMP_CDR_STAT_SRC | STATIS_CYCLE | 由明细统计周期映射为统计周期 |
 | STATIS_TYP | 承接类型0-全部 1-定期存款 2-理财 | VARCHAR2(2) | TMP_CDR_STAT_SRC | STATIS_TYP | 直接取统计来源中间表 |
 | EXPR_CUST_CNT | 已到期客户数 | NUMBER(8) | TMP_CDR_STAT_SRC | EXPR_AMT,CUST_ID | COUNT(DISTINCT CUST_ID) WHERE EXPR_AMT>0 |
 | TTL_EXPR_CUST_CNT | 总到期客户数 | NUMBER(8) | TMP_CDR_STAT_SRC | MATURE_TTL_AMT,CUST_ID | COUNT(DISTINCT CUST_ID) WHERE MATURE_TTL_AMT>0 |

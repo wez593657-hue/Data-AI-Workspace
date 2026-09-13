@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kbrp_jycshu;
 
+DROP TABLE crmdm.cbs_kbrp_jycshu;
 CREATE TABLE crmdm.cbs_kbrp_jycshu (
 	farendma varchar(4) NOT NULL, -- 法人代码
 	jiaoyima varchar(20) NOT NULL, -- 交易码

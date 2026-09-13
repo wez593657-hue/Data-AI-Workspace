@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_acct_rpt_segment;
 
+DROP TABLE crmdm.cms_acct_rpt_segment;
 CREATE TABLE crmdm.cms_acct_rpt_segment (
 	serialno varchar(40) NOT NULL, -- 流水号
 	objectno varchar(40) NULL, -- 对象编号

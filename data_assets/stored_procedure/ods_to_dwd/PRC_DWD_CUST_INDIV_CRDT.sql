@@ -60,7 +60,12 @@ BEGIN
       c.mfcustomerid     AS CUST_ID,             -- 客户编号；核心客户号
       c.customername     AS CUST_NAME,           -- 客户名称
       bc.serialno        AS CRDT_AGRE_NO,        -- 授信协议号；合同流水号
-      bc.creditcycle     AS CRDT_AGRE_TYP,       -- 授信协议类型；映射表未提供可确认来源 使用是否循环
+      CASE
+						 WHEN bc.CREDITCYCLE = '1' THEN
+							'1'
+						 ELSE
+							'0'
+					 END           AS CRDT_AGRE_TYP,       -- 授信协议类型；映射表未提供可确认来源 使用是否循环
       bc.businesssum     AS CRDT_TTL_LMT,        -- 授信额度；单笔授信额度
       bc.putoutdate      AS BGN_DATE,            -- 开始日期；授信起始日期
       bc.maturity        AS EXPR_DATE,           -- 到期日期；映射字段 MaturityDate 在 new 5 中对应 maturity
@@ -74,7 +79,7 @@ BEGIN
       ON bc.customerid = c.customerid
    LEFT JOIN CMS_ORG_INFO tt
     ON bc.OPERATEORGID = tt.ORGID
-   where c.OPERATEORGID is not null
+   where bc.OPERATEORGID is not null
    AND c.mfcustomerid LIKE '1%';
 
   COMMIT;

@@ -13,10 +13,12 @@ AS
   -- 来源表: ADS_CUST_DEADLINE_RMND_DTL, DWS_CUST_ASSE_LIAB, DWD_SYS_ORG
   -- 目标表: ADS_CUST_DEADLINE_RMND_STATIS
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.5.0
+  -- 需求版本: v2.18.0
   -- 关联需求: REQ-CUST-002
   -- 变更记录:
-  --   v2.8.1: 1.注释规范化：补齐输入输出参数、变量、各处理段及列定义注释
+  --   v2.10.0: 删除尾部V1数据验证段（冻结一致性/6字段一致性/跨期互斥/率值值域/行数一致性，-20023 FAIL即中止）及其专属V_FAIL_CNT变量；段1的TMP_CDR_VALIDATE_RESULT TRUNCATE同步移除；保留4.0冻结快照与两期计算
+   --   v2.9.0: 周期列命名统一：源DTL表/STAT_BASE/STAT_SRC临时表STAT_PERD列改STATIS_CYCLE（与DTL链及ADS_CUST_DEADLINE_RMND_STATIS目标列对齐）；临时表DDL/映射/需求文档同步
+   --   v2.8.1: 1.注释规范化：补齐输入输出参数、变量、各处理段及列定义注释
   --           2.第4段改为按承接类型(STATIS_TYP 0-全部/1-定期存款/2-理财)分段独立计算并UNION ALL写入
   --   v2.6.0: 1.统计表方案B(口径36)：上期统计行冻结维度与基础列，仅更新6个率值列
   --           2.DATA_DATE双语义(口径37)：本期行=跑批日期V_SYSDAT，上期行=期末日期
@@ -101,7 +103,6 @@ BEGIN
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_CDR_STAT_CURR_STAGE';
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_CDR_STAT_PREV_STAGE';
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_CDR_STAT_FREEZE_LOG';
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_CDR_VALIDATE_RESULT';
   COMMIT;
 
   OUTCDE := 0;
@@ -124,7 +125,7 @@ BEGIN
   INSERT INTO TMP_CDR_STAT_BASE (
       PERSN_LEGAL_BK_CODE,          -- 法人行号
       DATA_DATE,                    -- 数据日期（周期结束日）
-      STAT_PERD,                    -- 统计周期（M/Q/Y）
+      STATIS_CYCLE,                    -- 统计周期（M/Q/Y）
       STATIS_TYP,                   -- 承接类型（0-全部/1-定期存款/2-理财）
       CUST_ID,                      -- 客户编号
       ORG_ID,                       -- 归属机构（DWS取值，与法人行1:1）
@@ -139,36 +140,57 @@ BEGIN
       FRST_MATURE_PK_BF_DAY_AUM_BAL,-- 本期第一笔到期前一日AUM（留存率分母）
       CURR_AUM_BAL                  -- 当前AUM（当前时点DWS，客户+法人行聚合）
   )
-  SELECT d.PERSN_LEGAL_BK_CODE,
-         d.DATA_DATE,
-         d.STAT_PERD,
-         d.STATIS_TYP,
-         d.CUST_ID,
-         d.ORG_ID,
-         d.POST_ID,
-         NVL(d.EXPR_AMT, 0),
-         NVL(d.MATURE_TTL_AMT, 0),
-         NVL(d.TAKE_RATE, 0),
-         d.UNDTAKE_STATE,
-         NVL(d.FIXED_MATURE_TRAN_FIN_AMT, 0),
-         NVL(d.FIXED_FIN_MATURE_TRAN_INSUR_AMT, 0),
-         NVL(d.FIN_MATURE_TRAN_FIXED_AMT, 0),
-         NVL(d.FRST_MATURE_PK_BF_DAY_AUM_BAL, 0),
-         NVL(a.CURR_AUM_BAL, 0)
-    FROM ADS_CUST_DEADLINE_RMND_DTL d
-    LEFT JOIN (
-        SELECT x.CUST_ID, x.PERSN_LEGAL_BK_CODE, SUM(NVL(x.AUM_BAL, 0)) AS CURR_AUM_BAL
-          FROM DWS_CUST_ASSE_LIAB x
-         WHERE x.DATA_DATE = V_SYSDAT
-           AND x.BAL_TYPE = '1'
-         GROUP BY x.CUST_ID, x.PERSN_LEGAL_BK_CODE
-    ) a
-      ON a.CUST_ID = d.CUST_ID
-      AND A.PERSN_LEGAL_BK_CODE = D.PERSN_LEGAL_BK_CODE
-   -- v2.6.0(口径37): 本期行DATA_DATE=V_SYSDAT；上期行DATA_DATE=上期期末日期
-   WHERE (d.STAT_PERD = 'M' AND d.DATA_DATE IN (V_SYSDAT, V_PREV_MONTH_END))
-      OR (d.STAT_PERD = 'Q' AND d.DATA_DATE IN (V_SYSDAT, V_PREV_QUARTER_END))
-      OR (d.STAT_PERD = 'Y' AND d.DATA_DATE IN (V_SYSDAT, V_PREV_YEAR_END));
+  WITH d_filter AS (
+    SELECT d.*
+      FROM ADS_CUST_DEADLINE_RMND_DTL d
+     WHERE d.STATIS_CYCLE = 'M'
+       AND d.DATA_DATE IN (V_SYSDAT, V_PREV_MONTH_END)
+    UNION ALL
+    SELECT d.*
+      FROM ADS_CUST_DEADLINE_RMND_DTL d
+     WHERE d.STATIS_CYCLE = 'Q'
+       AND d.DATA_DATE IN (V_SYSDAT, V_PREV_QUARTER_END)
+    UNION ALL
+    SELECT d.*
+      FROM ADS_CUST_DEADLINE_RMND_DTL d
+     WHERE d.STATIS_CYCLE = 'Y'
+       AND d.DATA_DATE IN (V_SYSDAT, V_PREV_YEAR_END)
+  ),
+  a AS (
+    SELECT x.CUST_ID,
+           x.PERSN_LEGAL_BK_CODE,
+           SUM(NVL(x.AUM_BAL, 0)) AS CURR_AUM_BAL
+      FROM DWS_CUST_ASSE_LIAB x
+     WHERE x.DATA_DATE = V_SYSDAT
+       AND x.BAL_TYPE = '1'
+       AND EXISTS (
+           SELECT 1
+             FROM d_filter d
+            WHERE d.CUST_ID = x.CUST_ID
+              AND d.PERSN_LEGAL_BK_CODE = x.PERSN_LEGAL_BK_CODE
+       )
+     GROUP BY x.CUST_ID, x.PERSN_LEGAL_BK_CODE
+)
+SELECT d.PERSN_LEGAL_BK_CODE,
+       d.DATA_DATE,
+       d.STATIS_CYCLE,
+       d.STATIS_TYP,
+       d.CUST_ID,
+       d.ORG_ID,
+       d.POST_ID,
+       NVL(d.EXPR_AMT, 0),
+       NVL(d.MATURE_TTL_AMT, 0),
+       NVL(d.TAKE_RATE, 0),
+       d.UNDTAKE_STATE,
+       NVL(d.FIXED_MATURE_TRAN_FIN_AMT, 0),
+       NVL(d.FIXED_FIN_MATURE_TRAN_INSUR_AMT, 0),
+       NVL(d.FIN_MATURE_TRAN_FIXED_AMT, 0),
+       NVL(d.FRST_MATURE_PK_BF_DAY_AUM_BAL, 0),
+       NVL(a.CURR_AUM_BAL, 0)
+  FROM d_filter d
+  LEFT JOIN a
+    ON a.CUST_ID = d.CUST_ID
+   AND a.PERSN_LEGAL_BK_CODE = d.PERSN_LEGAL_BK_CODE;
   COMMIT;
 
   OUTCDE := 0;
@@ -191,7 +213,7 @@ BEGIN
       PERSN_LEGAL_BK_CODE,          -- 法人行号
       STATIS_OBJ,                   -- 统计对象（机构ID/管户经理岗位ID）
       DATA_DATE,                    -- 数据日期（周期结束日）
-      STAT_PERD,                    -- 统计周期（M/Q/Y）
+      STATIS_CYCLE,                    -- 统计周期（M/Q/Y）
       STATIS_TYP,                   -- 承接类型（0-全部/1-定期存款/2-理财）
       CUST_ID,                      -- 客户编号
       ORG_ID,                       -- 归属机构
@@ -208,7 +230,7 @@ BEGIN
   )
   SELECT b.PERSN_LEGAL_BK_CODE,
          o.ANCESTOR_ORG_ID,
-         b.DATA_DATE, b.STAT_PERD, b.STATIS_TYP, b.CUST_ID, b.ORG_ID, b.POST_ID,
+         b.DATA_DATE, b.STATIS_CYCLE, b.STATIS_TYP, b.CUST_ID, b.ORG_ID, b.POST_ID,
          b.EXPR_AMT, b.MATURE_TTL_AMT, b.TAKE_RATE_30D, b.CUST_TAKE_FLG,
          b.FIXED_MATURE_TRAN_FIN_AMT, b.FIXED_FIN_MATURE_TRAN_INSUR_AMT, b.FIN_MATURE_TRAN_FIXED_AMT,
          b.FRST_MATURE_PK_BF_DAY_AUM_BAL, b.CURR_AUM_BAL
@@ -228,7 +250,7 @@ BEGIN
   UNION ALL
   SELECT b.PERSN_LEGAL_BK_CODE,
          b.POST_ID,
-         b.DATA_DATE, b.STAT_PERD, b.STATIS_TYP, b.CUST_ID, b.ORG_ID, b.POST_ID,
+         b.DATA_DATE, b.STATIS_CYCLE, b.STATIS_TYP, b.CUST_ID, b.ORG_ID, b.POST_ID,
          b.EXPR_AMT, b.MATURE_TTL_AMT, b.TAKE_RATE_30D, b.CUST_TAKE_FLG,
          b.FIXED_MATURE_TRAN_FIN_AMT, b.FIXED_FIN_MATURE_TRAN_INSUR_AMT, b.FIN_MATURE_TRAN_FIXED_AMT,
          b.FRST_MATURE_PK_BF_DAY_AUM_BAL, b.CURR_AUM_BAL
@@ -244,16 +266,15 @@ BEGIN
   SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
 
   --***************************************
-  -- 2.3 -- 第4段处理开始：两期分离计算与验证（v3.0.0，单个BEGIN...END分段落）
-  -- 业务含义：本期/上期/验证统计逻辑位于同一个匿名块内，以注释段落分隔；方案B(口径36)
+  -- 2.3 -- 第4段处理开始：两期分离计算（v3.0.0，单个BEGIN...END分段落）
+  -- 业务含义：本期/上期统计逻辑位于同一个匿名块内，以注释段落分隔；方案B(口径36)
   -- 数据来源：TMP_CDR_STAT_SRC（已按机构/管户经理展开，含三种承接类型行）
-  -- 处理逻辑：4.0上期冻结快照 / 4.1本期计算段(C1/C2) / 4.2上期计算段(P1/P2) / 4.3验证段(V1，FAIL即中止)
+  -- 处理逻辑：4.0上期冻结快照 / 4.1本期计算段(C1/C2) / 4.2上期计算段(P1/P2)
   --***************************************
   V_NO_ID := '4';
   V_BGN_DATE := SYSDATE;
 
   DECLARE
-    V_FAIL_CNT INTEGER := 0;   -- 验证段失败计数（块级局部变量）
   BEGIN
   -- 4.0 上期统计冻结快照（供验证段比对9基础列是否被修改）
   INSERT INTO TMP_CDR_STAT_FREEZE_LOG (
@@ -291,7 +312,7 @@ BEGIN
       SELECT s.PERSN_LEGAL_BK_CODE,
              s.DATA_DATE,
              s.STATIS_OBJ,
-             s.STAT_PERD,
+             s.STATIS_CYCLE,
              '0' AS STATIS_TYP,
              COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS EXPR_CUST_CNT,
              COUNT(DISTINCT CASE WHEN s.MATURE_TTL_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS TTL_EXPR_CUST_CNT,
@@ -311,36 +332,36 @@ BEGIN
                          WHERE x.PERSN_LEGAL_BK_CODE = s.PERSN_LEGAL_BK_CODE
                            AND x.DATA_DATE = s.DATA_DATE
                            AND x.STATIS_OBJ = s.STATIS_OBJ
-                           AND x.STAT_PERD = s.STAT_PERD
+                           AND x.STATIS_CYCLE = s.STATIS_CYCLE
                            AND x.STATIS_TYP = '1')
                        / NULLIF((SELECT SUM(x.EXPR_AMT) FROM TMP_CDR_STAT_SRC x
                          WHERE x.PERSN_LEGAL_BK_CODE = s.PERSN_LEGAL_BK_CODE
                            AND x.DATA_DATE = s.DATA_DATE
                            AND x.STATIS_OBJ = s.STATIS_OBJ
-                           AND x.STAT_PERD = s.STAT_PERD
+                           AND x.STATIS_CYCLE = s.STATIS_CYCLE
                            AND x.STATIS_TYP = '1'), 0) * 100, 2), 0) AS DEPO_TO_FIN_CONVRS_RATE,
              NVL(ROUND(SUM(s.FIXED_FIN_MATURE_TRAN_INSUR_AMT) / NULLIF(SUM(s.EXPR_AMT), 0) * 100, 2), 0) AS INSUR_CONVRS_RATE,
              NVL(ROUND((SELECT NVL(SUM(x.FIN_MATURE_TRAN_FIXED_AMT), 0) FROM TMP_CDR_STAT_SRC x
                          WHERE x.PERSN_LEGAL_BK_CODE = s.PERSN_LEGAL_BK_CODE
                            AND x.DATA_DATE = s.DATA_DATE
                            AND x.STATIS_OBJ = s.STATIS_OBJ
-                           AND x.STAT_PERD = s.STAT_PERD
+                           AND x.STATIS_CYCLE = s.STATIS_CYCLE
                            AND x.STATIS_TYP = '2')
                        / NULLIF((SELECT SUM(x.EXPR_AMT) FROM TMP_CDR_STAT_SRC x
                          WHERE x.PERSN_LEGAL_BK_CODE = s.PERSN_LEGAL_BK_CODE
                            AND x.DATA_DATE = s.DATA_DATE
                            AND x.STATIS_OBJ = s.STATIS_OBJ
-                           AND x.STAT_PERD = s.STAT_PERD
+                           AND x.STATIS_CYCLE = s.STATIS_CYCLE
                            AND x.STATIS_TYP = '2'), 0) * 100, 2), 0) AS FIN_TO_DEPO_CONVRS_RATE
         FROM TMP_CDR_STAT_SRC s
        WHERE s.STATIS_TYP = '0'
-       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STAT_PERD
+       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STATIS_CYCLE
       UNION ALL
       -- 承接类型 1-定期存款
       SELECT s.PERSN_LEGAL_BK_CODE,
              s.DATA_DATE,
              s.STATIS_OBJ,
-             s.STAT_PERD,
+             s.STATIS_CYCLE,
              '1' AS STATIS_TYP,
              COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS EXPR_CUST_CNT,
              COUNT(DISTINCT CASE WHEN s.MATURE_TTL_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS TTL_EXPR_CUST_CNT,
@@ -361,13 +382,13 @@ BEGIN
              0 AS FIN_TO_DEPO_CONVRS_RATE
         FROM TMP_CDR_STAT_SRC s
        WHERE s.STATIS_TYP = '1'
-       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STAT_PERD
+       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STATIS_CYCLE
       UNION ALL
       -- 承接类型 2-理财
       SELECT s.PERSN_LEGAL_BK_CODE,
              s.DATA_DATE,
              s.STATIS_OBJ,
-             s.STAT_PERD,
+             s.STATIS_CYCLE,
              '2' AS STATIS_TYP,
              COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS EXPR_CUST_CNT,
              COUNT(DISTINCT CASE WHEN s.MATURE_TTL_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS TTL_EXPR_CUST_CNT,
@@ -388,7 +409,7 @@ BEGIN
              NVL(ROUND(SUM(s.FIN_MATURE_TRAN_FIXED_AMT) / NULLIF(SUM(s.EXPR_AMT), 0) * 100, 2), 0) AS FIN_TO_DEPO_CONVRS_RATE
         FROM TMP_CDR_STAT_SRC s
        WHERE s.STATIS_TYP = '2'
-       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STAT_PERD
+       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STATIS_CYCLE
     ) WHERE DATA_DATE = V_SYSDAT;   -- 边界检查：仅本期统计源行
 
     -- 边界检查：本期统计结果 DATA_DATE 必须全部等于跑批日期
@@ -440,7 +461,7 @@ BEGIN
       SELECT s.PERSN_LEGAL_BK_CODE,
              s.DATA_DATE,
              s.STATIS_OBJ,
-             s.STAT_PERD,
+             s.STATIS_CYCLE,
              '0' AS STATIS_TYP,
              COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS EXPR_CUST_CNT,
              COUNT(DISTINCT CASE WHEN s.MATURE_TTL_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS TTL_EXPR_CUST_CNT,
@@ -460,36 +481,36 @@ BEGIN
                          WHERE x.PERSN_LEGAL_BK_CODE = s.PERSN_LEGAL_BK_CODE
                            AND x.DATA_DATE = s.DATA_DATE
                            AND x.STATIS_OBJ = s.STATIS_OBJ
-                           AND x.STAT_PERD = s.STAT_PERD
+                           AND x.STATIS_CYCLE = s.STATIS_CYCLE
                            AND x.STATIS_TYP = '1')
                        / NULLIF((SELECT SUM(x.EXPR_AMT) FROM TMP_CDR_STAT_SRC x
                          WHERE x.PERSN_LEGAL_BK_CODE = s.PERSN_LEGAL_BK_CODE
                            AND x.DATA_DATE = s.DATA_DATE
                            AND x.STATIS_OBJ = s.STATIS_OBJ
-                           AND x.STAT_PERD = s.STAT_PERD
+                           AND x.STATIS_CYCLE = s.STATIS_CYCLE
                            AND x.STATIS_TYP = '1'), 0) * 100, 2), 0) AS DEPO_TO_FIN_CONVRS_RATE,
              NVL(ROUND(SUM(s.FIXED_FIN_MATURE_TRAN_INSUR_AMT) / NULLIF(SUM(s.EXPR_AMT), 0) * 100, 2), 0) AS INSUR_CONVRS_RATE,
              NVL(ROUND((SELECT NVL(SUM(x.FIN_MATURE_TRAN_FIXED_AMT), 0) FROM TMP_CDR_STAT_SRC x
                          WHERE x.PERSN_LEGAL_BK_CODE = s.PERSN_LEGAL_BK_CODE
                            AND x.DATA_DATE = s.DATA_DATE
                            AND x.STATIS_OBJ = s.STATIS_OBJ
-                           AND x.STAT_PERD = s.STAT_PERD
+                           AND x.STATIS_CYCLE = s.STATIS_CYCLE
                            AND x.STATIS_TYP = '2')
                        / NULLIF((SELECT SUM(x.EXPR_AMT) FROM TMP_CDR_STAT_SRC x
                          WHERE x.PERSN_LEGAL_BK_CODE = s.PERSN_LEGAL_BK_CODE
                            AND x.DATA_DATE = s.DATA_DATE
                            AND x.STATIS_OBJ = s.STATIS_OBJ
-                           AND x.STAT_PERD = s.STAT_PERD
+                           AND x.STATIS_CYCLE = s.STATIS_CYCLE
                            AND x.STATIS_TYP = '2'), 0) * 100, 2), 0) AS FIN_TO_DEPO_CONVRS_RATE
         FROM TMP_CDR_STAT_SRC s
        WHERE s.STATIS_TYP = '0'
-       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STAT_PERD
+       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STATIS_CYCLE
       UNION ALL
       -- 承接类型 1-定期存款
       SELECT s.PERSN_LEGAL_BK_CODE,
              s.DATA_DATE,
              s.STATIS_OBJ,
-             s.STAT_PERD,
+             s.STATIS_CYCLE,
              '1' AS STATIS_TYP,
              COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS EXPR_CUST_CNT,
              COUNT(DISTINCT CASE WHEN s.MATURE_TTL_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS TTL_EXPR_CUST_CNT,
@@ -510,13 +531,13 @@ BEGIN
              0 AS FIN_TO_DEPO_CONVRS_RATE
         FROM TMP_CDR_STAT_SRC s
        WHERE s.STATIS_TYP = '1'
-       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STAT_PERD
+       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STATIS_CYCLE
       UNION ALL
       -- 承接类型 2-理财
       SELECT s.PERSN_LEGAL_BK_CODE,
              s.DATA_DATE,
              s.STATIS_OBJ,
-             s.STAT_PERD,
+             s.STATIS_CYCLE,
              '2' AS STATIS_TYP,
              COUNT(DISTINCT CASE WHEN s.EXPR_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS EXPR_CUST_CNT,
              COUNT(DISTINCT CASE WHEN s.MATURE_TTL_AMT > 0 THEN s.CUST_ID || CHR(1) || s.PERSN_LEGAL_BK_CODE || CHR(1) || s.ORG_ID END) AS TTL_EXPR_CUST_CNT,
@@ -537,7 +558,7 @@ BEGIN
              NVL(ROUND(SUM(s.FIN_MATURE_TRAN_FIXED_AMT) / NULLIF(SUM(s.EXPR_AMT), 0) * 100, 2), 0) AS FIN_TO_DEPO_CONVRS_RATE
         FROM TMP_CDR_STAT_SRC s
        WHERE s.STATIS_TYP = '2'
-       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STAT_PERD
+       GROUP BY s.PERSN_LEGAL_BK_CODE, s.DATA_DATE, s.STATIS_OBJ, s.STATIS_CYCLE
     ) WHERE DATA_DATE IN (V_PREV_MONTH_END, V_PREV_QUARTER_END, V_PREV_YEAR_END);  -- 边界检查：仅上期周期实例(口径38)
 
     -- 边界检查：上期统计结果 DATA_DATE 必须与上期期末日期一一对应
@@ -591,108 +612,6 @@ BEGIN
     V_LOG_FLG := OUTCDE;
     SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, 'P2', V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
     -- ========== 【上期计算段】结束 ==========
-    -- ========== 【数据验证段】开始（冻结/一致性/互斥/值域/行数，FAIL即中止）==========
-    V_NO_ID := 'V1';
-    V_BGN_DATE := SYSDATE;
-
-    -- V1: 上期9基础列冻结校验（STAT_FREEZE_LOG vs 目标表当前上期行）
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'P', 'FREEZE_BASE_9',
-           CASE WHEN NOT EXISTS (
-                    SELECT PERSN_LEGAL_BK_CODE, DATA_DATE, STATIS_OBJ, STATIS_CYCLE, STATIS_TYP,
-                           EXPR_CUST_CNT, TTL_EXPR_CUST_CNT, EXPR_AMT, TTL_EXPR_AMT
-                      FROM TMP_CDR_STAT_FREEZE_LOG
-                    MINUS
-                    SELECT PERSN_LEGAL_BK_CODE, DATA_DATE, STATIS_OBJ, STATIS_CYCLE, STATIS_TYP,
-                           EXPR_CUST_CNT, TTL_EXPR_CUST_CNT, EXPR_AMT, TTL_EXPR_AMT
-                      FROM ADS_CUST_DEADLINE_RMND_STATIS
-                     WHERE DATA_DATE IN (V_PREV_MONTH_END, V_PREV_QUARTER_END, V_PREV_YEAR_END))
-                AND NOT EXISTS (
-                    SELECT PERSN_LEGAL_BK_CODE, DATA_DATE, STATIS_OBJ, STATIS_CYCLE, STATIS_TYP,
-                           EXPR_CUST_CNT, TTL_EXPR_CUST_CNT, EXPR_AMT, TTL_EXPR_AMT
-                      FROM ADS_CUST_DEADLINE_RMND_STATIS
-                     WHERE DATA_DATE IN (V_PREV_MONTH_END, V_PREV_QUARTER_END, V_PREV_YEAR_END)
-                    MINUS
-                    SELECT PERSN_LEGAL_BK_CODE, DATA_DATE, STATIS_OBJ, STATIS_CYCLE, STATIS_TYP,
-                           EXPR_CUST_CNT, TTL_EXPR_CUST_CNT, EXPR_AMT, TTL_EXPR_AMT
-                      FROM TMP_CDR_STAT_FREEZE_LOG)
-           THEN 'PASS' ELSE 'FAIL' END,
-           '上期9基础列冻结校验（方案B/口径36）', SYSDATE FROM dual;
-
-    -- V2: 上期6率值列一致性（目标表上期行 vs PREV_STAGE）
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'P', 'PREV_6RATES_CONSISTENT',
-           CASE WHEN NOT EXISTS (
-                    SELECT PERSN_LEGAL_BK_CODE, DATA_DATE, STATIS_OBJ, STATIS_CYCLE, STATIS_TYP,
-                           CUST_UNDTAKE_RATE, ASSET_KEEP_RATE, ASSET_UNDTAKE_RATE,
-                           DEPO_TO_FIN_CONVRS_RATE, INSUR_CONVRS_RATE, FIN_TO_DEPO_CONVRS_RATE
-                      FROM TMP_CDR_STAT_PREV_STAGE
-                    MINUS
-                    SELECT PERSN_LEGAL_BK_CODE, DATA_DATE, STATIS_OBJ, STATIS_CYCLE, STATIS_TYP,
-                           CUST_UNDTAKE_RATE, ASSET_KEEP_RATE, ASSET_UNDTAKE_RATE,
-                           DEPO_TO_FIN_CONVRS_RATE, INSUR_CONVRS_RATE, FIN_TO_DEPO_CONVRS_RATE
-                      FROM ADS_CUST_DEADLINE_RMND_STATIS
-                     WHERE DATA_DATE IN (V_PREV_MONTH_END, V_PREV_QUARTER_END, V_PREV_YEAR_END))
-           THEN 'PASS' ELSE 'FAIL' END,
-           '上期6率值列一致性校验', SYSDATE FROM dual;
-
-    -- V3: 本期结果不得包含上期日期（DATA_DATE互斥）
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'C', 'CURR_NO_PREV_DATE',
-           CASE WHEN EXISTS (SELECT 1 FROM TMP_CDR_STAT_CURR_STAGE
-                              WHERE DATA_DATE IN (V_PREV_MONTH_END, V_PREV_QUARTER_END, V_PREV_YEAR_END))
-                THEN 'FAIL' ELSE 'PASS' END,
-           '本期统计结果与上期日期互斥校验', SYSDATE FROM dual;
-
-    -- V4: 率值域（两期独立校验，率值>=0且非空）
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'C', 'RATE_DOMAIN_CURR',
-           CASE WHEN EXISTS (SELECT 1 FROM TMP_CDR_STAT_CURR_STAGE
-                              WHERE CUST_UNDTAKE_RATE IS NULL OR CUST_UNDTAKE_RATE < 0
-                                 OR ASSET_KEEP_RATE IS NULL OR ASSET_KEEP_RATE < 0
-                                 OR ASSET_UNDTAKE_RATE IS NULL OR ASSET_UNDTAKE_RATE < 0)
-                THEN 'FAIL' ELSE 'PASS' END,
-           '本期统计率值域校验', SYSDATE FROM dual;
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'P', 'RATE_DOMAIN_PREV',
-           CASE WHEN EXISTS (SELECT 1 FROM TMP_CDR_STAT_PREV_STAGE
-                              WHERE CUST_UNDTAKE_RATE IS NULL OR CUST_UNDTAKE_RATE < 0
-                                 OR ASSET_KEEP_RATE IS NULL OR ASSET_KEEP_RATE < 0
-                                 OR ASSET_UNDTAKE_RATE IS NULL OR ASSET_UNDTAKE_RATE < 0)
-                THEN 'FAIL' ELSE 'PASS' END,
-           '上期统计率值域校验', SYSDATE FROM dual;
-
-    -- V5: stage与目标表行数一致性（两期独立校验）
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'C', 'ROWCOUNT_CONSISTENT_CURR',
-           CASE WHEN (SELECT COUNT(*) FROM TMP_CDR_STAT_CURR_STAGE)
-                  = (SELECT COUNT(*) FROM ADS_CUST_DEADLINE_RMND_STATIS WHERE DATA_DATE = V_SYSDAT)
-                THEN 'PASS' ELSE 'FAIL' END,
-           '本期统计stage与目标表行数一致性', SYSDATE FROM dual;
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'P', 'ROWCOUNT_CONSISTENT_PREV',
-           CASE WHEN (SELECT COUNT(*) FROM TMP_CDR_STAT_PREV_STAGE)
-                  = (SELECT COUNT(*) FROM ADS_CUST_DEADLINE_RMND_STATIS
-                      WHERE DATA_DATE IN (V_PREV_MONTH_END, V_PREV_QUARTER_END, V_PREV_YEAR_END))
-                THEN 'PASS' ELSE 'FAIL' END,
-           '上期统计stage与目标表行数一致性', SYSDATE FROM dual;
-
-    COMMIT;
-
-    -- 任一FAIL即中止批次（防止污染数据后继续）
-    SELECT COUNT(*) INTO V_FAIL_CNT
-      FROM TMP_CDR_VALIDATE_RESULT
-     WHERE BATCH_DATE = V_SYSDAT AND RESULT = 'FAIL';
-    IF V_FAIL_CNT > 0 THEN
-      RAISE_APPLICATION_ERROR(-20023, '统计数据验证失败：' || V_FAIL_CNT || ' 项校验未通过');
-    END IF;
-    V_END_DATE := SYSDATE;
-    V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-    OUTCDE := 0;
-    V_LOG_MSG := '统计数据验证段完成：两期结果准确性与独立性校验通过';
-    V_LOG_FLG := OUTCDE;
-    SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, 'V1', V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);
-    -- ========== 【数据验证段】结束 ==========
   END;
   DELETE FROM ADS_CUST_DEADLINE_RMND_STATIS t
    WHERE t.DATA_DATE NOT IN (

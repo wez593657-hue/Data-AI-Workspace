@@ -19,6 +19,8 @@ AS
   --                     直接聚合INSUR_AMT生成保险余额，删除2.3-2.10中间段
   --   v4.0.0 2026-08-13 统一四类产品明细维度；保险按客户、账户、产品、渠道、办理日期、投保单号、机构等维度贯通；
   --                     新增CHNL_NO、ISSU_DATE、IOU_NO并纳入当日聚合、历史累计及当前/历史表写入键。
+  --   v4.1.0 2026-09-09 仅月末跑批日期才向DWS_CUST_ASSE_LIAB_CUMU_HIS入数，非月末批次跳过历史表写入。
+  --   v4.2.0 2026-09-09 历史表入数口径调整：恢复日批次入数；新增保留范围外历史数据清理，仅保留月末及当月数据。
   ------------------------------------------------------------------
   ------------------------------------------------------------------
   --***************************************
@@ -68,7 +70,8 @@ BEGIN
   V_BGN_DATE := SYSDATE;
 
   DELETE FROM DWS_CUST_ASSE_LIAB_CUMU
-   WHERE DATA_DATE = V_DATA_DATE;
+--   WHERE DATA_DATE = V_DATA_DATE
+   ;
 
   DELETE FROM DWS_CUST_ASSE_LIAB_CUMU_HIS
    WHERE DATA_DATE = V_DATA_DATE;
@@ -495,7 +498,8 @@ BEGIN
 
   --***************************************
   -- 2.16 写入客户资产负债基数历史表
-  -- 作用：把当日当前表结果同步写入历史表，供后续日期直接取上一日累计余额。
+  -- 作用：日批次把当日当前表结果同步写入历史表，供后续日期直接取上一日累计余额；
+  --       并清理保留范围外历史数据：仅保留月末及当月数据（v4.2.0）。
   --***************************************
   V_NO_ID := '16';
   V_BGN_DATE := SYSDATE;
@@ -542,12 +546,17 @@ BEGIN
   FROM DWS_CUST_ASSE_LIAB_CUMU C
   WHERE C.DATA_DATE = V_DATA_DATE;
 
+  -- 保留口径：仅保留月末及当月数据，清理保留范围外的历史数据（早于当月初且非月末）
+  DELETE FROM DWS_CUST_ASSE_LIAB_CUMU_HIS
+   WHERE DATA_DATE < V_MTH_BEGIN
+     AND TO_CHAR(LAST_DAY(TO_DATE(DATA_DATE, 'YYYYMMDD')), 'YYYYMMDD') <> DATA_DATE;
+
   COMMIT;
 
   OUTCDE      := 0;
   V_END_DATE  := SYSDATE;
   V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-  V_LOG_MSG   := '2.16 写入客户资产负债基数历史表';
+  V_LOG_MSG   := '2.16 写入客户资产负债基数历史表并清理保留范围外数据';
   V_LOG_FLG   := OUTCDE;
 
   SYS_PRC_STEP_LOGS(V_SYSDAT, V_PRC_NAME, V_PRC_DESC, V_NO_ID, V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON);

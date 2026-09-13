@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cbs_kdpa_zhbcxx;
 
+DROP TABLE crmdm.cbs_kdpa_zhbcxx;
 CREATE TABLE crmdm.cbs_kdpa_zhbcxx (
 	farendma varchar(4) NOT NULL, -- 法人代码
 	zhanghao varchar(40) NOT NULL, -- 负债账号

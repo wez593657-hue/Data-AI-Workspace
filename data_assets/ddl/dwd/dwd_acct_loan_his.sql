@@ -10,6 +10,7 @@
 
 -- DROP TABLE crmdm.dwd_acct_loan_his;
 
+DROP TABLE crmdm.dwd_acct_loan_his;
 CREATE TABLE crmdm.dwd_acct_loan_his (
     cust_id varchar(20) NULL,
     cust_typ varchar(6) NULL,

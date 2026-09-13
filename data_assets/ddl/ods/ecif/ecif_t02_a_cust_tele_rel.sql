@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ecif_t02_a_cust_tele_rel;
 
+DROP TABLE crmdm.ecif_t02_a_cust_tele_rel;
 CREATE TABLE crmdm.ecif_t02_a_cust_tele_rel (
 	tele_seq_id bpchar(20) NOT NULL, -- 电话关系记录编号
 	party_id bpchar(20) NOT NULL, -- 参与人ID

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.uepp_pay_mct_platform;
 
+DROP TABLE crmdm.uepp_pay_mct_platform;
 CREATE TABLE crmdm.uepp_pay_mct_platform (
 	r_id varchar(40) NOT NULL, -- 平台商户二级商户关联ID
 	platform_mct_id varchar(40) NULL, -- 平台商户id

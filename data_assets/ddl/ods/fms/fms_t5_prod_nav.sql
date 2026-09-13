@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_t5_prod_nav;
 
+DROP TABLE crmdm.fms_t5_prod_nav;
 CREATE TABLE crmdm.fms_t5_prod_nav (
 	prod_code varchar(32) NOT NULL, -- 产品代码
 	nav_date bpchar(8) NOT NULL, -- 净值日期

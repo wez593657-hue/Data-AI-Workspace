@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ecif_t02_a_cust_addr_rel;
 
+DROP TABLE crmdm.ecif_t02_a_cust_addr_rel;
 CREATE TABLE crmdm.ecif_t02_a_cust_addr_rel (
 	addr_seq_id bpchar(20) NOT NULL, -- 地址关系记录编号
 	party_id bpchar(20) NOT NULL, -- 参与人ID

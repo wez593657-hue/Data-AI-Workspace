@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_td_cust_vol;
 
+DROP TABLE crmdm.fms_td_cust_vol;
 CREATE TABLE crmdm.fms_td_cust_vol (
 	fnc_trans_acct_no varchar(24) NULL, -- 理财交易账号
 	ta_acct_no varchar(32) NULL, -- TA账号

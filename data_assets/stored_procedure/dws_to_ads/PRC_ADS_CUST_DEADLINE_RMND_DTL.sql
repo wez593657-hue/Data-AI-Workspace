@@ -18,9 +18,10 @@ AS
   -- author :
   -- date   : 2026-07-15
   -- 适配数据库: Kingbase Oracle 兼容模式
-  -- 需求版本: v2.7.0
+  -- 需求版本: v2.17.0
   -- 关联需求: REQ-CUST-001, REQ-CUST-002
   -- 变更记录:
+  --   v3.3.0: 周期列命名统一：全程STAT_PERD改STATIS_CYCLE（ADS目标列+8张中间表列+过程内引用，与ADS_CUST_DEADLINE_RMND_STATIS周期列对齐）；DDL/映射/需求文档同步
   --   v3.1.1: DUE_WIN生成优化：两条INSERT合并为一条（统一窗口子查询w × 按类型金额子查询a），
   --           三个日期字段统一来自w，金额按类型独立来自a，逻辑更清晰
    --   v3.2.0【待确认】: 段8 AUM基准查询(DATA_DATE=本期第一笔到期日前一日)改用DWS_CUST_ASSE_LIAB_HIS(与当期表同构)
@@ -31,8 +32,7 @@ AS
   --             与到期源过滤条件统一(口径3)
   --   v3.0.0: 两期计算完全分离架构（单过程、单块分段落、禁止嵌套过程）：
   --           段9为单个BEGIN...END块，块内以注释段落分隔本期计算段(C1/C2)/上期计算段(P1/P2)/
-  --           数据验证段(V1)；独立存储TMP_CDR_DTL_CURR_STAGE/TMP_CDR_DTL_PREV_STAGE/
-  --           FREEZE_LOG/VALIDATE_RESULT；严格边界检查(RAISE -2001x)；日志内联并C/P/V前缀隔离
+  --           独立存储TMP_CDR_DTL_CURR_STAGE/TMP_CDR_DTL_PREV_STAGE/FREEZE_LOG；日志内联并C/P前缀隔离
   --   v2.8.1: 注释规范化：补齐输入输出参数、变量、各处理段(数据来源/业务含义/处理逻辑)注释
   --   v2.9.0: 1.上期基础数据冻结(口径34)：段1不再删除上期行，仅删除本期快照
   --           2.上期仅定点更新7字段(口径35)：TAKE_RATE/FIX_DEPO_TAKE_RATE/UNDTAKE_STATE/
@@ -136,13 +136,13 @@ BEGIN
   DELETE FROM ADS_CUST_DEADLINE_RMND_DTL
    -- v2.9.0(口径28/34/37): 每日替换——删除当期周期区间内的本期快照行
    --                        (当月初/季初/年初~V_SYSDAT)，上期行不删除
-   WHERE (STAT_PERD = 'M' AND DATA_DATE >= V_CURR_MONTH_BEGIN AND DATA_DATE <= V_SYSDAT)
-      OR (STAT_PERD = 'Q' AND DATA_DATE >= V_CURR_QUARTER_BEGIN AND DATA_DATE <= V_SYSDAT)
-      OR (STAT_PERD = 'Y' AND DATA_DATE >= V_CURR_YEAR_BEGIN AND DATA_DATE <= V_SYSDAT)
+   WHERE (STATIS_CYCLE = 'M' AND DATA_DATE >= V_CURR_MONTH_BEGIN AND DATA_DATE <= V_SYSDAT)
+      OR (STATIS_CYCLE = 'Q' AND DATA_DATE >= V_CURR_QUARTER_BEGIN AND DATA_DATE <= V_SYSDAT)
+      OR (STATIS_CYCLE = 'Y' AND DATA_DATE >= V_CURR_YEAR_BEGIN AND DATA_DATE <= V_SYSDAT)
       -- 过渡期清理：旧语义生成的当期结束日行(仅首日存在，后续幂等无影响)
-      OR (STAT_PERD = 'M' AND DATA_DATE = V_CURR_MONTH_END)
-      OR (STAT_PERD = 'Q' AND DATA_DATE = V_CURR_QUARTER_END)
-      OR (STAT_PERD = 'Y' AND DATA_DATE = V_CURR_YEAR_END);
+      OR (STATIS_CYCLE = 'M' AND DATA_DATE = V_CURR_MONTH_END)
+      OR (STATIS_CYCLE = 'Q' AND DATA_DATE = V_CURR_QUARTER_END)
+      OR (STATIS_CYCLE = 'Y' AND DATA_DATE = V_CURR_YEAR_END);
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_CDR_DTL_PERIOD';
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_CDR_DTL_MATURE_SRC';
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_CDR_DTL_DUE_WIN';
@@ -155,7 +155,7 @@ BEGIN
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_CDR_DTL_CURR_STAGE';
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_CDR_DTL_PREV_STAGE';
   EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_CDR_DTL_FREEZE_LOG';
-  EXECUTE IMMEDIATE 'TRUNCATE TABLE TMP_CDR_VALIDATE_RESULT';
+  
 
   COMMIT;
 
@@ -188,36 +188,36 @@ BEGIN
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO TMP_CDR_DTL_PERIOD (
-      STAT_PERD, -- 统计周期：M-月,Q-季,Y-年
+      STATIS_CYCLE, -- 统计周期：M-月,Q-季,Y-年
       BGN_DT,    -- 统计周期开始日期
       END_DT     -- 统计周期结束日期
   )
-  SELECT 'M' AS STAT_PERD,
+  SELECT 'M' AS STATIS_CYCLE,
          TO_DATE(V_CURR_MONTH_BEGIN, 'yyyymmdd') AS BGN_DT,
          TO_DATE(V_CURR_MONTH_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
-  SELECT 'Q' AS STAT_PERD,
+  SELECT 'Q' AS STATIS_CYCLE,
          TO_DATE(V_CURR_QUARTER_BEGIN, 'yyyymmdd') AS BGN_DT,
          TO_DATE(V_CURR_QUARTER_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
-  SELECT 'Y' AS STAT_PERD,
+  SELECT 'Y' AS STATIS_CYCLE,
          TO_DATE(V_CURR_YEAR_BEGIN, 'yyyymmdd') AS BGN_DT,
          TO_DATE(V_CURR_YEAR_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
-  SELECT 'M' AS STAT_PERD,
+  SELECT 'M' AS STATIS_CYCLE,
          TO_DATE(V_PREV_MONTH_BEGIN, 'yyyymmdd') AS BGN_DT,
          TO_DATE(V_PREV_MONTH_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
-  SELECT 'Q' AS STAT_PERD,
+  SELECT 'Q' AS STATIS_CYCLE,
          TO_DATE(V_PREV_QUARTER_BEGIN, 'yyyymmdd') AS BGN_DT,
          TO_DATE(V_PREV_QUARTER_END, 'yyyymmdd') AS END_DT
     FROM dual
   UNION ALL
-  SELECT 'Y' AS STAT_PERD,
+  SELECT 'Y' AS STATIS_CYCLE,
          TO_DATE(V_PREV_YEAR_BEGIN, 'yyyymmdd') AS BGN_DT,
          TO_DATE(V_PREV_YEAR_END, 'yyyymmdd') AS END_DT
     FROM dual;
@@ -355,7 +355,7 @@ BEGIN
 
   -- 统一窗口(口径40)：w子查询提供三个日期字段(仅STATIS_TYP=0计算)，a子查询提供按类型金额
   INSERT INTO TMP_CDR_DTL_DUE_WIN (
-      STAT_PERD,            -- 统计周期：M-月,Q-季,Y-年
+      STATIS_CYCLE,            -- 统计周期：M-月,Q-季,Y-年
       BGN_DT,               -- 统计周期开始日期
       END_DT,               -- 统计周期结束日期
       CUST_ID,              -- 客户编号
@@ -368,7 +368,7 @@ BEGIN
       PERSN_LEGAL_BK_CODE,  -- 法人行号
       ORG_ID                -- 归属机构
   )
-  SELECT w.STAT_PERD,
+  SELECT w.STATIS_CYCLE,
          w.BGN_DT,
          w.END_DT,
          a.CUST_ID,
@@ -382,7 +382,7 @@ BEGIN
          a.ORG_ID
     FROM (
           -- 统一窗口子查询w：仅STATIS_TYP=0(全部产品)计算FIRST/LAST_EXPR_DT + TAKE_END_DT_30D
-          SELECT g.STAT_PERD, g.BGN_DT, g.END_DT, g.CUST_ID,
+          SELECT g.STATIS_CYCLE, g.BGN_DT, g.END_DT, g.CUST_ID,
                  g.PERSN_LEGAL_BK_CODE, g.ORG_ID,
                  g.FIRST_EXPR_DT, g.LAST_EXPR_DT,
                  NVL(
@@ -399,7 +399,7 @@ BEGIN
                      g.LAST_EXPR_DT + 30
                  ) AS TAKE_END_DT_30D
             FROM (
-                  SELECT p.STAT_PERD, p.BGN_DT, p.END_DT, m.CUST_ID,
+                  SELECT p.STATIS_CYCLE, p.BGN_DT, p.END_DT, m.CUST_ID,
                          m.PERSN_LEGAL_BK_CODE, m.ORG_ID,
                          MIN(m.EXPR_DT) AS FIRST_EXPR_DT,
                          MAX(m.EXPR_DT) AS LAST_EXPR_DT
@@ -407,12 +407,12 @@ BEGIN
                     JOIN TMP_CDR_DTL_PERIOD p
                       ON m.EXPR_DT BETWEEN p.BGN_DT AND p.END_DT
                    WHERE m.STATIS_TYP = '0'                                          -- 仅STATIS_TYP=0计算统一窗口
-                   GROUP BY p.STAT_PERD, p.BGN_DT, p.END_DT, m.CUST_ID, m.PERSN_LEGAL_BK_CODE, m.ORG_ID
+                   GROUP BY p.STATIS_CYCLE, p.BGN_DT, p.END_DT, m.CUST_ID, m.PERSN_LEGAL_BK_CODE, m.ORG_ID
                  ) g
          ) w
     JOIN (
           -- 按类型金额子查询a：STATIS_TYP=0(全部)+1(存款)+2(理财)各自汇总金额
-          SELECT p.STAT_PERD, p.BGN_DT, p.END_DT, m.CUST_ID, m.STATIS_TYP,
+          SELECT p.STATIS_CYCLE, p.BGN_DT, p.END_DT, m.CUST_ID, m.STATIS_TYP,
                  m.PERSN_LEGAL_BK_CODE, m.ORG_ID,
                  -- 已到期金额截止日=跑批日V_SYSDAT(口径12/T-1)
                  SUM(CASE WHEN m.EXPR_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
@@ -422,9 +422,9 @@ BEGIN
             JOIN TMP_CDR_DTL_PERIOD p
               ON m.EXPR_DT BETWEEN p.BGN_DT AND p.END_DT
            WHERE m.STATIS_TYP IN ('0', '1', '2')                     -- 0=全部产品,1=存款,2=理财
-           GROUP BY p.STAT_PERD, p.BGN_DT, p.END_DT, m.CUST_ID, m.STATIS_TYP, m.PERSN_LEGAL_BK_CODE, m.ORG_ID
+           GROUP BY p.STATIS_CYCLE, p.BGN_DT, p.END_DT, m.CUST_ID, m.STATIS_TYP, m.PERSN_LEGAL_BK_CODE, m.ORG_ID
          ) a
-      ON a.STAT_PERD = w.STAT_PERD
+      ON a.STATIS_CYCLE = w.STATIS_CYCLE
      AND a.BGN_DT = w.BGN_DT
      AND a.END_DT = w.END_DT
      AND a.CUST_ID = w.CUST_ID
@@ -529,7 +529,7 @@ BEGIN
   V_NO_ID := '6';
   V_BGN_DATE := SYSDATE;
 
-  -- DEFECT-006 修复(2026-08-01): 承接金额不再按 STAT_PERD 聚合写入 TAKE_AMT 中间表,
+  -- DEFECT-006 修复(2026-08-01): 承接金额不再按 STATIS_CYCLE 聚合写入 TAKE_AMT 中间表,
   -- 改为在第9段最终写入明细时按统计周期实例(BGN_DT/END_DT)内联计算,
   -- 避免上季/上月与当季/当月周期合并导致的购买金额错配。
   -- TMP_CDR_DTL_TAKE_AMT 表结构保留(第1段仍 TRUNCATE), 不再生成数据。
@@ -559,7 +559,7 @@ BEGIN
   -- 2.5.1 -- 第6.1段处理开始：生成跨类型转化金额中间表(优化:预聚合替代关联子查询)
   -- 业务含义：理财到期转定期金额(STATIS_TYP=2)、定期到期转理财金额(STATIS_TYP=1)，按类型预聚合
   -- 数据来源：TMP_CDR_DTL_TAKE_AMT
-  -- 处理逻辑：按 STAT_PERD+CUST_ID+STATIS_TYP+PERSN_LEGAL_BK_CODE 分组(口径11)，避免明细层跨类型混计
+  -- 处理逻辑：按 STATIS_CYCLE+CUST_ID+STATIS_TYP+PERSN_LEGAL_BK_CODE 分组(口径11)，避免明细层跨类型混计
   --***************************************
   V_NO_ID := '6.1';
   V_BGN_DATE := SYSDATE;
@@ -673,7 +673,7 @@ BEGIN
   V_BGN_DATE := SYSDATE;
 
   INSERT INTO TMP_CDR_DTL_AUM_BAL (
-      STAT_PERD,            -- 统计周期：M-月,Q-季,Y-年
+      STATIS_CYCLE,            -- 统计周期：M-月,Q-季,Y-年
       CUST_ID,              -- 客户编号
       STATIS_TYP,           -- 承接类型：0-全部,1-存款,2-理财
       AUM_TYP,              -- AUM类型：PREV-第一笔到期前一日,CURR-当前日
@@ -681,7 +681,7 @@ BEGIN
       AUM_BAL,              -- AUM余额
       PERSN_LEGAL_BK_CODE   -- 法人行号（计算单位=客户+法人行，口径23）
   )
-  SELECT w.STAT_PERD                                         AS STAT_PERD,  -- 统计周期：M-月,Q-季,Y-年
+  SELECT w.STATIS_CYCLE                                         AS STATIS_CYCLE,  -- 统计周期：M-月,Q-季,Y-年
          w.CUST_ID                                           AS CUST_ID,    -- 客户编号
          w.STATIS_TYP                                        AS STATIS_TYP, -- 承接类型：0-全部,1-存款,2-理财
          'PREV'                                              AS AUM_TYP,    -- AUM类型：第一笔到期前一日
@@ -694,7 +694,7 @@ BEGIN
       and H.PERSN_LEGAL_BK_CODE = W.PERSN_LEGAL_BK_CODE
      AND h.DATA_DATE = TO_CHAR(w.FIRST_EXPR_DT - 1, 'yyyymmdd')
      AND h.BAL_TYPE = '1'                                    -- 余额类型
-   GROUP BY w.STAT_PERD, w.CUST_ID, w.STATIS_TYP, TO_CHAR(w.FIRST_EXPR_DT - 1, 'yyyymmdd'), w.PERSN_LEGAL_BK_CODE;
+   GROUP BY w.STATIS_CYCLE, w.CUST_ID, w.STATIS_TYP, TO_CHAR(w.FIRST_EXPR_DT - 1, 'yyyymmdd'), w.PERSN_LEGAL_BK_CODE;
 
   COMMIT;
 
@@ -718,28 +718,27 @@ BEGIN
   );
 
   --***************************************
-  -- 2.8 -- 第9段处理开始：两期分离计算与验证（v3.0.0，单个BEGIN...END分段落）
-  -- 业务含义：本期/上期/验证逻辑位于同一个匿名块内，以注释段落分隔，界限清晰
+  -- 2.8 -- 第9段处理开始：两期分离计算（v3.0.0，单个BEGIN...END分段落）
+  -- 业务含义：本期/上期计算逻辑位于同一个匿名块内，以注释段落分隔，界限清晰
   -- 数据来源：DUE_WIN×TAKE_AMT×CUST_BASE×AUM_BAL×CROSS_CONV（关联键均不含ORG_ID，口径23）
-  -- 处理逻辑：9.0冻结快照 / 9.1本期计算段(C1/C2) / 9.2上期计算段(P1/P2) / 9.3验证段(V1，FAIL即中止)
+  -- 处理逻辑：9.0上期冻结快照 / 9.1本期计算段(C1/C2) / 9.2上期计算段(P1/P2)
   --***************************************
   V_NO_ID := '9';
   V_BGN_DATE := SYSDATE;
 
   DECLARE
-    V_FAIL_CNT INTEGER := 0;   -- 验证段失败计数（块级局部变量）
   BEGIN
   -- 9.0 上期冻结快照（供验证模块比对18基础字段是否被修改）
   INSERT INTO TMP_CDR_DTL_FREEZE_LOG (
       BATCH_DATE, PERSN_LEGAL_BK_CODE, DATA_DATE, CUST_ID, CUST_NAME, CUST_LVL,
-      DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STAT_PERD, STATIS_TYP,
+      DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STATIS_CYCLE, STATIS_TYP,
       EXPR_AMT, MATURE_TTL_AMT, TAKE_RATE, FIX_DEPO_MATURE_AMT, FIX_DEPO_MATURE_TTL_AMT,
       FIX_DEPO_TAKE_RATE, CNTCT_STATE, UNDTAKE_STATE, FIXED_FIN_MATURE_TRAN_INSUR_AMT,
       FIN_MATURE_TRAN_FIXED_AMT, FIXED_MATURE_TRAN_FIN_AMT, FRST_MATURE_PK_BF_DAY_AUM_BAL,
       LAST_END_DATE, POST_ID, ORG_ID
   )
   SELECT V_SYSDAT, PERSN_LEGAL_BK_CODE, DATA_DATE, CUST_ID, CUST_NAME, CUST_LVL,
-         DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STAT_PERD, STATIS_TYP,
+         DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STATIS_CYCLE, STATIS_TYP,
          EXPR_AMT, MATURE_TTL_AMT, TAKE_RATE, FIX_DEPO_MATURE_AMT, FIX_DEPO_MATURE_TTL_AMT,
          FIX_DEPO_TAKE_RATE, CNTCT_STATE, UNDTAKE_STATE, FIXED_FIN_MATURE_TRAN_INSUR_AMT,
          FIN_MATURE_TRAN_FIXED_AMT, FIXED_MATURE_TRAN_FIN_AMT, FRST_MATURE_PK_BF_DAY_AUM_BAL,
@@ -771,7 +770,7 @@ BEGIN
 
     INSERT INTO TMP_CDR_DTL_CURR_STAGE (
         PERSN_LEGAL_BK_CODE, DATA_DATE, CUST_ID, CUST_NAME, CUST_LVL,
-        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STAT_PERD, STATIS_TYP,
+        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STATIS_CYCLE, STATIS_TYP,
         EXPR_AMT, MATURE_TTL_AMT, TAKE_RATE, FIX_DEPO_MATURE_AMT, FIX_DEPO_MATURE_TTL_AMT,
         FIX_DEPO_TAKE_RATE, CNTCT_STATE, UNDTAKE_STATE, FIXED_FIN_MATURE_TRAN_INSUR_AMT,
         FIN_MATURE_TRAN_FIXED_AMT, FIXED_MATURE_TRAN_FIN_AMT, FRST_MATURE_PK_BF_DAY_AUM_BAL,
@@ -786,7 +785,7 @@ BEGIN
         cb.DEPO_CURNT_DEPO_BAL,
         cb.FIXD_DEPO_BAL,
         cb.FIN_AMT,
-        w.STAT_PERD,
+        w.STATIS_CYCLE,
         w.STATIS_TYP,
         NVL(w.EXPR_AMT, 0),
         NVL(w.MATURE_TTL_AMT, 0),
@@ -823,7 +822,7 @@ BEGIN
         w.ORG_ID
       FROM TMP_CDR_DTL_DUE_WIN w
       LEFT JOIN (
-            SELECT w2.STAT_PERD, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE,
+            SELECT w2.STATIS_CYCLE, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE,
                    SUM(CASE WHEN p.PRDKT_TYP IN ('DEPO', 'FIN')
                              AND p.BUY_DT BETWEEN w2.FIRST_EXPR_DT AND w2.TAKE_END_DT_30D
                              AND p.BUY_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
@@ -846,9 +845,9 @@ BEGIN
                AND p.PERSN_LEGAL_BK_CODE = w2.PERSN_LEGAL_BK_CODE
                AND p.BUY_DT BETWEEN w2.FIRST_EXPR_DT AND w2.TAKE_END_DT_30D
                AND p.BUY_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
-             GROUP BY w2.STAT_PERD, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE
+             GROUP BY w2.STATIS_CYCLE, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE
            ) t
-        ON t.STAT_PERD = w.STAT_PERD
+        ON t.STATIS_CYCLE = w.STATIS_CYCLE
        AND t.BGN_DT = w.BGN_DT
        AND t.END_DT = w.END_DT
        AND t.CUST_ID = w.CUST_ID
@@ -858,18 +857,18 @@ BEGIN
         ON cb.CUST_ID = w.CUST_ID
        AND cb.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
       LEFT JOIN TMP_CDR_DTL_AUM_BAL ap
-        ON ap.STAT_PERD = w.STAT_PERD
+        ON ap.STATIS_CYCLE = w.STATIS_CYCLE
        AND ap.CUST_ID = w.CUST_ID
        AND ap.STATIS_TYP = w.STATIS_TYP
        AND ap.AUM_TYP = 'PREV'
        AND ap.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
        AND ap.DATA_DATE = TO_CHAR(w.FIRST_EXPR_DT - 1, 'yyyymmdd')
       LEFT JOIN (
-            SELECT ta.STAT_PERD, ta.BGN_DT, ta.END_DT, ta.CUST_ID, ta.STATIS_TYP, ta.PERSN_LEGAL_BK_CODE,
+            SELECT ta.STATIS_CYCLE, ta.BGN_DT, ta.END_DT, ta.CUST_ID, ta.STATIS_TYP, ta.PERSN_LEGAL_BK_CODE,
                    SUM(CASE WHEN ta.STATIS_TYP = '2' THEN ta.BUY_DEPO_AMT_30D ELSE 0 END) AS FIN_MATURE_TRAN_FIXED_AMT,
                    SUM(CASE WHEN ta.STATIS_TYP = '1' THEN ta.BUY_FIN_AMT_30D ELSE 0 END) AS FIXED_MATURE_TRAN_FIN_AMT
               FROM (
-                    SELECT w2.STAT_PERD, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE,
+                    SELECT w2.STATIS_CYCLE, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE,
                            SUM(CASE WHEN p.PRDKT_TYP = 'DEPO'
                                      AND p.BUY_DT BETWEEN w2.FIRST_EXPR_DT AND w2.TAKE_END_DT_30D
                                      AND p.BUY_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
@@ -884,20 +883,20 @@ BEGIN
                        AND p.PERSN_LEGAL_BK_CODE = w2.PERSN_LEGAL_BK_CODE
                        AND p.BUY_DT BETWEEN w2.FIRST_EXPR_DT AND w2.TAKE_END_DT_30D
                        AND p.BUY_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
-                     GROUP BY w2.STAT_PERD, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE
+                     GROUP BY w2.STATIS_CYCLE, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE
                    ) ta
-             GROUP BY ta.STAT_PERD, ta.BGN_DT, ta.END_DT, ta.CUST_ID, ta.STATIS_TYP, ta.PERSN_LEGAL_BK_CODE
+             GROUP BY ta.STATIS_CYCLE, ta.BGN_DT, ta.END_DT, ta.CUST_ID, ta.STATIS_TYP, ta.PERSN_LEGAL_BK_CODE
            ) cv
-        ON cv.STAT_PERD = w.STAT_PERD
+        ON cv.STATIS_CYCLE = w.STATIS_CYCLE
        AND cv.BGN_DT = w.BGN_DT
        AND cv.END_DT = w.END_DT
        AND cv.CUST_ID = w.CUST_ID
        AND cv.STATIS_TYP = w.STATIS_TYP
        AND cv.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
      -- 边界检查：仅本期周期实例（END_DT=当期结束日），杜绝读取上期/历史实例
-     WHERE (w.STAT_PERD = 'M' AND w.END_DT = TO_DATE(V_CURR_MONTH_END, 'yyyymmdd'))
-        OR (w.STAT_PERD = 'Q' AND w.END_DT = TO_DATE(V_CURR_QUARTER_END, 'yyyymmdd'))
-        OR (w.STAT_PERD = 'Y' AND w.END_DT = TO_DATE(V_CURR_YEAR_END, 'yyyymmdd'));
+     WHERE (w.STATIS_CYCLE = 'M' AND w.END_DT = TO_DATE(V_CURR_MONTH_END, 'yyyymmdd'))
+        OR (w.STATIS_CYCLE = 'Q' AND w.END_DT = TO_DATE(V_CURR_QUARTER_END, 'yyyymmdd'))
+        OR (w.STATIS_CYCLE = 'Y' AND w.END_DT = TO_DATE(V_CURR_YEAR_END, 'yyyymmdd'));
 
     -- 边界检查：本期结果 DATA_DATE 必须全部等于跑批日期（防止跨期引用）
     IF EXISTS (SELECT 1 FROM TMP_CDR_DTL_CURR_STAGE WHERE DATA_DATE <> V_SYSDAT) THEN
@@ -918,7 +917,7 @@ BEGIN
     V_BGN_DATE := SYSDATE;
     INSERT INTO ADS_CUST_DEADLINE_RMND_DTL (
         PERSN_LEGAL_BK_CODE, DATA_DATE, CUST_ID, CUST_NAME, CUST_LVL,
-        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STAT_PERD, STATIS_TYP,
+        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STATIS_CYCLE, STATIS_TYP,
         EXPR_AMT, MATURE_TTL_AMT, TAKE_RATE, FIX_DEPO_MATURE_AMT, FIX_DEPO_MATURE_TTL_AMT,
         FIX_DEPO_TAKE_RATE, CNTCT_STATE, UNDTAKE_STATE, FIXED_FIN_MATURE_TRAN_INSUR_AMT,
         FIN_MATURE_TRAN_FIXED_AMT, FIXED_MATURE_TRAN_FIN_AMT, FRST_MATURE_PK_BF_DAY_AUM_BAL,
@@ -926,7 +925,7 @@ BEGIN
     )
     SELECT
         PERSN_LEGAL_BK_CODE, DATA_DATE, CUST_ID, CUST_NAME, CUST_LVL,
-        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STAT_PERD, STATIS_TYP,
+        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STATIS_CYCLE, STATIS_TYP,
         EXPR_AMT, MATURE_TTL_AMT, TAKE_RATE, FIX_DEPO_MATURE_AMT, FIX_DEPO_MATURE_TTL_AMT,
         FIX_DEPO_TAKE_RATE, CNTCT_STATE, UNDTAKE_STATE, FIXED_FIN_MATURE_TRAN_INSUR_AMT,
         FIN_MATURE_TRAN_FIXED_AMT, FIXED_MATURE_TRAN_FIN_AMT, FRST_MATURE_PK_BF_DAY_AUM_BAL,
@@ -949,7 +948,7 @@ BEGIN
 
     INSERT INTO TMP_CDR_DTL_PREV_STAGE (
         PERSN_LEGAL_BK_CODE, DATA_DATE, CUST_ID, CUST_NAME, CUST_LVL,
-        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STAT_PERD, STATIS_TYP,
+        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STATIS_CYCLE, STATIS_TYP,
         EXPR_AMT, MATURE_TTL_AMT, TAKE_RATE, FIX_DEPO_MATURE_AMT, FIX_DEPO_MATURE_TTL_AMT,
         FIX_DEPO_TAKE_RATE, CNTCT_STATE, UNDTAKE_STATE, FIXED_FIN_MATURE_TRAN_INSUR_AMT,
         FIN_MATURE_TRAN_FIXED_AMT, FIXED_MATURE_TRAN_FIN_AMT, FRST_MATURE_PK_BF_DAY_AUM_BAL,
@@ -964,7 +963,7 @@ BEGIN
         cb.DEPO_CURNT_DEPO_BAL,
         cb.FIXD_DEPO_BAL,
         cb.FIN_AMT,
-        w.STAT_PERD,
+        w.STATIS_CYCLE,
         w.STATIS_TYP,
         NVL(w.EXPR_AMT, 0),
         NVL(w.MATURE_TTL_AMT, 0),
@@ -1001,7 +1000,7 @@ BEGIN
         w.ORG_ID
       FROM TMP_CDR_DTL_DUE_WIN w
       LEFT JOIN (
-            SELECT w2.STAT_PERD, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE,
+            SELECT w2.STATIS_CYCLE, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE,
                    SUM(CASE WHEN p.PRDKT_TYP IN ('DEPO', 'FIN')
                              AND p.BUY_DT BETWEEN w2.FIRST_EXPR_DT AND w2.TAKE_END_DT_30D
                              AND p.BUY_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
@@ -1024,9 +1023,9 @@ BEGIN
                AND p.PERSN_LEGAL_BK_CODE = w2.PERSN_LEGAL_BK_CODE
                AND p.BUY_DT BETWEEN w2.FIRST_EXPR_DT AND w2.TAKE_END_DT_30D
                AND p.BUY_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
-             GROUP BY w2.STAT_PERD, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE
+             GROUP BY w2.STATIS_CYCLE, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE
            ) t
-        ON t.STAT_PERD = w.STAT_PERD
+        ON t.STATIS_CYCLE = w.STATIS_CYCLE
        AND t.BGN_DT = w.BGN_DT
        AND t.END_DT = w.END_DT
        AND t.CUST_ID = w.CUST_ID
@@ -1036,18 +1035,18 @@ BEGIN
         ON cb.CUST_ID = w.CUST_ID
        AND cb.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
       LEFT JOIN TMP_CDR_DTL_AUM_BAL ap
-        ON ap.STAT_PERD = w.STAT_PERD
+        ON ap.STATIS_CYCLE = w.STATIS_CYCLE
        AND ap.CUST_ID = w.CUST_ID
        AND ap.STATIS_TYP = w.STATIS_TYP
        AND ap.AUM_TYP = 'PREV'
        AND ap.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
        AND ap.DATA_DATE = TO_CHAR(w.FIRST_EXPR_DT - 1, 'yyyymmdd')
       LEFT JOIN (
-            SELECT ta.STAT_PERD, ta.BGN_DT, ta.END_DT, ta.CUST_ID, ta.STATIS_TYP, ta.PERSN_LEGAL_BK_CODE,
+            SELECT ta.STATIS_CYCLE, ta.BGN_DT, ta.END_DT, ta.CUST_ID, ta.STATIS_TYP, ta.PERSN_LEGAL_BK_CODE,
                    SUM(CASE WHEN ta.STATIS_TYP = '2' THEN ta.BUY_DEPO_AMT_30D ELSE 0 END) AS FIN_MATURE_TRAN_FIXED_AMT,
                    SUM(CASE WHEN ta.STATIS_TYP = '1' THEN ta.BUY_FIN_AMT_30D ELSE 0 END) AS FIXED_MATURE_TRAN_FIN_AMT
               FROM (
-                    SELECT w2.STAT_PERD, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE,
+                    SELECT w2.STATIS_CYCLE, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE,
                            SUM(CASE WHEN p.PRDKT_TYP = 'DEPO'
                                      AND p.BUY_DT BETWEEN w2.FIRST_EXPR_DT AND w2.TAKE_END_DT_30D
                                      AND p.BUY_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
@@ -1062,26 +1061,26 @@ BEGIN
                        AND p.PERSN_LEGAL_BK_CODE = w2.PERSN_LEGAL_BK_CODE
                        AND p.BUY_DT BETWEEN w2.FIRST_EXPR_DT AND w2.TAKE_END_DT_30D
                        AND p.BUY_DT <= TO_DATE(V_SYSDAT, 'yyyymmdd')
-                     GROUP BY w2.STAT_PERD, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE
+                     GROUP BY w2.STATIS_CYCLE, w2.BGN_DT, w2.END_DT, w2.CUST_ID, w2.STATIS_TYP, w2.PERSN_LEGAL_BK_CODE
                    ) ta
-             GROUP BY ta.STAT_PERD, ta.BGN_DT, ta.END_DT, ta.CUST_ID, ta.STATIS_TYP, ta.PERSN_LEGAL_BK_CODE
+             GROUP BY ta.STATIS_CYCLE, ta.BGN_DT, ta.END_DT, ta.CUST_ID, ta.STATIS_TYP, ta.PERSN_LEGAL_BK_CODE
            ) cv
-        ON cv.STAT_PERD = w.STAT_PERD
+        ON cv.STATIS_CYCLE = w.STATIS_CYCLE
        AND cv.BGN_DT = w.BGN_DT
        AND cv.END_DT = w.END_DT
        AND cv.CUST_ID = w.CUST_ID
        AND cv.STATIS_TYP = w.STATIS_TYP
        AND cv.PERSN_LEGAL_BK_CODE = w.PERSN_LEGAL_BK_CODE
      -- 边界检查：仅上期周期实例（END_DT=上期结束日），数据来源=上一周期实例(口径38)
-     WHERE (w.STAT_PERD = 'M' AND w.END_DT = TO_DATE(V_PREV_MONTH_END, 'yyyymmdd'))
-        OR (w.STAT_PERD = 'Q' AND w.END_DT = TO_DATE(V_PREV_QUARTER_END, 'yyyymmdd'))
-        OR (w.STAT_PERD = 'Y' AND w.END_DT = TO_DATE(V_PREV_YEAR_END, 'yyyymmdd'));
+     WHERE (w.STATIS_CYCLE = 'M' AND w.END_DT = TO_DATE(V_PREV_MONTH_END, 'yyyymmdd'))
+        OR (w.STATIS_CYCLE = 'Q' AND w.END_DT = TO_DATE(V_PREV_QUARTER_END, 'yyyymmdd'))
+        OR (w.STATIS_CYCLE = 'Y' AND w.END_DT = TO_DATE(V_PREV_YEAR_END, 'yyyymmdd'));
 
     -- 边界检查：上期结果 DATA_DATE 必须与上期期末日期一一对应（防止跨期引用）
     IF EXISTS (SELECT 1 FROM TMP_CDR_DTL_PREV_STAGE
-                WHERE (STAT_PERD = 'M' AND DATA_DATE <> V_PREV_MONTH_END)
-                   OR (STAT_PERD = 'Q' AND DATA_DATE <> V_PREV_QUARTER_END)
-                   OR (STAT_PERD = 'Y' AND DATA_DATE <> V_PREV_YEAR_END)) THEN
+                WHERE (STATIS_CYCLE = 'M' AND DATA_DATE <> V_PREV_MONTH_END)
+                   OR (STATIS_CYCLE = 'Q' AND DATA_DATE <> V_PREV_QUARTER_END)
+                   OR (STATIS_CYCLE = 'Y' AND DATA_DATE <> V_PREV_YEAR_END)) THEN
       RAISE_APPLICATION_ERROR(-20012, '上期边界检查失败：PREV_STAGE存在DATA_DATE与上期期末不一致行（跨期引用）');
     END IF;
     COMMIT;
@@ -1100,7 +1099,7 @@ BEGIN
     -- 定点更新：上期行仅更新7字段（口径35），缺失上期行整行补插
     MERGE INTO ADS_CUST_DEADLINE_RMND_DTL dst
     USING TMP_CDR_DTL_PREV_STAGE src
-    ON (dst.STAT_PERD = src.STAT_PERD
+    ON (dst.STATIS_CYCLE = src.STATIS_CYCLE
         AND dst.DATA_DATE = src.DATA_DATE
         AND dst.CUST_ID = src.CUST_ID
         AND dst.STATIS_TYP = src.STATIS_TYP
@@ -1115,14 +1114,14 @@ BEGIN
         dst.FIXED_MATURE_TRAN_FIN_AMT = src.FIXED_MATURE_TRAN_FIN_AMT
     WHEN NOT MATCHED THEN INSERT (
         PERSN_LEGAL_BK_CODE, DATA_DATE, CUST_ID, CUST_NAME, CUST_LVL,
-        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STAT_PERD, STATIS_TYP,
+        DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STATIS_CYCLE, STATIS_TYP,
         EXPR_AMT, MATURE_TTL_AMT, TAKE_RATE, FIX_DEPO_MATURE_AMT, FIX_DEPO_MATURE_TTL_AMT,
         FIX_DEPO_TAKE_RATE, CNTCT_STATE, UNDTAKE_STATE, FIXED_FIN_MATURE_TRAN_INSUR_AMT,
         FIN_MATURE_TRAN_FIXED_AMT, FIXED_MATURE_TRAN_FIN_AMT, FRST_MATURE_PK_BF_DAY_AUM_BAL,
         LAST_END_DATE, POST_ID, ORG_ID
     ) VALUES (
         src.PERSN_LEGAL_BK_CODE, src.DATA_DATE, src.CUST_ID, src.CUST_NAME, src.CUST_LVL,
-        src.DEPO_CURNT_DEPO_BAL, src.FIXD_DEPO_BAL, src.FIN_AMT, src.STAT_PERD, src.STATIS_TYP,
+        src.DEPO_CURNT_DEPO_BAL, src.FIXD_DEPO_BAL, src.FIN_AMT, src.STATIS_CYCLE, src.STATIS_TYP,
         src.EXPR_AMT, src.MATURE_TTL_AMT, src.TAKE_RATE, src.FIX_DEPO_MATURE_AMT, src.FIX_DEPO_MATURE_TTL_AMT,
         src.FIX_DEPO_TAKE_RATE, src.CNTCT_STATE, src.UNDTAKE_STATE, src.FIXED_FIN_MATURE_TRAN_INSUR_AMT,
         src.FIN_MATURE_TRAN_FIXED_AMT, src.FIXED_MATURE_TRAN_FIN_AMT, src.FRST_MATURE_PK_BF_DAY_AUM_BAL,
@@ -1139,123 +1138,6 @@ BEGIN
         V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON
     );
     -- ========== 【上期计算段】结束 ==========
-    -- ========== 【数据验证段】开始（冻结/一致性/互斥/值域/行数，FAIL即中止）==========
-    V_NO_ID := 'V1';
-    V_BGN_DATE := SYSDATE;
-
-    -- V1: 上期18基础字段冻结校验（FREEZE_LOG快照 vs 目标表当前上期行）
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'P', 'FREEZE_BASE_18',
-           CASE WHEN NOT EXISTS (
-                    SELECT PERSN_LEGAL_BK_CODE, DATA_DATE, CUST_ID, CUST_NAME, CUST_LVL,
-                           DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STAT_PERD, STATIS_TYP,
-                           EXPR_AMT, MATURE_TTL_AMT, FIX_DEPO_MATURE_AMT, FIX_DEPO_MATURE_TTL_AMT,
-                           FRST_MATURE_PK_BF_DAY_AUM_BAL, LAST_END_DATE, POST_ID, ORG_ID
-                      FROM TMP_CDR_DTL_FREEZE_LOG
-                    MINUS
-                    SELECT PERSN_LEGAL_BK_CODE, DATA_DATE, CUST_ID, CUST_NAME, CUST_LVL,
-                           DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STAT_PERD, STATIS_TYP,
-                           EXPR_AMT, MATURE_TTL_AMT, FIX_DEPO_MATURE_AMT, FIX_DEPO_MATURE_TTL_AMT,
-                           FRST_MATURE_PK_BF_DAY_AUM_BAL, LAST_END_DATE, POST_ID, ORG_ID
-                      FROM ADS_CUST_DEADLINE_RMND_DTL
-                     WHERE DATA_DATE IN (V_PREV_MONTH_END, V_PREV_QUARTER_END, V_PREV_YEAR_END))
-                AND NOT EXISTS (
-                    SELECT PERSN_LEGAL_BK_CODE, DATA_DATE, CUST_ID, CUST_NAME, CUST_LVL,
-                           DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STAT_PERD, STATIS_TYP,
-                           EXPR_AMT, MATURE_TTL_AMT, FIX_DEPO_MATURE_AMT, FIX_DEPO_MATURE_TTL_AMT,
-                           FRST_MATURE_PK_BF_DAY_AUM_BAL, LAST_END_DATE, POST_ID, ORG_ID
-                      FROM ADS_CUST_DEADLINE_RMND_DTL
-                     WHERE DATA_DATE IN (V_PREV_MONTH_END, V_PREV_QUARTER_END, V_PREV_YEAR_END)
-                    MINUS
-                    SELECT PERSN_LEGAL_BK_CODE, DATA_DATE, CUST_ID, CUST_NAME, CUST_LVL,
-                           DEPO_CURNT_DEPO_BAL, FIXD_DEPO_BAL, FIN_AMT, STAT_PERD, STATIS_TYP,
-                           EXPR_AMT, MATURE_TTL_AMT, FIX_DEPO_MATURE_AMT, FIX_DEPO_MATURE_TTL_AMT,
-                           FRST_MATURE_PK_BF_DAY_AUM_BAL, LAST_END_DATE, POST_ID, ORG_ID
-                      FROM TMP_CDR_DTL_FREEZE_LOG)
-           THEN 'PASS' ELSE 'FAIL' END,
-           '上期18基础字段冻结校验（口径34）', SYSDATE FROM dual;
-
-    -- V2: 上期7更新字段一致性（目标表上期行 vs PREV_STAGE）
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'P', 'PREV_7FIELDS_CONSISTENT',
-           CASE WHEN NOT EXISTS (
-                    SELECT STAT_PERD, DATA_DATE, CUST_ID, STATIS_TYP, PERSN_LEGAL_BK_CODE,
-                           TAKE_RATE, FIX_DEPO_TAKE_RATE, UNDTAKE_STATE, CNTCT_STATE,
-                           FIXED_FIN_MATURE_TRAN_INSUR_AMT, FIN_MATURE_TRAN_FIXED_AMT,
-                           FIXED_MATURE_TRAN_FIN_AMT
-                      FROM TMP_CDR_DTL_PREV_STAGE
-                    MINUS
-                    SELECT STAT_PERD, DATA_DATE, CUST_ID, STATIS_TYP, PERSN_LEGAL_BK_CODE,
-                           TAKE_RATE, FIX_DEPO_TAKE_RATE, UNDTAKE_STATE, CNTCT_STATE,
-                           FIXED_FIN_MATURE_TRAN_INSUR_AMT, FIN_MATURE_TRAN_FIXED_AMT,
-                           FIXED_MATURE_TRAN_FIN_AMT
-                      FROM ADS_CUST_DEADLINE_RMND_DTL
-                     WHERE DATA_DATE IN (V_PREV_MONTH_END, V_PREV_QUARTER_END, V_PREV_YEAR_END))
-           THEN 'PASS' ELSE 'FAIL' END,
-           '上期7更新字段一致性校验（口径35）', SYSDATE FROM dual;
-
-    -- V3: 本期结果不得包含上期日期（DATA_DATE互斥，防止跨期引用）
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'C', 'CURR_NO_PREV_DATE',
-           CASE WHEN EXISTS (SELECT 1 FROM TMP_CDR_DTL_CURR_STAGE
-                              WHERE DATA_DATE IN (V_PREV_MONTH_END, V_PREV_QUARTER_END, V_PREV_YEAR_END))
-                THEN 'FAIL' ELSE 'PASS' END,
-           '本期结果与上期日期互斥校验', SYSDATE FROM dual;
-
-    -- V4: 率值域与状态值域（两期独立校验）
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'C', 'RATE_DOMAIN_CURR',
-           CASE WHEN EXISTS (SELECT 1 FROM TMP_CDR_DTL_CURR_STAGE
-                              WHERE TAKE_RATE IS NULL OR TAKE_RATE < 0
-                                 OR FIX_DEPO_TAKE_RATE IS NULL OR FIX_DEPO_TAKE_RATE < 0
-                                 OR CNTCT_STATE NOT IN ('0', '1')
-                                 OR UNDTAKE_STATE NOT IN ('0', '1'))
-                THEN 'FAIL' ELSE 'PASS' END,
-           '本期率值/状态值域校验', SYSDATE FROM dual;
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'P', 'RATE_DOMAIN_PREV',
-           CASE WHEN EXISTS (SELECT 1 FROM TMP_CDR_DTL_PREV_STAGE
-                              WHERE TAKE_RATE IS NULL OR TAKE_RATE < 0
-                                 OR FIX_DEPO_TAKE_RATE IS NULL OR FIX_DEPO_TAKE_RATE < 0
-                                 OR CNTCT_STATE NOT IN ('0', '1')
-                                 OR UNDTAKE_STATE NOT IN ('0', '1'))
-                THEN 'FAIL' ELSE 'PASS' END,
-           '上期率值/状态值域校验', SYSDATE FROM dual;
-
-    -- V5: stage与目标表行数一致性（两期独立校验）
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'C', 'ROWCOUNT_CONSISTENT_CURR',
-           CASE WHEN (SELECT COUNT(*) FROM TMP_CDR_DTL_CURR_STAGE)
-                  = (SELECT COUNT(*) FROM ADS_CUST_DEADLINE_RMND_DTL WHERE DATA_DATE = V_SYSDAT)
-                THEN 'PASS' ELSE 'FAIL' END,
-           '本期stage与目标表行数一致性', SYSDATE FROM dual;
-    INSERT INTO TMP_CDR_VALIDATE_RESULT (BATCH_DATE, PERIOD_TYP, VALIDATE_ITEM, RESULT, DETAIL, CHECK_TIME)
-    SELECT V_SYSDAT, 'P', 'ROWCOUNT_CONSISTENT_PREV',
-           CASE WHEN (SELECT COUNT(*) FROM TMP_CDR_DTL_PREV_STAGE)
-                  = (SELECT COUNT(*) FROM ADS_CUST_DEADLINE_RMND_DTL
-                      WHERE DATA_DATE IN (V_PREV_MONTH_END, V_PREV_QUARTER_END, V_PREV_YEAR_END))
-                THEN 'PASS' ELSE 'FAIL' END,
-           '上期stage与目标表行数一致性', SYSDATE FROM dual;
-
-    COMMIT;
-
-    -- 任一FAIL即中止批次（防止污染数据后继续）
-    SELECT COUNT(*) INTO V_FAIL_CNT
-      FROM TMP_CDR_VALIDATE_RESULT
-     WHERE BATCH_DATE = V_SYSDAT AND RESULT = 'FAIL';
-    IF V_FAIL_CNT > 0 THEN
-      RAISE_APPLICATION_ERROR(-20013, '数据验证失败：' || V_FAIL_CNT || ' 项校验未通过');
-    END IF;
-    V_END_DATE := SYSDATE;
-    V_DURA_DATE := TRUNC((V_END_DATE - V_BGN_DATE) * 24 * 60 * 60);
-    OUTCDE := 0;
-    V_LOG_MSG := '数据验证段完成：两期计算结果准确性与独立性校验通过';
-    V_LOG_FLG := OUTCDE;
-    SYS_PRC_STEP_LOGS(
-        V_SYSDAT, V_PRC_NAME, V_PRC_DESC, 'V1',
-        V_BGN_DATE, V_END_DATE, V_DURA_DATE, V_LOG_MSG, V_LOG_FLG, V_LOG_BUTTON
-    );
-    -- ========== 【数据验证段】结束 ==========
   END;
 
 

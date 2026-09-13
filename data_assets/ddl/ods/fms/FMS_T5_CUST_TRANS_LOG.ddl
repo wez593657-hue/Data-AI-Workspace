@@ -1,3 +1,4 @@
+DROP TABLE FMS_T5_CUST_TRANS_LOG;
 create table FMS_T5_CUST_TRANS_LOG
 (
   TRANS_SERNO         VARCHAR2(32) not null,

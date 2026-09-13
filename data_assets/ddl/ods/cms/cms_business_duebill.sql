@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_business_duebill;
 
+DROP TABLE crmdm.cms_business_duebill;
 CREATE TABLE crmdm.cms_business_duebill (
 	serialno varchar(40) NOT NULL, -- 流水号
 	relativeserialno1 varchar(40) NULL, -- 相关出账流水号

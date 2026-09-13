@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.mbk_mkp_rebat_recode;
 
+DROP TABLE crmdm.mbk_mkp_rebat_recode;
 CREATE TABLE crmdm.mbk_mkp_rebat_recode (
 	acti_no varchar(32) NOT NULL, -- 折扣活动编号
 	cust_no varchar(32) NULL, -- 客户号

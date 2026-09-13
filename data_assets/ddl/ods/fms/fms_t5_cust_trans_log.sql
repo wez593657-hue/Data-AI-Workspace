@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_t5_cust_trans_log;
 
+DROP TABLE crmdm.fms_t5_cust_trans_log;
 CREATE TABLE crmdm.fms_t5_cust_trans_log (
 	trans_serno varchar(32) NOT NULL, -- 交易流水号
 	sys_mbt varchar(6) NULL, -- 交易编码

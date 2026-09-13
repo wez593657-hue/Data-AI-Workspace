@@ -5,7 +5,8 @@
  * 用途: 存非当日跑批的历史客户等级快照；指标基准回溯取数（基准日<跑批日时读本表，主表仅存当日跑批数据）
  */
 
-CREATE TABLE IF NOT EXISTS DWS_CUST_LVL_INFO_HIS (
+DROP TABLE DWS_CUST_LVL_INFO_HIS;
+CREATE TABLE DWS_CUST_LVL_INFO_HIS (
     PERSN_LEGAL_BK_CODE VARCHAR(7) NULL, -- 法人行号
     DATA_DATE VARCHAR(8) NOT NULL, -- 数据日期
     CUST_ID VARCHAR(20) NOT NULL, -- 客户编号

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.crm_sys_post;
 
+DROP TABLE crmdm.crm_sys_post;
 CREATE TABLE crmdm.crm_sys_post (
 	post_id varchar(40) NOT NULL, -- 职位ID(员工号-条线-岗位分类-机构)
 	emp_id varchar(40) NULL, -- 工号

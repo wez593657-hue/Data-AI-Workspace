@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ibp_ybt_insurance_base_info;
 
+DROP TABLE crmdm.ibp_ybt_insurance_base_info;
 CREATE TABLE crmdm.ibp_ybt_insurance_base_info (
 	insurance_id varchar(200) NOT NULL, -- 险种ID
 	item_id varchar(40) NOT NULL, -- 保险公司编号（项目编号 )

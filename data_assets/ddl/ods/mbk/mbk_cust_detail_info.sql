@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.mbk_cust_detail_info;
 
+DROP TABLE crmdm.mbk_cust_detail_info;
 CREATE TABLE crmdm.mbk_cust_detail_info (
 	cust_no varchar(32) NULL, -- 电子银行客户号
 	ecif_no varchar(32) NULL, -- ECIF客户号

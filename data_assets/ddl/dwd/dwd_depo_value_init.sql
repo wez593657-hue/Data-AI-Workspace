@@ -5,7 +5,8 @@
  * 来源: 已确认需求——按机构号、机构名称、储蓄存款基数维护
  */
 
-CREATE TABLE IF NOT EXISTS DWD_DEPO_VALUE_INIT (
+DROP TABLE DWD_DEPO_VALUE_INIT;
+CREATE TABLE DWD_DEPO_VALUE_INIT (
     ORG_ID      VARCHAR(64)  NOT NULL, -- 机构号
     ORG_NAME    VARCHAR(200) NULL,     -- 机构名称
     VALUE_INIT  NUMBER(20,2) NULL,     -- 储蓄存款基数

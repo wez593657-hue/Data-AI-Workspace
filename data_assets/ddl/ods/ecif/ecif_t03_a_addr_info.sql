@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ecif_t03_a_addr_info;
 
+DROP TABLE crmdm.ecif_t03_a_addr_info;
 CREATE TABLE crmdm.ecif_t03_a_addr_info (
 	addr_id bpchar(20) NULL, -- 联系地址ID
 	post_cd varchar(6) NULL, -- 邮政编码

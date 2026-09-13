@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ibp_ybt_policy_fee_list;
 
+DROP TABLE crmdm.ibp_ybt_policy_fee_list;
 CREATE TABLE crmdm.ibp_ybt_policy_fee_list (
 	plat_policy_serial varchar(200) NOT NULL, -- 保单平台流水号
 	cont_no varchar(200) NULL, -- 保险单号

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ibp_ybt_product_info;
 
+DROP TABLE crmdm.ibp_ybt_product_info;
 CREATE TABLE crmdm.ibp_ybt_product_info (
 	product_id varchar(200) NOT NULL, -- 产品ID
 	item_id varchar(40) NOT NULL, -- 保险公司编号(项目编号）

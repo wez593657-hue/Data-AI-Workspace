@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_cl_info;
 
+DROP TABLE crmdm.cms_cl_info;
 CREATE TABLE crmdm.cms_cl_info (
 	lineid varchar(32) NULL, -- 额度编号
 	cltypeid varchar(32) NULL, -- 额度类型编号

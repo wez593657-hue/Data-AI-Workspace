@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cms_acct_payment_schedule;
 
+DROP TABLE crmdm.cms_acct_payment_schedule;
 CREATE TABLE crmdm.cms_acct_payment_schedule (
 	serialno varchar(40) NOT NULL, -- 流水号
 	parentserialno varchar(40) NULL, -- 父还款计划流水号

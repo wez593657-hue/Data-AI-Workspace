@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ybt_lssb_trans_detail;
 
+DROP TABLE crmdm.ybt_lssb_trans_detail;
 CREATE TABLE crmdm.ybt_lssb_trans_detail (
 	plat_serial varchar(20) NOT NULL, -- 平台流水号
 	tran_code varchar(8) NULL, -- 交易码

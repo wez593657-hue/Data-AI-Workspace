@@ -4,7 +4,8 @@
  * 来源: Mapping Excel 同步
  */
 
-CREATE TABLE IF NOT EXISTS DWD_SYS_POST (
+DROP TABLE DWD_SYS_POST;
+CREATE TABLE DWD_SYS_POST (
     POST_ID VARCHAR NULL, -- 职位ID(员工号-条线-岗位分类-机构)
     EMP_ID VARCHAR NULL, -- 工号
     POST_NAME VARCHAR NULL, -- 职位名称

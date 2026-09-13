@@ -1,4 +1,5 @@
 -- Create table
+DROP TABLE FMS_TD_CUST_VOL_DETAIL;
 create table FMS_TD_CUST_VOL_DETAIL
 (
   FNC_TRANS_ACCT_NO        VARCHAR2(24) not null,

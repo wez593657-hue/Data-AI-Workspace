@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ibp_ib_list_plat;
 
+DROP TABLE crmdm.ibp_ib_list_plat;
 CREATE TABLE crmdm.ibp_ib_list_plat (
 	plat_serial varchar(35) NOT NULL, -- 平台流水
 	plat_date varchar(8) NOT NULL, -- 交易日期

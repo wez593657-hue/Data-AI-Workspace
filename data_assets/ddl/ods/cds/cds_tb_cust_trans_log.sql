@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cds_tb_cust_trans_log;
 
+DROP TABLE crmdm.cds_tb_cust_trans_log;
 CREATE TABLE crmdm.cds_tb_cust_trans_log (
 	trans_serno varchar(32) NOT NULL, -- 系统交易流水号
 	trans_date bpchar(8) NOT NULL, -- 交易日期

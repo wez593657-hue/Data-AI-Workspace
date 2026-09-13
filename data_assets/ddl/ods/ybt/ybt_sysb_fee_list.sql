@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.ybt_sysb_fee_list;
 
+DROP TABLE crmdm.ybt_sysb_fee_list;
 CREATE TABLE crmdm.ybt_sysb_fee_list (
 	query_serial varchar(120) NOT NULL, -- 查询流水
 	pay_serial varchar(120) NULL, -- 缴费流水

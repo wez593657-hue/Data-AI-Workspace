@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.cds_tb_prod_pub_info;
 
+DROP TABLE crmdm.cds_tb_prod_pub_info;
 CREATE TABLE crmdm.cds_tb_prod_pub_info (
 	prod_code varchar(32) NOT NULL, -- 产品代码
 	prod_glob_code varchar(32) NULL, -- 全国唯一编码

@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.fms_td_cust_trans_cfm_log_h;
 
+DROP TABLE crmdm.fms_td_cust_trans_cfm_log_h;
 CREATE TABLE crmdm.fms_td_cust_trans_cfm_log_h (
 	back_date varchar(8) NULL, -- 备份历史表日期
 	app_serno varchar(32) NULL, -- 交易申请流水号

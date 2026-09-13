@@ -4,6 +4,7 @@
 
 -- DROP TABLE crmdm.uepp_pay_aml_mer_info;
 
+DROP TABLE crmdm.uepp_pay_aml_mer_info;
 CREATE TABLE crmdm.uepp_pay_aml_mer_info (
 	merch_id varchar(20) NOT NULL, -- 商户编号
 	merch_name varchar(200) NULL, -- 商户名称
